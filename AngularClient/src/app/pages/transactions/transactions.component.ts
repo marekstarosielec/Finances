@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from '../../services/data.service';
+import { TransactionsService } from '../../services/transactions.service';
 
 declare interface TableData {
     headerRow: string[];
@@ -15,11 +15,11 @@ export class TransactionsComponent implements OnInit{
     data: any[];
     loading: boolean;
 
-    constructor (private dataService: DataService) {}
+    constructor (private transactionsService: TransactionsService) {}
 
     ngOnInit(){
         this.loading = true;
-        this.dataService.sendGetRequest().subscribe((data: any[])=>{
+        this.transactionsService.sendGetRequest().subscribe((data: any[])=>{
             this.data = data;
             this.loading = false;
         }) 

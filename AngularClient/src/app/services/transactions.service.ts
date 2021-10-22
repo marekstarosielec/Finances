@@ -5,9 +5,9 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class TransactionsService {
 
-  private REST_API_SERVER = "http://localhost:5000/WeatherForecast";
+  private REST_API_SERVER = "http://localhost:5000/Transactions";
 
   constructor(private httpClient: HttpClient) { }
 
