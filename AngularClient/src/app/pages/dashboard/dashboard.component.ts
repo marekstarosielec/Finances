@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import Chart from 'chart.js';
+import { DataService } from '../../services/data.service';
 
 
 @Component({
@@ -15,8 +16,18 @@ export class DashboardComponent implements OnInit{
   public chartColor;
   public chartEmail;
   public chartHours;
+  weather = [];
 
-    ngOnInit(){
+  constructor(private dataService: DataService)
+  {}
+ 
+ 
+  ngOnInit(){
+      this.dataService.sendGetRequest().subscribe((data)=>{
+        debugger;
+        console.log(data);
+      //  this.weather = data;
+      })  
       this.chartColor = "#FFFFFF";
 
       this.canvas = document.getElementById("chartHours");
