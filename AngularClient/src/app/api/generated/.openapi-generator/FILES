@@ -1,8 +1,8 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
+api/mBankScrapper.service.ts
 api/transactions.service.ts
 configuration.ts
 encoder.ts

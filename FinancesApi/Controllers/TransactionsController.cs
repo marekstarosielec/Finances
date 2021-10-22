@@ -24,7 +24,7 @@ namespace FinancesApi.Controllers
             string jsonString = System.IO.File.ReadAllText(fileName);
             var data =
                JsonSerializer.Deserialize<Transaction[]>(jsonString);
-
+            
             return data;
         }
     }

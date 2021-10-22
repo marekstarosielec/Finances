@@ -2,6 +2,7 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
+import { MBankScrapperService } from './api/mBankScrapper.service';
 import { TransactionsService } from './api/transactions.service';
 
 @NgModule({

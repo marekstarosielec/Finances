@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
 
@@ -12,7 +13,7 @@ export class TransactionsComponent implements OnInit{
     data: Transaction[];
     loading: boolean;
 
-    constructor (private transactionsService: TransactionsService) {}
+    constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService) {}
 
     ngOnInit(){
         this.loading = true;
@@ -21,5 +22,11 @@ export class TransactionsComponent implements OnInit{
             this.loading = false;
         });
 
+    }
+
+    scrapButtonClick(){
+        this.mbankScrappingService.mBankScrapperPost().subscribe(t => {
+            console.log(t);
+        })
     }
 }
