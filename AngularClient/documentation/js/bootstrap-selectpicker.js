@@ -1,19 +1,3 @@
-/*!
- * Bootstrap-select v1.12.1 (http://silviomoreto.github.io/bootstrap-select)
- *
- * Copyright 2013-2016 bootstrap-select
- * Licensed under MIT (https://github.com/silviomoreto/bootstrap-select/blob/master/LICENSE)
- */
-
-
- /*
-
-      Creative Tim Modifications
-
-      Lines: 384, 384 we added Themify Icons 
-
- */
-
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set

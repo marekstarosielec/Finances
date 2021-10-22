@@ -1,4 +1,6 @@
-<div class="row">
+<loading-indicator *ngIf="loading"></loading-indicator>
+
+<div class="row" *ngIf="!loading">
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
