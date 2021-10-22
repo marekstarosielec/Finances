@@ -16,17 +16,16 @@ export class DashboardComponent implements OnInit{
   public chartColor;
   public chartEmail;
   public chartHours;
-  weather = [];
+  weather: any[];
 
   constructor(private dataService: DataService)
   {}
  
  
   ngOnInit(){
-      this.dataService.sendGetRequest().subscribe((data)=>{
-        debugger;
-        console.log(data);
-      //  this.weather = data;
+      this.dataService.sendGetRequest().subscribe((data: any[])=>{
+        this.weather = data;
+        console.log(this.weather);
       })  
       this.chartColor = "#FFFFFF";
 

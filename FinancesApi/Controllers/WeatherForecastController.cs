@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FinancesApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.IO;
 
 namespace FinancesApi.Controllers
 {
@@ -24,16 +26,14 @@ namespace FinancesApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<Transaction> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            string fileName = @"c:\Users\marek\Downloads\data.json";
+            string jsonString = System.IO.File.ReadAllText(fileName);
+            var data =
+               JsonSerializer.Deserialize<Transaction[]>(jsonString);
+
+            return data;
         }
     }
 }
