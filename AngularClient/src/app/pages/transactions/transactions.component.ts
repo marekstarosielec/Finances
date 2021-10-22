@@ -1,28 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { TransactionsService } from '../../services/transactions.service';
-
-declare interface TableData {
-    headerRow: string[];
-    dataRows: string[][];
-}
+import { TransactionsService } from '../../api/generated/api/transactions.service'
+import { Transaction } from '../../api/generated/model/transaction';
 
 @Component({
-    selector: 'table-cmp',
+    selector: 'transactions',
     moduleId: module.id,
-    templateUrl: 'transactions.component.html'
+    templateUrl: 'transactions.component.html',
+    styleUrls: ['./transactions.component.scss']
 })
 export class TransactionsComponent implements OnInit{
-    data: any[];
+    data: Transaction[];
     loading: boolean;
 
     constructor (private transactionsService: TransactionsService) {}
 
     ngOnInit(){
         this.loading = true;
-        this.transactionsService.sendGetRequest().subscribe((data: any[])=>{
-            this.data = data;
+        this.transactionsService.transactionsGet().subscribe((transactions: Transaction[]) =>{
+            this.data = transactions;
             this.loading = false;
-        }) 
+        });
 
     }
 }

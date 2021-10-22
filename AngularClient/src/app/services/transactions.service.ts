@@ -1,17 +1,17 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+// import { Injectable } from '@angular/core';
+// import { HttpClient } from '@angular/common/http';
+// import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class TransactionsService {
+// @Injectable({
+//   providedIn: 'root'
+// })
+// export class TransactionsService {
 
-  private REST_API_SERVER = "http://localhost:5000/Transactions";
+//   private REST_API_SERVER = "http://localhost:5000/Transactions";
 
-  constructor(private httpClient: HttpClient) { }
+//   constructor(private httpClient: HttpClient) { }
 
-  public sendGetRequest(): Observable<any> {
-     return this.httpClient.get(this.REST_API_SERVER);
-  }
-}
+//   public sendGetRequest(): Observable<any> {
+//      return this.httpClient.get(this.REST_API_SERVER);
+//   }
+// }
