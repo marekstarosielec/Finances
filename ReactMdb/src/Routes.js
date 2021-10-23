@@ -62,7 +62,7 @@ import NotificationPage from './pages/NotificationPage';
 import InputGroupPage from './pages/InputGroupPage';
 import TreeviewPage from './pages/TreeviewPage';
 import RatingPage from './pages/RatingPage';
-
+import TransactionsPage from './pages/TransactionsPage';
 
 
 class Routes extends React.Component {
@@ -70,6 +70,7 @@ class Routes extends React.Component {
     return (
       <Switch>
         <Route exact path='/' component={HomePage} />
+        <Route exact path='/transactions' component={TransactionsPage} />
         <Route exact path='/addons' component={AddonsNavPage} />
         <Route exact path='/advanced' component={AdvancedNavPage} />
         <Route exact path='/components' component={ComponentsNavPage} />
