@@ -14,15 +14,10 @@ namespace FinancesApi.Controllers
         {
             try
             {
-              
-                using var playwright = await Playwright.CreateAsync();
-                  
-                await using var browser = await playwright.Chromium.LaunchAsync( new BrowserTypeLaunchOptions { Headless = false });
-                
-                var page = await browser.NewPageAsync();
-                
-                await page.GotoAsync("https://playwright.dev/dotnet");
-                await page.ScreenshotAsync(new PageScreenshotOptions { Path = "screenshot.png" });
+                await using var hook = new PlaywrightHook.PlaywrightHook();
+                var mBank = new MBankScrapper.MBank();
+                await hook.Start();
+                await mBank.NavigateToLoginPage(hook);
             }
             catch (Exception e)
             {

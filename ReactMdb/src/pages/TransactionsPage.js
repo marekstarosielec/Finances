@@ -46,13 +46,11 @@ class TransactionsPage extends Component {
             {
               label: 'Szczegóły',
               field: 'detale',
-              sort: 'disabled',
               width: 150,
             },
             {
               label: 'Osoba',
               field: 'person',
-              sort: 'disabled',
               width: 100,
             },
           ],
