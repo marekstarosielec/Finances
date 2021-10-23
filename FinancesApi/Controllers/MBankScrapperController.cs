@@ -16,9 +16,7 @@ namespace FinancesApi.Controllers
             {
                 await using var hook = new PlaywrightHook.PlaywrightHook();
                 var mBank = new MBankScrapper.MBank();
-                await hook.Start();
-                await mBank.Login(hook);
-                await mBank.SwitchToPrivateProfile(hook);
+                await mBank.StartScrapping(hook);
             }
             catch (Exception e)
             {

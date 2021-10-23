@@ -10,7 +10,7 @@ namespace PlaywrightHook
         IPlaywright _playwright;
         IBrowserContext _browser;
         IPage _page;
-        public async Task Start()
+        public async Task Initialize()
         {
             _playwright = await Playwright.CreateAsync();
             _browser = await _playwright.Chromium.LaunchPersistentContextAsync("browserContext", new BrowserTypeLaunchPersistentContextOptions { Headless = false });

@@ -4,6 +4,8 @@ namespace MBankScrapper
 {
     public interface IBrowserHook
     {
+        Task Initialize();
+
         Task NavigateTo(string url);
 
         Task WaitForPage(string url);
