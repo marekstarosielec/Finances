@@ -9,5 +9,9 @@ namespace MBankScrapper
         Task WaitForPage(string url);
 
         Task WaitForElement(string xpath);
+
+        Task<bool> IsElementPresent(string xpath);
+
+        Task Click(string xpath);
     }
 }
