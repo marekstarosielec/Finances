@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Playwright" Version="1.16.0" />
+    <PackageReference Include="Saraff.Twain" Version="1.0.30.695" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
