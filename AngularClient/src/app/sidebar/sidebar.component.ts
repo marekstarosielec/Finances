@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DatasetService } from 'app/api/generated/api/dataset.service';
 
 
 export interface RouteInfo {
@@ -6,17 +7,19 @@ export interface RouteInfo {
     title: string;
     icon: string;
     class: string;
+    openDataset: boolean;
+    closedDataset: boolean;
 }
 
 export const ROUTES: RouteInfo[] = [
-    { path: '/dashboard',     title: 'Dashboard',         icon:'nc-bank',       class: '' },
-    { path: '/transactions',  title: 'Tranzakcje',        icon:'nc-tile-56',    class: '' },
-    { path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '' },
-    { path: '/maps',          title: 'Maps',              icon:'nc-pin-3',      class: '' },
-    { path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '' },
-    { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '' },
-    { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '' },
-    { path: '/upgrade',       title: 'Upgrade to PRO',    icon:'nc-spaceship',  class: 'active-pro' },
+    { path: '/dashboard',     title: 'Dashboard',         icon:'nc-bank',       class: '',              openDataset: true,              closedDataset: false },
+    { path: '/transactions',  title: 'Tranzakcje',        icon:'nc-tile-56',    class: '',              openDataset: true,              closedDataset: false },
+    { path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '',              openDataset: true,              closedDataset: false },
+    { path: '/maps',          title: 'Maps',              icon:'nc-pin-3',      class: '',              openDataset: true,              closedDataset: false },
+    { path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '',              openDataset: true,              closedDataset: false },
+    { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '',              openDataset: true,              closedDataset: false },
+    { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '',              openDataset: true,              closedDataset: false },
+    { path: '/upgrade',       title: 'Open dataset',      icon:'nc-spaceship',  class: '',              openDataset: false,             closedDataset: true },
 ];
 
 @Component({
@@ -27,7 +30,20 @@ export const ROUTES: RouteInfo[] = [
 
 export class SidebarComponent implements OnInit {
     public menuItems: any[];
+
+    constructor(private datasetService: DatasetService) {
+    }
+
     ngOnInit() {
-        this.menuItems = ROUTES.filter(menuItem => menuItem);
+        this.datasetService.datasetIsOpenGet().subscribe(o =>
+            {
+              if (o)
+                this.menuItems = ROUTES.filter(listTitle => listTitle.openDataset);
+              else
+                this.menuItems = ROUTES.filter(listTitle => listTitle.closedDataset);
+            }
+          );
+  
+        //this.menuItems = ROUTES;
     }
 }
