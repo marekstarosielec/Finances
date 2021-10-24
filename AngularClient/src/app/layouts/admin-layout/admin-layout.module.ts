@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AdminLayoutRoutes } from './admin-layout.routing';
 
@@ -12,7 +12,7 @@ import { TypographyComponent }      from '../../pages/typography/typography.comp
 import { IconsComponent }           from '../../pages/icons/icons.component';
 import { MapsComponent }            from '../../pages/maps/maps.component';
 import { NotificationsComponent }   from '../../pages/notifications/notifications.component';
-import { UpgradeComponent }         from '../../pages/upgrade/upgrade.component';
+import { OpenDatasetComponent }         from '../../pages/open-dataset/open-dataset.component';
 import { LoadingIndicatorComponent } from '../../shared/loading-indicator/loading-indicator.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -21,13 +21,14 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     CommonModule,
     RouterModule.forChild(AdminLayoutRoutes),
     FormsModule,
-    NgbModule
+    NgbModule,
+    ReactiveFormsModule
   ],
   declarations: [
     DashboardComponent,
     UserComponent,
     TransactionsComponent,
-    UpgradeComponent,
+    OpenDatasetComponent,
     TypographyComponent,
     IconsComponent,
     MapsComponent,

@@ -19,7 +19,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '',              openDataset: true,              closedDataset: false },
     { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '',              openDataset: true,              closedDataset: false },
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '',              openDataset: true,              closedDataset: false },
-    { path: '/upgrade',       title: 'Open dataset',      icon:'nc-spaceship',  class: '',              openDataset: false,             closedDataset: true },
+    { path: '/opendataset',   title: 'Otwórz zbiór',      icon:'nc-spaceship',  class: '',              openDataset: false,             closedDataset: true },
 ];
 
 @Component({
@@ -35,15 +35,15 @@ export class SidebarComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.datasetService.datasetIsOpenGet().subscribe(o =>
-            {
-              if (o)
-                this.menuItems = ROUTES.filter(listTitle => listTitle.openDataset);
-              else
-                this.menuItems = ROUTES.filter(listTitle => listTitle.closedDataset);
-            }
-          );
+        // this.datasetService.datasetIsOpenGet().subscribe(o =>
+        //     {
+        //       if (o)
+        //         this.menuItems = ROUTES.filter(listTitle => listTitle.openDataset);
+        //       else
+        //         this.menuItems = ROUTES.filter(listTitle => listTitle.closedDataset);
+        //     }
+        //   );
   
-        //this.menuItems = ROUTES;
+        this.menuItems = ROUTES;
     }
 }
