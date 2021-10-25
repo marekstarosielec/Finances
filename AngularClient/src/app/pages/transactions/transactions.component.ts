@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DatasetService } from 'app/api/generated';
+import { DatasetInfo } from 'app/api/generated/model/datasetInfo';
+import { DatasetState } from 'app/api/generated/model/datasetState';
 import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
@@ -33,7 +35,10 @@ export class TransactionsComponent implements OnInit{
     }
 
     datasetButtonClick(){
-        this.datasetService.datasetIsOpenGet().subscribe(t => {
+        this.datasetService.datasetGet().subscribe((t: DatasetInfo) => {
+           if (t.state == DatasetState.Error)
+            console.error(t);
+        else
             console.log(t);
         })
     }

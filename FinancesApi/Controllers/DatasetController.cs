@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FinancesApi.Models;
+using FinancesApi.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
@@ -8,19 +10,15 @@ namespace FinancesApi.Controllers
     [ApiController]
     public class DatasetController : ControllerBase
     {
-        private readonly IConfiguration configuration;
+        private readonly IDatasetService datasetService;
 
-        public DatasetController(IConfiguration configuration)
+        public DatasetController(IDatasetService datasetService)
         {
-            this.configuration = configuration;
+            this.datasetService = datasetService;
         }
 
-        [HttpGet("IsOpen")]
-        public bool IsDatasetOpen()
-        {
-            var path = configuration.GetValue<string>("DatasetPath");
-            return System.IO.File.Exists(Path.Combine(path, "transactions.json"));
-        }
+        [HttpGet]
+        public DatasetInfo GetDatasetInfo() => datasetService.GetInfo();
 
         [HttpPost("Open")]
         public IActionResult OpenDataset()
