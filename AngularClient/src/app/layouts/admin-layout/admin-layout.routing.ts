@@ -9,9 +9,11 @@ import { MapsComponent } from '../../pages/maps/maps.component';
 import { NotificationsComponent } from '../../pages/notifications/notifications.component';
 import { OpenDatasetComponent } from '../../pages/open-dataset/open-dataset.component';
 import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.component';
+import { DatasetStateGuard } from 'app/guards/datasetStateGuard';
+import { DatasetState } from 'app/api/generated';
 
 export const AdminLayoutRoutes: Routes = [
-    { path: 'dashboard',      component: DashboardComponent },
+    { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Open]} },
     { path: 'user',           component: UserComponent },
     { path: 'transactions',   component: TransactionsComponent },
     { path: 'typography',     component: TypographyComponent },
