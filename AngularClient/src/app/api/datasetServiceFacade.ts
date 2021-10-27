@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { DatasetInfo, DatasetService } from "./generated";
+import { DatasetInfo, DatasetService, DatasetState } from "./generated";
 import { take } from "rxjs/operators";
 
 @Injectable({
@@ -8,7 +8,7 @@ import { take } from "rxjs/operators";
 })
 export class DatasetServiceFacade {
 
-    private datasetInfo$: BehaviorSubject<DatasetInfo> = new BehaviorSubject(null);
+    private datasetInfo$: BehaviorSubject<DatasetInfo> = new BehaviorSubject({ state: DatasetState.Closed });
 
     constructor(private datasetService: DatasetService) {
         this.datasetService.datasetGet().pipe(take(1)).subscribe((result:DatasetInfo) => {
