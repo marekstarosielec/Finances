@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
+import { DatasetInfo, DatasetState } from 'app/api/generated';
 import { DatasetService } from 'app/api/generated/api/dataset.service';
+import { Subscription } from 'rxjs';
 
 
 export interface RouteInfo {
@@ -20,6 +23,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '',              openDataset: true,              closedDataset: false },
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '',              openDataset: true,              closedDataset: false },
     { path: '/opendataset',   title: 'Otwórz zbiór',      icon:'nc-spaceship',  class: '',              openDataset: false,             closedDataset: true },
+    { path: '/closedataset',  title: 'Zamknij zbiór',     icon:'nc-spaceship',  class: '',              openDataset: true,              closedDataset: false },
 ];
 
 @Component({
@@ -28,22 +32,25 @@ export const ROUTES: RouteInfo[] = [
     templateUrl: 'sidebar.component.html',
 })
 
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
     public menuItems: any[];
-
-    constructor(private datasetService: DatasetService) {
+    private dataServiceSubscription: Subscription;
+    constructor(private datasetServiceFacade: DatasetServiceFacade) {
     }
 
     ngOnInit() {
-        // this.datasetService.datasetIsOpenGet().subscribe(o =>
-        //     {
-        //       if (o)
-        //         this.menuItems = ROUTES.filter(listTitle => listTitle.openDataset);
-        //       else
-        //         this.menuItems = ROUTES.filter(listTitle => listTitle.closedDataset);
-        //     }
-        //   );
-  
-        this.menuItems = ROUTES;
+
+        this.dataServiceSubscription = this.datasetServiceFacade.getDatasetInfo().subscribe((datasetInfo: DatasetInfo) => {
+            if (datasetInfo && datasetInfo.state == DatasetState.Open)
+                this.menuItems = ROUTES.filter(listTitle => listTitle.openDataset);
+            else
+                this.menuItems = ROUTES.filter(listTitle => listTitle.closedDataset);
+            
+        });
+        
+    }
+
+    ngOnDestroy() {
+        this.dataServiceSubscription.unsubscribe();
     }
 }

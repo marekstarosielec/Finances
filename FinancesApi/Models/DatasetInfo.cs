@@ -7,6 +7,6 @@ namespace FinancesApi.Models
     {
         public DatasetState State { get; set; }
 
-        public DateTime LastCloseDatte { get; set; }
+        public DateTime LastCloseDate { get; set; }
     }
 }

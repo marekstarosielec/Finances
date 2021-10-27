@@ -4,12 +4,12 @@ import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
 import { DatasetService } from 'app/api/generated';
 
 @Component({
-    selector: 'open-dataset',
+    selector: 'close-dataset',
     moduleId: module.id,
-    templateUrl: 'open-dataset.component.html'
+    templateUrl: 'close-dataset.component.html'
 })
 
-export class OpenDatasetComponent implements OnInit{
+export class CloseDatasetComponent implements OnInit{
 
     form = new FormGroup({
         password: new FormControl('', [Validators.required, Validators.minLength(8)])
@@ -19,7 +19,7 @@ export class OpenDatasetComponent implements OnInit{
         if(!this.form.valid){
             return;
         }
-        this.datasetServiceFacade.openDataset();
+        this.datasetServiceFacade.closeDataset();
     }
       
     constructor(private datasetServiceFacade: DatasetServiceFacade) {

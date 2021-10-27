@@ -10,26 +10,26 @@ namespace FinancesApi.Controllers
     [ApiController]
     public class DatasetController : ControllerBase
     {
-        private readonly IDatasetService datasetService;
+        private readonly IDatasetService _datasetService;
 
         public DatasetController(IDatasetService datasetService)
         {
-            this.datasetService = datasetService;
+            _datasetService = datasetService;
         }
 
         [HttpGet]
-        public DatasetInfo GetDatasetInfo() => datasetService.GetInfo();
+        public DatasetInfo GetDatasetInfo() => _datasetService.GetInfo();
 
         [HttpPost("Open")]
         public IActionResult OpenDataset()
         {
-            return Ok();
+            return Ok(_datasetService.Open());
         }
 
         [HttpPost("Close")]
         public IActionResult CloseDataset()
         {
-            return Ok();
+            return Ok(_datasetService.Close());
         }
 
     }

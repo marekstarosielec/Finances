@@ -15,6 +15,7 @@ import { NotificationsComponent }   from '../../pages/notifications/notification
 import { OpenDatasetComponent }         from '../../pages/open-dataset/open-dataset.component';
 import { LoadingIndicatorComponent } from '../../shared/loading-indicator/loading-indicator.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.component';
 
 @NgModule({
   imports: [
@@ -29,6 +30,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     UserComponent,
     TransactionsComponent,
     OpenDatasetComponent,
+    CloseDatasetComponent,
     TypographyComponent,
     IconsComponent,
     MapsComponent,
