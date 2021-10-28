@@ -7,7 +7,7 @@ import { ROUTES } from 'app/sidebar/sidebar.component';
 @Injectable({
     providedIn: 'root'
   })
-export class DatasetStateGuard implements CanActivate, CanLoad {
+export class DatasetStateGuard implements CanActivate {
 
     private datasetState: DatasetState;
 
@@ -19,14 +19,10 @@ export class DatasetStateGuard implements CanActivate, CanLoad {
         });
     }
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        const states = route.data["states"] as Array<DatasetState>;
-        if (states.includes(this.datasetState))
+        // const states = route.data["states"] as Array<DatasetState>;
+        // if (states.includes(this.datasetState))
             return true;
-        this.router.navigate(['/opendataset']);
-        return false;
+        // this.router.navigate(['/opendataset']);
+        // return false;
     }
-    canLoad(route: Route): boolean {
-        return  true;
-    }
-    
 }
