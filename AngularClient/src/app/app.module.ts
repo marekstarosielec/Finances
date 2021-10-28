@@ -14,11 +14,32 @@ import { AppRoutes } from './app.routing';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { ApiModule } from "./api/generated/api.module";
+import { CloseDatasetComponent } from "./pages/close-dataset/close-dataset.component";
+import { DashboardComponent } from "./pages/dashboard/dashboard.component";
+import { IconsComponent } from "./pages/icons/icons.component";
+import { MapsComponent } from "./pages/maps/maps.component";
+import { NotificationsComponent } from "./pages/notifications/notifications.component";
+import { OpenDatasetComponent } from "./pages/open-dataset/open-dataset.component";
+import { TransactionsComponent } from "./pages/transactions/transactions.component";
+import { TypographyComponent } from "./pages/typography/typography.component";
+import { UserComponent } from "./pages/user/user.component";
+import { LoadingIndicatorComponent } from "./shared/loading-indicator/loading-indicator.component";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
   declarations: [
     AppComponent,
-    AdminLayoutComponent
+    AdminLayoutComponent,
+    DashboardComponent,
+    UserComponent,
+    TransactionsComponent,
+    OpenDatasetComponent,
+    CloseDatasetComponent,
+    TypographyComponent,
+    IconsComponent,
+    MapsComponent,
+    NotificationsComponent,
+    LoadingIndicatorComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -31,7 +52,9 @@ import { ApiModule } from "./api/generated/api.module";
     FooterModule,
     FixedPluginModule,
     HttpClientModule,
-    ApiModule
+    ApiModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

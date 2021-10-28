@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
-import { DatasetService } from 'app/api/generated';
 
 @Component({
     selector: 'open-dataset',

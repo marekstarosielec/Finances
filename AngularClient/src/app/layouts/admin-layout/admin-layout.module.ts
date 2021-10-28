@@ -26,16 +26,7 @@ import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.com
     ReactiveFormsModule
   ],
   declarations: [
-    DashboardComponent,
-    UserComponent,
-    TransactionsComponent,
-    OpenDatasetComponent,
-    CloseDatasetComponent,
-    TypographyComponent,
-    IconsComponent,
-    MapsComponent,
-    NotificationsComponent,
-    LoadingIndicatorComponent
+   
   ]
 })
 

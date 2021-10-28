@@ -13,6 +13,11 @@ import { DatasetStateGuard } from 'app/guards/datasetStateGuard';
 import { DatasetState } from 'app/api/generated';
 import { Type } from '@angular/core';
 
+export function GetDefaultRoute(state: DatasetState): RouteInfo {
+    if (state == DatasetState.Open)
+        return ROUTES.find(r => r.path === 'dashboard')
+    return ROUTES.find(r => { return r.path === 'opendataset'});
+}
 export class RouteInfo implements Route {
     path: string;
     title: string;
