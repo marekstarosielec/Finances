@@ -8,7 +8,7 @@ import { take } from "rxjs/operators";
 })
 export class DatasetServiceFacade {
 
-    private datasetInfo$: BehaviorSubject<DatasetInfo> = new BehaviorSubject({ state: DatasetState.Closed});
+    private datasetInfo$: BehaviorSubject<DatasetInfo> = new BehaviorSubject({ state: DatasetState.Opening});
 
     constructor(private datasetService: DatasetService) {
         this.refreshDataset();

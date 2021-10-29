@@ -1,4 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
+import { DatasetState } from 'app/api/generated';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'loading-indicator',
@@ -6,6 +10,28 @@ import { Component } from '@angular/core';
     styleUrls: ['./loading-indicator.component.scss']
 })
 
-export class LoadingIndicatorComponent{
+export class LoadingIndicatorComponent implements OnInit, OnDestroy{
+    private dataServiceSubscription: Subscription;
+    constructor(private router:Router,  private dataServiceFacade: DatasetServiceFacade) {
+        
+        
+    }
 
+    ngOnInit() {
+        this.dataServiceSubscription = this.dataServiceFacade.getDatasetInfo().subscribe(t => {
+            if (t.state === DatasetState.Open)
+                {
+                    this.router.navigate(["/dashboard"]);
+                }
+            else if (t.state === DatasetState.Closed)
+            {
+                this.router.navigate(["/opendataset"]);
+            }
+        });
+    }
+
+    ngOnDestroy()
+    {
+        this.dataServiceSubscription.unsubscribe();
+    }
 }

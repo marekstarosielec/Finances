@@ -11,6 +11,7 @@ import { OpenDatasetComponent } from '../../pages/open-dataset/open-dataset.comp
 import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.component';
 import { DatasetStateGuard } from 'app/guards/datasetStateGuard';
 import { DatasetState } from 'app/api/generated';
+import { LoadingIndicatorComponent } from 'app/shared/loading-indicator/loading-indicator.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Open]} },
@@ -21,5 +22,6 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'maps',           component: MapsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Open]} },
     { path: 'notifications',  component: NotificationsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Open]} },
     { path: 'opendataset',    component: OpenDatasetComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Closed]} },
-    { path: 'closedataset',   component: CloseDatasetComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Open]} }
+    { path: 'closedataset',   component: CloseDatasetComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Open]} },
+    { path: 'loading',         component: LoadingIndicatorComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opening, DatasetState.Closing]} }
 ];
