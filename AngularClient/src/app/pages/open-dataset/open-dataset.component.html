@@ -4,14 +4,9 @@
       <div class="card-header text-center">
         <h4 class="card-title">Zbiór jest zamknięty</h4>
       </div>
+
       <div class="card-body">
         <div class="table-responsive table-upgrade text-right overflow-hidden">
-          <!-- <form [formGroup]="form" (ngSubmit)="submit()">
-            <div class="form-group">
-              <input type="password" class="form-control" id="password" placeholder="Hasło" required="true">
-            </div>
-            <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Otwórz</button>
-          </form>       -->
           <form [formGroup]="form" (ngSubmit)="submit()">
             <div class="form-group">
                 <input 
@@ -20,7 +15,9 @@
                     type="password" 
                     class="form-control">
             </div>
-            <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Otwórz</button>
+            <button class="btn btn-primary" type="submit" [disabled]="!form.valid || isOpening">Otwórz
+              <loading-indicator *ngIf="isOpening"></loading-indicator>
+            </button>
         </form>
         </div>
       </div>

@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FinancesApi.Services
 {
@@ -45,9 +47,10 @@ namespace FinancesApi.Services
                 _datasetInfo.Load();
                 if (_datasetInfo.Value.State != DatasetState.Closed)
                     return null;
-                _datasetInfo.Value.State = DatasetState.Open;
+                _datasetInfo.Value.State = DatasetState.Opening;
                 _datasetInfo.Save();
-                return _datasetInfo.Value;
+            Unpack();
+            return _datasetInfo.Value;
             //}
             //catch (Exception e)
             //{
@@ -55,6 +58,18 @@ namespace FinancesApi.Services
             //}
         }
 
+        public void Unpack()
+        {
+            Thread t = new Thread(() => {
+                //call stored procedure which will run longer time since it calls another remote stored procedure and
+                //waits until it's done processing
+                Thread.Sleep(10000);
+                _datasetInfo.Load();
+                _datasetInfo.Value.State = DatasetState.Open;
+                _datasetInfo.Save();
+            });
+            t.Start();
+        }
         public DatasetInfo Close()
         {
             //try

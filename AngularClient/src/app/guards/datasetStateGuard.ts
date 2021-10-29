@@ -19,10 +19,16 @@ export class DatasetStateGuard implements CanActivate {
         });
     }
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        // const states = route.data["states"] as Array<DatasetState>;
-        // if (states.includes(this.datasetState))
+        const states = route.data["states"] as Array<DatasetState>;
+        console.log(states);
+        console.log(this.datasetState);
+        if (states.includes(this.datasetState))
             return true;
-        // this.router.navigate(['/opendataset']);
-        // return false;
+        
+        if (this.datasetState === DatasetState.Closed)
+            this.router.navigate(['/opendataset']);
+        if (this.datasetState === DatasetState.Open)
+            this.router.navigate(['/dashboard']);
+        return false;
     }
 }

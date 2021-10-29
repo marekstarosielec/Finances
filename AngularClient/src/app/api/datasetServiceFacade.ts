@@ -11,6 +11,10 @@ export class DatasetServiceFacade {
     private datasetInfo$: BehaviorSubject<DatasetInfo> = new BehaviorSubject({ state: DatasetState.Closed});
 
     constructor(private datasetService: DatasetService) {
+        this.refreshDataset();
+    }
+
+    refreshDataset()  {
         this.datasetService.datasetGet().pipe(take(1)).subscribe((result:DatasetInfo) => {
             this.datasetInfo$.next(result);
         });
