@@ -1,9 +1,10 @@
 ﻿using FinancesApi.Models;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace FinancesApi.Services
 {
@@ -19,12 +20,22 @@ namespace FinancesApi.Services
     public class DatasetService : IDatasetService
     {
         private readonly Jsonfile<DatasetInfo> _datasetInfo;
+        private readonly ICompressionService _compressionService;
+        private readonly string _datasetArchive;
+        private readonly List<string> _dataFiles = new List<string>
+        {
+            "transactions.json"
+        };
 
-        public DatasetService(IConfiguration configuration)
+        public DatasetService(IConfiguration configuration, ICompressionService compressionService)
         {
             var basePath = configuration.GetValue<string>("DatasetPath");
             var infoFilePath = Path.Combine(basePath, "info.json");
+            _dataFiles = _dataFiles.Select(dataFile => Path.Combine(basePath, dataFile)).ToList();
+            _datasetArchive = Path.Combine(basePath, "dataset.zip");
+
             _datasetInfo = new Jsonfile<DatasetInfo>(infoFilePath);
+            _compressionService = compressionService;
         }
 
         public DatasetInfo GetInfo()
@@ -54,9 +65,7 @@ namespace FinancesApi.Services
         public void Unpack()
         {
             Thread t = new Thread(() => {
-                //call stored procedure which will run longer time since it calls another remote stored procedure and
-                //waits until it's done processing
-                Thread.Sleep(10000);
+                _compressionService.Decompress(_datasetArchive);
                 _datasetInfo.Load();
                 _datasetInfo.Value.State = DatasetState.Open;
                 _datasetInfo.Save();
@@ -68,9 +77,7 @@ namespace FinancesApi.Services
         public void Pack()
         {
             Thread t = new Thread(() => {
-                //call stored procedure which will run longer time since it calls another remote stored procedure and
-                //waits until it's done processing
-                Thread.Sleep(10000);
+                _compressionService.Compress(_dataFiles, _datasetArchive);
                 _datasetInfo.Load();
                 _datasetInfo.Value.State = DatasetState.Closed;
                 _datasetInfo.Save();

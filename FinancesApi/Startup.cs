@@ -21,6 +21,7 @@ namespace FinancesApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDatasetService, DatasetService>();
+            services.AddSingleton<ICompressionService, CompressionService>();
             services.AddCors(); 
             services.AddControllers();
             services.AddSwaggerGen(c =>
