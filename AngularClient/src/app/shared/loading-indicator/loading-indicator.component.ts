@@ -12,20 +12,22 @@ import { Subscription } from 'rxjs';
 
 export class LoadingIndicatorComponent implements OnInit, OnDestroy{
     private dataServiceSubscription: Subscription;
+    
     constructor(private router:Router,  private dataServiceFacade: DatasetServiceFacade) {
-        
-        
     }
 
     ngOnInit() {
+        
         this.dataServiceSubscription = this.dataServiceFacade.getDatasetInfo().subscribe(t => {
-            if (t.state === DatasetState.Open)
-                {
-                    this.router.navigate(["/dashboard"]);
-                }
-            else if (t.state === DatasetState.Closed)
-            {
+            if (t.state === DatasetState.Open) {
+                this.router.navigate(["/dashboard"]);
+            }
+            else if (t.state === DatasetState.Closed) {
                 this.router.navigate(["/opendataset"]);
+            }
+            else {
+                console.log('refreshing');
+                setTimeout(() => this.dataServiceFacade.refreshDataset(), 1000);
             }
         });
     }

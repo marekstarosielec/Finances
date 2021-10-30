@@ -4,7 +4,6 @@
       <div class="card-header text-center">
         <h4 class="card-title">Zbiór jest zamknięty</h4>
       </div>
-
       <div class="card-body">
         <div class="table-responsive table-upgrade text-right overflow-hidden">
           <form [formGroup]="form" (ngSubmit)="submit()">
@@ -15,9 +14,7 @@
                     type="password" 
                     class="form-control">
             </div>
-            <button class="btn btn-primary" type="submit" [disabled]="!form.valid || isOpening">Otwórz
-              <loading-indicator *ngIf="isOpening"></loading-indicator>
-            </button>
+            <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Otwórz</button>
         </form>
         </div>
       </div>

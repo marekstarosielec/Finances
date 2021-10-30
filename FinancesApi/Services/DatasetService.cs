@@ -57,7 +57,7 @@ namespace FinancesApi.Services
 
             //}
         }
-
+            
         public void Unpack()
         {
             Thread t = new Thread(() => {
@@ -70,6 +70,21 @@ namespace FinancesApi.Services
             });
             t.Start();
         }
+
+
+        public void Pack()
+        {
+            Thread t = new Thread(() => {
+                //call stored procedure which will run longer time since it calls another remote stored procedure and
+                //waits until it's done processing
+                Thread.Sleep(10000);
+                _datasetInfo.Load();
+                _datasetInfo.Value.State = DatasetState.Closed;
+                _datasetInfo.Save();
+            });
+            t.Start();
+        }
+
         public DatasetInfo Close()
         {
             //try
@@ -77,8 +92,9 @@ namespace FinancesApi.Services
             _datasetInfo.Load();
             if (_datasetInfo.Value.State != DatasetState.Open)
                 return null;
-            _datasetInfo.Value.State = DatasetState.Closed;
+            _datasetInfo.Value.State = DatasetState.Closing;
             _datasetInfo.Save();
+            Pack();
             return _datasetInfo.Value;
             //}
             //catch (Exception e)
