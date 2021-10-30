@@ -8,33 +8,33 @@ namespace FinancesApi.Services
 {
 	public interface ICompressionService
     {
-		void Compress(List<string> files, string archiveName);
-        void Decompress(string archiveName);
+		void Compress(List<string> files, string archiveName, string password);
+        void Decompress(string archiveName, string password);
     }
 
     public class CompressionService: ICompressionService
 	{
-        public void Compress(List<string> files, string archiveName)
+        public void Compress(List<string> files, string archiveName, string password)
         {
             using (var file = ZipFile.Create(archiveName))
             {
                 file.BeginUpdate();
                 files.ForEach(x => file.Add(x, Path.GetFileName(x)));
-                file.Password = "abc";
+                file.Password = password;
                 file.UseZip64 = UseZip64.On;
                 file.CommitUpdate();
                 file.Close();
             }
         }
 
-        public void Decompress(string archiveName)
+        public void Decompress(string archiveName, string password)
         {
             ZipFile file = null;
             try
             {
                 FileStream fs = File.OpenRead(archiveName);
                 file = new ZipFile(fs);
-                file.Password = "abc";
+                file.Password = password;
                 var outputFolder = Path.GetDirectoryName(archiveName);
 
                 foreach (ZipEntry zipEntry in file)
@@ -52,8 +52,8 @@ namespace FinancesApi.Services
             {
                 if (file != null)
                 {
-                    file.IsStreamOwner = true; // Makes close also shut the underlying stream
-                    file.Close(); // Ensure we release resources
+                    file.IsStreamOwner = true; 
+                    file.Close(); 
                 }
             }
         }

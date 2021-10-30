@@ -21,15 +21,15 @@ namespace FinancesApi.Controllers
         public DatasetInfo GetDatasetInfo() => _datasetService.GetInfo();
 
         [HttpPost("Open")]
-        public IActionResult OpenDataset()
+        public IActionResult OpenDataset([FromBody] DatasetOpenInstruction instruction)
         {
-            return Ok(_datasetService.Open());
+            return Ok(_datasetService.Open(instruction.Password));
         }
 
         [HttpPost("Close")]
-        public IActionResult CloseDataset()
+        public IActionResult CloseDataset([FromBody] DatasetCloseInstruction instruction)
         {
-            return Ok(_datasetService.Close());
+            return Ok(_datasetService.Close(instruction.Password));
         }
 
     }

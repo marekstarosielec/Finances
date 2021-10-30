@@ -25,7 +25,7 @@ export class DatasetStateGuard implements CanActivate {
         
         if (this.datasetState === DatasetState.Closed)
             this.router.navigate(['/opendataset']);
-        if (this.datasetState === DatasetState.Open)
+        if (this.datasetState === DatasetState.Opened)
             this.router.navigate(['/dashboard']);
         if (this.datasetState === DatasetState.Opening || this.datasetState === DatasetState.Closing)
             this.router.navigate(['/loading']);

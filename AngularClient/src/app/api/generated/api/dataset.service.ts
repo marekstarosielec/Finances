@@ -17,7 +17,9 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
+import { DatasetCloseInstruction } from '../model/models';
 import { DatasetInfo } from '../model/models';
+import { DatasetOpenInstruction } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -85,13 +87,14 @@ export class DatasetService {
     }
 
     /**
+     * @param datasetCloseInstruction 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public datasetClosePost(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public datasetClosePost(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public datasetClosePost(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public datasetClosePost(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+    public datasetClosePost(datasetCloseInstruction?: DatasetCloseInstruction, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public datasetClosePost(datasetCloseInstruction?: DatasetCloseInstruction, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public datasetClosePost(datasetCloseInstruction?: DatasetCloseInstruction, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public datasetClosePost(datasetCloseInstruction?: DatasetCloseInstruction, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -107,13 +110,24 @@ export class DatasetService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' = 'json';
         if(localVarHttpHeaderAcceptSelected && localVarHttpHeaderAcceptSelected.startsWith('text')) {
             responseType_ = 'text';
         }
 
         return this.httpClient.post<any>(`${this.configuration.basePath}/Dataset/Close`,
-            null,
+            datasetCloseInstruction,
             {
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
@@ -167,13 +181,14 @@ export class DatasetService {
     }
 
     /**
+     * @param datasetOpenInstruction 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public datasetOpenPost(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public datasetOpenPost(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public datasetOpenPost(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public datasetOpenPost(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+    public datasetOpenPost(datasetOpenInstruction?: DatasetOpenInstruction, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public datasetOpenPost(datasetOpenInstruction?: DatasetOpenInstruction, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public datasetOpenPost(datasetOpenInstruction?: DatasetOpenInstruction, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public datasetOpenPost(datasetOpenInstruction?: DatasetOpenInstruction, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -189,13 +204,24 @@ export class DatasetService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' = 'json';
         if(localVarHttpHeaderAcceptSelected && localVarHttpHeaderAcceptSelected.startsWith('text')) {
             responseType_ = 'text';
         }
 
         return this.httpClient.post<any>(`${this.configuration.basePath}/Dataset/Open`,
-            null,
+            datasetOpenInstruction,
             {
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,

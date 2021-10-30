@@ -36,6 +36,6 @@ export class CloseDatasetComponent implements OnInit{
         if(!this.form.valid){
             return;
         }
-        this.datasetServiceFacade.closeDataset();
+        this.datasetServiceFacade.closeDataset(this.form.value.password);
     }
 }

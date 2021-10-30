@@ -19,7 +19,7 @@ export class LoadingIndicatorComponent implements OnInit, OnDestroy{
     ngOnInit() {
         
         this.dataServiceSubscription = this.dataServiceFacade.getDatasetInfo().subscribe(t => {
-            if (t.state === DatasetState.Open) {
+            if (t.state === DatasetState.Opened) {
                 this.router.navigate(["/dashboard"]);
             }
             else if (t.state === DatasetState.Closed) {

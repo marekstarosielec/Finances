@@ -36,6 +36,6 @@ export class OpenDatasetComponent implements OnInit, OnDestroy{
         if(!this.form.valid){
             return;
         }
-        this.datasetServiceFacade.openDataset();
+        this.datasetServiceFacade.openDataset(this.form.value.password);
     }
 }

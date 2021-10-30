@@ -11,13 +11,7 @@
  */
 
 
-export type DatasetState = 'Closed' | 'Opened' | 'Opening' | 'Closing' | 'Error';
-
-export const DatasetState = {
-    Closed: 'Closed' as DatasetState,
-    Opened: 'Opened' as DatasetState,
-    Opening: 'Opening' as DatasetState,
-    Closing: 'Closing' as DatasetState,
-    Error: 'Error' as DatasetState
-};
+export interface DatasetOpenInstruction { 
+    password?: string | null;
+}
 

@@ -12,9 +12,9 @@ namespace FinancesApi.Services
     {
         DatasetInfo GetInfo();
 
-        DatasetInfo Open();
+        DatasetInfo Open(string password);
 
-        DatasetInfo Close();
+        DatasetInfo Close(string password);
     }
 
     public class DatasetService : IDatasetService
@@ -51,33 +51,35 @@ namespace FinancesApi.Services
             }
         }
 
-        public DatasetInfo Open()
+        public DatasetInfo Open(string password)
         {
             _datasetInfo.Load();
             if (_datasetInfo.Value.State != DatasetState.Closed)
                 return null;
             _datasetInfo.Value.State = DatasetState.Opening;
             _datasetInfo.Save();
-            Unpack();
+            Unpack(password);
             return _datasetInfo.Value;
         }
             
-        public void Unpack()
+        public void Unpack(string password)
         {
             Thread t = new Thread(() => {
-                _compressionService.Decompress(_datasetArchive);
+                _compressionService.Decompress(_datasetArchive, password);
+                File.Delete(_datasetArchive);
                 _datasetInfo.Load();
-                _datasetInfo.Value.State = DatasetState.Open;
+                _datasetInfo.Value.State = DatasetState.Opened;
                 _datasetInfo.Save();
             });
             t.Start();
         }
 
 
-        public void Pack()
+        public void Pack(string password)
         {
             Thread t = new Thread(() => {
-                _compressionService.Compress(_dataFiles, _datasetArchive);
+                _compressionService.Compress(_dataFiles, _datasetArchive, password);
+                _dataFiles.ForEach(dataFile => File.Delete(dataFile));
                 _datasetInfo.Load();
                 _datasetInfo.Value.State = DatasetState.Closed;
                 _datasetInfo.Save();
@@ -85,14 +87,14 @@ namespace FinancesApi.Services
             t.Start();
         }
 
-        public DatasetInfo Close()
+        public DatasetInfo Close(string password)
         {
             _datasetInfo.Load();
-            if (_datasetInfo.Value.State != DatasetState.Open)
+            if (_datasetInfo.Value.State != DatasetState.Opened)
                 return null;
             _datasetInfo.Value.State = DatasetState.Closing;
             _datasetInfo.Save();
-            Pack();
+            Pack(password);
             return _datasetInfo.Value;
         }
     }

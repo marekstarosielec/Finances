@@ -2,6 +2,9 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DatasetInfo, DatasetService, DatasetState } from "./generated";
 import { take } from "rxjs/operators";
+import { DatasetOpen } from "./generated/model/datasetOpen";
+import { DatasetCloseInstruction } from "./generated/model/datasetCloseInstruction";
+import { DatasetOpenInstruction } from "./generated/model/datasetOpenInstruction";
 
 @Injectable({
     providedIn: 'root'
@@ -24,14 +27,16 @@ export class DatasetServiceFacade {
         return this.datasetInfo$.asObservable();
     }
 
-    openDataset() {
-        this.datasetService.datasetOpenPost().subscribe((result:DatasetInfo) => {
+    openDataset(password: string) {
+        let instruction : DatasetOpenInstruction = { password: password};
+        this.datasetService.datasetOpenPost(instruction).subscribe((result:DatasetInfo) => {
             this.datasetInfo$.next(result);
         });
     }
 
-    closeDataset() {
-        this.datasetService.datasetClosePost().subscribe((result:DatasetInfo) => {
+    closeDataset(password: string) {
+        let instruction : DatasetCloseInstruction = { password: password};
+        this.datasetService.datasetClosePost(instruction).subscribe((result:DatasetInfo) => {
             this.datasetInfo$.next(result);
         });
     }

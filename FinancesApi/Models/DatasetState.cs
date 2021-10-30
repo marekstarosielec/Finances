@@ -8,8 +8,8 @@ namespace FinancesApi.Models
     {
         [EnumMember(Value = "Closed")]
         Closed,
-        [EnumMember(Value = "Open")]
-        Open,
+        [EnumMember(Value = "Opened")]
+        Opened,
         [EnumMember(Value = "Opening")]
         Opening,
         [EnumMember(Value = "Closing")]

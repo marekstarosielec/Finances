@@ -9,7 +9,9 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/datasetCloseInstruction.ts
 model/datasetInfo.ts
+model/datasetOpenInstruction.ts
 model/datasetState.ts
 model/models.ts
 model/transaction.ts
