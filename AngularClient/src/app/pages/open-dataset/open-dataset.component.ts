@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
-import { DatasetState } from 'app/api/generated';
+import { DatasetInfo, DatasetState } from 'app/api/generated';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -13,7 +13,8 @@ import { Subscription } from 'rxjs';
 
 export class OpenDatasetComponent implements OnInit, OnDestroy{
     private dataServiceSubscription: Subscription;
-    
+    public datasetInfo: DatasetInfo;
+
     form = new FormGroup({
         password: new FormControl('', [Validators.required, Validators.minLength(8)])
     });
@@ -22,8 +23,9 @@ export class OpenDatasetComponent implements OnInit, OnDestroy{
     }
 
     ngOnInit(){
-        this.dataServiceSubscription = this.datasetServiceFacade.getDatasetInfo().subscribe(i =>{
-            if (i.state == DatasetState.Opening) 
+        this.dataServiceSubscription = this.datasetServiceFacade.getDatasetInfo().subscribe((result: DatasetInfo) =>{
+            this.datasetInfo = result;
+            if (result.state == DatasetState.Opening) 
                 this.router.navigate(['/loading']);
         });
     }

@@ -13,7 +13,8 @@ import { Subscription } from 'rxjs';
 
 export class CloseDatasetComponent implements OnInit{
     private dataServiceSubscription: Subscription;
-    
+    public todayDate : Date = new Date();
+  
     form = new FormGroup({
         password: new FormControl('', [Validators.required, Validators.minLength(8)])
     });

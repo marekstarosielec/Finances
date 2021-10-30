@@ -82,6 +82,7 @@ namespace FinancesApi.Services
                 _dataFiles.ForEach(dataFile => File.Delete(dataFile));
                 _datasetInfo.Load();
                 _datasetInfo.Value.State = DatasetState.Closed;
+                _datasetInfo.Value.LastCloseDate = DateTime.Now;
                 _datasetInfo.Save();
             });
             t.Start();
