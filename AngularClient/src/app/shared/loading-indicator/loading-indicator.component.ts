@@ -26,7 +26,6 @@ export class LoadingIndicatorComponent implements OnInit, OnDestroy{
                 this.router.navigate(["/opendataset"]);
             }
             else {
-                console.log('refreshing');
                 setTimeout(() => this.dataServiceFacade.refreshDataset(), 1000);
             }
         });

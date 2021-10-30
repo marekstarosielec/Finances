@@ -26,7 +26,6 @@ export class DatasetServiceFacade {
 
     openDataset() {
         this.datasetService.datasetOpenPost().subscribe((result:DatasetInfo) => {
-            console.log('Dataset is opening. Current state is ' + result.state);
             this.datasetInfo$.next(result);
         });
     }

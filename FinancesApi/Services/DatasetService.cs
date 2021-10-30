@@ -42,20 +42,13 @@ namespace FinancesApi.Services
 
         public DatasetInfo Open()
         {
-            //try
-            //{
-                _datasetInfo.Load();
-                if (_datasetInfo.Value.State != DatasetState.Closed)
-                    return null;
-                _datasetInfo.Value.State = DatasetState.Opening;
-                _datasetInfo.Save();
+            _datasetInfo.Load();
+            if (_datasetInfo.Value.State != DatasetState.Closed)
+                return null;
+            _datasetInfo.Value.State = DatasetState.Opening;
+            _datasetInfo.Save();
             Unpack();
             return _datasetInfo.Value;
-            //}
-            //catch (Exception e)
-            //{
-
-            //}
         }
             
         public void Unpack()
@@ -87,8 +80,6 @@ namespace FinancesApi.Services
 
         public DatasetInfo Close()
         {
-            //try
-            //{
             _datasetInfo.Load();
             if (_datasetInfo.Value.State != DatasetState.Open)
                 return null;
@@ -96,11 +87,6 @@ namespace FinancesApi.Services
             _datasetInfo.Save();
             Pack();
             return _datasetInfo.Value;
-            //}
-            //catch (Exception e)
-            //{
-
-            //}
         }
     }
 }
