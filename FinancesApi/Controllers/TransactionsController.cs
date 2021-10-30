@@ -1,7 +1,10 @@
 ﻿using FinancesApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text.Json;
 
 namespace FinancesApi.Controllers
@@ -24,7 +27,13 @@ namespace FinancesApi.Controllers
             string jsonString = System.IO.File.ReadAllText(fileName);
             var data =
                JsonSerializer.Deserialize<Transaction[]>(jsonString);
-            
+            //var list = data.ToList();
+            //Stopwatch stopWatch = new Stopwatch();
+            //stopWatch.Start();
+            //list.OrderBy(o => o.Category);
+            //stopWatch.Stop();
+            //TimeSpan ts = stopWatch.Elapsed;
+
             return data;
         }
     }

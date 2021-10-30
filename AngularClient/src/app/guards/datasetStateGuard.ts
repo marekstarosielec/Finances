@@ -1,8 +1,7 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanLoad, Route, Router, RouterStateSnapshot} from '@angular/router';
+import { Injectable} from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate,  Router, RouterStateSnapshot} from '@angular/router';
 import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
 import { DatasetInfo, DatasetState } from 'app/api/generated';
-import { ROUTES } from 'app/sidebar/sidebar.component';
 
 @Injectable({
     providedIn: 'root'
@@ -22,7 +21,7 @@ export class DatasetStateGuard implements CanActivate {
         const states = route.data["states"] as Array<DatasetState>;
         if (states.includes(this.datasetState))
             return true;
-        
+        console.log('Can\'t navigate, current state is ' + this.datasetState);
         if (this.datasetState === DatasetState.Closed)
             this.router.navigate(['/opendataset']);
         if (this.datasetState === DatasetState.Opened)

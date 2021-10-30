@@ -16,11 +16,10 @@ export interface RouteInfo {
 export const ROUTES: RouteInfo[] = [
     { path: '/dashboard',     title: 'Dashboard',         icon:'nc-bank',       class: '', availableInStates: [DatasetState.Opened] },
     { path: '/transactions',  title: 'Tranzakcje',        icon:'nc-tile-56',    class: '', availableInStates: [DatasetState.Opened] },
-    { path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '', availableInStates: [DatasetState.Opened] },
-    { path: '/maps',          title: 'Maps',              icon:'nc-pin-3',      class: '', availableInStates: [DatasetState.Opened] },
+   /* { path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '', availableInStates: [DatasetState.Opened] },
     { path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '', availableInStates: [DatasetState.Opened] },
     { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '', availableInStates: [DatasetState.Opened] },
-    { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '', availableInStates: [DatasetState.Opened] },
+    { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '', availableInStates: [DatasetState.Opened] },*/
     { path: '/opendataset',   title: 'Otwórz zbiór',      icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Closed] },
     { path: '/closedataset',  title: 'Zamknij zbiór',     icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Opened] },
 ];
@@ -38,11 +37,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-
         this.dataServiceSubscription = this.datasetServiceFacade.getDatasetInfo().subscribe((datasetInfo: DatasetInfo) => {
             this.menuItems = ROUTES.filter(listTitle => listTitle.availableInStates.includes(datasetInfo.state));     
-        });
-        
+        });      
     }
 
     ngOnDestroy() {

@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { ToastrModule } from "ngx-toastr";
 
 import { SidebarModule } from './sidebar/sidebar.module';
-import { FooterModule } from './shared/footer/footer.module';
 import { NavbarModule} from './shared/navbar/navbar.module';
 import { FixedPluginModule} from './shared/fixedplugin/fixedplugin.module';
 import { HttpClientModule } from '@angular/common/http';
@@ -28,7 +27,6 @@ import { ApiModule } from "./api/generated/api.module";
     SidebarModule,
     NavbarModule,
     ToastrModule.forRoot(),
-    FooterModule,
     FixedPluginModule,
     HttpClientModule,
     ApiModule
