@@ -13,6 +13,7 @@ import { AppRoutes } from './app.routing';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { ApiModule } from "./api/generated/api.module";
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { ApiModule } from "./api/generated/api.module";
     ToastrModule.forRoot(),
     FixedPluginModule,
     HttpClientModule,
-    ApiModule
+    ApiModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

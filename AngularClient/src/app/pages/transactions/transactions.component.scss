@@ -3,6 +3,11 @@ tr
     cursor: pointer;
 }
 
+th 
+{
+    cursor: pointer;
+}
+
 .table-responsive 
 {
     overflow-x: hidden;
@@ -11,4 +16,8 @@ tr
 
 .showAll{
     cursor: pointer;
+}
+
+.filterDropdown {
+    width: 15em;
 }

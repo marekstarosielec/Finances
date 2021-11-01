@@ -6,6 +6,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'transactions',
@@ -15,6 +16,7 @@ import { Transaction } from '../../api/generated/model/transaction';
 })
 export class TransactionsComponent implements OnInit{
     data: Transaction[];
+    accountList: string[];
     numberOfRecords: number = 100;
     sortColumn: string = 'date';
     sortOrder: number = -1;
@@ -31,6 +33,10 @@ export class TransactionsComponent implements OnInit{
         this.transactionsService.transactionsGet().subscribe((transactions: Transaction[]) =>{
             this.data = transactions;
             this.totalNumberOfRecords = transactions.length;
+            this.accountList = _(transactions).groupBy('account')
+                .map(function(elements, account) {
+                    return account;
+                }).value().sort((a,b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
             this.loading = false;
             this.prepareView();
         });
@@ -79,5 +85,9 @@ export class TransactionsComponent implements OnInit{
     showSome(){
         this.showAllRecords = false;
         this.prepareView();
+    }
+
+    filter() {
+
     }
 }
