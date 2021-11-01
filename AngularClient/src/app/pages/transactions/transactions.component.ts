@@ -18,7 +18,9 @@ export class TransactionsComponent implements OnInit{
     numberOfRecords: number = 100;
     sortColumn: string = 'date';
     sortOrder: number = -1;
+    totalNumberOfRecords: number = 0;
     dataSubject = new BehaviorSubject(null);
+    showAllRecords: boolean = false;
     loading: boolean;
 
     constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService,
@@ -28,6 +30,7 @@ export class TransactionsComponent implements OnInit{
         this.loading = true;
         this.transactionsService.transactionsGet().subscribe((transactions: Transaction[]) =>{
             this.data = transactions;
+            this.totalNumberOfRecords = transactions.length;
             this.loading = false;
             this.prepareView();
         });
@@ -62,7 +65,19 @@ export class TransactionsComponent implements OnInit{
     prepareView() {
         let data = this.data;
         data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
-        data = data.slice(0, this.numberOfRecords);
+        if (!this.showAllRecords) {
+            data = data.slice(0, this.numberOfRecords);
+        }
         this.dataSubject.next(data);
+    }
+
+    showAll() {
+        this.showAllRecords = true;
+        this.prepareView();
+    }
+
+    showSome(){
+        this.showAllRecords = false;
+        this.prepareView();
     }
 }
