@@ -15,6 +15,9 @@ import { Transaction } from '../../api/generated/model/transaction';
 })
 export class TransactionsComponent implements OnInit{
     data: Transaction[];
+    numberOfRecords: number = 100;
+    sortColumn: string = 'date';
+    sortOrder: number = -1;
     dataSubject = new BehaviorSubject(null);
     loading: boolean;
 
@@ -25,8 +28,8 @@ export class TransactionsComponent implements OnInit{
         this.loading = true;
         this.transactionsService.transactionsGet().subscribe((transactions: Transaction[]) =>{
             this.data = transactions;
-            this.dataSubject.next(transactions);
             this.loading = false;
+            this.prepareView();
         });
     }
 
@@ -47,7 +50,19 @@ export class TransactionsComponent implements OnInit{
 
     sort(column: string)
     {
-        let sorted = this.dataSubject.value.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
-        this.dataSubject.next(sorted);
+        if (column === this.sortColumn){
+            this.sortOrder = this.sortOrder * (-1);
+        } else {
+            this.sortColumn = column;
+            this.sortOrder = -1;
+        }
+        this.prepareView();
+    }
+
+    prepareView() {
+        let data = this.data;
+        data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
+        data = data.slice(0, this.numberOfRecords);
+        this.dataSubject.next(data);
     }
 }
