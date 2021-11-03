@@ -15,5 +15,6 @@ import { DatasetState } from './datasetState';
 export interface DatasetInfo { 
     state?: DatasetState;
     lastCloseDate?: string;
+    error?: string | null;
 }
 

@@ -21,7 +21,7 @@ export class DatasetStateGuard implements CanActivate {
         const states = route.data["states"] as Array<DatasetState>;
         if (states.includes(this.datasetState))
             return true;
-        console.log('Can\'t navigate, current state is ' + this.datasetState);
+        
         if (this.datasetState === DatasetState.Closed)
             this.router.navigate(['/opendataset']);
         if (this.datasetState === DatasetState.Opened)

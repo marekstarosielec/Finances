@@ -22,7 +22,7 @@
               </th>
               <th>
                 <div ngbDropdown class="d-inline-block" #accountFilterDropdown="ngbDropdown">
-                  <i class="fa fa-filter" (click)="filter()" ngbDropdownToggle></i>
+                  <i class="fa fa-filter" ngbDropdownToggle></i>
                   <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
                     <div class="list-group filterElement">
                       <div >&nbsp;<input type="radio" id="all" value="all" name="account" (click)="filterByAccount('');$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===''"><label for="all">&nbsp;Wszystkie</label></div>
@@ -46,7 +46,7 @@
               </th>
             </thead>
             <tbody>
-              <tr *ngFor="let row of dataSubject | async">
+              <tr *ngFor="let row of dataSubject | async" (click)="selectTransaction(row.scrapID)">
                   <td>{{row.date | date: 'yyyy-MM-dd'}}</td>
                   <td>{{row.account}}</td>
                   <td>{{row.category}}</td>

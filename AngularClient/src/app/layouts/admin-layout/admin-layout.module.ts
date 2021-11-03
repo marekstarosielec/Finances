@@ -15,6 +15,7 @@ import { OpenDatasetComponent }         from '../../pages/open-dataset/open-data
 import { LoadingIndicatorComponent } from '../../shared/loading-indicator/loading-indicator.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.component';
+import { TransactionComponent } from 'app/pages/transactions/transaction.component';
 
 @NgModule({
   imports: [
@@ -28,6 +29,7 @@ import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.com
     DashboardComponent,
     UserComponent,
     TransactionsComponent,
+    TransactionComponent,
     OpenDatasetComponent,
     CloseDatasetComponent,
     TypographyComponent,

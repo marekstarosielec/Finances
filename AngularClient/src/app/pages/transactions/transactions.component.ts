@@ -7,6 +7,7 @@ import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.serv
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
 import * as _ from 'lodash';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'transactions',
@@ -27,7 +28,7 @@ export class TransactionsComponent implements OnInit{
     loading: boolean;
 
     constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService,
-        private datasetService: DatasetService) {}
+        private datasetService: DatasetService, private router: Router, private route: ActivatedRoute) {}
 
     ngOnInit(){
         this.loading = true;
@@ -95,5 +96,10 @@ export class TransactionsComponent implements OnInit{
     filterByAccount(account: string) {
         this.accountFilter = account;
         this.prepareView();
+    }
+
+    selectTransaction(scrapID: string) {
+        console.log("clicked scrapID", scrapID);
+        this.router.navigate([scrapID], { relativeTo: this.route});
     }
 }

@@ -27,14 +27,17 @@ namespace FinancesApi.Controllers
             string jsonString = System.IO.File.ReadAllText(fileName);
             var data =
                JsonSerializer.Deserialize<Transaction[]>(jsonString);
-            //var list = data.ToList();
-            //Stopwatch stopWatch = new Stopwatch();
-            //stopWatch.Start();
-            //list.OrderBy(o => o.Category);
-            //stopWatch.Stop();
-            //TimeSpan ts = stopWatch.Elapsed;
-
             return data;
+        }
+
+        [HttpGet("{id}")]
+        public Transaction GetSingle(string id)
+        {
+            string fileName = @"c:\Users\marek\Downloads\data.json";
+            string jsonString = System.IO.File.ReadAllText(fileName);
+            var data =
+               JsonSerializer.Deserialize<Transaction[]>(jsonString);
+            return data.First(t => t.ScrapID == id);
         }
     }
 }
