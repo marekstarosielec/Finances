@@ -17,6 +17,7 @@ import * as _ from 'lodash';
 export class TransactionsComponent implements OnInit{
     data: Transaction[];
     accountList: string[];
+    public accountFilter: string = '';
     numberOfRecords: number = 100;
     sortColumn: string = 'date';
     sortOrder: number = -1;
@@ -70,6 +71,10 @@ export class TransactionsComponent implements OnInit{
 
     prepareView() {
         let data = this.data;
+        if (this.accountFilter !== '') {
+            data = data.filter(d => d.account === this.accountFilter);
+        }
+
         data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
         if (!this.showAllRecords) {
             data = data.slice(0, this.numberOfRecords);
@@ -87,7 +92,8 @@ export class TransactionsComponent implements OnInit{
         this.prepareView();
     }
 
-    filter() {
-
+    filterByAccount(account: string) {
+        this.accountFilter = account;
+        this.prepareView();
     }
 }
