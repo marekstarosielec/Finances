@@ -39,5 +39,12 @@ namespace FinancesApi.Controllers
             return Ok();
         }
 
+        [HttpDelete("account/{id}")]
+        public IActionResult DeleteAccount(string id)
+        {
+            _transactionsService.DeleteAccount(id);
+            return Ok();
+        }
+
     }
 }

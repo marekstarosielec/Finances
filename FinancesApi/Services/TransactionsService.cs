@@ -12,20 +12,21 @@ namespace FinancesApi.Services
         IList<Transaction> GetTransactions(string id = null);
         IList<TransactionAccount> GetAccounts();
         void SaveAccount(TransactionAccount account);
+        void DeleteAccount(string id);
     }
 
     public class TransactionsService: ITransactionsService
     {
-        private readonly Jsonfile<IList<Transaction>> _transactions;
-        private readonly Jsonfile<IList<TransactionAccount>> _accounts;
+        private readonly Jsonfile<List<Transaction>> _transactions;
+        private readonly Jsonfile<List<TransactionAccount>> _accounts;
 
         public TransactionsService(IConfiguration configuration)
         {
             var basePath = configuration.GetValue<string>("DatasetPath");
             var transactionsFile = Path.Combine(basePath, "transactions.json");
-            _transactions = new Jsonfile<IList<Transaction>>(transactionsFile);
+            _transactions = new Jsonfile<List<Transaction>>(transactionsFile);
             var accountsFile = Path.Combine(basePath, "transaction-accounts.json");
-            _accounts = new Jsonfile<IList<TransactionAccount>>(accountsFile);
+            _accounts = new Jsonfile<List<TransactionAccount>>(accountsFile);
         }
 
         public IList<TransactionAccount> GetAccounts()
@@ -41,6 +42,13 @@ namespace FinancesApi.Services
             if (editedAccount == null)
                 return;
             editedAccount.Title = account.Title;
+            _accounts.Save();
+        }
+
+        public void DeleteAccount(string id)
+        {
+            _accounts.Load();
+            _accounts.Value.RemoveAll(a => string.Equals(id, a.Id, StringComparison.InvariantCultureIgnoreCase));
             _accounts.Save();
         }
 

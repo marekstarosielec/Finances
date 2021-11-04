@@ -5,6 +5,7 @@ import { TransactionAccount, TransactionsService } from 'app/api/generated';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Location } from '@angular/common';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'account',
@@ -18,7 +19,8 @@ export class AccountComponent implements OnInit, OnDestroy{
     form = new FormGroup({
         title: new FormControl('', [Validators.required, Validators.minLength(3)])
     });
-    constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location) {}
+    constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location,
+        private modalService: NgbModal) {}
 
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe(
@@ -48,4 +50,19 @@ export class AccountComponent implements OnInit, OnDestroy{
             this.location.back();
         });
     }
+
+    delete() {
+        this.transactionsService.transactionsAccountIdDelete(this.data.id).pipe(take(1)).subscribe(() =>
+        {
+            this.location.back();
+        });
+    }
+
+    open(content) {
+        this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+            if (result === 'delete')
+                this.delete();
+        }, (reason) => { });
+      }
+    
 }
