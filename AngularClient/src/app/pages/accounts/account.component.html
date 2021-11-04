@@ -1,0 +1,18 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <button type="submit" class="btn btn-primary" [disabled]="!isSavable()">Zapisz</button>
+  <button class="btn btn-outline-danger" (click)="open(content)">Usuń</button>
+  <div class="form-group">
+    <label for="account">Tytuł</label>
+    <input type="input" class="form-control" id="account" placeholder="Wpisz tytuł" [value]="data?.title" formControlName="title">
+  </div>
+</form>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Na pewno?</h4>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.close('back')">Anuluj</button>
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close('delete')">Usuń</button>
+  </div>
+</ng-template>

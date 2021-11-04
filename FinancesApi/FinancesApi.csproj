@@ -5,7 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Playwright" Version="1.16.0" />
+    <PackageReference Include="Saraff.Twain" Version="1.0.30.695" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MBankScrapper\MBankScrapper.csproj" />
+    <ProjectReference Include="..\PlaywrightHook\PlaywrightHook.csproj" />
   </ItemGroup>
 
 </Project>

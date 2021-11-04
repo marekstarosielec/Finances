@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col-md-8 ml-auto mr-auto">
+    <div class="card card-upgrade">
+      <div class="card-header text-center">
+        <h4 class="card-title">Zbiór jest otwarty</h4>
+        <p class="card-text">Dzisiaj jest: {{ todayDate | date: 'yyyy-MM-dd'}}</p>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive table-upgrade text-right overflow-hidden">
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <div class="form-group">
+                <input 
+                    formControlName="password"
+                    id="name" 
+                    type="password" 
+                    class="form-control">
+            </div>
+            <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Zamknij</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

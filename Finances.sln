@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinancesApi", "FinancesApi\FinancesApi.csproj", "{6D651065-8C47-47A9-80D8-10C1AF9A312E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinancesApi", "FinancesApi\FinancesApi.csproj", "{6D651065-8C47-47A9-80D8-10C1AF9A312E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBankScrapper", "MBankScrapper\MBankScrapper.csproj", "{FA6BAEAD-145D-4E25-BC36-BB8CFC536D6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaywrightHook", "PlaywrightHook\PlaywrightHook.csproj", "{0A3F7271-1C9D-4B3E-AA34-F16C2A09F893}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{6D651065-8C47-47A9-80D8-10C1AF9A312E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D651065-8C47-47A9-80D8-10C1AF9A312E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D651065-8C47-47A9-80D8-10C1AF9A312E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA6BAEAD-145D-4E25-BC36-BB8CFC536D6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA6BAEAD-145D-4E25-BC36-BB8CFC536D6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA6BAEAD-145D-4E25-BC36-BB8CFC536D6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA6BAEAD-145D-4E25-BC36-BB8CFC536D6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A3F7271-1C9D-4B3E-AA34-F16C2A09F893}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A3F7271-1C9D-4B3E-AA34-F16C2A09F893}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A3F7271-1C9D-4B3E-AA34-F16C2A09F893}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A3F7271-1C9D-4B3E-AA34-F16C2A09F893}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

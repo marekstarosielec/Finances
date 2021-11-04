@@ -1,15 +1,10 @@
+using FinancesApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FinancesApi
 {
@@ -25,7 +20,10 @@ namespace FinancesApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddSingleton<IDatasetService, DatasetService>();
+            services.AddSingleton<ICompressionService, CompressionService>();
+            services.AddSingleton<ITransactionsService, TransactionsService>();
+            services.AddCors(); 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -42,8 +40,11 @@ namespace FinancesApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FinancesApi v1"));
             }
-
             app.UseRouting();
+            app.UseCors(x => x
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowAnyOrigin()); // allow credentials
 
             app.UseAuthorization();
 
