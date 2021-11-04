@@ -24,7 +24,8 @@ namespace FinancesApi.Services
         private readonly string _datasetArchive;
         private readonly List<string> _dataFiles = new List<string>
         {
-            "transactions.json"
+            "transactions.json",
+            "transaction-accounts.json"
         };
 
         public DatasetService(IConfiguration configuration, ICompressionService compressionService)

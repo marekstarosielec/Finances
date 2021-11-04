@@ -15,4 +15,5 @@ model/datasetOpenInstruction.ts
 model/datasetState.ts
 model/models.ts
 model/transaction.ts
+model/transactionAccount.ts
 variables.ts

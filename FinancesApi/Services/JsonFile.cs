@@ -24,7 +24,10 @@ namespace FinancesApi.Services
             if (!File.Exists(_fileName))
                 throw new FileNotFoundException();
             string jsonString = File.ReadAllText(_fileName);
-            Value = JsonSerializer.Deserialize<T>(jsonString);
+            Value = JsonSerializer.Deserialize<T>(jsonString, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
         }
 
         public void Save()

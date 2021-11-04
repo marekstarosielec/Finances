@@ -1,4 +1,5 @@
 ﻿using FinancesApi.Models;
+using FinancesApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,30 +15,29 @@ namespace FinancesApi.Controllers
     public class TransactionsController : ControllerBase
     {
         private readonly ILogger<TransactionsController> _logger;
+        private readonly ITransactionsService _transactionsService;
 
-        public TransactionsController(ILogger<TransactionsController> logger)
+        public TransactionsController(ILogger<TransactionsController> logger, ITransactionsService transactionsService)
         {
             _logger = logger;
+            _transactionsService = transactionsService;
         }
 
         [HttpGet]
-        public IEnumerable<Transaction> Get()
-        {
-            string fileName = @"c:\Users\marek\Downloads\data.json";
-            string jsonString = System.IO.File.ReadAllText(fileName);
-            var data =
-               JsonSerializer.Deserialize<Transaction[]>(jsonString);
-            return data;
-        }
+        public IEnumerable<Transaction> Get() => _transactionsService.GetTransactions();
 
         [HttpGet("{id}")]
-        public Transaction GetSingle(string id)
+        public Transaction GetSingle(string id) => _transactionsService.GetTransactions(id).FirstOrDefault();
+
+        [HttpGet("accounts")]
+        public IEnumerable<TransactionAccount> GetAccounts() => _transactionsService.GetAccounts();
+
+        [HttpPost("account")]
+        public IActionResult SaveAccount([FromBody] TransactionAccount account)
         {
-            string fileName = @"c:\Users\marek\Downloads\data.json";
-            string jsonString = System.IO.File.ReadAllText(fileName);
-            var data =
-               JsonSerializer.Deserialize<Transaction[]>(jsonString);
-            return data.First(t => t.ScrapID == id);
+            _transactionsService.SaveAccount(account);
+            return Ok();
         }
+
     }
 }
