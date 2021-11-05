@@ -74,5 +74,29 @@ namespace FinancesApi.Controllers
             return Ok();
         }
 
+
+        [HttpGet("categories")]
+        public IEnumerable<TransactionCategory> GetCategories() => _transactionsService.GetCategories();
+
+        [HttpPost("category")]
+        public IActionResult AddCategory([FromBody] TransactionCategory category)
+        {
+            _transactionsService.SaveCategory(category);
+            return Ok();
+        }
+
+        [HttpPut("category")]
+        public IActionResult SaveCategory([FromBody] TransactionCategory category)
+        {
+            _transactionsService.SaveCategory(category);
+            return Ok();
+        }
+
+        [HttpDelete("category/{id}")]
+        public IActionResult DeleteCategory(string id)
+        {
+            _transactionsService.DeleteCategory(id);
+            return Ok();
+        }
     }
 }

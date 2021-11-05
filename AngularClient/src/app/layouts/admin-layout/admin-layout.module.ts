@@ -18,6 +18,8 @@ import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.com
 import { TransactionComponent } from 'app/pages/transactions/transaction.component';
 import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
+import { TransactionCategoriesComponent } from 'app/pages/transaction-categories/transaction-categories.component';
+import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
 
 @NgModule({
   imports: [
@@ -34,6 +36,8 @@ import { AccountComponent } from 'app/pages/accounts/account.component';
     TransactionComponent,
     AccountsComponent,
     AccountComponent,
+    TransactionCategoriesComponent,
+    TransactionCategoryComponent,
     OpenDatasetComponent,
     CloseDatasetComponent,
     TypographyComponent,

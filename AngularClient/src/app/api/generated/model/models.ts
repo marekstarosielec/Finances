@@ -4,3 +4,4 @@ export * from './datasetOpenInstruction';
 export * from './datasetState';
 export * from './transaction';
 export * from './transactionAccount';
+export * from './transactionCategory';

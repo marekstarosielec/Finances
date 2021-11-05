@@ -17,12 +17,17 @@ namespace FinancesApi.Services
         IList<TransactionAccount> GetAccounts();
         void SaveAccount(TransactionAccount account);
         void DeleteAccount(string id);
+
+        IList<TransactionCategory> GetCategories();
+        void SaveCategory(TransactionCategory category);
+        void DeleteCategory(string id);
     }
 
     public class TransactionsService: ITransactionsService
     {
         private readonly Jsonfile<List<Transaction>> _transactions;
         private readonly Jsonfile<List<TransactionAccount>> _accounts;
+        private readonly Jsonfile<List<TransactionCategory>> _categories;
 
         public TransactionsService(IConfiguration configuration)
         {
@@ -31,6 +36,8 @@ namespace FinancesApi.Services
             _transactions = new Jsonfile<List<Transaction>>(transactionsFile);
             var accountsFile = Path.Combine(basePath, "transaction-accounts.json");
             _accounts = new Jsonfile<List<TransactionAccount>>(accountsFile);
+            var categoriesFile = Path.Combine(basePath, "transaction-categories.json");
+            _categories = new Jsonfile<List<TransactionCategory>>(categoriesFile);
         }
 
         public IList<TransactionAccount> GetAccounts()
@@ -83,6 +90,32 @@ namespace FinancesApi.Services
             _transactions.Load();
             _transactions.Value.RemoveAll(a => string.Equals(id, a.ScrapID, StringComparison.InvariantCultureIgnoreCase));
             _transactions.Save();
+        }
+
+        public IList<TransactionCategory> GetCategories()
+        {
+            _categories.Load();
+            //_categories.Value.ForEach(c => c.Id = Guid.NewGuid().ToString());
+            //_categories.Save();
+            return _categories.Value;
+        }
+
+        public void SaveCategory(TransactionCategory category)
+        {
+            _categories.Load();
+            var edited = _categories.Value.FirstOrDefault(c => string.Equals(category.Id, c.Id, StringComparison.InvariantCultureIgnoreCase));
+            if (edited == null)
+                _categories.Value.Add(category);
+            else
+                edited.Title = category.Title;
+            _categories.Save();
+        }
+
+        public void DeleteCategory(string id)
+        {
+            _categories.Load();
+            _categories.Value.RemoveAll(c => string.Equals(id, c.Id, StringComparison.InvariantCultureIgnoreCase));
+            _categories.Save();
         }
     }
 }

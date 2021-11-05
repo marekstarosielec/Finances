@@ -25,7 +25,8 @@ namespace FinancesApi.Services
         private readonly List<string> _dataFiles = new List<string>
         {
             "transactions.json",
-            "transaction-accounts.json"
+            "transaction-accounts.json",
+            "transaction-categories.json"
         };
 
         public DatasetService(IConfiguration configuration, ICompressionService compressionService)

@@ -99,7 +99,6 @@ export class TransactionsComponent implements OnInit{
     }
 
     selectTransaction(scrapID: string) {
-        console.log("clicked scrapID", scrapID);
         this.router.navigate([scrapID], { relativeTo: this.route});
     }
 }
