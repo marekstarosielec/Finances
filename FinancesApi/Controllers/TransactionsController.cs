@@ -29,6 +29,27 @@ namespace FinancesApi.Controllers
         [HttpGet("{id}")]
         public Transaction GetSingle(string id) => _transactionsService.GetTransactions(id).FirstOrDefault();
 
+        [HttpPost("transaction")]
+        public IActionResult Add([FromBody] Transaction transaction)
+        {
+            _transactionsService.SaveTransaction(transaction);
+            return Ok();
+        }
+
+        [HttpPut("transaction")]
+        public IActionResult Save([FromBody] Transaction transaction)
+        {
+            _transactionsService.SaveTransaction(transaction);
+            return Ok();
+        }
+
+        [HttpDelete("transaction/{id}")]
+        public IActionResult Delete(string id)
+        {
+            _transactionsService.DeleteTransaction(id);
+            return Ok();
+        }
+
         [HttpGet("accounts")]
         public IEnumerable<TransactionAccount> GetAccounts() => _transactionsService.GetAccounts();
 

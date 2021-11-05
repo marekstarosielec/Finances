@@ -1,8 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { Transaction, TransactionsService } from 'app/api/generated';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Transaction, TransactionAccount, TransactionsService } from 'app/api/generated';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import {v4 as uuidv4} from 'uuid';
+import { Location } from '@angular/common';
 
 interface TransactionHeader {
     column: string;
@@ -89,15 +93,30 @@ const TransactionHeaders: TransactionHeader[] = [
 })
 export class TransactionComponent implements OnInit, OnDestroy{
     private routeSubscription: Subscription;
-    transaction: Transaction;
-    constructor (private transactionsService: TransactionsService, private route: ActivatedRoute) {}
+    data: Transaction;
+    accounts: TransactionAccount[];
+    adding: boolean = false;
+    form = new FormGroup({
+        account: new FormControl('', [])
+    });
+    
+    constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location,
+        private modalService: NgbModal) {}
 
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe(
             (params: Params) => {
-              this.transactionsService.transactionsIdGet(params['id']).pipe(take(1)).subscribe(t => {
-                  this.transaction = t;
-              })
+                this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((a: TransactionAccount[]) => {
+                    this.accounts = a;
+                });
+                if (params['id']==='new'){
+                    this.adding = true;
+                } else { 
+                    this.adding = false;
+                    this.transactionsService.transactionsIdGet(params['id']).pipe(take(1)).subscribe(t => {
+                        this.data = t;
+                    });
+                }
             }
           );
     }
@@ -122,4 +141,56 @@ export class TransactionComponent implements OnInit, OnDestroy{
         });
         return result;
     }
+
+
+    isSavable(): boolean {
+        return this.form.valid && (this.adding || this.isFormChanged());
+    }
+
+    isFormChanged() : boolean {
+        if (!this.data)
+            return true;
+        if (this.form.value.account && this.data.account != this.form.value.account) return true;
+        
+        return false;
+    }
+
+    isDeletable(): boolean {
+        return !this.adding;
+    }
+
+    submit() {
+        if(!this.form.valid){
+            return;
+        }
+        if (this.adding) {
+            this.data = { scrapID: uuidv4(), 
+                account: this.form.value.account }
+            this.transactionsService.transactionsTransactionPost(this.data).pipe(take(1)).subscribe(() =>
+            {
+                this.location.back();
+            });
+        } else {
+            this.data.account = this.form.value.account;
+            this.transactionsService.transactionsTransactionPut(this.data).pipe(take(1)).subscribe(() =>
+            {
+                this.location.back();
+            });
+        }
+       
+    }
+
+    delete() {
+        // this.transactionsService.transactionsAccountIdDelete(this.data.id).pipe(take(1)).subscribe(() =>
+        // {
+        //     this.location.back();
+        // });
+    }
+
+    open(content) {
+    //     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+    //         if (result === 'delete')
+    //             this.delete();
+    //     }, (reason) => { });
+      }
 }

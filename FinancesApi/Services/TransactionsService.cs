@@ -4,12 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace FinancesApi.Services
 {
     public interface ITransactionsService
     {
         IList<Transaction> GetTransactions(string id = null);
+        void SaveTransaction(Transaction transaction);
+        void DeleteTransaction(string id);
+
         IList<TransactionAccount> GetAccounts();
         void SaveAccount(TransactionAccount account);
         void DeleteAccount(string id);
@@ -59,6 +63,26 @@ namespace FinancesApi.Services
             return string.IsNullOrWhiteSpace(id)
                 ? _transactions.Value
                 : _transactions.Value.Where(t => string.Equals(id, t.ScrapID, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
+
+        public void SaveTransaction(Transaction transaction)
+        {
+            _transactions.Load();
+            var editedTransaction = _transactions.Value.FirstOrDefault(t => string.Equals(transaction.ScrapID, t.ScrapID, StringComparison.InvariantCultureIgnoreCase));
+            if (editedTransaction == null)
+                _transactions.Value.Add(transaction);
+            else
+                typeof(Transaction).GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList().ForEach(prop => {
+                    prop.SetValue(editedTransaction, prop.GetValue(transaction));
+                });
+            _transactions.Save();
+        }
+
+        public void DeleteTransaction(string id)
+        {
+            _transactions.Load();
+            _transactions.Value.RemoveAll(a => string.Equals(id, a.ScrapID, StringComparison.InvariantCultureIgnoreCase));
+            _transactions.Save();
         }
     }
 }
