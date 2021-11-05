@@ -73,7 +73,7 @@ export interface Transaction {
     date?: string | null;
     account?: string | null;
     category?: string | null;
-    amount?: string | null;
+    amount?: number;
     description?: string | null;
     comment?: string | null;
     invoice?: string | null;

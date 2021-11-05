@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Transaction, TransactionAccount, TransactionsService } from 'app/api/generated';
+import { Transaction, TransactionAccount, TransactionCategory, TransactionsService } from 'app/api/generated';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import {v4 as uuidv4} from 'uuid';
@@ -95,9 +95,11 @@ export class TransactionComponent implements OnInit, OnDestroy{
     private routeSubscription: Subscription;
     data: Transaction;
     accounts: TransactionAccount[];
+    categories: TransactionCategory[];
     adding: boolean = false;
     form = new FormGroup({
-        account: new FormControl('', [])
+        account: new FormControl('', []),
+        category: new FormControl('', [])
     });
     
     constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location,
@@ -106,8 +108,11 @@ export class TransactionComponent implements OnInit, OnDestroy{
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe(
             (params: Params) => {
-                this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((a: TransactionAccount[]) => {
-                    this.accounts = a;
+                this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((result: TransactionAccount[]) => {
+                    this.accounts = result;
+                });
+                this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((result: TransactionCategory[]) => {
+                    this.categories = result;
                 });
                 if (params['id']==='new'){
                     this.adding = true;
@@ -151,6 +156,7 @@ export class TransactionComponent implements OnInit, OnDestroy{
         if (!this.data)
             return true;
         if (this.form.value.account && this.data.account != this.form.value.account) return true;
+        if (this.form.value.category && this.data.category != this.form.value.category) return true;
         
         return false;
     }
@@ -165,13 +171,15 @@ export class TransactionComponent implements OnInit, OnDestroy{
         }
         if (this.adding) {
             this.data = { scrapID: uuidv4(), 
-                account: this.form.value.account }
+                account: this.form.value.account,
+                category: this.form.value.category }
             this.transactionsService.transactionsTransactionPost(this.data).pipe(take(1)).subscribe(() =>
             {
                 this.location.back();
             });
         } else {
-            this.data.account = this.form.value.account;
+            if (this.form.value.account != '' ) this.data.account = this.form.value.account;
+            if (this.form.value.category != '' ) this.data.category = this.form.value.category;
             this.transactionsService.transactionsTransactionPut(this.data).pipe(take(1)).subscribe(() =>
             {
                 this.location.back();

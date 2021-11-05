@@ -67,6 +67,16 @@ namespace FinancesApi.Services
         public IList<Transaction> GetTransactions(string id = null)
         {
             _transactions.Load();
+            //_transactions.Value.ForEach(t =>
+            //{
+            //    t.Amount2 = decimal.Parse(string.IsNullOrWhiteSpace( t.Amount) ? "0" : t.Amount);
+            //});
+            //_transactions.Save();
+            //_transactions.Value.ForEach(t =>
+            //{
+            //    t.Amount2 = decimal.Parse(string.IsNullOrWhiteSpace(t.Amount) ? "0" : t.Amount);
+            //});
+            _transactions.Save();
             return string.IsNullOrWhiteSpace(id)
                 ? _transactions.Value
                 : _transactions.Value.Where(t => string.Equals(id, t.ScrapID, System.StringComparison.InvariantCultureIgnoreCase)).ToList();

@@ -186,7 +186,7 @@
         public string Category { get; set; }
 
         //Kwota
-        public string Amount { get; set; }
+        public decimal Amount { get; set; }
 
         //Opis
         public string Description { get; set; }
@@ -202,5 +202,7 @@
 
         //Osoba
         public string Person { get; set; }
+
+        //public decimal Amount2 { get; set; }
     }
 }
