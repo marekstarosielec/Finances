@@ -40,8 +40,9 @@ namespace FinancesApi.Services
             _accounts.Load();
             var editedAccount = _accounts.Value.FirstOrDefault(a => string.Equals(account.Id, a.Id, StringComparison.InvariantCultureIgnoreCase));
             if (editedAccount == null)
-                return;
-            editedAccount.Title = account.Title;
+                _accounts.Value.Add(account);
+            else
+                editedAccount.Title = account.Title;
             _accounts.Save();
         }
 

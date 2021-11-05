@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {v4 as uuidv4} from 'uuid';
 
 @Component({
     selector: 'account',
@@ -16,6 +17,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class AccountComponent implements OnInit, OnDestroy{
     private routeSubscription: Subscription;
     data: TransactionAccount;
+    adding: boolean = false;
     form = new FormGroup({
         title: new FormControl('', [Validators.required, Validators.minLength(3)])
     });
@@ -25,9 +27,14 @@ export class AccountComponent implements OnInit, OnDestroy{
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe(
             (params: Params) => {
-                this.transactionsService.transactionsAccountsGet().subscribe((accounts: TransactionAccount[]) =>{
-                    this.data = accounts.find(ta => ta.id === params['id']);
-                });
+                if (params['id']==='new'){
+                    this.adding = true;
+                } else { 
+                    this.adding = false;
+                    this.transactionsService.transactionsAccountsGet().subscribe((accounts: TransactionAccount[]) =>{
+                        this.data = accounts.find(ta => ta.id === params['id']);
+                    });
+                }
             }
         );
     }
@@ -37,18 +44,31 @@ export class AccountComponent implements OnInit, OnDestroy{
     }
     
     isSavable(): boolean {
-        return this.form.valid && this.form.value.title!=this.data.title;
+        return this.form.valid && (this.adding || this.form.value.title!=this.data.title);
+    }
+
+    isDeletable(): boolean {
+        return !this.adding;
     }
 
     submit() {
         if(!this.form.valid){
             return;
         }
-        this.data.title = this.form.value.title;
-        this.transactionsService.transactionsAccountPost(this.data).pipe(take(1)).subscribe(() =>
-        {
-            this.location.back();
-        });
+        if (this.adding) {
+            this.data = { id: uuidv4(), title: this.form.value.title }
+            this.transactionsService.transactionsAccountPost(this.data).pipe(take(1)).subscribe(() =>
+            {
+                this.location.back();
+            });
+        } else {
+            this.data.title = this.form.value.title;
+            this.transactionsService.transactionsAccountPut(this.data).pipe(take(1)).subscribe(() =>
+            {
+                this.location.back();
+            });
+        }
+       
     }
 
     delete() {

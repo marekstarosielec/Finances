@@ -33,6 +33,13 @@ namespace FinancesApi.Controllers
         public IEnumerable<TransactionAccount> GetAccounts() => _transactionsService.GetAccounts();
 
         [HttpPost("account")]
+        public IActionResult AddAccount([FromBody] TransactionAccount account)
+        {
+            _transactionsService.SaveAccount(account);
+            return Ok();
+        }
+
+        [HttpPut("account")]
         public IActionResult SaveAccount([FromBody] TransactionAccount account)
         {
             _transactionsService.SaveAccount(account);
