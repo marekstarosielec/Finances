@@ -1,36 +1,45 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <button type="submit" class="btn btn-primary" [disabled]="!isSavable()">Zapisz</button>
-  <div class="form-group">
+    <div class="form-group">
+      <label for="date">Data</label>
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #d="ngbDatepicker" id="date" formControlName="date" />
+        <div class="input-group-append">
+          <button (click)="d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
       <label for="account">Konto</label>
       <select class="form-control" id="account" formControlName="account">
-        <option *ngFor="let account of accounts" [selected]="account.title.toUpperCase()===data?.account.toUpperCase()" [value]="account.title">{{account.title}}</option>
+        <option *ngFor="let account of accounts">{{account.title}}</option>
       </select>
     </div>
     <div class="form-group">
       <label for="category">Kategoria</label>
       <select class="form-control" id="category" formControlName="category">
-        <option *ngFor="let category of categories" [selected]="category.title.toUpperCase()===data?.category.toUpperCase()" [value]="category.title">{{category.title}}</option>
+        <option *ngFor="let category of categories">{{category.title}}</option>
       </select>
     </div>
     <div class="form-group">
       <label for="amount">Kwota</label>
-      <input type="input" class="form-control" id="amount" placeholder="Wpisz kwotę" [value]="data?.amount">
+      <input type="number" class="form-control" id="amount" placeholder="Wpisz kwotę" formControlName="amount">
     </div>
     <div class="form-group">
       <label for="description">Opis</label>
-      <input type="input" class="form-control" id="description" [value]="data?.description">
+      <input type="input" class="form-control" id="description" formControlName="description">
     </div>
     <div class="form-group">
       <label for="comment">Komentarz</label>
-      <input type="input" class="form-control" id="comment" [value]="data?.comment">
+      <input type="input" class="form-control" id="comment" formControlName="comment">
     </div>
     <div class="form-group">
       <label for="details">Szczegóły</label>
-      <input type="input" class="form-control" id="details" [value]="data?.details">
+      <input type="input" class="form-control" id="details" formControlName="details">
     </div>
     <div class="form-group">
       <label for="person">Osoba</label>
-      <input type="input" class="form-control" id="person" [value]="data?.person">
+      <input type="input" class="form-control" id="person" formControlName="person">
     </div>
     <!-- <div class="form-group">
       <label for="bankInfo">Informacje z banku</label>

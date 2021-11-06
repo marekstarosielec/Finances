@@ -1,9 +1,11 @@
-﻿namespace FinancesApi.Models
+﻿using System;
+
+namespace FinancesApi.Models
 {
     public class Transaction
     {
         //Data scrapowania
-        public string ScrappingDate { get; set; }
+        public DateTime? ScrappingDate { get; set; }
     
         //Status	
         public string Status { get; set; }
@@ -171,7 +173,7 @@
         //public string Reserved18 { get; set; }
 
         //Data
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
 
         //Konto
         public string Account { get; set; }

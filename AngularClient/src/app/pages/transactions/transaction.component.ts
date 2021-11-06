@@ -98,8 +98,17 @@ export class TransactionComponent implements OnInit, OnDestroy{
     categories: TransactionCategory[];
     adding: boolean = false;
     form = new FormGroup({
+        scrappingDate: new FormControl('', []),
+        status: new FormControl('', []),
+        scrapID: new FormControl('', []),
+        date: new FormControl('', []),
         account: new FormControl('', []),
-        category: new FormControl('', [])
+        category: new FormControl('', []),
+        amount: new FormControl('', [Validators.required]),
+        description: new FormControl('', []),
+        comment: new FormControl('', []),
+        details: new FormControl('', []),
+        person: new FormControl('', [])
     });
     
     constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location,
@@ -118,8 +127,11 @@ export class TransactionComponent implements OnInit, OnDestroy{
                     this.adding = true;
                 } else { 
                     this.adding = false;
-                    this.transactionsService.transactionsIdGet(params['id']).pipe(take(1)).subscribe(t => {
-                        this.data = t;
+                    this.transactionsService.transactionsIdGet(params['id']).pipe(take(1)).subscribe((result: Transaction) => {
+                        this.data = result;
+                        this.form.setValue(result);
+                        let date = new Date(result.date);
+                        this.form.controls['date'].setValue({year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()});
                     });
                 }
             }
@@ -155,8 +167,13 @@ export class TransactionComponent implements OnInit, OnDestroy{
     isFormChanged() : boolean {
         if (!this.data)
             return true;
-        if (this.form.value.account && this.data.account != this.form.value.account) return true;
-        if (this.form.value.category && this.data.category != this.form.value.category) return true;
+        
+        var props = Object.getOwnPropertyNames(this.data);
+        for (var i = 0; i < props.length; i++) {
+            if (this.data[props[i]] !== this.form.value[props[i]]) {
+                return true;
+            }
+        }
         
         return false;
     }
@@ -169,18 +186,15 @@ export class TransactionComponent implements OnInit, OnDestroy{
         if(!this.form.valid){
             return;
         }
+        this.form.value.date=new Date(this.form.value.date.year, this.form.value.date.month-1, this.form.value.date.day);
         if (this.adding) {
-            this.data = { scrapID: uuidv4(), 
-                account: this.form.value.account,
-                category: this.form.value.category }
-            this.transactionsService.transactionsTransactionPost(this.data).pipe(take(1)).subscribe(() =>
+            this.form.value.scrapID = uuidv4();
+            this.transactionsService.transactionsTransactionPost(this.form.value).pipe(take(1)).subscribe(() =>
             {
                 this.location.back();
             });
         } else {
-            if (this.form.value.account != '' ) this.data.account = this.form.value.account;
-            if (this.form.value.category != '' ) this.data.category = this.form.value.category;
-            this.transactionsService.transactionsTransactionPut(this.data).pipe(take(1)).subscribe(() =>
+            this.transactionsService.transactionsTransactionPut(this.form.value).pipe(take(1)).subscribe(() =>
             {
                 this.location.back();
             });
