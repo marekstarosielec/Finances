@@ -1,9 +1,4 @@
 <!-- <loading-indicator *ngIf="loading"></loading-indicator> -->
-
-<button type="button" class="btn btn-primary" (click)="scrapButtonClick()">Scrap</button>
-<button type="button" class="btn btn-primary" (click)="datasetButtonClick()">Dataset</button>
-
-
 <div class="row" *ngIf="!loading">
   <div class="col-md-12">
     <div class="card">
@@ -33,27 +28,15 @@
                 </div>
                 <span (click)="sort('account')">&nbsp;Konto</span>
               </th>
-              <th (click)="sort('category')">
-                Kategoria
-              </th>
               <th class="text-right" (click)="sort('amount')">
                 Kwota
               </th>
-              <th (click)="sort('details')">
-                Szczegóły
-              </th>
-              <th (click)="sort('person')">
-                Osoba
-              </th>
             </thead>
             <tbody>
-              <tr *ngFor="let row of dataSubject | async" (click)="selectTransaction(row.scrapID)">
+              <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id)">
                   <td>{{row.date | date: 'yyyy-MM-dd'}}</td>
                   <td>{{row.account}}</td>
-                  <td>{{row.category}}</td>
                   <td class="text-right">{{row.amount | number:'1.2-2'}}</td>
-                  <td>{{row.details}}</td>
-                  <td>{{row.person}}</td>
               </tr>
             </tbody>
           </table>

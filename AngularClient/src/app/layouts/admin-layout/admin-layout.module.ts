@@ -20,6 +20,8 @@ import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
 import { TransactionCategoriesComponent } from 'app/pages/transaction-categories/transaction-categories.component';
 import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
+import { BalancesComponent } from 'app/pages/balances/balances.component';
+import { BalanceComponent } from 'app/pages/balances/balance.component';
 
 @NgModule({
   imports: [
@@ -38,6 +40,8 @@ import { TransactionCategoryComponent } from 'app/pages/transaction-categories/t
     AccountComponent,
     TransactionCategoriesComponent,
     TransactionCategoryComponent,
+    BalancesComponent,
+    BalanceComponent,
     OpenDatasetComponent,
     CloseDatasetComponent,
     TypographyComponent,

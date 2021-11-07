@@ -23,6 +23,7 @@ namespace FinancesApi
             services.AddSingleton<IDatasetService, DatasetService>();
             services.AddSingleton<ICompressionService, CompressionService>();
             services.AddSingleton<ITransactionsService, TransactionsService>();
+            services.AddSingleton<IBalanceService, BalanceService>();
             services.AddCors(); 
             services.AddControllers();
             services.AddSwaggerGen(c =>
