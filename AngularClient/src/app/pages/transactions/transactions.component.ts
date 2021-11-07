@@ -101,4 +101,8 @@ export class TransactionsComponent implements OnInit{
     selectTransaction(scrapID: string) {
         this.router.navigate([scrapID], { relativeTo: this.route});
     }
+
+    addNew() {
+        this.router.navigate(["new"], { relativeTo: this.route});
+    }
 }

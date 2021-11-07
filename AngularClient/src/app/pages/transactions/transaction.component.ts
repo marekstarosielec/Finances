@@ -98,12 +98,12 @@ export class TransactionComponent implements OnInit, OnDestroy{
     categories: TransactionCategory[];
     adding: boolean = false;
     form = new FormGroup({
-        scrappingDate: new FormControl('', []),
+        scrappingDate: new FormControl(undefined, []),
         status: new FormControl('', []),
         scrapID: new FormControl('', []),
         date: new FormControl('', []),
-        account: new FormControl('', []),
-        category: new FormControl('', []),
+        account: new FormControl('', [Validators.required]),
+        category: new FormControl('', [Validators.required]),
         amount: new FormControl('', [Validators.required]),
         description: new FormControl('', []),
         comment: new FormControl('', []),
@@ -125,6 +125,8 @@ export class TransactionComponent implements OnInit, OnDestroy{
                 });
                 if (params['id']==='new'){
                     this.adding = true;
+                    let date = new Date();
+                    this.form.controls['date'].setValue({year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()});
                 } else { 
                     this.adding = false;
                     this.transactionsService.transactionsIdGet(params['id']).pipe(take(1)).subscribe((result: Transaction) => {
@@ -203,16 +205,16 @@ export class TransactionComponent implements OnInit, OnDestroy{
     }
 
     delete() {
-        // this.transactionsService.transactionsAccountIdDelete(this.data.id).pipe(take(1)).subscribe(() =>
-        // {
-        //     this.location.back();
-        // });
+        this.transactionsService.transactionsTransactionIdDelete(this.data.scrapID).pipe(take(1)).subscribe(() =>
+        {
+            this.location.back();
+        });
     }
 
     open(content) {
-    //     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
-    //         if (result === 'delete')
-    //             this.delete();
-    //     }, (reason) => { });
+        this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+           if (result === 'delete')
+                this.delete();
+        }, (reason) => { });
       }
 }
