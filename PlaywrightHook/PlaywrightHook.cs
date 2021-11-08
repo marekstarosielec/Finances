@@ -1,6 +1,7 @@
-﻿using MBankScrapper;
+﻿using BrowserHook;
 using Microsoft.Playwright;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PlaywrightHook
@@ -24,7 +25,10 @@ namespace PlaywrightHook
             await _page.WaitForSelectorAsync(xpath, new PageWaitForSelectorOptions { });
 
         public async Task WaitForPage(string url) => 
-            await _page.WaitForURLAsync(url, new PageWaitForURLOptions { Timeout = 0, WaitUntil = WaitUntilState.NetworkIdle });
+            await _page.WaitForURLAsync(url, new PageWaitForURLOptions { Timeout = 0, WaitUntil = WaitUntilState.NetworkIdle  });
+
+        public async Task WaitForPage(Regex regex) =>
+            await _page.WaitForURLAsync(regex, new PageWaitForURLOptions { Timeout = 0, WaitUntil = WaitUntilState.NetworkIdle });
 
         public async Task<bool> IsElementPresent(string xpath) => 
             (await _page.QuerySelectorAsync(xpath, new PageQuerySelectorOptions { })) != null;

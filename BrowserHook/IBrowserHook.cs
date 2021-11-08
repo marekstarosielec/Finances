@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace MBankScrapper
+namespace BrowserHook
 {
     public interface IBrowserHook
     {
@@ -9,6 +10,8 @@ namespace MBankScrapper
         Task NavigateTo(string url);
 
         Task WaitForPage(string url);
+
+        Task WaitForPage(Regex regex);
 
         Task WaitForElement(string xpath);
 
