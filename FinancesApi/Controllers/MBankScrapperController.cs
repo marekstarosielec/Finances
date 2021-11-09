@@ -15,7 +15,15 @@ namespace FinancesApi.Controllers
             {
                 await using var hook = new PlaywrightHook.PlaywrightHook();
                 var mBank = new MBankScrapper.MBank();
-                await mBank.StartScrapping(hook);
+                await mBank.StartScrapping(hook, new MBankScrapper.ActionSet {
+                    AccountBalance = accountBalance =>
+                    {
+                        Console.WriteLine(accountBalance.Title);
+                        Console.WriteLine(accountBalance.Iban);
+                        Console.WriteLine(accountBalance.Balance);
+                        Console.WriteLine(accountBalance.Currency);
+                    }
+                });
             }
             catch (Exception e)
             {

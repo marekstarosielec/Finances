@@ -33,6 +33,9 @@ namespace PlaywrightHook
         public async Task<bool> IsElementPresent(string xpath) => 
             (await _page.QuerySelectorAsync(xpath, new PageQuerySelectorOptions { })) != null;
 
+        public async Task<string> GetInnerText(string xpath) =>
+            await _page.InnerTextAsync(xpath, new PageInnerTextOptions { Timeout = 1000 });
+
         public async ValueTask DisposeAsync()
         {
             await _page.CloseAsync();
