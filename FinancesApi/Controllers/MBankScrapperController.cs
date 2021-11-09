@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FinancesApi.Services;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
@@ -8,6 +9,13 @@ namespace FinancesApi.Controllers
     [Route("[controller]")]
     public class MBankScrapperController : ControllerBase
     {
+        private readonly IBalanceService _balanceService;
+
+        public MBankScrapperController(IBalanceService balanceService)
+        {
+            _balanceService = balanceService;
+        }
+
         [HttpPost]
         public async Task<IActionResult> Start()
         {
@@ -18,10 +26,7 @@ namespace FinancesApi.Controllers
                 await mBank.StartScrapping(hook, new MBankScrapper.ActionSet {
                     AccountBalance = accountBalance =>
                     {
-                        Console.WriteLine(accountBalance.Title);
-                        Console.WriteLine(accountBalance.Iban);
-                        Console.WriteLine(accountBalance.Balance);
-                        Console.WriteLine(accountBalance.Currency);
+                        _balanceService.SaveBalance(new Models.Balance { Id = Guid.NewGuid().ToString(), Date=DateTime.Now.Date, Account = accountBalance.Title, Amount = accountBalance.Balance });
                     }
                 });
             }

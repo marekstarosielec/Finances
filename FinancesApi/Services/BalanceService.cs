@@ -38,13 +38,8 @@ namespace FinancesApi.Services
         public void SaveBalance(Balance balance)
         {
             _balances.Load();
-            var edited = _balances.Value.FirstOrDefault(b => string.Equals(balance.Id, b.Id, StringComparison.InvariantCultureIgnoreCase));
-            if (edited == null)
-                _balances.Value.Add(balance);
-            else
-                typeof(Balance).GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList().ForEach(prop => {
-                    prop.SetValue(edited, prop.GetValue(balance));
-                });
+            _balances.Value.RemoveAll(b => b.Account == balance.Account && b.Date.Date == balance.Date.Date);
+            _balances.Value.Add(balance);
             _balances.Save();
         }
 

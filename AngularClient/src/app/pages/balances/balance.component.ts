@@ -82,7 +82,12 @@ export class BalanceComponent implements OnInit, OnDestroy{
         if(!this.form.valid){
             return;
         }
-        this.form.value.date=new Date(this.form.value.date.year, this.form.value.date.month-1, this.form.value.date.day);
+        let resultDate = new Date();
+        resultDate.setUTCFullYear(this.form.value.date.year);
+        resultDate.setUTCMonth(this.form.value.date.month-1);
+        resultDate.setUTCDate(this.form.value.date.day);
+        this.form.value.date=resultDate;
+        
         if (this.adding) {
             this.form.value.id = uuidv4();
             this.balancesService.balancesBalancePost(this.form.value).pipe(take(1)).subscribe(() =>
