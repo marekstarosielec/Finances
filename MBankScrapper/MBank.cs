@@ -1,5 +1,6 @@
 ﻿using BrowserHook;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace MBankScrapper
     {
         IBrowserHook _browser;
         ActionSet _actionSet;
+        List<Models.AccountBalance> _accounts = new ();
 
         public async Task StartScrapping(IBrowserHook browser, ActionSet actionSet)
         {
@@ -20,11 +22,13 @@ namespace MBankScrapper
             await _browser.Initialize();
             await Login();
             await SwitchToPrivateProfile();
-            if (_actionSet?.AccountBalance != null)
-                await GoToAccountsPage();
+            await GoToAccountsPage();
+            await ScrapAccounts();
+            await GoToTransactionsPage();
+            await ScrapTransactions();
+            Thread.Sleep(5000);
             await Logout();
         }
-
 
         private async Task Login()
         {
@@ -63,7 +67,10 @@ namespace MBankScrapper
         {
             await _browser.NavigateTo("https://online.mbank.pl/accounts2");
             await _browser.WaitForPage("https://online.mbank.pl/accounts2");
+        }
 
+        private async Task ScrapAccounts()
+        {
             var accountIndex = 1;
             while (await _browser.IsElementPresent(accountXPath(accountIndex)))
             {
@@ -96,50 +103,58 @@ namespace MBankScrapper
                     decimal.TryParse(balance, out parsedBalance);
                 }
 
-                _actionSet?.AccountBalance?.Invoke(new Models.AccountBalance
+                var model = new Models.AccountBalance
                 {
                     Title = title,
                     Iban = iban,
                     Balance = parsedBalance,
                     Currency = currency
-                });
+                };
+                _accounts.Add(model);
+                _actionSet?.AccountBalance?.Invoke(model);
 
                 accountIndex++;
             }
-            //var groups = _browser.("//li[@data-ccl='true'][0]");
-            //foreach (var group in groups)
-            //{
-            //        var elements = _browser.GetElements(group.XPath + Elements.GetBalanceList());
-            //        foreach (var element in elements)
-            //        {
-            //            var bankAccount = new BankAccount();
-            //            bankAccount.Title = _browser.GetElement(element.XPath + Elements.GetBalanceAccountTitle()).GetText().Replace("eKonto - ", "").Replace("eKonto walutowe EUR - ", "").Replace("eMax - ", "").Replace("mBiznes konto - ", "").Replace(" - Konto VAT", "");
-            //            bankAccount.Number = _browser.GetElement(element.XPath + Elements.GetBalanceAccountNumber()).GetText().Replace("Skopiuj numer rachunku", "").Replace(" ", "");
-            //            bankAccount.Amount = _browser.GetElement(element.XPath + Elements.GetBalanceAmount()).GetText();
-            //            bankAccount.Currency = bankAccount.Amount.GetCurrency();
-            //            bankAccount.Amount = bankAccount.Amount.GetAmountWithoutCurrency(bankAccount.Currency);
-            //            result.Add(bankAccount);
-            //        }
-
-            //        elements = _browser.GetElements(group.XPath + Elements.GetSavingList());
-            //        foreach (var element in elements)
-            //        {
-            //            var bankAccount = new BankAccount();
-            //            bankAccount.Title = _browser.GetElement(element.XPath + Elements.GetBalanceSavingTitle()).GetText();
-            //            bankAccount.Number = "0";
-            //            bankAccount.Amount = _browser.GetElement(element.XPath + Elements.GetBalanceSavingAmount()).GetText();
-            //            bankAccount.Currency = bankAccount.Amount.GetCurrency();
-            //            bankAccount.Amount = bankAccount.Amount.GetAmountWithoutCurrency(bankAccount.Currency);
-            //            result.Add(bankAccount);
-            //        }
-            //    }
-
-
-
-            //    return result;
-            //}
-
             string accountXPath(int accountIndex) => $"//html/descendant::li[{accountIndex}]";
         }
+
+        private async Task GoToTransactionsPage()
+        {
+            await _browser.NavigateTo("https://online.mbank.pl/history");
+            await _browser.WaitForPage(new Regex("https://online.mbank.pl/history.*"));
+        }
+
+        private async Task ScrapTransactions()
+        {
+            await ShowAllAccounts();
+            var allButton = "//span[text()='wszystkie']//ancestor::li";
+            await _browser.Click(allButton);
+            await _browser.Click(allButton);
+            foreach(var account in _accounts)
+            {
+                await FilterBy(account.Title);
+            };
+
+            async Task ShowAllAccounts()
+            {
+                var moreButton = "//button[@data-test-id='history:showMoreProductsFilter']/span[text()='więcej']";
+                if (await _browser.IsElementPresent(moreButton))
+                    await _browser.Click(moreButton);
+            }
+
+            async Task FilterBy(string accountName)
+            {
+                try
+                {
+                    await _browser.Check($"//div[@title='{accountName}']//ancestor::li/descendant::input");
+                    Thread.Sleep(2000);
+                }
+                catch(Exception e)
+                {
+
+                }
+            }
+        }
     }
+    ////div[@class='_PMtueryzQy6EvzsZf3o'] - spinner on transactions
 }

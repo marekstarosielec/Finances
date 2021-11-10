@@ -29,6 +29,7 @@ namespace FinancesApi.Controllers
                         _balanceService.SaveBalance(new Models.Balance { Id = Guid.NewGuid().ToString(), Date=DateTime.Now.Date, Account = accountBalance.Title, Amount = accountBalance.Balance });
                     }
                 });
+             
             }
             catch (Exception e)
             {
