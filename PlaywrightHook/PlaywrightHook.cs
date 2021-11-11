@@ -45,11 +45,5 @@ namespace PlaywrightHook
 
         public async Task Click(string xpath) => 
             await _page.ClickAsync(xpath, new PageClickOptions { });
-
-        public async Task Check(string xpath) =>
-            await _page.CheckAsync(xpath, new PageCheckOptions { });
-
-        public async Task Uncheck(string xpath) =>
-            await _page.UncheckAsync(xpath, new PageUncheckOptions { });
     }
 }

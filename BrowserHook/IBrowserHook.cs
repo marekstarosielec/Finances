@@ -20,9 +20,5 @@ namespace BrowserHook
         Task<string> GetInnerText(string xpath);
 
         Task Click(string xpath);
-
-        Task Check(string xpath);
-
-        Task Uncheck(string xpath);
     }
 }
