@@ -20,5 +20,9 @@ namespace BrowserHook
         Task<string> GetInnerText(string xpath);
 
         Task Click(string xpath);
+
+        Task SetText(string xpath, string text);
+
+        Task SendKey(string path, string key, int count = 1);
     }
 }

@@ -167,8 +167,25 @@ namespace MBankScrapper
                 //.Replace("mBiznes konto - ", "")
                 //.Replace(" - Konto VAT", "");
                 var a = _accounts.FirstOrDefault(ai => ai.Title == title);
+                if (a == null)
+                {
+                    //Filtering option is not on a list of accounts (from accounts and savings screen).
+                    //Propably some bank specific filter so ignoring it.
+                    await _browser.Click(GetAccountFilterXPath(accountNumber));
+                    accountNumber++;
+                    continue;
+                }
+                await SetDateFilter(DateTime.Today.AddYears(-1).AddDays(1), DateTime.Today);
                 //var spinnerPresent = await _browser.IsElementPresent(spinner); 
-                var operationCount = OperationCount();
+                var operationCount = await OperationCount();
+                if (operationCount > 50)
+                {
+                    await SetDateFilter(DateTime.Today, DateTime.Today);
+                }
+                else
+                {
+
+                }
                 Thread.Sleep(2000);
 
                 await _browser.Click(GetAccountFilterXPath(accountNumber));
@@ -186,21 +203,27 @@ namespace MBankScrapper
             {
                 var counter = await _browser.GetInnerText("//div[@testid='OperationsSummary:operationsCount']");
                 //25 z 4042 operacji
-                return 0;
-            } 
-            //async Task FilterBy(string accountName)
-            //{
-            //    try
-            //    {
-            //        await _browser.Check($"//div[@title='{accountName}']//ancestor::li/descendant::input");
-            //        Thread.Sleep(2000);
-            //    }
-            //    catch(Exception e)
-            //    {
+                int result = 0;
+                foreach (var c in counter.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                    if (int.TryParse(c, out int parsedCounter))
+                        result = Math.Max(result, parsedCounter);
+                return result;
+            }
+            async Task ScrapVisibleTransactions()
+            {
+               
+            }
 
-            //    }
-            //}
+            async Task SetDateFilter(DateTime from, DateTime to)
+            {
+                var dateFromXPath = "//html/descendant::input[@class='DateInput_input DateInput_input_1'][1]";
+                var dateToXPath = "//html/descendant::input[@class='DateInput_input DateInput_input_1'][2]";
 
+                await _browser.SetText(dateFromXPath, from.ToString("dd'.'MM'.'yyyy"));
+                await _browser.SendKey(dateFromXPath, "Delete", 10);
+                await _browser.SetText(dateToXPath, to.ToString("dd'.'MM'.'yyyy"));
+                await _browser.SendKey(dateToXPath, "Delete", 10);
+            }
             string GetAccountFilterXPath(int accountNumber) => $"//span[text()='wszystkie']//ancestor::ul/parent::*/descendant::li[{accountNumber}]";
         }
     }

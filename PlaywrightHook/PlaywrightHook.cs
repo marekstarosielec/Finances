@@ -34,7 +34,7 @@ namespace PlaywrightHook
             (await _page.QuerySelectorAsync(xpath, new PageQuerySelectorOptions { })) != null;
 
         public async Task<string> GetInnerText(string xpath) =>
-            await _page.InnerTextAsync(xpath, new PageInnerTextOptions { Timeout = 1000 });
+            await _page.InnerTextAsync(xpath, new PageInnerTextOptions {  });
 
         public async ValueTask DisposeAsync()
         {
@@ -45,5 +45,16 @@ namespace PlaywrightHook
 
         public async Task Click(string xpath) => 
             await _page.ClickAsync(xpath, new PageClickOptions { });
+
+        public async Task SetText(string xpath, string text)
+        {
+            await _page.TypeAsync(xpath, text, new PageTypeOptions { });
+        }
+
+        public async Task SendKey(string path, string key, int count = 1)
+        {
+            for (var x = 0; x < count; x++)
+                await _page.Keyboard.PressAsync(key, new KeyboardPressOptions { });
+        }
     }
 }
