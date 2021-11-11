@@ -51,7 +51,7 @@ namespace PlaywrightHook
             await _page.TypeAsync(xpath, text, new PageTypeOptions { });
         }
 
-        public async Task SendKey(string path, string key, int count = 1)
+        public async Task SendKey(string key, int count = 1)
         {
             for (var x = 0; x < count; x++)
                 await _page.Keyboard.PressAsync(key, new KeyboardPressOptions { });

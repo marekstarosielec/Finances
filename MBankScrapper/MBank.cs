@@ -177,16 +177,29 @@ namespace MBankScrapper
                 }
                 await SetDateFilter(DateTime.Today.AddYears(-1).AddDays(1), DateTime.Today);
                 //var spinnerPresent = await _browser.IsElementPresent(spinner); 
-                var operationCount = await OperationCount();
-                if (operationCount > 50)
+                var transactionCount = await TransactionCount();
+                if (transactionCount.total > 50)
                 {
-                    await SetDateFilter(DateTime.Today, DateTime.Today);
+                    //There is a lot of transaction in the view. To avoid slowing page down,
+                    //navigate thru transactions day by day.
+                    var currentDay = DateTime.Now;
+                    var daysWithoutNoNewTransactions = 0;
+                    while (daysWithoutNoNewTransactions < 7)
+                    {
+                        await SetDateFilter(currentDay, currentDay);
+                        transactionCount = await TransactionCount();
+                        var newTransactions = await ScrapVisibleTransactions();
+                        if (newTransactions == 0)
+                            daysWithoutNoNewTransactions++;
+
+                        currentDay = currentDay.AddDays(-1);
+                    }
                 }
                 else
                 {
-
+                    await ScrapVisibleTransactions();
                 }
-                Thread.Sleep(2000);
+                //Thread.Sleep(2000);
 
                 await _browser.Click(GetAccountFilterXPath(accountNumber));
                 accountNumber++;
@@ -199,19 +212,58 @@ namespace MBankScrapper
                     await _browser.Click(moreButton);
             }
 
-            async Task<int> OperationCount()
+            async Task<(int loaded, int total)> TransactionCount()
             {
                 var counter = await _browser.GetInnerText("//div[@testid='OperationsSummary:operationsCount']");
                 //25 z 4042 operacji
-                int result = 0;
+                (int loaded, int total) = (-1, -1);
                 foreach (var c in counter.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                     if (int.TryParse(c, out int parsedCounter))
-                        result = Math.Max(result, parsedCounter);
-                return result;
+                        if (loaded == -1) 
+                            loaded = parsedCounter;
+                        else 
+                            total = parsedCounter;
+                return (loaded, total);
             }
-            async Task ScrapVisibleTransactions()
+            
+            async Task<int> ScrapVisibleTransactions()
             {
-               
+                await ScrollToLoadAllTransactionsInFilter();
+                var transactionCount = await TransactionCount();
+                for (var currentTransaction = 0; currentTransaction < transactionCount.total; currentTransaction++)
+                {
+                    var tags = "";
+                    if (await _browser.IsElementPresent($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:tags-trigger']"))
+                        tags = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:tags-trigger']");
+                    if (tags == "scrapped")
+                        continue;
+
+                    var type = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:operationType-trigger']");
+                    var date = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[4]");
+                    var title = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/td[3]");
+                    var amount = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/td[position()=6]");
+                    var comment = "";
+                    if (await _browser.IsElementPresent($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:comment-trigger']"))
+                        comment = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:comment-trigger']");
+                    
+                }
+
+                return 0;
+            }
+
+            string GetTransactionRow(int transactionNumber) => 
+                $"//tr[@data-test-id='history:operationRow:{transactionNumber}']"; 
+
+            async Task ScrollToLoadAllTransactionsInFilter()
+            {
+                await _browser.Click("//div[@testid='OperationsSummary:operationsCount']");
+                var transactionCount = await TransactionCount();
+                while (transactionCount.loaded != transactionCount.total)
+                {
+                    await _browser.SendKey("Home");
+                    await _browser.SendKey("End");
+                    transactionCount = await TransactionCount();
+                }
             }
 
             async Task SetDateFilter(DateTime from, DateTime to)
@@ -220,9 +272,9 @@ namespace MBankScrapper
                 var dateToXPath = "//html/descendant::input[@class='DateInput_input DateInput_input_1'][2]";
 
                 await _browser.SetText(dateFromXPath, from.ToString("dd'.'MM'.'yyyy"));
-                await _browser.SendKey(dateFromXPath, "Delete", 10);
+                await _browser.SendKey("Delete", 10);
                 await _browser.SetText(dateToXPath, to.ToString("dd'.'MM'.'yyyy"));
-                await _browser.SendKey(dateToXPath, "Delete", 10);
+                await _browser.SendKey("Delete", 10);
             }
             string GetAccountFilterXPath(int accountNumber) => $"//span[text()='wszystkie']//ancestor::ul/parent::*/descendant::li[{accountNumber}]";
         }

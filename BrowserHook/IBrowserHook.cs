@@ -23,6 +23,6 @@ namespace BrowserHook
 
         Task SetText(string xpath, string text);
 
-        Task SendKey(string path, string key, int count = 1);
+        Task SendKey(string key, int count = 1);
     }
 }
