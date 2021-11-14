@@ -98,8 +98,8 @@ export class TransactionsComponent implements OnInit{
         this.prepareView();
     }
 
-    selectTransaction(scrapID: string) {
-        this.router.navigate([scrapID], { relativeTo: this.route});
+    selectTransaction(id: string) {
+        this.router.navigate([id], { relativeTo: this.route});
     }
 
     addNew() {

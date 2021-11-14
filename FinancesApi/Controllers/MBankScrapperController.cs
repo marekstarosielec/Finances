@@ -10,10 +10,12 @@ namespace FinancesApi.Controllers
     public class MBankScrapperController : ControllerBase
     {
         private readonly IBalanceService _balanceService;
+        private readonly ITransactionsService _transactionService;
 
-        public MBankScrapperController(IBalanceService balanceService)
+        public MBankScrapperController(IBalanceService balanceService, ITransactionsService transactionService)
         {
             _balanceService = balanceService;
+            _transactionService = transactionService;
         }
 
         [HttpPost]
@@ -27,6 +29,11 @@ namespace FinancesApi.Controllers
                     AccountBalance = accountBalance =>
                     {
                         _balanceService.SaveBalance(new Models.Balance { Id = Guid.NewGuid().ToString(), Date=DateTime.Now.Date, Account = accountBalance.Title, Amount = accountBalance.Balance });
+                    },
+                    Transaction = transaction =>
+                    {
+                        DateTime.TryParseExact(transaction.Date, "dd'.'MM'.'yyyy", null, System.Globalization.DateTimeStyles.None, out var transactionDate);
+                        _transactionService.SaveTransaction(new Models.Transaction { Id = transaction.Id, Details = transaction.Title, Amount = transaction.Amount, Account = transaction.Account, Date= transactionDate, Source = "mbank scrapper" });
                     }
                 });
              

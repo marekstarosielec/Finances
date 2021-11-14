@@ -14,7 +14,8 @@
 export interface Transaction { 
     scrappingDate?: string | null;
     status?: string | null;
-    scrapID?: string | null;
+    id?: string | null;
+    source?: string | null;
     date?: string;
     account?: string | null;
     category?: string | null;

@@ -50,8 +50,8 @@
               </th> -->
             </thead>
             <tbody>
-              <tr *ngFor="let row of dataSubject | async" (click)="selectTransaction(row.scrapID)">
-                  <td>{{row.date | date: 'yyyy-MM-dd'}}</td>
+              <tr *ngFor="let row of dataSubject | async" (click)="selectTransaction(row.id)">
+                  <td class="date">{{row.date | date: 'yyyy-MM-dd'}}</td>
                   <td>{{row.account}}</td>
                   <td>{{row.category}}</td>
                   <td class="text-right">{{row.amount | number:'1.2-2'}}</td>

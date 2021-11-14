@@ -69,13 +69,13 @@ namespace FinancesApi.Services
             _transactions.Load();
             return string.IsNullOrWhiteSpace(id)
                 ? _transactions.Value
-                : _transactions.Value.Where(t => string.Equals(id, t.ScrapID, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                : _transactions.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
         public void SaveTransaction(Transaction transaction)
         {
             _transactions.Load();
-            var editedTransaction = _transactions.Value.FirstOrDefault(t => string.Equals(transaction.ScrapID, t.ScrapID, StringComparison.InvariantCultureIgnoreCase));
+            var editedTransaction = _transactions.Value.FirstOrDefault(t => string.Equals(transaction.Id, t.Id, StringComparison.InvariantCultureIgnoreCase));
             if (editedTransaction == null)
                 _transactions.Value.Add(transaction);
             else
@@ -88,7 +88,7 @@ namespace FinancesApi.Services
         public void DeleteTransaction(string id)
         {
             _transactions.Load();
-            _transactions.Value.RemoveAll(a => string.Equals(id, a.ScrapID, StringComparison.InvariantCultureIgnoreCase));
+            _transactions.Value.RemoveAll(a => string.Equals(id, a.Id, StringComparison.InvariantCultureIgnoreCase));
             _transactions.Save();
         }
 

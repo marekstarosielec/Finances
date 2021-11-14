@@ -98,11 +98,13 @@ namespace FinancesApi.Models
         //public string OwnAccount { get; set; }
 
         //ScrapID
-        public string ScrapID { get; set; }
+        public string Id { get; set; }
+
+        public string Source { get; set; }
 
         ////NewScrap
         //public int? NewScrap { get; set; }
-    
+
         ////Nazwa nadawcy
         //public string SenderName { get; set; }
 

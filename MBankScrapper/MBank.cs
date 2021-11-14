@@ -1,6 +1,7 @@
 ﻿using BrowserHook;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -30,6 +31,13 @@ namespace MBankScrapper
                 await ScrapAccounts();
                 await GoToSavingsPage();
                 await ScrapAccounts();
+                await GoToCardsPage();
+                await ScrapCards();
+                await GoToTransactionsPage();
+                await ScrapTransactions();
+                await SwitchToCompanyProfile();
+                await GoToAccountsPage();
+                await ScrapAccounts();
                 await GoToTransactionsPage();
                 await ScrapTransactions();
                 await Logout();
@@ -37,6 +45,10 @@ namespace MBankScrapper
             catch(Exception e) 
             {
 
+            }
+            finally
+            {
+                Process.GetProcesses().Where(p => string.Equals(p.ProcessName, "chromium", StringComparison.InvariantCultureIgnoreCase)).ToList().ForEach(proc => proc.Kill());
             }
         }
 
@@ -85,6 +97,12 @@ namespace MBankScrapper
             await _browser.WaitForPage("https://online.mbank.pl/savings2");
         }
 
+        private async Task GoToCardsPage()
+        {
+            await _browser.NavigateTo("https://online.mbank.pl/cards2");
+            await _browser.WaitForPage("https://online.mbank.pl/cards2");
+        }
+
         private async Task ScrapAccounts()
         {
             var accountIndex = 1;
@@ -127,16 +145,57 @@ namespace MBankScrapper
                 if (balance.LastIndexOf(" ") != -1)
                 {
                     currency = balance.Substring(balance.LastIndexOf(" ")).Trim();
-
-                    char[] whiteSpaces = { (char)160 };
-                    balance = balance.Replace(currency, string.Empty).Replace(" ", "").Replace(new string(whiteSpaces), string.Empty).Trim();
-                    decimal.TryParse(balance, out parsedBalance);
+                    balance = balance.Replace(currency, string.Empty).Replace(" ", "").Replace(new string(new char[] { (char)160 }), string.Empty).Trim();
+                    _ = decimal.TryParse(balance, out parsedBalance);
                 }
 
                 var model = new Models.AccountBalance
                 {
                     Title = title,
                     Iban = iban,
+                    Balance = parsedBalance,
+                    Currency = currency
+                };
+                _accounts.Add(model);
+                _actionSet?.AccountBalance?.Invoke(model);
+
+                accountIndex++;
+            }
+            string accountXPath(int accountIndex) => $"//html/descendant::li[{accountIndex}]";
+        }
+
+        private async Task ScrapCards()
+        {
+            var accountIndex = 1;
+            while (await _browser.IsElementPresent(accountXPath(accountIndex)))
+            {
+                var titleXPath = $"{accountXPath(accountIndex)}/descendant::p";
+                var amountXPath = $"{accountXPath(accountIndex)}/descendant::span[2]";
+
+                if (!await _browser.IsElementPresent(titleXPath))
+                {
+                    accountIndex++;
+                    continue;
+                }
+                var title = await _browser.GetInnerText(titleXPath);
+                var balance = "0";
+                if (await _browser.IsElementPresent(amountXPath))
+                    balance = await _browser.GetInnerText(amountXPath);
+                
+                decimal parsedBalance = 0;
+                var currency = string.Empty;
+                if (balance.LastIndexOf(" ") != -1)
+                {
+                    currency = balance.Substring(balance.LastIndexOf(" ")).Trim();
+
+                    char[] whiteSpaces = { (char)160 };
+                    balance = balance.Replace(currency, string.Empty).Replace(" ", "").Replace(new string(whiteSpaces), string.Empty).Trim();
+                    _ = decimal.TryParse(balance, out parsedBalance);
+                }
+
+                var model = new Models.AccountBalance
+                {
+                    Title = title,
                     Balance = parsedBalance,
                     Currency = currency
                 };
@@ -158,9 +217,10 @@ namespace MBankScrapper
         {
             await ShowAllAccounts();
             var allButton = "//span[text()='wszystkie']//ancestor::li";
-            //var spinner = "//div[@class='_PMtueryzQy6EvzsZf3o']";
+            var noTransactionXPath = "//span[text()='Brak operacji dla wybranych kryteriów wyszukiwania']";
             await _browser.Click(allButton);
-            await _browser.Click(allButton);
+            if (!await _browser.IsElementPresent(noTransactionXPath))
+                await _browser.Click(allButton);
             var accountNumber = 2;
             while (await _browser.IsElementPresent(GetAccountFilterXPath(accountNumber)))
             {
@@ -170,9 +230,11 @@ namespace MBankScrapper
                     .Replace("\n", "")
                     .Replace("EUR eKonto walutowe", "")
                     .Replace("eKonto", "")
-                    .Replace("eMax", "");
-                //.Replace("mBiznes konto - ", "")
-                //.Replace(" - Konto VAT", "");
+                    .Replace("eMax", "")
+                    .Replace("mBiznes konto", "")
+                    .Replace("\nKonto VAT", "")
+                    .Replace(" - ", "");
+
                 var a = _accounts.FirstOrDefault(ai => ai.Title == title);
                 if (a == null)
                 {
@@ -183,7 +245,6 @@ namespace MBankScrapper
                     continue;
                 }
                 await SetDateFilter(DateTime.Today.AddYears(-1).AddDays(1), DateTime.Today);
-                //var spinnerPresent = await _browser.IsElementPresent(spinner); 
                 var transactionCount = await TransactionCount();
                 if (transactionCount.total > 50)
                 {
@@ -194,7 +255,7 @@ namespace MBankScrapper
                     while (daysWithoutNewTransactions < 7)
                     {
                         await SetDateFilter(currentDay, currentDay);
-                        var newTransactions = await ScrapVisibleTransactions();
+                        var newTransactions = await ScrapVisibleTransactions(a.Title);
                         if (newTransactions == 0)
                             daysWithoutNewTransactions++;
                         else
@@ -205,7 +266,7 @@ namespace MBankScrapper
                 }
                 else
                 {
-                    await ScrapVisibleTransactions();
+                    await ScrapVisibleTransactions(a.Title);
                 }
 
                 await _browser.Click(GetAccountFilterXPath(accountNumber));
@@ -233,8 +294,11 @@ namespace MBankScrapper
                 return (loaded, total);
             }
             
-            async Task<int> ScrapVisibleTransactions()
+            async Task<int> ScrapVisibleTransactions(string account)
             {
+                var noTransactionXPath = "//span[text()='Brak operacji dla wybranych kryteriów wyszukiwania']";
+                if (await _browser.IsElementPresent(noTransactionXPath))
+                    return 0;
                 await ScrollToLoadAllTransactionsInFilter();
                 var transactionCount = await TransactionCount();
                 var result = 0;
@@ -254,13 +318,25 @@ namespace MBankScrapper
                     if (await _browser.IsElementPresent($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:comment-trigger']"))
                         comment = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:comment-trigger']");
 
-                    var Id = Guid.NewGuid().ToString();
+                    var id = Guid.NewGuid().ToString();
                     var pos = comment.IndexOf("scrapid:", StringComparison.InvariantCultureIgnoreCase);
                     if (pos > -1 && string.Equals(type, "nierozliczone", StringComparison.InvariantCultureIgnoreCase))
                         continue; //If id is added and type is "nierozliczone" means it was scrapped already and not yet settled.
 
                     if (pos > -1)
-                        Id = comment.Substring(pos + 8, 36); //get id from comment
+                        id = comment.Substring(pos + 8, 36); //get id from comment
+
+                    decimal parsedAmount = 0;
+                    amount = amount.Replace((char)8201, ' ');
+                    var currency = string.Empty;
+                    if (amount.LastIndexOf(" ") != -1)
+                    {
+                        currency = amount.Substring(amount.LastIndexOf(" ")).Trim();
+
+                        char[] whiteSpaces = { (char)160 };
+                        amount = amount.Replace(currency, string.Empty).Replace(" ", "").Replace(new string(whiteSpaces), string.Empty).Trim();
+                        _ = decimal.TryParse(amount, out parsedAmount);
+                    }
 
                     await ExpandCollapseTransactionRow(currentTransaction);
                     //await EditTransaction(currentTransaction);
@@ -269,6 +345,16 @@ namespace MBankScrapper
                     //if (!string.Equals(type,"nierozliczone", StringComparison.InvariantCultureIgnoreCase))
                     //    await SetScrappedTag();
                     //await SaveTransaction();
+
+                    var transactionModel = new Models.Transaction
+                    {
+                        Date = date,
+                        Title = title,
+                        Account = account,
+                        Amount = parsedAmount,
+                        Id = id
+                    };
+                    _actionSet?.Transaction?.Invoke(transactionModel);
                     result++;
                 }
 

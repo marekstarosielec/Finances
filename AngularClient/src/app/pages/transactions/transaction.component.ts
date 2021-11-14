@@ -50,7 +50,7 @@ import { Location } from '@angular/common';
 //     { column: 'bookingDate', showInBankInfo: true, title: 'Data księgowania' },
 //     { column: 'operationTitle', showInBankInfo: true, title: 'Tytuł operacji' },
 //     { column: 'ownAccount', showInBankInfo: true, title: 'Konto własne' },
-//     { column: 'scrapID', showInBankInfo: false, title: 'ScrapID' },
+//     { column: 'id', showInBankInfo: false, title: 'Id' },
 //     { column: 'newScrap', showInBankInfo: false, title: 'NewScrap' },
 //     { column: 'senderName', showInBankInfo: true, title: 'Nazwa nadawcy' },
 //     { column: 'senderBank', showInBankInfo: true, title: 'Bank nadawcy' },
@@ -100,8 +100,9 @@ export class TransactionComponent implements OnInit, OnDestroy{
     form = new FormGroup({
         scrappingDate: new FormControl(undefined, []),
         status: new FormControl('', []),
-        scrapID: new FormControl('', []),
+        id: new FormControl('', []),
         date: new FormControl('', []),
+        source: new FormControl('', []),
         account: new FormControl('', [Validators.required]),
         category: new FormControl('', [Validators.required]),
         amount: new FormControl('', [Validators.required]),
@@ -190,7 +191,7 @@ export class TransactionComponent implements OnInit, OnDestroy{
         }
         this.form.value.date=new Date(this.form.value.date.year, this.form.value.date.month-1, this.form.value.date.day);
         if (this.adding) {
-            this.form.value.scrapID = uuidv4();
+            this.form.value.id = uuidv4();
             this.transactionsService.transactionsTransactionPost(this.form.value).pipe(take(1)).subscribe(() =>
             {
                 this.location.back();
@@ -205,7 +206,7 @@ export class TransactionComponent implements OnInit, OnDestroy{
     }
 
     delete() {
-        this.transactionsService.transactionsTransactionIdDelete(this.data.scrapID).pipe(take(1)).subscribe(() =>
+        this.transactionsService.transactionsTransactionIdDelete(this.data.id).pipe(take(1)).subscribe(() =>
         {
             this.location.back();
         });
