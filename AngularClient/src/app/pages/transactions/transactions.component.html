@@ -39,12 +39,15 @@
               <th class="text-right" (click)="sort('amount')">
                 Kwota
               </th>
-              <th (click)="sort('details')">
+              <th (click)="sort('description')">
+                Opis
+              </th>
+              <!-- <th (click)="sort('details')">
                 Szczegóły
               </th>
               <th (click)="sort('person')">
                 Osoba
-              </th>
+              </th> -->
             </thead>
             <tbody>
               <tr *ngFor="let row of dataSubject | async" (click)="selectTransaction(row.scrapID)">
@@ -52,8 +55,9 @@
                   <td>{{row.account}}</td>
                   <td>{{row.category}}</td>
                   <td class="text-right">{{row.amount | number:'1.2-2'}}</td>
-                  <td>{{row.details}}</td>
-                  <td>{{row.person}}</td>
+                  <td>{{row.description}}</td>
+                  <!-- <td>{{row.details}}</td>
+                  <td>{{row.person}}</td> -->
               </tr>
             </tbody>
           </table>

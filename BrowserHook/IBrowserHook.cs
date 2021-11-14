@@ -13,7 +13,7 @@ namespace BrowserHook
 
         Task WaitForPage(Regex regex);
 
-        Task WaitForElement(string xpath);
+        Task WaitForElement(string xpath, bool continueOnTimeout = false, int timeoutMilliseconds = 30000);
 
         Task<bool> IsElementPresent(string xpath);
 

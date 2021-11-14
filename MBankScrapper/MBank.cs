@@ -13,24 +13,31 @@ namespace MBankScrapper
         IBrowserHook _browser;
         ActionSet _actionSet;
         List<Models.AccountBalance> _accounts = new ();
+        const int sleepTime = 100;
 
         public async Task StartScrapping(IBrowserHook browser, ActionSet actionSet)
         {
-            _browser = browser
-                ?? throw new ArgumentException();
-            _actionSet = actionSet;
+            try
+            {
+                _browser = browser
+                    ?? throw new ArgumentException();
+                _actionSet = actionSet;
 
-            await _browser.Initialize();
-            await Login();
-            await SwitchToPrivateProfile();
-            await GoToAccountsPage();
-            await ScrapAccounts();
-            await GoToSavingsPage();
-            await ScrapAccounts();
-            await GoToTransactionsPage();
-            await ScrapTransactions();
-            Thread.Sleep(5000);
-            await Logout();
+                await _browser.Initialize();
+                await Login();
+                await SwitchToPrivateProfile();
+                await GoToAccountsPage();
+                await ScrapAccounts();
+                await GoToSavingsPage();
+                await ScrapAccounts();
+                await GoToTransactionsPage();
+                await ScrapTransactions();
+                await Logout();
+            }
+            catch(Exception e) 
+            {
+
+            }
         }
 
         private async Task Login()
@@ -183,14 +190,15 @@ namespace MBankScrapper
                     //There is a lot of transaction in the view. To avoid slowing page down,
                     //navigate thru transactions day by day.
                     var currentDay = DateTime.Now;
-                    var daysWithoutNoNewTransactions = 0;
-                    while (daysWithoutNoNewTransactions < 7)
+                    var daysWithoutNewTransactions = 0;
+                    while (daysWithoutNewTransactions < 7)
                     {
                         await SetDateFilter(currentDay, currentDay);
-                        transactionCount = await TransactionCount();
                         var newTransactions = await ScrapVisibleTransactions();
                         if (newTransactions == 0)
-                            daysWithoutNoNewTransactions++;
+                            daysWithoutNewTransactions++;
+                        else
+                            daysWithoutNewTransactions = 0;
 
                         currentDay = currentDay.AddDays(-1);
                     }
@@ -199,7 +207,6 @@ namespace MBankScrapper
                 {
                     await ScrapVisibleTransactions();
                 }
-                //Thread.Sleep(2000);
 
                 await _browser.Click(GetAccountFilterXPath(accountNumber));
                 accountNumber++;
@@ -230,6 +237,7 @@ namespace MBankScrapper
             {
                 await ScrollToLoadAllTransactionsInFilter();
                 var transactionCount = await TransactionCount();
+                var result = 0;
                 for (var currentTransaction = 0; currentTransaction < transactionCount.total; currentTransaction++)
                 {
                     var tags = "";
@@ -245,14 +253,50 @@ namespace MBankScrapper
                     var comment = "";
                     if (await _browser.IsElementPresent($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:comment-trigger']"))
                         comment = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:comment-trigger']");
-                    
+
+                    var Id = Guid.NewGuid().ToString();
+                    var pos = comment.IndexOf("scrapid:", StringComparison.InvariantCultureIgnoreCase);
+                    if (pos > -1 && string.Equals(type, "nierozliczone", StringComparison.InvariantCultureIgnoreCase))
+                        continue; //If id is added and type is "nierozliczone" means it was scrapped already and not yet settled.
+
+                    if (pos > -1)
+                        Id = comment.Substring(pos + 8, 36); //get id from comment
+
+                    await ExpandCollapseTransactionRow(currentTransaction);
+                    //await EditTransaction(currentTransaction);
+                    //if (pos == -1) 
+                    //    await SetComment($"scrapid:{Id}");
+                    //if (!string.Equals(type,"nierozliczone", StringComparison.InvariantCultureIgnoreCase))
+                    //    await SetScrappedTag();
+                    //await SaveTransaction();
+                    result++;
                 }
 
-                return 0;
+                return result;
             }
 
             string GetTransactionRow(int transactionNumber) => 
-                $"//tr[@data-test-id='history:operationRow:{transactionNumber}']"; 
+                $"//tr[@data-test-id='history:operationRow:{transactionNumber}']";
+
+            async Task ExpandCollapseTransactionRow(int transactionNumber)
+            {
+                while (!await _browser.IsElementPresent($"{GetTransactionRow(transactionNumber)}/following::tr[@aria-hidden='false']"))
+                {
+                    await _browser.Click($"{GetTransactionRow(transactionNumber)}");
+                    Sleep();
+                }
+                    
+            }
+
+            async Task EditTransaction(int transactionNumber)
+            {
+                var editButtonXPath = $"{GetTransactionRow(transactionNumber)}/following::tr/descendant::button[@data-test-id='history:edit']";
+                while (await _browser.IsElementPresent(editButtonXPath))
+                {
+                    await _browser.Click(editButtonXPath);
+                    Sleep();
+                }
+            }
 
             async Task ScrollToLoadAllTransactionsInFilter()
             {
@@ -260,8 +304,11 @@ namespace MBankScrapper
                 var transactionCount = await TransactionCount();
                 while (transactionCount.loaded != transactionCount.total)
                 {
+                    //Sometime "End" alone is not enough - page is stuck with spinner.
+                    //Call "Home" to to trigger loading.
                     await _browser.SendKey("Home");
                     await _browser.SendKey("End");
+                    Sleep();
                     transactionCount = await TransactionCount();
                 }
             }
@@ -270,14 +317,38 @@ namespace MBankScrapper
             {
                 var dateFromXPath = "//html/descendant::input[@class='DateInput_input DateInput_input_1'][1]";
                 var dateToXPath = "//html/descendant::input[@class='DateInput_input DateInput_input_1'][2]";
+                var spinner = "//div[@class='_PMtueryzQy6EvzsZf3o']";
+                var noTransactionXPath = "//span[text()='Brak operacji dla wybranych kryteriów wyszukiwania']";
 
                 await _browser.SetText(dateFromXPath, from.ToString("dd'.'MM'.'yyyy"));
                 await _browser.SendKey("Delete", 10);
                 await _browser.SetText(dateToXPath, to.ToString("dd'.'MM'.'yyyy"));
                 await _browser.SendKey("Delete", 10);
+
+                await _browser.WaitForElement(spinner, continueOnTimeout: true, timeoutMilliseconds: 1000); //Sometimes spinner disappears before it can be checked for.
+                while ((!await _browser.IsElementPresent(noTransactionXPath)) && (!await _browser.IsElementPresent(GetTransactionRow(0)))) { } //Wait for transactions to appear
             }
+
+            async Task SetComment(string comment)
+            {
+                var deleteButtonXPath = "//a[@data-test-id='Comment:RemoveButton']";
+                var addButtonXPath = "//button[@data-test-id='Comment:AddButton']";
+                
+                if (await _browser.IsElementPresent(deleteButtonXPath))
+                    await _browser.Click(deleteButtonXPath);
+                if (await _browser.IsElementPresent(addButtonXPath))
+                    await _browser.Click(addButtonXPath);
+                await _browser.SetText("//input[@data-test-id='Comment:Input']", comment);
+            }
+
+            async Task SetScrappedTag() => await _browser.Click("//button[text()='scrapped' and contains(@data-test-id,'SelectionSwitch:Tag')]");
+
+            async Task SaveTransaction() =>
+                await _browser.Click("//button[@data-test-id='EditDetails:SaveButton']");
+
             string GetAccountFilterXPath(int accountNumber) => $"//span[text()='wszystkie']//ancestor::ul/parent::*/descendant::li[{accountNumber}]";
         }
+
+        void Sleep() => Thread.Sleep(sleepTime);
     }
-    ////div[@class='_PMtueryzQy6EvzsZf3o'] - spinner on transactions
 }

@@ -21,9 +21,17 @@ namespace PlaywrightHook
         public async Task NavigateTo(string url) => 
             await _page.GotoAsync(url);
 
-        public async Task WaitForElement(string xpath) => 
-            await _page.WaitForSelectorAsync(xpath, new PageWaitForSelectorOptions { });
-
+        public async Task WaitForElement(string xpath, bool continueOnTimeout = false, int timeoutMilliseconds = 30000)
+        {
+            try
+            {
+                await _page.WaitForSelectorAsync(xpath, new PageWaitForSelectorOptions { Timeout = timeoutMilliseconds });
+            }
+            catch (System.TimeoutException) {
+                if (!continueOnTimeout) throw;
+            }
+        }
+           
         public async Task WaitForPage(string url) => 
             await _page.WaitForURLAsync(url, new PageWaitForURLOptions { Timeout = 0, WaitUntil = WaitUntilState.NetworkIdle  });
 
@@ -44,7 +52,7 @@ namespace PlaywrightHook
         }
 
         public async Task Click(string xpath) => 
-            await _page.ClickAsync(xpath, new PageClickOptions { });
+            await _page.ClickAsync(xpath, new PageClickOptions {  });
 
         public async Task SetText(string xpath, string text)
         {
