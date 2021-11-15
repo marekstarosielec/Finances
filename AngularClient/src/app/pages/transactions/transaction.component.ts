@@ -131,6 +131,7 @@ export class TransactionComponent implements OnInit, OnDestroy{
                 if (params['id']==='new'){
                     this.adding = true;
                     let date = new Date();
+                    this.form.controls['currency'].setValue('PLN');
                     this.form.controls['date'].setValue({year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()});
                 } else { 
                     this.adding = false;

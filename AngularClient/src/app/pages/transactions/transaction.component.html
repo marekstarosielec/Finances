@@ -29,7 +29,7 @@
       <div class="input-group">
         <input type="number" class="form-control" id="amount" placeholder="Wpisz kwotę" formControlName="amount">
         <div class="input-group-append">
-          <span class="input-group-text" id="basic-addon2">{{data?.currency}}</span>
+          <span class="input-group-text" id="basic-addon2">{{form.controls['currency'].value}}</span>
         </div>
       </div>
     </div>
