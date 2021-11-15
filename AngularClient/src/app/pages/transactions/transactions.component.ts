@@ -22,6 +22,8 @@ export class TransactionsComponent implements OnInit{
     numberOfRecords: number = 100;
     sortColumn: string = 'date';
     sortOrder: number = -1;
+    filteredNumberOfRecords: number = 0;
+    currentNumberOfRecords: number = 0;
     totalNumberOfRecords: number = 0;
     dataSubject = new BehaviorSubject(null);
     loading: boolean;
@@ -34,6 +36,7 @@ export class TransactionsComponent implements OnInit{
         this.transactionsService.transactionsGet().subscribe((transactions: Transaction[]) =>{
             this.data = transactions;
             this.totalNumberOfRecords = transactions.length;
+            this.filteredNumberOfRecords = transactions.length;
             this.accountList = _(transactions).groupBy('account')
                 .map(function(elements, account) {
                     return account;
@@ -43,6 +46,11 @@ export class TransactionsComponent implements OnInit{
         });
         this.route.queryParams.subscribe((qp: Params) => {
             this.numberOfRecords = qp.limit ?? 100;
+            if (qp.account)
+                this.accountFilter = decodeURIComponent(qp.account);
+            else
+                this.accountFilter = "";
+
             this.prepareView();
         });
     }
@@ -75,31 +83,36 @@ export class TransactionsComponent implements OnInit{
 
     prepareView() {
         if (!this.data)
+        {
+            this.currentNumberOfRecords = 0;
+            this.filteredNumberOfRecords = 0;
             return;
+        }
 
         let data = this.data;
         if (this.accountFilter !== '') {
             data = data.filter(d => d.account === this.accountFilter);
         }
-
+        this.filteredNumberOfRecords = data.length;
+            
         data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
         if (this.numberOfRecords && this.numberOfRecords != 0) {
             data = data.slice(0, this.numberOfRecords);
         }
+        this.currentNumberOfRecords = data.length;
         this.dataSubject.next(data);
     }
 
     showAll() {
-        this.router.navigate(['/transactions'], { queryParams: { limit: 0 } });
+        this.router.navigate(['/transactions'], { queryParams: { limit: 0 }, queryParamsHandling: "merge" });
     }
 
     showSome(){
-        this.router.navigate(['/transactions'], { queryParams: {  limit: 100 } });
+        this.router.navigate(['/transactions'], { queryParams: {  limit: 100 }, queryParamsHandling: "merge" });
     }
 
     filterByAccount(account: string) {
-        this.accountFilter = account;
-        this.prepareView();
+        this.router.navigate(['/transactions'], { queryParams: {  account: encodeURIComponent(account) }, queryParamsHandling: "merge" });
     }
 
     selectTransaction(id: string) {
