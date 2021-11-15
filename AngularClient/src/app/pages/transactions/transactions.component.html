@@ -7,10 +7,10 @@
 <div class="row" *ngIf="!loading">
   <div class="col-md-12">
     <div class="card">
-      <div class="card-header" *ngIf="!showAllRecords">
+      <div class="card-header" *ngIf="numberOfRecords != 0">
         Widoczne {{numberOfRecords}} z {{totalNumberOfRecords}} rekordów. <span class="showAll" (click)="showAll()">Pokaż wszystkie.</span>
       </div>
-      <div class="card-header" *ngIf="showAllRecords">
+      <div class="card-header" *ngIf="numberOfRecords == 0">
         Widoczne wszystkie {{totalNumberOfRecords}} rekordów. <span class="showAll" (click)="showSome()">Pokaż część.</span>
       </div>
       <div class="card-body">

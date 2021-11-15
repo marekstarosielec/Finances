@@ -7,7 +7,7 @@ import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.serv
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
 import * as _ from 'lodash';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 @Component({
     selector: 'transactions',
@@ -24,7 +24,6 @@ export class TransactionsComponent implements OnInit{
     sortOrder: number = -1;
     totalNumberOfRecords: number = 0;
     dataSubject = new BehaviorSubject(null);
-    showAllRecords: boolean = false;
     loading: boolean;
 
     constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService,
@@ -40,6 +39,10 @@ export class TransactionsComponent implements OnInit{
                     return account;
                 }).value().sort((a,b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
             this.loading = false;
+            this.prepareView();
+        });
+        this.route.queryParams.subscribe((qp: Params) => {
+            this.numberOfRecords = qp.limit ?? 100;
             this.prepareView();
         });
     }
@@ -71,26 +74,27 @@ export class TransactionsComponent implements OnInit{
     }
 
     prepareView() {
+        if (!this.data)
+            return;
+
         let data = this.data;
         if (this.accountFilter !== '') {
             data = data.filter(d => d.account === this.accountFilter);
         }
 
         data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
-        if (!this.showAllRecords) {
+        if (this.numberOfRecords && this.numberOfRecords != 0) {
             data = data.slice(0, this.numberOfRecords);
         }
         this.dataSubject.next(data);
     }
 
     showAll() {
-        this.showAllRecords = true;
-        this.prepareView();
+        this.router.navigate(['/transactions'], { queryParams: { limit: 0 } });
     }
 
     showSome(){
-        this.showAllRecords = false;
-        this.prepareView();
+        this.router.navigate(['/transactions'], { queryParams: {  limit: 100 } });
     }
 
     filterByAccount(account: string) {
