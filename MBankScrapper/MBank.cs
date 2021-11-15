@@ -48,7 +48,7 @@ namespace MBankScrapper
             }
             finally
             {
-                Process.GetProcesses().Where(p => string.Equals(p.ProcessName, "chromium", StringComparison.InvariantCultureIgnoreCase)).ToList().ForEach(proc => proc.Kill());
+           //     Process.GetProcesses().Where(p => string.Equals(p.ProcessName, "chromium", StringComparison.InvariantCultureIgnoreCase)).ToList().ForEach(proc => proc.Kill());
             }
         }
 
@@ -282,6 +282,10 @@ namespace MBankScrapper
 
             async Task<(int loaded, int total)> TransactionCount()
             {
+                var noTransactionXPath = "//span[text()='Brak operacji dla wybranych kryteriów wyszukiwania']";
+                if (await _browser.IsElementPresent(noTransactionXPath))
+                    return (0,0);
+
                 var counter = await _browser.GetInnerText("//div[@testid='OperationsSummary:operationsCount']");
                 //25 z 4042 operacji
                 (int loaded, int total) = (-1, -1);
