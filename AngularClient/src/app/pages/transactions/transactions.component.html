@@ -54,7 +54,7 @@
                   <td class="date">{{row.date | date: 'yyyy-MM-dd'}}</td>
                   <td>{{row.account}}</td>
                   <td>{{row.category}}</td>
-                  <td class="text-right">{{row.amount | number:'1.2-2'}}</td>
+                  <td class="text-right amount" [class.negative]="row.amount<0" [class.positive]="row.amount>0">{{row.amount | number:'1.2-2'}}</td>
                   <td><p>{{row.bankInfo}}</p><p class="subcomment">{{row.comment}}</p></td>
                   <!-- <td>{{row.details}}</td>
                   <td>{{row.person}}</td> -->
