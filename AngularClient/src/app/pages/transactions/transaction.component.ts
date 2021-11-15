@@ -111,6 +111,7 @@ export class TransactionComponent implements OnInit, OnDestroy{
         text: new FormControl('', []),
         bankInfo: new FormControl('', []),
         comment: new FormControl('', []),
+        currency: new FormControl('', []),
         details: new FormControl('', []),
         person: new FormControl('', [])
     });
@@ -162,7 +163,6 @@ export class TransactionComponent implements OnInit, OnDestroy{
                 return true;
             }
         }
-        
         return false;
     }
 

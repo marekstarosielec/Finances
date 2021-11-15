@@ -211,6 +211,8 @@ namespace FinancesApi.Models
         //Komentarz
         public string Comment { get; set; }
 
+        public string Currency { get; set; }
+
         ////Faktura
         //public string Invoice { get; set; }
 

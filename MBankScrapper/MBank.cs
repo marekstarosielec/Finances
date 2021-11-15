@@ -316,7 +316,7 @@ namespace MBankScrapper
 
                     var type = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:operationType-trigger']");
                     var date = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[4]");
-                    var title = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/td[3]");
+                    var text = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/td[3]");
                     var amount = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/td[position()=6]");
                     var comment = "";
                     if (await _browser.IsElementPresent($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:comment-trigger']"))
@@ -343,6 +343,16 @@ namespace MBankScrapper
                     }
 
                     await ExpandCollapseTransactionRow(currentTransaction);
+                    var titleXPath = $"{GetTransactionRow(currentTransaction)}/following::tr/descendant::div[@data-test-id='GenericDetails:Title:0']";
+                    var title = string.Empty;
+                    if (await _browser.IsElementPresent(titleXPath))
+                        title = await _browser.GetInnerText(titleXPath);
+
+                    var descriptionXPath = $"{GetTransactionRow(currentTransaction)}/following::tr/descendant::div[@data-test-id='GenericDetails:TransferDescription:0']";
+                    var description = string.Empty;
+                    if (await _browser.IsElementPresent(descriptionXPath))
+                        description = await _browser.GetInnerText(descriptionXPath);
+
                     //await EditTransaction(currentTransaction);
                     //if (pos == -1) 
                     //    await SetComment($"scrapid:{Id}");
@@ -353,10 +363,13 @@ namespace MBankScrapper
                     var transactionModel = new Models.Transaction
                     {
                         Date = date,
+                        Text = text,
                         Title = title,
+                        Description = description,
                         Account = account,
                         Amount = parsedAmount,
-                        Id = id
+                        Id = id,
+                        Currency = currency
                     };
                     _actionSet?.Transaction?.Invoke(transactionModel);
                     result++;

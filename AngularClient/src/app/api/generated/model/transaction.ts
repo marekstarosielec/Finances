@@ -25,6 +25,7 @@ export interface Transaction {
     text?: string | null;
     readonly bankInfo?: string | null;
     comment?: string | null;
+    currency?: string | null;
     details?: string | null;
     person?: string | null;
 }
