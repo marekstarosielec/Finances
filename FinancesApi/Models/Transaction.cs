@@ -186,8 +186,27 @@ namespace FinancesApi.Models
         //Kwota
         public decimal Amount { get; set; }
 
-        //Opis
+        //Tytuł przelewu
+        public string Title { get; set; }
+
+        //Opis operacji
         public string Description { get; set; }
+
+        //Tekst tranzakcji
+        public string Text { get; set; }
+
+        public string BankInfo
+        {
+            get
+            {
+                var result = Text;
+                if (!string.IsNullOrWhiteSpace(Title))
+                    result += Environment.NewLine + Title;
+                if (!string.IsNullOrWhiteSpace(Description))
+                    result += Environment.NewLine + Description;
+                return result;
+            }
+        }
 
         //Komentarz
         public string Comment { get; set; }

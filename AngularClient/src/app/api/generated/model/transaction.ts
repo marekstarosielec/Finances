@@ -20,7 +20,10 @@ export interface Transaction {
     account?: string | null;
     category?: string | null;
     amount?: number;
+    title?: string | null;
     description?: string | null;
+    text?: string | null;
+    readonly bankInfo?: string | null;
     comment?: string | null;
     details?: string | null;
     person?: string | null;

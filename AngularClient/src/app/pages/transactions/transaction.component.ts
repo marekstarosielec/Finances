@@ -107,6 +107,9 @@ export class TransactionComponent implements OnInit, OnDestroy{
         category: new FormControl('', [Validators.required]),
         amount: new FormControl('', [Validators.required]),
         description: new FormControl('', []),
+        title: new FormControl('', []),
+        text: new FormControl('', []),
+        bankInfo: new FormControl('', []),
         comment: new FormControl('', []),
         details: new FormControl('', []),
         person: new FormControl('', [])
@@ -138,30 +141,12 @@ export class TransactionComponent implements OnInit, OnDestroy{
                     });
                 }
             }
-          );
+        );
     }
 
-   ngOnDestroy() {
-        this.routeSubscription.unsubscribe();
-   }
-
-//    getBankInfo(transaction:Transaction): TransactionHeader[] {
-//         if(!transaction)
-//             return;
-//         let result: TransactionHeader[] = [];
-//         Object.keys(transaction).forEach(key => {
-//             let header = TransactionHeaders.find(th => th.column === key);
-//             if (!header){
-//                 header = { column: key, title: key, isError: true, showInBankInfo: true };
-//             }
-//             if (transaction[key] && transaction[key] !== '' && header.showInBankInfo) {
-//                 header.value = transaction[key];
-//                 result.push(header);
-//             }
-//         });
-//         return result;
-//     }
-
+    ngOnDestroy() {
+            this.routeSubscription.unsubscribe();
+    }
 
     isSavable(): boolean {
         return this.form.valid && (this.adding || this.isFormChanged());

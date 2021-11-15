@@ -80,7 +80,8 @@ namespace FinancesApi.Services
                 _transactions.Value.Add(transaction);
             else
                 typeof(Transaction).GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList().ForEach(prop => {
-                    prop.SetValue(editedTransaction, prop.GetValue(transaction));
+                    if (prop.CanWrite)
+                        prop.SetValue(editedTransaction, prop.GetValue(transaction));
                 });
             _transactions.Save();
         }
