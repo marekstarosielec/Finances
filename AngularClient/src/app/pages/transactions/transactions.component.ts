@@ -53,6 +53,7 @@ export class TransactionsComponent implements OnInit{
         });
         this.route.queryParams.subscribe((qp: Params) => {
             this.numberOfRecords = qp.limit ?? 100;
+            if (this.numberOfRecords < 0) this.numberOfRecords = 100;
             this.accountFilter = qp.account ? decodeURIComponent(qp.account) : "";
             this.categoryFilter = qp.category ? decodeURIComponent(qp.category) : "";
             this.prepareView();

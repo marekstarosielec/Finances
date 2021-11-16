@@ -21,6 +21,10 @@ namespace FinancesApi.Services
         IList<TransactionCategory> GetCategories();
         void SaveCategory(TransactionCategory category);
         void DeleteCategory(string id);
+
+        IList<TransactionAutoCategory> GetAutoCategories();
+        void SaveAutoCategory(TransactionAutoCategory category);
+        void DeleteAutoCategory(string id);
     }
 
     public class TransactionsService: ITransactionsService
@@ -28,6 +32,7 @@ namespace FinancesApi.Services
         private readonly Jsonfile<List<Transaction>> _transactions;
         private readonly Jsonfile<List<TransactionAccount>> _accounts;
         private readonly Jsonfile<List<TransactionCategory>> _categories;
+        private readonly Jsonfile<List<TransactionAutoCategory>> _autoCategories;
 
         public TransactionsService(IConfiguration configuration)
         {
@@ -38,6 +43,8 @@ namespace FinancesApi.Services
             _accounts = new Jsonfile<List<TransactionAccount>>(accountsFile);
             var categoriesFile = Path.Combine(basePath, "transaction-categories.json");
             _categories = new Jsonfile<List<TransactionCategory>>(categoriesFile);
+            var autoCategoriesFile = Path.Combine(basePath, "transaction-auto-categories.json");
+            _autoCategories = new Jsonfile<List<TransactionAutoCategory>>(autoCategoriesFile);
         }
 
         public IList<TransactionAccount> GetAccounts()
@@ -130,6 +137,33 @@ namespace FinancesApi.Services
             _categories.Load();
             _categories.Value.RemoveAll(c => string.Equals(id, c.Id, StringComparison.InvariantCultureIgnoreCase));
             _categories.Save();
+        }
+
+        public IList<TransactionAutoCategory> GetAutoCategories()
+        {
+            _autoCategories.Load();
+           return _autoCategories.Value;
+        }
+
+        public void SaveAutoCategory(TransactionAutoCategory autoCategory)
+        {
+            _autoCategories.Load();
+            var edited = _autoCategories.Value.FirstOrDefault(ac => string.Equals(autoCategory.Id, ac.Id, StringComparison.InvariantCultureIgnoreCase));
+            if (edited == null)
+                _autoCategories.Value.Add(autoCategory);
+            else
+            {
+                edited.BankInfo = autoCategory.BankInfo;
+                edited.Category = autoCategory.Category;
+            }
+            _autoCategories.Save();
+        }
+
+        public void DeleteAutoCategory(string id)
+        {
+            _autoCategories.Load();
+            _autoCategories.Value.RemoveAll(c => string.Equals(id, c.Id, StringComparison.InvariantCultureIgnoreCase));
+            _autoCategories.Save();
         }
     }
 }

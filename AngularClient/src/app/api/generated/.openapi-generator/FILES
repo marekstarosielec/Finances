@@ -18,5 +18,6 @@ model/datasetState.ts
 model/models.ts
 model/transaction.ts
 model/transactionAccount.ts
+model/transactionAutoCategory.ts
 model/transactionCategory.ts
 variables.ts

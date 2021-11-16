@@ -18,6 +18,8 @@ import { TransactionCategoriesComponent } from 'app/pages/transaction-categories
 import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
 import { BalancesComponent } from 'app/pages/balances/balances.component';
 import { BalanceComponent } from 'app/pages/balances/balance.component';
+import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-categories/transaction-auto-category.component';
+import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-categories/transaction-auto-categories.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
@@ -28,6 +30,8 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'accounts/:id',   component: AccountComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     { path: 'transaction-categories',   component: TransactionCategoriesComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     { path: 'transaction-categories/:id',   component: TransactionCategoryComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
+    { path: 'transaction-auto-categories',   component: TransactionAutoCategoriesComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
+    { path: 'transaction-auto-categories/:id',   component: TransactionAutoCategoryComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     { path: 'balances',   component: BalancesComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     { path: 'balances/:id',   component: BalanceComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     // { path: 'typography',     component: TypographyComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },

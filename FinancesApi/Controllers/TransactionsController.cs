@@ -98,5 +98,29 @@ namespace FinancesApi.Controllers
             _transactionsService.DeleteCategory(id);
             return Ok();
         }
+
+        [HttpGet("autocategories")]
+        public IEnumerable<TransactionAutoCategory> GetAutoCategories() => _transactionsService.GetAutoCategories();
+
+        [HttpPost("autocategory")]
+        public IActionResult AddAutoCategory([FromBody] TransactionAutoCategory category)
+        {
+            _transactionsService.SaveAutoCategory(category);
+            return Ok();
+        }
+
+        [HttpPut("autocategory")]
+        public IActionResult SaveAutoCategory([FromBody] TransactionAutoCategory category)
+        {
+            _transactionsService.SaveAutoCategory(category);
+            return Ok();
+        }
+
+        [HttpDelete("autocategory/{id}")]
+        public IActionResult DeleteAutoCategory(string id)
+        {
+            _transactionsService.DeleteAutoCategory(id);
+            return Ok();
+        }
     }
 }

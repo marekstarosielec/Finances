@@ -22,6 +22,8 @@ import { TransactionCategoriesComponent } from 'app/pages/transaction-categories
 import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
 import { BalancesComponent } from 'app/pages/balances/balances.component';
 import { BalanceComponent } from 'app/pages/balances/balance.component';
+import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-categories/transaction-auto-categories.component';
+import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-categories/transaction-auto-category.component';
 
 @NgModule({
   imports: [
@@ -40,6 +42,8 @@ import { BalanceComponent } from 'app/pages/balances/balance.component';
     AccountComponent,
     TransactionCategoriesComponent,
     TransactionCategoryComponent,
+    TransactionAutoCategoriesComponent,
+    TransactionAutoCategoryComponent,
     BalancesComponent,
     BalanceComponent,
     OpenDatasetComponent,
