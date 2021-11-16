@@ -30,14 +30,28 @@
                   <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
                     <div class="list-group filterElement">
                       <div >&nbsp;<input type="radio" id="all" value="all" name="account" (click)="filterByAccount('');$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===''"><label for="all">&nbsp;Wszystkie</label></div>
-                      <div *ngFor="let account of accountList">&nbsp;<input type="radio" id="{{account}}" value="{{account}}" name="account" (click)="filterByAccount(account);$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===account"><label for="{{account}}">&nbsp;{{account}}</label></div>
+                      <div *ngFor="let account of primaryAccountList">&nbsp;<input type="radio" id="{{account.title}}" value="{{account.title}}" name="account" (click)="filterByAccount(account.title);$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===account.title"><label for="{{account.title}}">&nbsp;{{account.title}}</label></div>
                     </div>
                   </div>
                 </div>
                 <span (click)="sort('account')">&nbsp;Konto</span>
               </th>
-              <th (click)="sort('category')">
-                Kategoria
+              <th>
+                <div ngbDropdown class="d-inline-block" #categoryFilterDropdown="ngbDropdown">
+                  <i class="fa fa-filter" ngbDropdownToggle></i>
+                  <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
+                    <div class="list-group filterElement">
+                      <div >&nbsp;<input type="radio" id="all" value="all" name="category" (click)="filterByCategory('');$event.stopPropagation();categoryFilterDropdown.close();" [checked]="isFilteredByCategory('all')"><label for="all">&nbsp;Wszystkie</label></div>
+                      <div *ngFor="let category of primaryCategoryList">&nbsp;<input type="radio" id="{{category.title}}" value="{{category.title}}" name="category" (click)="filterByCategory(category.title);$event.stopPropagation();categoryFilterDropdown.close();" [checked]="isFilteredByCategory('category.title')"><label for="{{category.title}}">&nbsp;{{category.title}}</label></div>
+                      <div >&nbsp;<input type="radio" id="all" value="other" name="category" [checked]="isFilteredByCategory('other')"><label for="other">&nbsp;Mało używane</label></div>
+                      <select #categoryList class="form-control" id="category" (change)="filterByCategory(categoryList.value);$event.stopPropagation();categoryFilterDropdown.close();" [value]="getCategorySecondaryFilter()">
+                        <option></option>
+                        <option *ngFor="let category of secondaryCategoryList">{{category.title}}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <span (click)="sort('category')">&nbsp;Kategoria</span>
               </th>
               <th class="text-right" (click)="sort('amount')">
                 Kwota

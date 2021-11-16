@@ -43,7 +43,7 @@ namespace FinancesApi.Services
         public IList<TransactionAccount> GetAccounts()
         {
             _accounts.Load();
-            return _accounts.Value;
+            return _accounts.Value.OrderBy(a => a.Title).ToList();
         }
 
         public void SaveAccount(TransactionAccount account)
@@ -67,6 +67,11 @@ namespace FinancesApi.Services
         public IList<Transaction> GetTransactions(string id = null)
         {
             _transactions.Load();
+            //_transactions.Value.ForEach(t =>
+            //{
+            //    t.Category = t.Category[0].ToString().ToUpper() + t.Category.Substring(1).ToLower();
+            //});
+            //_transactions.Save();
             return string.IsNullOrWhiteSpace(id)
                 ? _transactions.Value
                 : _transactions.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
@@ -96,6 +101,14 @@ namespace FinancesApi.Services
         public IList<TransactionCategory> GetCategories()
         {
             _categories.Load();
+            //_transactions.Load();
+            //var t = _transactions.Value.Where(_ => _.Date > DateTime.Now.AddDays(-14)).GroupBy(k => k.Category).Select(g=> new { Category = g.Key, Count = g.Count() }).ToList();
+            //_categories.Value.ForEach(c =>
+            //    {
+            //        c.Title = c.Title[0].ToString().ToUpper() + c.Title.Substring(1).ToLower();
+            //        c.UsageIndex = t.FirstOrDefault(tg => string.Equals(tg.Category, c.Title, StringComparison.InvariantCultureIgnoreCase))?.Count ?? 0;
+            //    }
+            //);
             //_categories.Value.ForEach(c => c.Id = Guid.NewGuid().ToString());
             //_categories.Save();
             return _categories.Value;

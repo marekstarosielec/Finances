@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DatasetService } from 'app/api/generated';
+import { DatasetService, TransactionAccount, TransactionCategory } from 'app/api/generated';
 import { DatasetInfo } from 'app/api/generated/model/datasetInfo';
 import { DatasetState } from 'app/api/generated/model/datasetState';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -8,6 +8,7 @@ import { TransactionsService } from '../../api/generated/api/transactions.servic
 import { Transaction } from '../../api/generated/model/transaction';
 import * as _ from 'lodash';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'transactions',
@@ -17,8 +18,11 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 })
 export class TransactionsComponent implements OnInit{
     data: Transaction[];
-    accountList: string[];
+    primaryAccountList: TransactionAccount[];
+    primaryCategoryList: TransactionCategory[];
+    secondaryCategoryList: TransactionCategory[];
     public accountFilter: string = '';
+    public categoryFilter: string = '';
     numberOfRecords: number = 100;
     sortColumn: string = 'date';
     sortOrder: number = -1;
@@ -34,23 +38,23 @@ export class TransactionsComponent implements OnInit{
     ngOnInit(){
         this.loading = true;
         this.transactionsService.transactionsGet().subscribe((transactions: Transaction[]) =>{
-            this.data = transactions;
-            this.totalNumberOfRecords = transactions.length;
-            this.filteredNumberOfRecords = transactions.length;
-            this.accountList = _(transactions).groupBy('account')
-                .map(function(elements, account) {
-                    return account;
-                }).value().sort((a,b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
-            this.loading = false;
-            this.prepareView();
+            this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((accounts: TransactionAccount[]) => {
+                this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((categories: TransactionCategory[]) => {
+                    this.data = transactions;
+                    this.totalNumberOfRecords = transactions.length;
+                    this.filteredNumberOfRecords = transactions.length;
+                    this.primaryAccountList = accounts;
+                    this.primaryCategoryList = categories.filter(c => c.usageIndex > 0).sort((c1, c2) => c2.usageIndex - c1.usageIndex);
+                    this.secondaryCategoryList = categories.filter(c => c.usageIndex === 0).sort((c1, c2) => c2.title > c1.title ? -1 : 1);
+                    this.loading = false;
+                    this.prepareView();
+                })
+            })
         });
         this.route.queryParams.subscribe((qp: Params) => {
             this.numberOfRecords = qp.limit ?? 100;
-            if (qp.account)
-                this.accountFilter = decodeURIComponent(qp.account);
-            else
-                this.accountFilter = "";
-
+            this.accountFilter = qp.account ? decodeURIComponent(qp.account) : "";
+            this.categoryFilter = qp.category ? decodeURIComponent(qp.category) : "";
             this.prepareView();
         });
     }
@@ -93,6 +97,9 @@ export class TransactionsComponent implements OnInit{
         if (this.accountFilter !== '') {
             data = data.filter(d => d.account === this.accountFilter);
         }
+        if (this.categoryFilter !== '') {
+            data = data.filter(d => d.category === this.categoryFilter);
+        }
         this.filteredNumberOfRecords = data.length;
             
         data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
@@ -113,6 +120,23 @@ export class TransactionsComponent implements OnInit{
 
     filterByAccount(account: string) {
         this.router.navigate(['/transactions'], { queryParams: {  account: encodeURIComponent(account) }, queryParamsHandling: "merge" });
+    }
+
+    filterByCategory(category: string) {
+        this.router.navigate(['/transactions'], { queryParams: {  category: encodeURIComponent(category) }, queryParamsHandling: "merge" });
+    }
+
+    isFilteredByCategory(category: string) : boolean {
+        if (category==='all' && this.categoryFilter=='') return true;
+        if (this.primaryCategoryList.filter(c => c.title === category).length > 0) return true;
+        if (category==='other' && this.secondaryCategoryList.filter(c => c.title === this.categoryFilter).length > 0) return true;
+        return false;
+    }
+
+    getCategorySecondaryFilter() {
+        if (this.secondaryCategoryList.filter(c => c.title === this.categoryFilter).length > 0)
+            return this.categoryFilter;
+        return undefined;
     }
 
     selectTransaction(id: string) {
