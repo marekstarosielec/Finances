@@ -65,15 +65,6 @@ export class TransactionsComponent implements OnInit{
         })
     }
 
-    datasetButtonClick(){
-        this.datasetService.datasetGet().subscribe((t: DatasetInfo) => {
-           if (t.state == DatasetState.Error)
-            console.error(t);
-        else
-            console.log(t);
-        })
-    }
-
     sort(column: string)
     {
         if (column === this.sortColumn){

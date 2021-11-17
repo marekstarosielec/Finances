@@ -36,7 +36,7 @@ namespace FinancesApi.Controllers
                         _transactionService.SaveTransaction(new Models.Transaction { Id = transaction.Id, Text = transaction.Text, Title = transaction.Title, Description = transaction.Description, Amount = transaction.Amount, Account = transaction.Account, Date= transactionDate, Source = "mbank scrapper", Currency = transaction.Currency });
                     }
                 });
-             
+                _transactionService.ApplyAutoCategories();
             }
             catch (Exception e)
             {

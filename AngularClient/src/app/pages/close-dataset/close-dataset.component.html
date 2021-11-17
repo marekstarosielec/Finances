@@ -2,7 +2,7 @@
   <div class="col-md-8 ml-auto mr-auto">
     <div class="card card-upgrade">
       <div class="card-header text-center">
-        <h4 class="card-title">Zbiór jest otwarty</h4>
+        <h4 class="card-title">Zamykanie zbioru</h4>
         <p class="card-text">Dzisiaj jest: {{ todayDate | date: 'yyyy-MM-dd'}}</p>
       </div>
       <div class="card-body">
@@ -13,7 +13,8 @@
                     formControlName="password"
                     id="name" 
                     type="password" 
-                    class="form-control">
+                    class="form-control"
+                    placeholder="Hasło">
             </div>
             <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Zamknij</button>
         </form>
