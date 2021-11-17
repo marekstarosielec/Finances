@@ -99,7 +99,7 @@ export class TransactionsComponent implements OnInit{
             data = data.filter(d => d.account === this.accountFilter);
         }
         if (this.categoryFilter !== '') {
-            data = data.filter(d => d.category === this.categoryFilter);
+            data = data.filter(d => d.category === this.categoryFilter || (this.categoryFilter === 'missing' && !!!d.category));
         }
         this.filteredNumberOfRecords = data.length;
             
@@ -129,6 +129,7 @@ export class TransactionsComponent implements OnInit{
 
     isFilteredByCategory(category: string) : boolean {
         if (category==='all' && this.categoryFilter=='') return true;
+        if (category==='missing' && this.categoryFilter=='missing') return true;
         if (this.primaryCategoryList.filter(c => c.title === category).length > 0) return true;
         if (category==='other' && this.secondaryCategoryList.filter(c => c.title === this.categoryFilter).length > 0) return true;
         return false;

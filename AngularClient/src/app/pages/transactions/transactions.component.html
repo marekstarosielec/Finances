@@ -42,6 +42,7 @@
                   <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
                     <div class="list-group filterElement">
                       <div >&nbsp;<input type="radio" id="all" value="all" name="category" (click)="filterByCategory('');$event.stopPropagation();categoryFilterDropdown.close();" [checked]="isFilteredByCategory('all')"><label for="all">&nbsp;Wszystkie</label></div>
+                      <div >&nbsp;<input type="radio" id="missing" value="missing" name="category" (click)="filterByCategory('missing');$event.stopPropagation();categoryFilterDropdown.close();" [checked]="isFilteredByCategory('missing')"><label for="missing">&nbsp;Niewypełnione</label></div>
                       <div *ngFor="let category of primaryCategoryList">&nbsp;<input type="radio" id="{{category.title}}" value="{{category.title}}" name="category" (click)="filterByCategory(category.title);$event.stopPropagation();categoryFilterDropdown.close();" [checked]="isFilteredByCategory('category.title')"><label for="{{category.title}}">&nbsp;{{category.title}}</label></div>
                       <div >&nbsp;<input type="radio" id="all" value="other" name="category" [checked]="isFilteredByCategory('other')"><label for="other">&nbsp;Mało używane</label></div>
                       <select #categoryList class="form-control" id="category" (change)="filterByCategory(categoryList.value);$event.stopPropagation();categoryFilterDropdown.close();" [value]="getCategorySecondaryFilter()">

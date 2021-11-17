@@ -3,6 +3,7 @@ import { TransactionAutoCategory, TransactionCategory } from 'app/api/generated'
 import { BehaviorSubject } from 'rxjs';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { ActivatedRoute, Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'transaction-auto-categories',
@@ -48,5 +49,11 @@ export class TransactionAutoCategoriesComponent implements OnInit{
 
     addNew() {
         this.router.navigate(["new"], { relativeTo: this.route});
+    }
+
+    apply() {
+        this.transactionsService.transactionsAutocategorizePost().pipe(take(1)).subscribe(() =>{
+           
+        });
     }
 }

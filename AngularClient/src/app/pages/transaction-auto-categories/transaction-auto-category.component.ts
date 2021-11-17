@@ -18,6 +18,7 @@ export class TransactionAutoCategoryComponent implements OnInit, OnDestroy{
     private routeSubscription: Subscription;
     data: TransactionAutoCategory;
     adding: boolean = false;
+    bankInfo: string;
     form = new FormGroup({
         id: new FormControl('', []),
         category: new FormControl('', [Validators.required, Validators.minLength(3)]),
@@ -36,12 +37,13 @@ export class TransactionAutoCategoryComponent implements OnInit, OnDestroy{
             (params: Params) => {
                 if (params['id']==='new'){
                     this.adding = true;
+                    this.bankInfo = decodeURIComponent(this.route.snapshot.queryParams["bankInfo"]);
+                    if (this.bankInfo && this.bankInfo != '')
+                        this.form.controls['bankInfo'].setValue(this.bankInfo);
                 } else { 
                     this.adding = false;
                     this.transactionsService.transactionsAutocategoriesGet().subscribe((result: TransactionAutoCategory[]) =>{
                         this.data = result.find(ta => ta.id === params['id']);
-                        this.form.setValue(this.data);
-                        console.log(this.data);
                     });
                 }
             }
@@ -81,7 +83,12 @@ export class TransactionAutoCategoryComponent implements OnInit, OnDestroy{
             this.form.value.id = uuidv4();
             this.transactionsService.transactionsAutocategoryPost(this.form.value).pipe(take(1)).subscribe(() =>
             {
-                this.location.back();
+                if (this.bankInfo && this.bankInfo != '')
+                    this.transactionsService.transactionsAutocategorizePost().pipe(take(1)).subscribe(() =>{
+                        this.location.back();
+                    });
+                else
+                    this.location.back();
             });
         } else {
             this.transactionsService.transactionsAutocategoryPut(this.form.value).pipe(take(1)).subscribe(() =>

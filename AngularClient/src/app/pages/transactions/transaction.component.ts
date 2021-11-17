@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Transaction, TransactionAccount, TransactionCategory, TransactionsService } from 'app/api/generated';
 import { Subscription } from 'rxjs';
@@ -117,7 +117,7 @@ export class TransactionComponent implements OnInit, OnDestroy{
     });
     
     constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location,
-        private modalService: NgbModal) {}
+        private router: Router, private modalService: NgbModal) {}
 
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe(
@@ -203,5 +203,9 @@ export class TransactionComponent implements OnInit, OnDestroy{
            if (result === 'delete')
                 this.delete();
         }, (reason) => { });
-      }
+    }
+
+    addAutoCategory() {
+        this.router.navigate(['transaction-auto-categories','new'], { queryParams: {  bankInfo: encodeURIComponent(this.data.bankInfo) }})
+    }
 }

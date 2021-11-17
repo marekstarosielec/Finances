@@ -36,6 +36,13 @@ namespace FinancesApi.Controllers
             return Ok();
         }
 
+        [HttpPost("autocategorize")]
+        public IActionResult AutoCategorize()
+        {
+            _transactionsService.ApplyAutoCategories();
+            return Ok();
+        }
+
         [HttpPut("transaction")]
         public IActionResult Save([FromBody] Transaction transaction)
         {
@@ -73,7 +80,6 @@ namespace FinancesApi.Controllers
             _transactionsService.DeleteAccount(id);
             return Ok();
         }
-
 
         [HttpGet("categories")]
         public IEnumerable<TransactionCategory> GetCategories() => _transactionsService.GetCategories();

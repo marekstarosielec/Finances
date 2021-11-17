@@ -1,5 +1,6 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <button type="submit" class="btn btn-primary" [disabled]="!isSavable()">Zapisz</button>
+  <button type="input" class="btn btn-primary" [disabled]="adding" (click)="addAutoCategory()">Nowa autokategoria</button>
   <button type="button" class="btn btn-outline-danger" (click)="open(content)" [disabled]="!isDeletable()">Usuń</button>
     <div class="form-group">
       <label for="date">Data</label>
