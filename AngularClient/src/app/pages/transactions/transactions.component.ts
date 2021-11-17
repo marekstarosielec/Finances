@@ -6,7 +6,6 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
-import * as _ from 'lodash';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 

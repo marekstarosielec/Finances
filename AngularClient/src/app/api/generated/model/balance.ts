@@ -16,5 +16,6 @@ export interface Balance {
     date?: string;
     account?: string | null;
     amount?: number;
+    currency?: string | null;
 }
 

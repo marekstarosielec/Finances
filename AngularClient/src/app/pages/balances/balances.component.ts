@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Balance, BalancesService, DatasetService } from 'app/api/generated';
+import { Balance, BalancesService, DatasetService, TransactionAccount, TransactionsService } from 'app/api/generated';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'balances',
@@ -15,21 +16,20 @@ export class BalancesComponent implements OnInit{
     numberOfRecords: number = 100;
     sortColumn: string = 'date';
     sortOrder: number = -1;
-    accountList: string[];
+    accountList: TransactionAccount[];
     public accountFilter: string = '';
     dataSubject = new BehaviorSubject(null);
     showAllRecords: boolean = false;
     
-    constructor (private balancesService: BalancesService, private router: Router, private route: ActivatedRoute) {}
+    constructor (private balancesService: BalancesService, private transactionsService: TransactionsService, private router: Router, private route: ActivatedRoute) {}
 
     ngOnInit(){
         this.balancesService.balancesGet().subscribe((balances: Balance[]) =>{
-            this.data = balances;
-            this.accountList = _(balances).groupBy('account')
-                .map(function(elements, account) {
-                    return account;
-                }).value().sort((a,b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
-           this.prepareView();
+            this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((accounts: TransactionAccount[]) => {
+                this.data = balances;
+                this.accountList = accounts;
+                this.prepareView();
+            });
         });
     }
 

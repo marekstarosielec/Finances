@@ -28,7 +28,7 @@ namespace FinancesApi.Controllers
                 await mBank.StartScrapping(hook, new MBankScrapper.ActionSet {
                     AccountBalance = accountBalance =>
                     {
-                        _balanceService.SaveBalance(new Models.Balance { Id = Guid.NewGuid().ToString(), Date=DateTime.Now.Date, Account = accountBalance.Title, Amount = accountBalance.Balance });
+                        _balanceService.SaveBalance(new Models.Balance { Id = Guid.NewGuid().ToString(), Date=DateTime.Now.Date, Account = accountBalance.Title, Amount = accountBalance.Balance, Currency = accountBalance.Currency });
                     },
                     Transaction = transaction =>
                     {
