@@ -2,7 +2,9 @@ import { Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/co
 import { ROUTES } from '../../sidebar/sidebar.component';
 import { Router } from '@angular/router';
 import { Location} from '@angular/common';
-import { DatasetService } from 'app/api/generated';
+import { DatasetInfo, DatasetService, DatasetState } from 'app/api/generated';
+import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
+import { Subscription } from 'rxjs';
 
 @Component({
     moduleId: module.id,
@@ -13,6 +15,7 @@ import { DatasetService } from 'app/api/generated';
 export class NavbarComponent implements OnInit{
     private listTitles: any[];
     location: Location;
+    listsShouldBeVisible: boolean = false;
     private nativeElement: Node;
     private toggleButton;
     private sidebarVisible: boolean;
@@ -20,8 +23,9 @@ export class NavbarComponent implements OnInit{
     public isCollapsed = true;
     @ViewChild("navbar-cmp", {static: false}) button;
 
+    private dataServiceSubscription: Subscription;
     constructor(location:Location, private renderer : Renderer2, private element : ElementRef, private router: Router,
-      private datasetService: DatasetService) {
+      private datasetServiceFacade: DatasetServiceFacade) {
         this.location = location;
         this.nativeElement = element.nativeElement;
         this.sidebarVisible = false;
@@ -34,6 +38,9 @@ export class NavbarComponent implements OnInit{
         this.router.events.subscribe((event) => {
           this.sidebarClose();
        });
+       this.dataServiceSubscription = this.datasetServiceFacade.getDatasetInfo().subscribe((datasetInfo: DatasetInfo) => {
+          this.listsShouldBeVisible = datasetInfo?.state === DatasetState.Opened || datasetInfo?.state === DatasetState.ClosingError;
+        });    
     }
     getTitle(){
       // var titlee = this.location.prepareExternalUrl(this.location.path());

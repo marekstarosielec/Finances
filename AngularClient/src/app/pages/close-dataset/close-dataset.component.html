@@ -11,12 +11,26 @@
             <div class="form-group">
                 <input 
                     formControlName="password"
-                    id="name" 
+                    id="password" 
                     type="password" 
                     class="form-control"
                     placeholder="Hasło">
             </div>
-            <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Zamknij</button>
+            <div class="form-group">
+              <input 
+                formControlName="password2"
+                id="password2" 
+                type="password" 
+                class="form-control"
+                placeholder="Powtórz hasło">
+              <div class="has-error" *ngIf="form.controls.password2.errors?.differentPassword" >  
+                Hasła powinny być takie same
+              </div>
+          </div>
+          <div class="has-error" *ngIf="error" >  
+            {{error}}
+          </div>
+          <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Zamknij</button>
         </form>
         </div>
       </div>

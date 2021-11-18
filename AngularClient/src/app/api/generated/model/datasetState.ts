@@ -11,13 +11,15 @@
  */
 
 
-export type DatasetState = 'Closed' | 'Opened' | 'Opening' | 'Closing' | 'Error';
+export type DatasetState = 'Closed' | 'Opened' | 'Opening' | 'Closing' | 'OpeningError' | 'ClosingError' | 'UnknownError';
 
 export const DatasetState = {
     Closed: 'Closed' as DatasetState,
     Opened: 'Opened' as DatasetState,
     Opening: 'Opening' as DatasetState,
     Closing: 'Closing' as DatasetState,
-    Error: 'Error' as DatasetState
+    OpeningError: 'OpeningError' as DatasetState,
+    ClosingError: 'ClosingError' as DatasetState,
+    UnknownError: 'UnknownError' as DatasetState
 };
 

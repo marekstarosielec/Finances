@@ -15,6 +15,9 @@
                     type="password" 
                     class="form-control">
             </div>
+            <div class="has-error" *ngIf="error" >  
+              {{error}}
+            </div>
             <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Otwórz</button>
         </form>
         </div>

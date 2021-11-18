@@ -8,13 +8,14 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'open-dataset',
     moduleId: module.id,
-    templateUrl: 'open-dataset.component.html'
+    templateUrl: 'open-dataset.component.html',
+    styleUrls: ['open-dataset.component.scss']
 })
 
 export class OpenDatasetComponent implements OnInit, OnDestroy{
     private dataServiceSubscription: Subscription;
     public datasetInfo: DatasetInfo;
-
+    error: string;
     form = new FormGroup({
         password: new FormControl('', [Validators.required, Validators.minLength(8)])
     });
@@ -27,6 +28,8 @@ export class OpenDatasetComponent implements OnInit, OnDestroy{
             this.datasetInfo = result;
             if (result.state == DatasetState.Opening) 
                 this.router.navigate(['/loading']);
+            if (result.state == DatasetState.OpeningError) 
+                this.error = result.error;
         });
     }
 
