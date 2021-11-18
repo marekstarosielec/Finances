@@ -353,12 +353,12 @@ namespace MBankScrapper
                     if (await _browser.IsElementPresent(descriptionXPath))
                         description = await _browser.GetInnerText(descriptionXPath);
 
-                    //await EditTransaction(currentTransaction);
-                    //if (pos == -1) 
-                    //    await SetComment($"scrapid:{Id}");
-                    //if (!string.Equals(type,"nierozliczone", StringComparison.InvariantCultureIgnoreCase))
-                    //    await SetScrappedTag();
-                    //await SaveTransaction();
+                    await EditTransaction(currentTransaction);
+                    if (pos == -1)
+                        await SetComment($"scrapid:{id}");
+                    if (!string.Equals(type, "nierozliczone", StringComparison.InvariantCultureIgnoreCase))
+                        await SetScrappedTag();
+                    await SaveTransaction();
 
                     var transactionModel = new Models.Transaction
                     {

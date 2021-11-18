@@ -33,7 +33,8 @@ namespace FinancesApi.Services
             new DataFile { FileName = "transaction-accounts.json" },
             new DataFile { FileName = "transaction-categories.json" },
             new DataFile { FileName = "balances.json" },
-            new DataFile { FileName = "transaction-auto-categories.json" }
+            new DataFile { FileName = "transaction-auto-categories.json" },
+            new DataFile { FileName = "codziennik.xlsm" }
         };
         
 
@@ -74,6 +75,7 @@ namespace FinancesApi.Services
             if (_datasetInfo.Value.State != DatasetState.Closed && _datasetInfo.Value.State != DatasetState.OpeningError)
                 return _datasetInfo.Value;
             _datasetInfo.Value.State = DatasetState.Opening;
+            _datasetInfo.Value.Error = string.Empty;
             _datasetInfo.Save();
 
             new Thread(() => {
@@ -89,6 +91,7 @@ namespace FinancesApi.Services
             if (_datasetInfo.Value.State != DatasetState.Opened && _datasetInfo.Value.State != DatasetState.ClosingError)
                 return _datasetInfo.Value;
             _datasetInfo.Value.State = DatasetState.Closing;
+            _datasetInfo.Value.Error = string.Empty;
             _datasetInfo.Save();
             new Thread(() =>
             {
@@ -109,6 +112,7 @@ namespace FinancesApi.Services
                 _datasetInfo.Load();
                 _datasetInfo.Value.State = DatasetState.Closed;
                 _datasetInfo.Value.LastCloseDate = DateTime.Now;
+                _datasetInfo.Value.Error = string.Empty;
                 _datasetInfo.Save();
             }
             catch (Exception e)
@@ -166,6 +170,7 @@ namespace FinancesApi.Services
                 File.Delete(_datasetArchive.FileNameWithLocation);
                 _datasetInfo.Load();
                 _datasetInfo.Value.State = DatasetState.Opened;
+                _datasetInfo.Value.Error = string.Empty;
                 _datasetInfo.Save();
             }
             catch(Exception e)
