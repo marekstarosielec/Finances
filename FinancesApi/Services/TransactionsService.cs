@@ -11,7 +11,7 @@ namespace FinancesApi.Services
     public interface ITransactionsService
     {
         IList<Transaction> GetTransactions(string id = null);
-        void SaveTransaction(Transaction transaction);
+        void SaveTransaction(Transaction transaction, bool overwriteEditableData = true);
         void DeleteTransaction(string id);
 
         IList<TransactionAccount> GetAccounts();
@@ -76,6 +76,7 @@ namespace FinancesApi.Services
         public IList<Transaction> GetTransactions(string id = null)
         {
             _transactions.Load();
+            //var t = _transactions.Value.Where(t => t.Id.Length > 36);
             //_transactions.Value.ForEach(t =>
             //{
             //    t.Category = t.Category[0].ToString().ToUpper() + t.Category.Substring(1).ToLower();
@@ -86,17 +87,33 @@ namespace FinancesApi.Services
                 : _transactions.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
-        public void SaveTransaction(Transaction transaction)
+        public void SaveTransaction(Transaction transaction, bool overwriteEditableData=true)
         {
             _transactions.Load();
             var editedTransaction = _transactions.Value.FirstOrDefault(t => string.Equals(transaction.Id, t.Id, StringComparison.InvariantCultureIgnoreCase));
             if (editedTransaction == null)
                 _transactions.Value.Add(transaction);
             else
-                typeof(Transaction).GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList().ForEach(prop => {
-                    if (prop.CanWrite)
-                        prop.SetValue(editedTransaction, prop.GetValue(transaction));
-                });
+            {
+                editedTransaction.ScrappingDate = transaction.ScrappingDate;
+                editedTransaction.Status = transaction.Status;
+                editedTransaction.Source = transaction.Source;
+                editedTransaction.Date = transaction.Date;
+                editedTransaction.Account = transaction.Account;
+                editedTransaction.Amount = transaction.Amount;
+                editedTransaction.Title = transaction.Title;
+                editedTransaction.Description = transaction.Description;
+                editedTransaction.Text = transaction.Text;
+                editedTransaction.Currency = transaction.Currency;
+                if (overwriteEditableData)
+                {
+                    editedTransaction.Category = transaction.Category;
+                    editedTransaction.Comment = transaction.Comment;
+                    editedTransaction.Person = transaction.Person;
+                    editedTransaction.Details = transaction.Person;
+
+                }
+            }
             _transactions.Save();
         }
 

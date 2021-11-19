@@ -14,7 +14,7 @@ namespace MBankScrapper
         IBrowserHook _browser;
         ActionSet _actionSet;
         List<Models.AccountBalance> _accounts = new ();
-        const int sleepTime = 100;
+        const int sleepTime = 1000;
 
         public async Task StartScrapping(IBrowserHook browser, ActionSet actionSet)
         {
@@ -342,7 +342,7 @@ namespace MBankScrapper
                         _ = decimal.TryParse(amount, out parsedAmount);
                     }
 
-                    await ExpandCollapseTransactionRow(currentTransaction);
+                    await ExpandTransactionRow(currentTransaction);
                     var titleXPath = $"{GetTransactionRow(currentTransaction)}/following::tr/descendant::div[@data-test-id='GenericDetails:Title:0']";
                     var title = string.Empty;
                     if (await _browser.IsElementPresent(titleXPath))
@@ -353,7 +353,7 @@ namespace MBankScrapper
                     if (await _browser.IsElementPresent(descriptionXPath))
                         description = await _browser.GetInnerText(descriptionXPath);
 
-                    await EditTransaction(currentTransaction);
+                    await EditTransaction(currentTransaction, comment);
                     if (pos == -1)
                         await SetComment($"scrapid:{id}");
                     if (!string.Equals(type, "nierozliczone", StringComparison.InvariantCultureIgnoreCase))
@@ -381,7 +381,7 @@ namespace MBankScrapper
             string GetTransactionRow(int transactionNumber) => 
                 $"//tr[@data-test-id='history:operationRow:{transactionNumber}']";
 
-            async Task ExpandCollapseTransactionRow(int transactionNumber)
+            async Task ExpandTransactionRow(int transactionNumber)
             {
                 while (!await _browser.IsElementPresent($"{GetTransactionRow(transactionNumber)}/following::tr[@aria-hidden='false']"))
                 {
@@ -391,13 +391,15 @@ namespace MBankScrapper
                     
             }
 
-            async Task EditTransaction(int transactionNumber)
+            async Task EditTransaction(int transactionNumber, string comment)
             {
                 var editButtonXPath = $"{GetTransactionRow(transactionNumber)}/following::tr/descendant::button[@data-test-id='history:edit']";
-                while (await _browser.IsElementPresent(editButtonXPath))
+                var commentInputXPath = $"{GetTransactionRow(transactionNumber)}/following::tr/descendant::input[@data-test-id='Comment:Input']";
+                while (await _browser.IsElementPresent(editButtonXPath) && !await _browser.IsElementPresent(commentInputXPath))
                 {
+                    Console.WriteLine("Clicking edit");
                     await _browser.Click(editButtonXPath);
-                    Sleep();
+                    Sleep(); 
                 }
             }
 
@@ -452,6 +454,6 @@ namespace MBankScrapper
             string GetAccountFilterXPath(int accountNumber) => $"//span[text()='wszystkie']//ancestor::ul/parent::*/descendant::li[{accountNumber}]";
         }
 
-        void Sleep() => Thread.Sleep(sleepTime);
+        void Sleep(int sleepLength = 0) => Thread.Sleep(sleepLength == 0 ? sleepTime: sleepLength);
     }
 }

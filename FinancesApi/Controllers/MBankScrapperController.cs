@@ -33,7 +33,7 @@ namespace FinancesApi.Controllers
                     Transaction = transaction =>
                     {
                         DateTime.TryParseExact(transaction.Date, "dd'.'MM'.'yyyy", null, System.Globalization.DateTimeStyles.None, out var transactionDate);
-                        _transactionService.SaveTransaction(new Models.Transaction { Id = transaction.Id, Text = transaction.Text, Title = transaction.Title, Description = transaction.Description, Amount = transaction.Amount, Account = transaction.Account, Date= transactionDate, Source = "mbank scrapper", Currency = transaction.Currency });
+                        _transactionService.SaveTransaction(new Models.Transaction { Id = transaction.Id, Text = transaction.Text, Title = transaction.Title, Description = transaction.Description, Amount = transaction.Amount, Account = transaction.Account, Date= transactionDate, Source = "mbank scrapper", Currency = transaction.Currency }, false);
                     }
                 });
                 _transactionService.ApplyAutoCategories();
