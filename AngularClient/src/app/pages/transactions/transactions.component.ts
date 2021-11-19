@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { DatasetService, TransactionAccount, TransactionCategory } from 'app/api/generated';
-import { DatasetInfo } from 'app/api/generated/model/datasetInfo';
-import { DatasetState } from 'app/api/generated/model/datasetState';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
+import * as _ from 'fast-sort';
 
 @Component({
     selector: 'transactions',
@@ -91,9 +90,20 @@ export class TransactionsComponent implements OnInit{
         if (this.categoryFilter !== '') {
             data = data.filter(d => d.category === this.categoryFilter || (this.categoryFilter === 'missing' && !!!d.category));
         }
-        this.filteredNumberOfRecords = data.length;
-            
-        data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
+
+        if (this.sortOrder == -1)
+            data = _.sort(data).by([
+                { desc: t => t[this.sortColumn]},
+                { asc: t => t.id}
+            ]);
+        else
+            data = _.sort(data).by([
+                { asc: t => t[this.sortColumn]},
+                { asc: t => t.id}
+            ]);
+        
+            // data = data.sort((a,b) => (
+        //     a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
         if (this.numberOfRecords && this.numberOfRecords != 0) {
             data = data.slice(0, this.numberOfRecords);
         }
