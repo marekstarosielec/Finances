@@ -76,10 +76,12 @@ namespace FinancesApi.Services
         public IList<Transaction> GetTransactions(string id = null)
         {
             _transactions.Load();
-            //var t = _transactions.Value.Where(t => t.Id.Length > 36);
+            ////var t = _transactions.Value.Where(t => t.Id.Length > 36);
             //_transactions.Value.ForEach(t =>
             //{
-            //    t.Category = t.Category[0].ToString().ToUpper() + t.Category.Substring(1).ToLower();
+            //    //t.Category = t.Category[0].ToString().ToUpper() + t.Category.Substring(1).ToLower();
+            //    if (t.ScrappingDate == null)
+            //        t.ScrappingDate = DateTime.Now;
             //});
             //_transactions.Save();
             return string.IsNullOrWhiteSpace(id)
@@ -196,5 +198,12 @@ namespace FinancesApi.Services
             });
             _transactions.Save();
         }
+
+        //public void GetBills()
+        //{
+        //    _transactions.Load();
+        //    _transactions.Value.GroupBy(key => key.Category + key.Date.ToString("yyyyMM"))
+        //        .Select(g => g.Key, g)
+        //}
     }
 }

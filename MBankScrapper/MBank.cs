@@ -397,7 +397,6 @@ namespace MBankScrapper
                 var commentInputXPath = $"{GetTransactionRow(transactionNumber)}/following::tr/descendant::input[@data-test-id='Comment:Input']";
                 while (await _browser.IsElementPresent(editButtonXPath) && !await _browser.IsElementPresent(commentInputXPath))
                 {
-                    Console.WriteLine("Clicking edit");
                     await _browser.Click(editButtonXPath);
                     Sleep(); 
                 }

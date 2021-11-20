@@ -18,6 +18,9 @@
         <div class="table-responsive">
           <table class="table table-hover overflow-auto table-striped">
             <thead class="text-primary">
+              <th (click)="sort('scrappingDate')">
+                Data pobrania
+              </th>
               <th (click)="sort('date')">
                 Data
               </th>
@@ -66,7 +69,8 @@
             </thead>
             <tbody>
               <tr *ngFor="let row of dataSubject | async" (click)="selectTransaction(row.id)">
-                  <td class="date">{{row.date | date: 'yyyy-MM-dd'}}</td>
+                <td class="date">{{row.scrappingDate | date: 'yyyy-MM-dd'}}</td>
+                <td class="date">{{row.date | date: 'yyyy-MM-dd'}}</td>
                   <td>{{row.account}}</td>
                   <td>{{row.category}}</td>
                   <td class="text-right amount" [class.negative]="row.amount<0" [class.positive]="row.amount>0">{{row.amount | number:'1.2-2'}} {{row.currency}}</td>
