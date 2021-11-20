@@ -6,6 +6,7 @@ tr
 th 
 {
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .table-responsive 
@@ -20,4 +21,29 @@ th
 
 .filterDropdown {
     width: 15em;
+}
+
+.date {
+    white-space: nowrap;
+}
+
+p {
+    margin-bottom: 0;
+}
+.subcomment {
+    font-size: small;
+    font-style: italic;
+}
+
+
+.amount {
+    font-weight:bold;
+    white-space: nowrap;
+}
+.negative {
+    color: red;
+}
+
+.positive {
+    color: green;
 }

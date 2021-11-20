@@ -14,7 +14,11 @@ namespace FinancesApi.Models
         Opening,
         [EnumMember(Value = "Closing")]
         Closing,
-        [EnumMember(Value = "Error")]
-        Error
+        [EnumMember(Value = "OpeningError")]
+        OpeningError,
+        [EnumMember(Value = "ClosingError")]
+        ClosingError,
+        [EnumMember(Value = "UnknownError")]
+        UnknownError
     }
 }

@@ -2,7 +2,7 @@
   <div class="col-md-8 ml-auto mr-auto">
     <div class="card card-upgrade">
       <div class="card-header text-center">
-        <h4 class="card-title">Zbiór jest otwarty</h4>
+        <h4 class="card-title">Zamykanie zbioru</h4>
         <p class="card-text">Dzisiaj jest: {{ todayDate | date: 'yyyy-MM-dd'}}</p>
       </div>
       <div class="card-body">
@@ -11,11 +11,26 @@
             <div class="form-group">
                 <input 
                     formControlName="password"
-                    id="name" 
+                    id="password" 
                     type="password" 
-                    class="form-control">
+                    class="form-control"
+                    placeholder="Hasło">
             </div>
-            <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Zamknij</button>
+            <div class="form-group">
+              <input 
+                formControlName="password2"
+                id="password2" 
+                type="password" 
+                class="form-control"
+                placeholder="Powtórz hasło">
+              <div class="has-error" *ngIf="form.controls.password2.errors?.differentPassword" >  
+                Hasła powinny być takie same
+              </div>
+          </div>
+          <div class="has-error" *ngIf="error" >  
+            {{error}}
+          </div>
+          <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Zamknij</button>
         </form>
         </div>
       </div>

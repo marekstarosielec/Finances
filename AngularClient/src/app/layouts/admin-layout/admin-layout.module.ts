@@ -18,6 +18,15 @@ import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.com
 import { TransactionComponent } from 'app/pages/transactions/transaction.component';
 import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
+import { TransactionCategoriesComponent } from 'app/pages/transaction-categories/transaction-categories.component';
+import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
+import { BalancesComponent } from 'app/pages/balances/balances.component';
+import { BalanceComponent } from 'app/pages/balances/balance.component';
+import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-categories/transaction-auto-categories.component';
+import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-categories/transaction-auto-category.component';
+import { CCBalanceComponent } from 'app/pages/dashboard/cc-balance/cc-balance.component';
+import { ScrappingInfoComponent } from 'app/pages/dashboard/scrapping-info/scrapping-info.component';
+import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
 
 @NgModule({
   imports: [
@@ -34,12 +43,21 @@ import { AccountComponent } from 'app/pages/accounts/account.component';
     TransactionComponent,
     AccountsComponent,
     AccountComponent,
+    TransactionCategoriesComponent,
+    TransactionCategoryComponent,
+    TransactionAutoCategoriesComponent,
+    TransactionAutoCategoryComponent,
+    BalancesComponent,
+    BalanceComponent,
     OpenDatasetComponent,
     CloseDatasetComponent,
     TypographyComponent,
     IconsComponent,
     NotificationsComponent,
-    LoadingIndicatorComponent
+    LoadingIndicatorComponent,
+    CCBalanceComponent,
+    ScrappingInfoComponent,
+    BillsComponent
   ]
 })
 

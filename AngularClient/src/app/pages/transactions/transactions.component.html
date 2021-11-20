@@ -1,22 +1,26 @@
 <!-- <loading-indicator *ngIf="loading"></loading-indicator> -->
 
-<button type="button" class="btn btn-primary" (click)="scrapButtonClick()">Scrap</button>
-<button type="button" class="btn btn-primary" (click)="datasetButtonClick()">Dataset</button>
-
-
+<button type="button" class="btn btn-primary" (click)="scrapButtonClick()">Pobierz z mBanku</button>
 <div class="row" *ngIf="!loading">
   <div class="col-md-12">
     <div class="card">
-      <div class="card-header" *ngIf="!showAllRecords">
-        Widoczne {{numberOfRecords}} z {{totalNumberOfRecords}} rekordów. <span class="showAll" (click)="showAll()">Pokaż wszystkie.</span>
+      <div class="card-header" *ngIf="numberOfRecords != 0 && currentNumberOfRecords < filteredNumberOfRecords">
+        Widoczne {{currentNumberOfRecords}} z {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showAll()">Pokaż wszystkie.</span>
       </div>
-      <div class="card-header" *ngIf="showAllRecords">
-        Widoczne wszystkie {{totalNumberOfRecords}} rekordów. <span class="showAll" (click)="showSome()">Pokaż część.</span>
+      <div class="card-header" *ngIf="numberOfRecords == 0">
+        Widoczne wszystkie {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showSome()">Pokaż część.</span>
+      </div>
+      <div class="card-header" *ngIf="numberOfRecords != 0 && currentNumberOfRecords == filteredNumberOfRecords">
+        Widoczne wszystkie {{filteredNumberOfRecords}} rekordów.
       </div>
       <div class="card-body">
+        <button (click)="addNew()" class="btn btn-primary">Dodaj</button>
         <div class="table-responsive">
           <table class="table table-hover overflow-auto table-striped">
             <thead class="text-primary">
+              <th (click)="sort('scrappingDate')">
+                Data pobrania
+              </th>
               <th (click)="sort('date')">
                 Data
               </th>
@@ -26,33 +30,53 @@
                   <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
                     <div class="list-group filterElement">
                       <div >&nbsp;<input type="radio" id="all" value="all" name="account" (click)="filterByAccount('');$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===''"><label for="all">&nbsp;Wszystkie</label></div>
-                      <div *ngFor="let account of accountList">&nbsp;<input type="radio" id="{{account}}" value="{{account}}" name="account" (click)="filterByAccount(account);$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===account"><label for="{{account}}">&nbsp;{{account}}</label></div>
+                      <div *ngFor="let account of primaryAccountList">&nbsp;<input type="radio" id="{{account.title}}" value="{{account.title}}" name="account" (click)="filterByAccount(account.title);$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===account.title"><label for="{{account.title}}">&nbsp;{{account.title}}</label></div>
                     </div>
                   </div>
                 </div>
                 <span (click)="sort('account')">&nbsp;Konto</span>
               </th>
-              <th (click)="sort('category')">
-                Kategoria
+              <th>
+                <div ngbDropdown class="d-inline-block" #categoryFilterDropdown="ngbDropdown">
+                  <i class="fa fa-filter" ngbDropdownToggle></i>
+                  <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
+                    <div class="list-group filterElement">
+                      <div >&nbsp;<input type="radio" id="all" value="all" name="category" (click)="filterByCategory('');$event.stopPropagation();categoryFilterDropdown.close();" [checked]="isFilteredByCategory('all')"><label for="all">&nbsp;Wszystkie</label></div>
+                      <div >&nbsp;<input type="radio" id="missing" value="missing" name="category" (click)="filterByCategory('missing');$event.stopPropagation();categoryFilterDropdown.close();" [checked]="isFilteredByCategory('missing')"><label for="missing">&nbsp;Niewypełnione</label></div>
+                      <div *ngFor="let category of primaryCategoryList">&nbsp;<input type="radio" id="{{category.title}}" value="{{category.title}}" name="category" (click)="filterByCategory(category.title);$event.stopPropagation();categoryFilterDropdown.close();" [checked]="isFilteredByCategory('category.title')"><label for="{{category.title}}">&nbsp;{{category.title}}</label></div>
+                      <div >&nbsp;<input type="radio" id="all" value="other" name="category" [checked]="isFilteredByCategory('other')"><label for="other">&nbsp;Mało używane</label></div>
+                      <select #categoryList class="form-control" id="category" (change)="filterByCategory(categoryList.value);$event.stopPropagation();categoryFilterDropdown.close();" [value]="getCategorySecondaryFilter()">
+                        <option></option>
+                        <option *ngFor="let category of secondaryCategoryList">{{category.title}}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <span (click)="sort('category')">&nbsp;Kategoria</span>
               </th>
               <th class="text-right" (click)="sort('amount')">
                 Kwota
               </th>
-              <th (click)="sort('details')">
+              <th (click)="sort('description')">
+                Opis
+              </th>
+              <!-- <th (click)="sort('details')">
                 Szczegóły
               </th>
               <th (click)="sort('person')">
                 Osoba
-              </th>
+              </th> -->
             </thead>
             <tbody>
-              <tr *ngFor="let row of dataSubject | async" (click)="selectTransaction(row.scrapID)">
-                  <td>{{row.date | date: 'yyyy-MM-dd'}}</td>
+              <tr *ngFor="let row of dataSubject | async" (click)="selectTransaction(row.id)">
+                <td class="date">{{row.scrappingDate | date: 'yyyy-MM-dd'}}</td>
+                <td class="date">{{row.date | date: 'yyyy-MM-dd'}}</td>
                   <td>{{row.account}}</td>
                   <td>{{row.category}}</td>
-                  <td class="text-right">{{row.amount}}</td>
-                  <td>{{row.details}}</td>
-                  <td>{{row.person}}</td>
+                  <td class="text-right amount" [class.negative]="row.amount<0" [class.positive]="row.amount>0">{{row.amount | number:'1.2-2'}} {{row.currency}}</td>
+                  <td><p>{{row.bankInfo}}</p><p class="subcomment">{{row.comment}}</p></td>
+                  <!-- <td>{{row.details}}</td>
+                  <td>{{row.person}}</td> -->
               </tr>
             </tbody>
           </table>

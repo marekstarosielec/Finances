@@ -45,4 +45,8 @@ export class AccountsComponent implements OnInit{
     selectRecord(id: string) {
         this.router.navigate([id], { relativeTo: this.route});
     }
+
+    addNew() {
+        this.router.navigate(["new"], { relativeTo: this.route});
+    }
 }

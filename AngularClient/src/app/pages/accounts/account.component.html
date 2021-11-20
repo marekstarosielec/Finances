@@ -1,6 +1,6 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <button type="submit" class="btn btn-primary" [disabled]="!isSavable()">Zapisz</button>
-  <button class="btn btn-outline-danger" (click)="open(content)">Usuń</button>
+  <button class="btn btn-outline-danger" (click)="open(content)" [disabled]="!isDeletable()">Usuń</button>
   <div class="form-group">
     <label for="account">Tytuł</label>
     <input type="input" class="form-control" id="account" placeholder="Wpisz tytuł" [value]="data?.title" formControlName="title">

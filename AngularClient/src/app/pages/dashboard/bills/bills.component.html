@@ -1,0 +1,29 @@
+<div class="card ">
+  <div class="card-header ">
+    <h5 class="card-title">Rachunki</h5>
+    <!-- <p class="card-category">24 Hours performance</p> -->
+  </div>
+  <div class="card-body ">
+    <table class="table table-hover table-striped">
+      <thead class="text-primary">
+        <th *ngFor="let date of dates" class="table-header card-category">
+          {{date.numericDate}}<br />
+          {{date.monthName}}
+        </th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of categories">
+          <td>
+            {{category}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer ">
+    <hr>
+    <div class="stats">
+      <!-- <i class="fa fa-history"></i> Updated 3 minutes ago -->
+    </div>
+  </div>
+</div>

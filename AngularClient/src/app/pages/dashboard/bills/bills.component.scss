@@ -1,0 +1,37 @@
+.card-category {
+    text-transform: none;
+}
+
+.scrap-button {
+    cursor: pointer;
+}
+
+.table-header{
+    white-space: nowrap;
+    text-align: center;
+    font-size: small;
+}
+
+.card {
+    overflow-y: hidden;
+    max-height: 80vh;
+    scroll-behavior: smooth;
+}
+
+.card-body { 
+    position: relative;
+}
+
+.card-header {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 1;
+}
+
+.card-footer {
+    position: sticky;
+    bottom: 0;
+    background-color: #f8f9fa;
+    z-index: 1;
+}

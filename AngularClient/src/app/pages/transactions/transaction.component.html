@@ -1,35 +1,63 @@
-<form>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <button type="submit" class="btn btn-primary" [disabled]="!isSavable()">Zapisz</button>
+  <button type="input" class="btn btn-primary" [disabled]="adding" (click)="addAutoCategory()">Nowa autokategoria</button>
+  <button type="button" class="btn btn-outline-danger" (click)="open(content)" [disabled]="!isDeletable()">Usuń</button>
+    <div class="form-group">
+      <label for="date">Data</label>
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #d="ngbDatepicker" id="date" formControlName="date" />
+        <div class="input-group-append">
+          <button (click)="d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+        </div>
+      </div>
+    </div>
     <div class="form-group">
       <label for="account">Konto</label>
-      <input type="input" class="form-control" id="account" placeholder="Wybierz konto" [value]="transaction?.account">
+      <select class="form-control" id="account" formControlName="account">
+        <option></option>
+        <option *ngFor="let account of accounts">{{account.title}}</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="category">Kategoria</label>
-      <input type="input" class="form-control" id="category" placeholder="Wybierz kategorię" [value]="transaction?.category">
+      <select class="form-control" id="category" formControlName="category">
+        <option></option>
+        <option *ngFor="let category of categories">{{category.title}}</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="amount">Kwota</label>
-      <input type="input" class="form-control" id="amount" placeholder="Wpisz kwotę" [value]="transaction?.amount">
+      <div class="input-group">
+        <input type="number" class="form-control" id="amount" placeholder="Wpisz kwotę" formControlName="amount">
+        <div class="input-group-append">
+          <span class="input-group-text" id="basic-addon2">{{form.controls['currency'].value}}</span>
+        </div>
+      </div>
     </div>
     <div class="form-group">
-      <label for="description">Opis</label>
-      <input type="input" class="form-control" id="description" [value]="transaction?.description">
+      <label for="description">Opis w banku</label>
+      <textarea class="form-control" id="bankInfo" formControlName="bankInfo" readonly></textarea> 
     </div>
     <div class="form-group">
       <label for="comment">Komentarz</label>
-      <input type="input" class="form-control" id="comment" [value]="transaction?.comment">
+      <input type="input" class="form-control" id="comment" formControlName="comment">
     </div>
     <div class="form-group">
       <label for="details">Szczegóły</label>
-      <input type="input" class="form-control" id="details" [value]="transaction?.details">
+      <input type="input" class="form-control" id="details" formControlName="details">
     </div>
     <div class="form-group">
       <label for="person">Osoba</label>
-      <input type="input" class="form-control" id="person" [value]="transaction?.person">
+      <input type="input" class="form-control" id="person" formControlName="person">
     </div>
-    <div class="form-group">
-      <label for="bankInfo">Informacje z banku</label>
-      <p *ngFor="let bankInfo of getBankInfo(transaction)" class="font-weight-light" [class.paragraphError]="bankInfo?.isError" >{{bankInfo.title}}: {{bankInfo.value}}</p>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
   </form>
+
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Na pewno?</h4>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('back')">Anuluj</button>
+      <button type="button" class="btn btn-outline-danger" (click)="modal.close('delete')">Usuń</button>
+    </div>
+  </ng-template>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 
 namespace FinancesApi.Services
@@ -23,10 +24,10 @@ namespace FinancesApi.Services
         {
             if (!File.Exists(_fileName))
                 throw new FileNotFoundException();
-            string jsonString = File.ReadAllText(_fileName);
+            string jsonString = File.ReadAllText(_fileName, Encoding.Latin1);
             Value = JsonSerializer.Deserialize<T>(jsonString, new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
             });
         }
 
