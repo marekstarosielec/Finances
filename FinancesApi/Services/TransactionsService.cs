@@ -76,12 +76,11 @@ namespace FinancesApi.Services
         public IList<Transaction> GetTransactions(string id = null)
         {
             _transactions.Load();
-            ////var t = _transactions.Value.Where(t => t.Id.Length > 36);
             //_transactions.Value.ForEach(t =>
             //{
-            //    //t.Category = t.Category[0].ToString().ToUpper() + t.Category.Substring(1).ToLower();
-            //    if (t.ScrappingDate == null)
-            //        t.ScrappingDate = DateTime.Now;
+            //    //if (t.Date.Hour == 23)
+            //    //    t.Date = t.Date.AddHours(1);
+            //    t.Category = null;
             //});
             //_transactions.Save();
             return string.IsNullOrWhiteSpace(id)

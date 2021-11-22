@@ -97,14 +97,12 @@ export class TransactionsComponent implements OnInit{
                 { asc: t => t.id}
             ]);
         else
-            data = _.sort(data).by([
+             data = _.sort(data).by([
                 { asc: t => t[this.sortColumn]},
                 { asc: t => t.id}
             ]);
-        
-        // data = data.sort((a,b) => (
-        //     a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0))
-        if (this.numberOfRecords && this.numberOfRecords != 0) {
+       
+            if (this.numberOfRecords && this.numberOfRecords != 0) {
             data = data.slice(0, this.numberOfRecords);
         }
         this.currentNumberOfRecords = data.length;
