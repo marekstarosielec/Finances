@@ -19,12 +19,12 @@ namespace FinancesApi.Services
 
     public class DatasetService : IDatasetService
     {
+        private string _basePath;
         private readonly DataFile _infoFile = new DataFile { FileName = "info.json" };
         private readonly Jsonfile<DatasetInfo> _datasetInfo;
 
         private readonly ICompressionService _compressionService;
         private readonly DataFile _datasetArchive = new DataFile { FileName = "Finanse.zip" };
-        private readonly DataFile _datasetTodayArchive;
         private readonly List<string> _fileBackupLocations;
         private readonly List<string> _datasetBackupLocations;
         private readonly List<DataFile> _dataFiles = new List<DataFile>
@@ -37,17 +37,15 @@ namespace FinancesApi.Services
             new DataFile { FileName = "codziennik.xlsm" }
         };
         
-
         public DatasetService(IConfiguration configuration, ICompressionService compressionService)
         {
-            var basePath = configuration.GetValue<string>("DatasetPath");
-            _infoFile.Location = basePath;
+            _basePath = configuration.GetValue<string>("DatasetPath");
+            _infoFile.Location = _basePath;
 
-            _dataFiles.ForEach(df => df.Location = basePath);
+            _dataFiles.ForEach(df => df.Location = _basePath);
 
-            _datasetArchive.Location = basePath;
-            _datasetTodayArchive = new DataFile { FileName = $"Finanse{DateTime.Now.ToString("yyyy'-'MM'-'dd")}.zip", Location = basePath };
-
+            _datasetArchive.Location = _basePath;
+            
             var test = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
             _datasetBackupLocations = configuration.GetSection("DatasetBackups").Get<List<string>>(); 
@@ -146,6 +144,8 @@ namespace FinancesApi.Services
         private void MakeCompressedBackups(string password)
         {
             _compressionService.Compress(_dataFiles.Select(df => df.FileNameWithLocation).ToList(), _datasetArchive.FileNameWithLocation, password);
+            var _datasetTodayArchive = new DataFile { FileName = $"Finanse{DateTime.Now.ToString("yyyy'-'MM'-'dd")}.zip", Location = _basePath };
+
             File.Copy(_datasetArchive.FileNameWithLocation, _datasetTodayArchive.FileNameWithLocation, true);
             _datasetBackupLocations.ForEach(location =>
             {

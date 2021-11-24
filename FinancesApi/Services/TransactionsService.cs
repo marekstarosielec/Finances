@@ -78,9 +78,9 @@ namespace FinancesApi.Services
             _transactions.Load();
             //_transactions.Value.ForEach(t =>
             //{
-            //    //if (t.Date.Hour == 23)
-            //    //    t.Date = t.Date.AddHours(1);
-            //    t.Category = null;
+            //    if (t.Date.Hour == 23)
+            //        t.Date = t.Date.AddHours(1);
+            //    //t.Category = null;
             //});
             //_transactions.Save();
             return string.IsNullOrWhiteSpace(id)
