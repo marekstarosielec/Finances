@@ -111,8 +111,7 @@ namespace FinancesApi.Services
                     editedTransaction.Category = transaction.Category;
                     editedTransaction.Comment = transaction.Comment;
                     editedTransaction.Person = transaction.Person;
-                    editedTransaction.Details = transaction.Person;
-
+                    editedTransaction.Details = transaction.Details;
                 }
             }
             _transactions.Save();
