@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DatasetService, TransactionAccount, TransactionCategory } from 'app/api/generated';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
 import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { take } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, take } from 'rxjs/operators';
 import * as _ from 'fast-sort';
 
 @Component({
@@ -14,13 +14,14 @@ import * as _ from 'fast-sort';
     templateUrl: 'transactions.component.html',
     styleUrls: ['./transactions.component.scss']
 })
-export class TransactionsComponent implements OnInit{
+export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
     data: Transaction[];
     primaryAccountList: TransactionAccount[];
     primaryCategoryList: TransactionCategory[];
     secondaryCategoryList: TransactionCategory[];
     public accountFilter: string = '';
     public categoryFilter: string = '';
+    descriptionFilter: string = '';
     numberOfRecords: number = 100;
     sortColumn: string = 'date';
     sortOrder: number = -1;
@@ -29,10 +30,12 @@ export class TransactionsComponent implements OnInit{
     totalNumberOfRecords: number = 0;
     dataSubject = new BehaviorSubject(null);
     loading: boolean;
+    subscription: Subscription;
+    searchTerm$ = new Subject<string>();
 
     constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService,
-        private datasetService: DatasetService, private router: Router, private route: ActivatedRoute) {}
-
+        private router: Router, private route: ActivatedRoute) {}
+    
     ngOnInit(){
         this.loading = true;
         this.transactionsService.transactionsGet().subscribe((transactions: Transaction[]) =>{
@@ -54,8 +57,23 @@ export class TransactionsComponent implements OnInit{
             if (this.numberOfRecords < 0) this.numberOfRecords = 100;
             this.accountFilter = qp.account ? decodeURIComponent(qp.account) : "";
             this.categoryFilter = qp.category ? decodeURIComponent(qp.category) : "";
+            this.descriptionFilter = qp.description ? decodeURIComponent(qp.description) : "";
             this.prepareView();
         });
+    }
+
+    ngAfterViewInit(): void {
+        this.subscription = this.searchTerm$.pipe(
+            filter(res => res.length > 2),
+            debounceTime(500), 
+            distinctUntilChanged()
+        ).subscribe((text: string) => {
+            this.router.navigate(['/transactions'], { queryParams: {  description: encodeURIComponent(text) }, queryParamsHandling: "merge" });
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
     scrapButtonClick(){
@@ -89,6 +107,10 @@ export class TransactionsComponent implements OnInit{
         }
         if (this.categoryFilter !== '') {
             data = data.filter(d => d.category === this.categoryFilter || (this.categoryFilter === 'missing' && !!!d.category));
+        }
+        if (this.descriptionFilter !== '') {
+            data = data.filter(d => d.bankInfo?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1
+            || d.comment?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1);
         }
         this.filteredNumberOfRecords = data.length;
         
@@ -147,5 +169,9 @@ export class TransactionsComponent implements OnInit{
 
     addNew() {
         this.router.navigate(["new"], { relativeTo: this.route});
+    }
+
+    filterDescription(value: string){
+        console.log(value);
     }
 }

@@ -60,8 +60,16 @@
               <th class="text-right" (click)="sort('amount')">
                 Kwota
               </th>
-              <th (click)="sort('description')">
-                Opis
+              <th>
+                <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown">
+                  <i class="fa fa-filter" ngbDropdownToggle></i>
+                  <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
+                    <div class="list-group filterElement">
+                      <input class="form-control" type="text" (keyup)="searchTerm$.next($event.target.value)">
+                    </div>
+                  </div>
+                </div>
+                <span (click)="sort('description')">&nbsp;Opis</span>
               </th>
               <!-- <th (click)="sort('details')">
                 Szczegóły

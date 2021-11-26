@@ -76,13 +76,26 @@ namespace FinancesApi.Services
         public IList<Transaction> GetTransactions(string id = null)
         {
             _transactionsFile.Load();
-            //_transactions.Value.ForEach(t =>
+            //_transactionCategoriesDataFile.Load();
+            //_transactionsFile.Value.ForEach(t =>
             //{
-            //    if (t.Date.Hour == 23)
-            //        t.Date = t.Date.AddHours(1);
-            //    //t.Category = null;
+            //    if (_transactionCategoriesDataFile.Value.FirstOrDefault(c => c.Title == t.Category) == null)
+            //    {
+            //        var match = _transactionCategoriesDataFile.Value.FirstOrDefault(c => string.Equals(c.Title, t.Category, StringComparison.InvariantCultureIgnoreCase));
+            //        if (match != null)
+            //            t.Category = match.Title;
+            //        else if (string.Equals(t.Category, "mazda inne", StringComparison.InvariantCultureIgnoreCase))
+            //            t.Category = "Mazda eksploatacja";
+            //        else if (string.Equals(t.Category, "kot", StringComparison.InvariantCultureIgnoreCase))
+            //            t.Category = "Koty";
+            //        else if (t.Category == null) { }
+            //        else
+            //        {
+
+            //        }
+            //    }
             //});
-            //_transactions.Save();
+            //_transactionsFile.Save();
             return string.IsNullOrWhiteSpace(id)
                 ? _transactionsFile.Value
                 : _transactionsFile.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
