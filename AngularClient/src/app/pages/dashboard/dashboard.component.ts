@@ -39,7 +39,6 @@ export class DashboardComponent implements OnInit{
       });
 
       this.statisticsService.statisticsGet().pipe(take(1)).subscribe((statistics: StatisticsAll) => {
-        console.log("Statistics", statistics);
         this.statistics = statistics;
       });
       // this.chartColor = "#FFFFFF";

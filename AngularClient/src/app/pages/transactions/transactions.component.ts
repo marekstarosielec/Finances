@@ -134,8 +134,9 @@ export class TransactionsComponent implements OnInit{
     }
 
     getCategorySecondaryFilter() {
-        if (this.secondaryCategoryList.filter(c => c.title === this.categoryFilter).length > 0)
-            return this.categoryFilter;
+        const search = decodeURIComponent(this.categoryFilter);
+        if (this.secondaryCategoryList.filter(c => c.title === search).length > 0)
+            return search;
         return undefined;
     }
 

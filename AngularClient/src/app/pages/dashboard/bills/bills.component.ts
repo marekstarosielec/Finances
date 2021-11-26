@@ -1,4 +1,5 @@
 import { Component, Input } from "@angular/core";
+import { Router } from "@angular/router";
 import { StatisticsBill, StatisticsBills } from "app/api/generated";
 
 interface date {
@@ -20,6 +21,9 @@ interface categoryValues {
 export class BillsComponent {
     dates: date[] = [];    
     categories: categoryValues[] = [];
+
+    constructor(private router: Router) {
+    }
 
     @Input()
     set bills(value: StatisticsBills){
@@ -61,5 +65,9 @@ export class BillsComponent {
             const amounts = value.amounts.filter(a => a.category === element);
             this.categories.push({ name: element, amounts: amounts})
         });
+    }
+
+    showTransactions(category: string){
+        this.router.navigate(["transactions"], { queryParams: {  category: encodeURIComponent(category) }});
     }
 }

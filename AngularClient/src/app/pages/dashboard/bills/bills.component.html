@@ -13,11 +13,11 @@
         </th>
       </thead>
       <tbody>
-        <tr *ngFor="let category of categories">
+        <tr *ngFor="let category of categories" class="clickable" (click)="showTransactions(category.name)">
           <td>
             {{category.name}}
           </td>
-          <td *ngFor="let amount of category.amounts" class="clickable">
+          <td *ngFor="let amount of category.amounts">
             {{amount.amount}}
           </td>
         </tr>
