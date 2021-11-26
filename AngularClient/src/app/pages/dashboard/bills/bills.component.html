@@ -18,7 +18,15 @@
             {{category.name}}
           </td>
           <td *ngFor="let amount of category.amounts">
-            {{amount.amount}}
+            {{amount.amount | number:'1.2-2'}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Suma
+          </td>
+          <td *ngFor="let sum of sums">
+            {{sum.amount | number:'1.2-2'}}
           </td>
         </tr>
       </tbody>

@@ -42,6 +42,10 @@ td {
     font-size: small;
 }
 
+tr:last-child {
+    border-top: 4px double #999;
+}
+
 .clickable {
     cursor: pointer;
 }

@@ -21,7 +21,7 @@ interface categoryValues {
 export class BillsComponent {
     dates: date[] = [];    
     categories: categoryValues[] = [];
-
+    sums: StatisticsBill[] = [];
     constructor(private router: Router) {
     }
 
@@ -33,7 +33,6 @@ export class BillsComponent {
     recalculate(value: StatisticsBills): void {
         if (!!!value)
             return;
-
         value.periods.forEach(element => {
             let numericMonth = '0' + (element.month).toString();
             numericMonth = numericMonth.substring(numericMonth.length -2);
@@ -65,6 +64,7 @@ export class BillsComponent {
             const amounts = value.amounts.filter(a => a.category === element);
             this.categories.push({ name: element, amounts: amounts})
         });
+        this.sums = value.amounts.filter(a => !!!a.category);
     }
 
     showTransactions(category: string){

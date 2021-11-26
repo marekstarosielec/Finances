@@ -30,6 +30,13 @@ namespace FinancesApi.Services
             }
             result.Categories.Add("Gaz");
             result.Categories.Add("Prąd");
+            result.Categories.Add("Internet");
+            result.Categories.Add("Marek ubezpieczenie na życie");
+            result.Categories.Add("Mazda leasing");
+            result.Categories.Add("Skoda rata");
+            result.Categories.Add("Telefon");
+            result.Categories.Add("Woda");
+            result.Categories.Add("Śmieci");
 
             _transactionsDataFile.Load();
             var amounts = _transactionsDataFile.Value.Where(t => result.Categories.Contains(t.Category)).GroupBy(t => new
@@ -50,6 +57,13 @@ namespace FinancesApi.Services
             foreach (var period in result.Periods)
                 foreach (var category in result.Categories)
                     result.Amounts.Add(new StatisticsBill(period, category, amounts.FirstOrDefault(a => a.Period.Year == period.Year && a.Period.Month == period.Month && a.Category == category).Amount));
+
+            foreach (var period in result.Periods)
+            {
+                var sums = amounts.Where(a => a.Period.Year == period.Year && a.Period.Month == period.Month).Where(a => a.Amount != null).ToList();
+                var calculatedSum = sums.Count > 0 ? sums.Sum(a => a.Amount) : null;
+                result.Amounts.Add(new StatisticsBill(period, null, calculatedSum));
+            }
             return result;
         }
 
