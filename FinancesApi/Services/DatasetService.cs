@@ -1,4 +1,5 @@
-﻿using FinancesApi.Models;
+﻿using FinancesApi.DataFiles;
+using FinancesApi.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -20,46 +21,51 @@ namespace FinancesApi.Services
     public class DatasetService : IDatasetService
     {
         private string _basePath;
-        private readonly DataFile _infoFile = new DataFile { FileName = "info.json" };
-        private readonly Jsonfile<DatasetInfo> _datasetInfo;
-
+      
         private readonly ICompressionService _compressionService;
+        private readonly DatasetInfoDataFile _datasetInfoDataFile;
         private readonly DataFile _datasetArchive = new DataFile { FileName = "Finanse.zip" };
         private readonly List<string> _fileBackupLocations;
         private readonly List<string> _datasetBackupLocations;
         private readonly List<DataFile> _dataFiles = new List<DataFile>
         {
-            new DataFile { FileName = "transactions.json" },
-            new DataFile { FileName = "transaction-accounts.json" },
-            new DataFile { FileName = "transaction-categories.json" },
-            new DataFile { FileName = "balances.json" },
-            new DataFile { FileName = "transaction-auto-categories.json" },
             new DataFile { FileName = "codziennik.xlsm" }
         };
         
-        public DatasetService(IConfiguration configuration, ICompressionService compressionService)
+        public DatasetService(
+            IConfiguration configuration, 
+            ICompressionService compressionService,
+            TransactionsDataFile transactionsFile,
+            TransactionAccountsDataFile transactionAccountsDataFile,
+            TransactionCategoriesDataFile transactionCategoriesDataFile,
+            TransactionAutoCategoriesDataFile transactionAutoCategoriesDataFile,
+            BalancesDataFile balancesDataFile,
+            DatasetInfoDataFile datasetInfoDataFile)
         {
             _basePath = configuration.GetValue<string>("DatasetPath");
-            _infoFile.Location = _basePath;
-
+            _datasetArchive.Location = _basePath;
             _dataFiles.ForEach(df => df.Location = _basePath);
 
-            _datasetArchive.Location = _basePath;
-            
-            var test = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
+            _dataFiles.Add(transactionsFile.DataFile);
+            _dataFiles.Add(transactionAccountsDataFile.DataFile);
+            _dataFiles.Add(transactionCategoriesDataFile.DataFile);
+            _dataFiles.Add(transactionAutoCategoriesDataFile.DataFile);
+            _dataFiles.Add(balancesDataFile.DataFile);
+
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
             _datasetBackupLocations = configuration.GetSection("DatasetBackups").Get<List<string>>(); 
 
-            _datasetInfo = new Jsonfile<DatasetInfo>(_infoFile.FileNameWithLocation);
+            
             _compressionService = compressionService;
+            _datasetInfoDataFile = datasetInfoDataFile;
         }
 
         public DatasetInfo GetInfo()
         {
             try
             {
-                _datasetInfo.Load();
-                return _datasetInfo.Value;
+                _datasetInfoDataFile.Load();
+                return _datasetInfoDataFile.Value;
             }
             catch (Exception e)
             {
@@ -69,33 +75,33 @@ namespace FinancesApi.Services
 
         public DatasetInfo Open(string password)
         {
-            _datasetInfo.Load();
-            if (_datasetInfo.Value.State != DatasetState.Closed && _datasetInfo.Value.State != DatasetState.OpeningError)
-                return _datasetInfo.Value;
-            _datasetInfo.Value.State = DatasetState.Opening;
-            _datasetInfo.Value.Error = string.Empty;
-            _datasetInfo.Save();
+            _datasetInfoDataFile.Load();
+            if (_datasetInfoDataFile.Value.State != DatasetState.Closed && _datasetInfoDataFile.Value.State != DatasetState.OpeningError)
+                return _datasetInfoDataFile.Value;
+            _datasetInfoDataFile.Value.State = DatasetState.Opening;
+            _datasetInfoDataFile.Value.Error = string.Empty;
+            _datasetInfoDataFile.Save();
 
             new Thread(() => {
                 DecompressBackup(password);
             }).Start();
-            return _datasetInfo.Value;
+            return _datasetInfoDataFile.Value;
         }
             
 
         public DatasetInfo Close(string password)
         {
-            _datasetInfo.Load();
-            if (_datasetInfo.Value.State != DatasetState.Opened && _datasetInfo.Value.State != DatasetState.ClosingError)
-                return _datasetInfo.Value;
-            _datasetInfo.Value.State = DatasetState.Closing;
-            _datasetInfo.Value.Error = string.Empty;
-            _datasetInfo.Save();
+            _datasetInfoDataFile.Load();
+            if (_datasetInfoDataFile.Value.State != DatasetState.Opened && _datasetInfoDataFile.Value.State != DatasetState.ClosingError)
+                return _datasetInfoDataFile.Value;
+            _datasetInfoDataFile.Value.State = DatasetState.Closing;
+            _datasetInfoDataFile.Value.Error = string.Empty;
+            _datasetInfoDataFile.Save();
             new Thread(() =>
             {
                 MakeBackups(password);
             }).Start();
-            return _datasetInfo.Value;
+            return _datasetInfoDataFile.Value;
         }
 
         private void MakeBackups(string password)
@@ -107,18 +113,18 @@ namespace FinancesApi.Services
 
                 _dataFiles.ForEach(dataFile => File.Delete(dataFile.FileNameWithLocation));
 
-                _datasetInfo.Load();
-                _datasetInfo.Value.State = DatasetState.Closed;
-                _datasetInfo.Value.LastCloseDate = DateTime.Now;
-                _datasetInfo.Value.Error = string.Empty;
-                _datasetInfo.Save();
+                _datasetInfoDataFile.Load();
+                _datasetInfoDataFile.Value.State = DatasetState.Closed;
+                _datasetInfoDataFile.Value.LastCloseDate = DateTime.Now;
+                _datasetInfoDataFile.Value.Error = string.Empty;
+                _datasetInfoDataFile.Save();
             }
             catch (Exception e)
             {
-                _datasetInfo.Load();
-                _datasetInfo.Value.State = DatasetState.ClosingError;
-                _datasetInfo.Value.Error = e.Message;
-                _datasetInfo.Save();
+                _datasetInfoDataFile.Load();
+                _datasetInfoDataFile.Value.State = DatasetState.ClosingError;
+                _datasetInfoDataFile.Value.Error = e.Message;
+                _datasetInfoDataFile.Save();
             }
         }
 
@@ -137,7 +143,7 @@ namespace FinancesApi.Services
                         throw new Exception($"Nie udało się skopiować zbioru do {dataFile.FileNameWithLocation}", e);
                     }
                 });
-                File.Copy(_infoFile.FileNameWithLocation, Path.Combine(location, _infoFile.FileName), true);
+                File.Copy(_datasetInfoDataFile.DataFile.FileNameWithLocation, Path.Combine(location, _datasetInfoDataFile.DataFile.FileName), true);
             });
         }
 
@@ -168,17 +174,17 @@ namespace FinancesApi.Services
             {
                 _compressionService.Decompress(_datasetArchive.FileNameWithLocation, password);
                 File.Delete(_datasetArchive.FileNameWithLocation);
-                _datasetInfo.Load();
-                _datasetInfo.Value.State = DatasetState.Opened;
-                _datasetInfo.Value.Error = string.Empty;
-                _datasetInfo.Save();
+                _datasetInfoDataFile.Load();
+                _datasetInfoDataFile.Value.State = DatasetState.Opened;
+                _datasetInfoDataFile.Value.Error = string.Empty;
+                _datasetInfoDataFile.Save();
             }
             catch(Exception e)
             {
-                _datasetInfo.Load();
-                _datasetInfo.Value.State = DatasetState.OpeningError;
-                _datasetInfo.Value.Error = string.Equals(e.Message, "invalid password", StringComparison.InvariantCultureIgnoreCase) ? "Nieprawidłowe hasło" : e.Message;
-                _datasetInfo.Save();
+                _datasetInfoDataFile.Load();
+                _datasetInfoDataFile.Value.State = DatasetState.OpeningError;
+                _datasetInfoDataFile.Value.Error = string.Equals(e.Message, "invalid password", StringComparison.InvariantCultureIgnoreCase) ? "Nieprawidłowe hasło" : e.Message;
+                _datasetInfoDataFile.Save();
             }
         }
     }

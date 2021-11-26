@@ -1,4 +1,5 @@
-﻿using FinancesApi.Models;
+﻿using FinancesApi.DataFiles;
+using FinancesApi.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -18,36 +19,34 @@ namespace FinancesApi.Services
 
     public class BalanceService: IBalanceService
     {
-        private readonly Jsonfile<List<Balance>> _balances;
+        private readonly BalancesDataFile _balancesDataFile;
 
-        public BalanceService(IConfiguration configuration)
+        public BalanceService(BalancesDataFile balancesDataFile)
         {
-            var basePath = configuration.GetValue<string>("DatasetPath");
-            var balancesFile = Path.Combine(basePath, "balances.json");
-            _balances = new Jsonfile<List<Balance>>(balancesFile);
+            _balancesDataFile = balancesDataFile;
         }
 
         public IList<Balance> GetBalances(string id = null)
         {
-            _balances.Load();
+            _balancesDataFile.Load();
             return string.IsNullOrWhiteSpace(id)
-                ? _balances.Value
-                : _balances.Value.Where(b => string.Equals(id, b.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                ? _balancesDataFile.Value
+                : _balancesDataFile.Value.Where(b => string.Equals(id, b.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
         public void SaveBalance(Balance balance)
         {
-            _balances.Load();
-            _balances.Value.RemoveAll(b => b.Account == balance.Account && b.Date.Date == balance.Date.Date);
-            _balances.Value.Add(balance);
-            _balances.Save();
+            _balancesDataFile.Load();
+            _balancesDataFile.Value.RemoveAll(b => b.Account == balance.Account && b.Date.Date == balance.Date.Date);
+            _balancesDataFile.Value.Add(balance);
+            _balancesDataFile.Save();
         }
 
         public void DeleteBalance(string id)
         {
-            _balances.Load();
-            _balances.Value.RemoveAll(b => string.Equals(id, b.Id, StringComparison.InvariantCultureIgnoreCase));
-            _balances.Save();
+            _balancesDataFile.Load();
+            _balancesDataFile.Value.RemoveAll(b => string.Equals(id, b.Id, StringComparison.InvariantCultureIgnoreCase));
+            _balancesDataFile.Save();
         }
     }
 }

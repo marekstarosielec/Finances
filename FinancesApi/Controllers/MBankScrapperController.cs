@@ -32,7 +32,8 @@ namespace FinancesApi.Controllers
                     },
                     Transaction = transaction =>
                     {
-                        DateTime.TryParseExact(transaction.Date, "dd'.'MM'.'yyyy", null, System.Globalization.DateTimeStyles.None, out var transactionDate);
+                        DateTime.TryParseExact(transaction.Date, "dd'.'MM'.'yyyy", null, System.Globalization.DateTimeStyles.AssumeUniversal, out var transactionDate);
+                        
                         _transactionService.SaveTransaction(
                             new Models.Transaction { 
                                 Id = transaction.Id, 

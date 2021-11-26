@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FinancesApi.Models;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -8,23 +10,28 @@ namespace FinancesApi.Services
 
     public class Jsonfile<T>
     {
-        private string _fileName;
+        public DataFile DataFile { get; }
 
-        public T Value { get; private set; 
-        }
-        public Jsonfile(string fileName) 
+        public T Value { get; private set; }
+
+        public Jsonfile(IConfiguration configuration, string fileName) 
         {
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentException($"'{nameof(fileName)}' cannot be null or whitespace.", nameof(fileName));
 
-            _fileName = fileName;
+            var basePath = configuration.GetValue<string>("DatasetPath");
+            DataFile = new DataFile
+            {
+                Location = basePath,
+                FileName = fileName
+            };
         }
 
         public void Load()
         {
-            if (!File.Exists(_fileName))
+            if (string.IsNullOrWhiteSpace(DataFile.FileName) || !File.Exists(DataFile.FileNameWithLocation))
                 throw new FileNotFoundException();
-            string jsonString = File.ReadAllText(_fileName, Encoding.Latin1);
+            string jsonString = File.ReadAllText(DataFile.FileNameWithLocation, Encoding.Latin1);
             Value = JsonSerializer.Deserialize<T>(jsonString, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
@@ -34,7 +41,7 @@ namespace FinancesApi.Services
         public void Save()
         {
             var serializedValue = JsonSerializer.Serialize(Value);
-            File.WriteAllText(_fileName, serializedValue);
+            File.WriteAllText(DataFile.FileNameWithLocation, serializedValue);
         }
     }
 }

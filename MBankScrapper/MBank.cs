@@ -40,6 +40,7 @@ namespace MBankScrapper
                 await ScrapAccounts();
                 await GoToTransactionsPage();
                 await ScrapTransactions();
+                await SwitchToPrivateProfile();
                 await Logout();
             }
             catch(Exception e) 

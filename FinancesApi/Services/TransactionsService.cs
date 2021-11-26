@@ -1,4 +1,5 @@
-﻿using FinancesApi.Models;
+﻿using FinancesApi.DataFiles;
+using FinancesApi.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -31,51 +32,50 @@ namespace FinancesApi.Services
 
     public class TransactionsService: ITransactionsService
     {
-        private readonly Jsonfile<List<Transaction>> _transactions;
-        private readonly Jsonfile<List<TransactionAccount>> _accounts;
-        private readonly Jsonfile<List<TransactionCategory>> _categories;
-        private readonly Jsonfile<List<TransactionAutoCategory>> _autoCategories;
+        private readonly TransactionsDataFile _transactionsFile;
+        private readonly TransactionAccountsDataFile _transactionAccountsDataFile;
+        private readonly TransactionCategoriesDataFile _transactionCategoriesDataFile;
+        private readonly TransactionAutoCategoriesDataFile _transactionAutoCategoriesDataFile;
 
-        public TransactionsService(IConfiguration configuration)
+        public TransactionsService( 
+            TransactionsDataFile transactionsFile,
+            TransactionAccountsDataFile transactionAccountsDataFile,
+            TransactionCategoriesDataFile transactionCategoriesDataFile,
+            TransactionAutoCategoriesDataFile transactionAutoCategoriesDataFile)
         {
-            var basePath = configuration.GetValue<string>("DatasetPath");
-            var transactionsFile = Path.Combine(basePath, "transactions.json");
-            _transactions = new Jsonfile<List<Transaction>>(transactionsFile);
-            var accountsFile = Path.Combine(basePath, "transaction-accounts.json");
-            _accounts = new Jsonfile<List<TransactionAccount>>(accountsFile);
-            var categoriesFile = Path.Combine(basePath, "transaction-categories.json");
-            _categories = new Jsonfile<List<TransactionCategory>>(categoriesFile);
-            var autoCategoriesFile = Path.Combine(basePath, "transaction-auto-categories.json");
-            _autoCategories = new Jsonfile<List<TransactionAutoCategory>>(autoCategoriesFile);
+            _transactionsFile = transactionsFile;
+            _transactionAccountsDataFile = transactionAccountsDataFile;
+            _transactionCategoriesDataFile = transactionCategoriesDataFile;
+            _transactionAutoCategoriesDataFile = transactionAutoCategoriesDataFile;
         }
 
         public IList<TransactionAccount> GetAccounts()
         {
-            _accounts.Load();
-            return _accounts.Value.OrderBy(a => a.Title).ToList();
+            _transactionAccountsDataFile.Load();
+            return _transactionAccountsDataFile.Value.OrderBy(a => a.Title).ToList();
         }
 
         public void SaveAccount(TransactionAccount account)
         {
-            _accounts.Load();
-            var editedAccount = _accounts.Value.FirstOrDefault(a => string.Equals(account.Id, a.Id, StringComparison.InvariantCultureIgnoreCase));
+            _transactionAccountsDataFile.Load();
+            var editedAccount = _transactionAccountsDataFile.Value.FirstOrDefault(a => string.Equals(account.Id, a.Id, StringComparison.InvariantCultureIgnoreCase));
             if (editedAccount == null)
-                _accounts.Value.Add(account);
+                _transactionAccountsDataFile.Value.Add(account);
             else
                 editedAccount.Title = account.Title;
-            _accounts.Save();
+            _transactionAccountsDataFile.Save();
         }
 
         public void DeleteAccount(string id)
         {
-            _accounts.Load();
-            _accounts.Value.RemoveAll(a => string.Equals(id, a.Id, StringComparison.InvariantCultureIgnoreCase));
-            _accounts.Save();
+            _transactionAccountsDataFile.Load();
+            _transactionAccountsDataFile.Value.RemoveAll(a => string.Equals(id, a.Id, StringComparison.InvariantCultureIgnoreCase));
+            _transactionAccountsDataFile.Save();
         }
 
         public IList<Transaction> GetTransactions(string id = null)
         {
-            _transactions.Load();
+            _transactionsFile.Load();
             //_transactions.Value.ForEach(t =>
             //{
             //    if (t.Date.Hour == 23)
@@ -84,16 +84,16 @@ namespace FinancesApi.Services
             //});
             //_transactions.Save();
             return string.IsNullOrWhiteSpace(id)
-                ? _transactions.Value
-                : _transactions.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                ? _transactionsFile.Value
+                : _transactionsFile.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
         public void SaveTransaction(Transaction transaction, bool overwriteEditableData=true)
         {
-            _transactions.Load();
-            var editedTransaction = _transactions.Value.FirstOrDefault(t => string.Equals(transaction.Id, t.Id, StringComparison.InvariantCultureIgnoreCase));
+            _transactionsFile.Load();
+            var editedTransaction = _transactionsFile.Value.FirstOrDefault(t => string.Equals(transaction.Id, t.Id, StringComparison.InvariantCultureIgnoreCase));
             if (editedTransaction == null)
-                _transactions.Value.Add(transaction);
+                _transactionsFile.Value.Add(transaction);
             else
             {
                 editedTransaction.ScrappingDate = transaction.ScrappingDate;
@@ -114,19 +114,19 @@ namespace FinancesApi.Services
                     editedTransaction.Details = transaction.Details;
                 }
             }
-            _transactions.Save();
+            _transactionsFile.Save();
         }
 
         public void DeleteTransaction(string id)
         {
-            _transactions.Load();
-            _transactions.Value.RemoveAll(a => string.Equals(id, a.Id, StringComparison.InvariantCultureIgnoreCase));
-            _transactions.Save();
+            _transactionsFile.Load();
+            _transactionsFile.Value.RemoveAll(a => string.Equals(id, a.Id, StringComparison.InvariantCultureIgnoreCase));
+            _transactionsFile.Save();
         }
 
         public IList<TransactionCategory> GetCategories()
         {
-            _categories.Load();
+            _transactionCategoriesDataFile.Load();
             //_transactions.Load();
             //var t = _transactions.Value.Where(_ => _.Date > DateTime.Now.AddDays(-14)).GroupBy(k => k.Category).Select(g=> new { Category = g.Key, Count = g.Count() }).ToList();
             //_categories.Value.ForEach(c =>
@@ -137,71 +137,64 @@ namespace FinancesApi.Services
             //);
             //_categories.Value.ForEach(c => c.Id = Guid.NewGuid().ToString());
             //_categories.Save();
-            return _categories.Value;
+            return _transactionCategoriesDataFile.Value;
         }
 
         public void SaveCategory(TransactionCategory category)
         {
-            _categories.Load();
-            var edited = _categories.Value.FirstOrDefault(c => string.Equals(category.Id, c.Id, StringComparison.InvariantCultureIgnoreCase));
+            _transactionCategoriesDataFile.Load();
+            var edited = _transactionCategoriesDataFile.Value.FirstOrDefault(c => string.Equals(category.Id, c.Id, StringComparison.InvariantCultureIgnoreCase));
             if (edited == null)
-                _categories.Value.Add(category);
+                _transactionCategoriesDataFile.Value.Add(category);
             else
                 edited.Title = category.Title;
-            _categories.Save();
+            _transactionCategoriesDataFile.Save();
         }
 
         public void DeleteCategory(string id)
         {
-            _categories.Load();
-            _categories.Value.RemoveAll(c => string.Equals(id, c.Id, StringComparison.InvariantCultureIgnoreCase));
-            _categories.Save();
+            _transactionCategoriesDataFile.Load();
+            _transactionCategoriesDataFile.Value.RemoveAll(c => string.Equals(id, c.Id, StringComparison.InvariantCultureIgnoreCase));
+            _transactionCategoriesDataFile.Save();
         }
 
         public IList<TransactionAutoCategory> GetAutoCategories()
         {
-            _autoCategories.Load();
-           return _autoCategories.Value;
+            _transactionAutoCategoriesDataFile.Load();
+           return _transactionAutoCategoriesDataFile.Value;
         }
 
         public void SaveAutoCategory(TransactionAutoCategory autoCategory)
         {
-            _autoCategories.Load();
-            var edited = _autoCategories.Value.FirstOrDefault(ac => string.Equals(autoCategory.Id, ac.Id, StringComparison.InvariantCultureIgnoreCase));
+            _transactionAutoCategoriesDataFile.Load();
+            var edited = _transactionAutoCategoriesDataFile.Value.FirstOrDefault(ac => string.Equals(autoCategory.Id, ac.Id, StringComparison.InvariantCultureIgnoreCase));
             if (edited == null)
-                _autoCategories.Value.Add(autoCategory);
+                _transactionAutoCategoriesDataFile.Value.Add(autoCategory);
             else
             {
                 edited.BankInfo = autoCategory.BankInfo;
                 edited.Category = autoCategory.Category;
             }
-            _autoCategories.Save();
+            _transactionAutoCategoriesDataFile.Save();
         }
 
         public void DeleteAutoCategory(string id)
         {
-            _autoCategories.Load();
-            _autoCategories.Value.RemoveAll(c => string.Equals(id, c.Id, StringComparison.InvariantCultureIgnoreCase));
-            _autoCategories.Save();
+            _transactionAutoCategoriesDataFile.Load();
+            _transactionAutoCategoriesDataFile.Value.RemoveAll(c => string.Equals(id, c.Id, StringComparison.InvariantCultureIgnoreCase));
+            _transactionAutoCategoriesDataFile.Save();
         }
 
         public void ApplyAutoCategories()
         {
-            _autoCategories.Load();
-            _transactions.Load();
-            _transactions.Value.Where(t => string.IsNullOrWhiteSpace(t.Category)).ToList().ForEach(t => {
-                var match = _autoCategories.Value.FirstOrDefault(ac => t.BankInfo.Contains(ac.BankInfo, StringComparison.InvariantCultureIgnoreCase));
+            _transactionAutoCategoriesDataFile.Load();
+            _transactionsFile.Load();
+            _transactionsFile.Value.Where(t => string.IsNullOrWhiteSpace(t.Category)).ToList().ForEach(t => {
+                var match = _transactionAutoCategoriesDataFile.Value.FirstOrDefault(ac => t.BankInfo.Contains(ac.BankInfo, StringComparison.InvariantCultureIgnoreCase));
                 if (match != null)
                     t.Category = match.Category;
             });
-            _transactions.Save();
+            _transactionsFile.Save();
         }
-
-        //public void GetBills()
-        //{
-        //    _transactions.Load();
-        //    _transactions.Value.GroupBy(key => key.Category + key.Date.ToString("yyyyMM"))
-        //        .Select(g => g.Key, g)
-        //}
     }
 }
