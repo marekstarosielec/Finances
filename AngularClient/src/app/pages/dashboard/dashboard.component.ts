@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Balance, BalancesService, Transaction, TransactionsService } from 'app/api/generated';
+import { Balance, BalancesService, StatisticsAll, StatisticsService, Transaction, TransactionsService } from 'app/api/generated';
 import Chart from 'chart.js';
 import { take } from 'rxjs/operators';
 import * as _ from 'fast-sort';
@@ -16,6 +16,7 @@ export class DashboardComponent implements OnInit{
   public scrappingDate: string;
   public balances: Balance[];
   public transactions: Transaction[];
+  public statistics: StatisticsAll;
 
   // public canvas : any;
   // public ctx;
@@ -23,7 +24,9 @@ export class DashboardComponent implements OnInit{
   // public chartEmail;
   // public chartHours;
 
-  constructor(private balancesService: BalancesService, private transactionsService: TransactionsService) {
+  constructor(private balancesService: BalancesService, 
+    private transactionsService: TransactionsService,
+    private statisticsService: StatisticsService) {
   }
 
   ngOnInit(){
@@ -35,7 +38,10 @@ export class DashboardComponent implements OnInit{
         this.transactions = transactions;
       });
 
-
+      this.statisticsService.statisticsGet().pipe(take(1)).subscribe((statistics: StatisticsAll) => {
+        console.log("Statistics", statistics);
+        this.statistics = statistics;
+      });
       // this.chartColor = "#FFFFFF";
 
       // this.canvas = document.getElementById("chartHours");

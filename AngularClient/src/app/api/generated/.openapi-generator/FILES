@@ -5,6 +5,7 @@ api/api.ts
 api/balances.service.ts
 api/dataset.service.ts
 api/mBankScrapper.service.ts
+api/statistics.service.ts
 api/transactions.service.ts
 configuration.ts
 encoder.ts
@@ -16,6 +17,10 @@ model/datasetInfo.ts
 model/datasetOpenInstruction.ts
 model/datasetState.ts
 model/models.ts
+model/statisticsAll.ts
+model/statisticsBill.ts
+model/statisticsBills.ts
+model/statisticsYearMonth.ts
 model/transaction.ts
 model/transactionAccount.ts
 model/transactionAutoCategory.ts

@@ -105,7 +105,6 @@ export class TransactionsComponent implements OnInit{
         if (this.numberOfRecords && this.numberOfRecords != 0) {
             data = data.slice(0, this.numberOfRecords);
         }
-        console.log(data.slice(0,8));
         this.currentNumberOfRecords = data.length;
         this.dataSubject.next(data);
     }
