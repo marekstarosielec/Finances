@@ -90,7 +90,8 @@ export class TransactionsComponent implements OnInit{
         if (this.categoryFilter !== '') {
             data = data.filter(d => d.category === this.categoryFilter || (this.categoryFilter === 'missing' && !!!d.category));
         }
-
+        this.filteredNumberOfRecords = data.length;
+        
         if (this.sortOrder == -1)
             data = _.sort(data).by([
                 { desc: t => t[this.sortColumn]},
