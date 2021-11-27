@@ -1,5 +1,5 @@
 <div class="card ">
-  <div class="card-header ">
+  <div class="card-header">   
     <h5 class="card-title">Rachunki</h5>
     <!-- <p class="card-category">24 Hours performance</p> -->
   </div>
@@ -32,10 +32,25 @@
       </tbody>
     </table>
   </div>
-  <div class="card-footer ">
-    <hr>
-    <div class="stats">
-      <!-- <i class="fa fa-history"></i> Updated 3 minutes ago -->
+  <div class="card-footer">
+    <div class="stats" (click)="open(content)">
+      <i class="nc-icon nc-settings-gear-65"></i> Konfiguruj
     </div>
   </div>
 </div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Wybierz konta</h4>
+  </div>
+  <div class="modal-body">
+    <div class="list-group filterElement">
+      <div *ngFor="let category of allCategories">&nbsp;<input type="checkbox" id="{{category.title}}" value="{{category.title}}" name="category"><label for="{{category.title}}">&nbsp;{{category.title}}</label></div>
+      <!-- <div *ngFor="let category of allCategories">&nbsp;<input type="radio" id="{{category.title}}" value="{{category.title}}" name="category" [checked]="this.accountFilter===account.title"><label for="{{account.title}}">&nbsp;{{account.title}}</label></div> -->
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.close('back')">Anuluj</button>
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close('save')">Zapisz</button>
+  </div>
+</ng-template>

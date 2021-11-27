@@ -49,3 +49,12 @@ tr:last-child {
 .clickable {
     cursor: pointer;
 }
+
+.stats {
+    cursor: pointer;
+}
+
+.modal-body .filterElement {
+    max-height: 20rem;
+    overflow-y: scroll;
+}

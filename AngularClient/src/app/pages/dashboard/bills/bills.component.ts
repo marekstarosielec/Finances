@@ -1,6 +1,8 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { StatisticsBill, StatisticsBills } from "app/api/generated";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { StatisticsBill, StatisticsBills, TransactionCategory, TransactionsService } from "app/api/generated";
+import { take } from "rxjs/operators";
 
 interface date {
     numericDate: string;
@@ -18,11 +20,19 @@ interface categoryValues {
     templateUrl: 'bills.component.html',
     styleUrls: ['bills.component.scss']
 })
-export class BillsComponent {
+export class BillsComponent implements OnInit {
     dates: date[] = [];    
     categories: categoryValues[] = [];
     sums: StatisticsBill[] = [];
-    constructor(private router: Router) {
+    allCategories: TransactionCategory[];
+    constructor(private router: Router, private modalService: NgbModal, private transactionsService: TransactionsService) 
+    {
+    }
+
+    ngOnInit(): void {
+        this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((categories:TransactionCategory[]) => {
+            this.allCategories = categories;
+        });
     }
 
     @Input()
@@ -69,5 +79,14 @@ export class BillsComponent {
 
     showTransactions(category: string){
         this.router.navigate(["transactions"], { queryParams: {  category: encodeURIComponent(category) }});
+    }
+
+    open(content) {
+        this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+            if (result === 'save')   
+            {
+                
+            }
+        }, (reason) => { });
     }
 }
