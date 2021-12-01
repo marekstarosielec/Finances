@@ -58,6 +58,8 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
             this.accountFilter = qp.account ? decodeURIComponent(qp.account) : "";
             this.categoryFilter = qp.category ? decodeURIComponent(qp.category) : "";
             this.descriptionFilter = qp.description ? decodeURIComponent(qp.description) : "";
+            this.sortColumn = qp.sortColumn ?? 'date';
+            this.sortOrder = qp.sortOrder ?? -1;
             this.prepareView();
         });
     }
@@ -90,7 +92,7 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
             this.sortColumn = column;
             this.sortOrder = -1;
         }
-        this.prepareView();
+        this.router.navigate(['/transactions'], { queryParams: { sortColumn: this.sortColumn, sortOrder: this.sortOrder }, queryParamsHandling: "merge" });
     }
 
     prepareView() {
