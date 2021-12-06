@@ -14,7 +14,7 @@ namespace MBankScrapper
         IBrowserHook _browser;
         ActionSet _actionSet;
         List<Models.AccountBalance> _accounts = new ();
-        const int sleepTime = 1000;
+        const int sleepTime = 1500;
 
         public async Task StartScrapping(IBrowserHook browser, ActionSet actionSet)
         {
@@ -396,10 +396,28 @@ namespace MBankScrapper
             {
                 var editButtonXPath = $"{GetTransactionRow(transactionNumber)}/following::tr/descendant::button[@data-test-id='history:edit']";
                 var commentInputXPath = $"{GetTransactionRow(transactionNumber)}/following::tr/descendant::input[@data-test-id='Comment:Input']";
-                while (await _browser.IsElementPresent(editButtonXPath) && !await _browser.IsElementPresent(commentInputXPath))
+                while (await _browser.IsElementPresent(editButtonXPath))
                 {
                     await _browser.Click(editButtonXPath);
                     Sleep(); 
+                }
+
+                //MBank shows comment from previous transaction for a few milliseconds.
+                //Need to make sure it is correct before continuing.
+
+                if (string.IsNullOrWhiteSpace(comment))
+                    //No comment in transaction - input should not be visible.
+                    while (await _browser.IsElementPresent(commentInputXPath))
+                        Sleep();
+                else
+                {
+                    //Transaction commented. Wait for input and check if it has
+                    //valid content.
+                    while (!await _browser.IsElementPresent(commentInputXPath))
+                        Sleep();
+
+                    while (await _browser.GetInputValue(commentInputXPath) != comment)
+                        Sleep();
                 }
             }
 

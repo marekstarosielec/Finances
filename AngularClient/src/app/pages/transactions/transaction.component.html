@@ -30,7 +30,10 @@
       <div class="input-group">
         <input type="number" class="form-control" id="amount" placeholder="Wpisz kwotę" formControlName="amount">
         <div class="input-group-append">
-          <span class="input-group-text" id="basic-addon2">{{form.controls['currency'].value}}</span>
+          <!-- <span class="input-group-text" id="basic-addon2">{{form.controls['currency'].value}}</span> -->
+          <select class="form-control" id="currency" formControlName="currency">
+            <option *ngFor="let currency of currencies" [value]="currency.code">{{currency.code}}</option>
+          </select>
         </div>
       </div>
     </div>

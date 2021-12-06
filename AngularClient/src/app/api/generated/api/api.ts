@@ -1,5 +1,7 @@
 export * from './balances.service';
 import { BalancesService } from './balances.service';
+export * from './currencies.service';
+import { CurrenciesService } from './currencies.service';
 export * from './dataset.service';
 import { DatasetService } from './dataset.service';
 export * from './mBankScrapper.service';
@@ -8,4 +10,4 @@ export * from './statistics.service';
 import { StatisticsService } from './statistics.service';
 export * from './transactions.service';
 import { TransactionsService } from './transactions.service';
-export const APIS = [BalancesService, DatasetService, MBankScrapperService, StatisticsService, TransactionsService];
+export const APIS = [BalancesService, CurrenciesService, DatasetService, MBankScrapperService, StatisticsService, TransactionsService];

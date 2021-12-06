@@ -15,6 +15,6 @@ import { StatisticsYearMonth } from './statisticsYearMonth';
 export interface StatisticsBill { 
     period?: StatisticsYearMonth;
     readonly category?: string | null;
-    readonly amount?: number;
+    readonly amount?: number | null;
 }
 

@@ -2,13 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Transaction, TransactionAccount, TransactionCategory, TransactionsService } from 'app/api/generated';
+import { CurrenciesService, Currency, Transaction, TransactionAccount, TransactionCategory, TransactionsService } from 'app/api/generated';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import {v4 as uuidv4} from 'uuid';
 import { Location } from '@angular/common';
 import * as _ from 'fast-sort';
-
 
 @Component({
     selector: 'transaction',
@@ -21,6 +20,7 @@ export class TransactionComponent implements OnInit, OnDestroy{
     data: Transaction;
     accounts: TransactionAccount[];
     categories: TransactionCategory[];
+    currencies: Currency[];
     adding: boolean = false;
     form = new FormGroup({
         scrappingDate: new FormControl(undefined, []),
@@ -42,11 +42,14 @@ export class TransactionComponent implements OnInit, OnDestroy{
     });
     
     constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location,
-        private router: Router, private modalService: NgbModal) {}
+        private router: Router, private modalService: NgbModal, private currenciesService: CurrenciesService) {}
 
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe(
             (params: Params) => {
+                this.currenciesService.currenciesGet().pipe(take(1)).subscribe((result: Currency[]) => {
+                    this.currencies = result;
+                });
                 this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((result: TransactionAccount[]) => {
                     this.accounts = result;
                 });

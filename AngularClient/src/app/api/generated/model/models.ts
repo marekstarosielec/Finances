@@ -1,4 +1,5 @@
 export * from './balance';
+export * from './currency';
 export * from './datasetCloseInstruction';
 export * from './datasetInfo';
 export * from './datasetOpenInstruction';

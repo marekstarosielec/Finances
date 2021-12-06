@@ -1,11 +1,8 @@
 ﻿using FinancesApi.DataFiles;
 using FinancesApi.Models;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace FinancesApi.Services
 {
@@ -52,6 +49,11 @@ namespace FinancesApi.Services
         public IList<TransactionAccount> GetAccounts()
         {
             _transactionAccountsDataFile.Load();
+            //_transactionAccountsDataFile.Value.ForEach(a =>
+            //{
+            //    a.Currency = "PLN";
+            //});
+            //_transactionAccountsDataFile.Save();
             return _transactionAccountsDataFile.Value.OrderBy(a => a.Title).ToList();
         }
 
@@ -75,7 +77,6 @@ namespace FinancesApi.Services
 
         public IList<Transaction> GetTransactions(string id = null)
         {
-            _transactionsFile.Load();
             //_transactionCategoriesDataFile.Load();
             //_transactionsFile.Value.ForEach(t =>
             //{

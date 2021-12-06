@@ -11,9 +11,7 @@
  */
 
 
-export interface TransactionAccount { 
-    id?: string | null;
-    title?: string | null;
-    currency?: string | null;
+export interface Currency { 
+    code?: string | null;
 }
 

@@ -32,6 +32,11 @@ namespace FinancesApi.Controllers
                     },
                     Transaction = transaction =>
                     {
+                        if (transaction.Date.IndexOf(".") == 1)
+                            transaction.Date = "0" + transaction.Date;
+                        if (transaction.Date.LastIndexOf(".") == 4)
+                            transaction.Date = transaction.Date.Substring(0,3) + "0" + transaction.Date.Substring(3);
+
                         DateTime.TryParseExact(transaction.Date, "dd'.'MM'.'yyyy", null, System.Globalization.DateTimeStyles.AssumeUniversal, out var transactionDate);
                         
                         _transactionService.SaveTransaction(
@@ -42,7 +47,7 @@ namespace FinancesApi.Controllers
                                 Description = transaction.Description, 
                                 Amount = transaction.Amount,
                                 Account = transaction.Account, 
-                                Date= transactionDate, 
+                                Date= transactionDate.ToUniversalTime(), 
                                 Source = "mbank scrapper", 
                                 Currency = transaction.Currency,
                                 ScrappingDate = DateTime.Now

@@ -64,5 +64,8 @@ namespace PlaywrightHook
             for (var x = 0; x < count; x++)
                 await _page.Keyboard.PressAsync(key, new KeyboardPressOptions { });
         }
+
+        public async Task<string> GetInputValue(string xpath) =>
+            await _page.InputValueAsync(xpath, new PageInputValueOptions { });
     }
 }

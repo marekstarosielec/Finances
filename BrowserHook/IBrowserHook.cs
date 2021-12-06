@@ -19,6 +19,8 @@ namespace BrowserHook
 
         Task<string> GetInnerText(string xpath);
 
+        Task<string> GetInputValue(string xpath);
+
         Task Click(string xpath);
 
         Task SetText(string xpath, string text);

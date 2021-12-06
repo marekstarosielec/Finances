@@ -3,6 +3,7 @@ README.md
 api.module.ts
 api/api.ts
 api/balances.service.ts
+api/currencies.service.ts
 api/dataset.service.ts
 api/mBankScrapper.service.ts
 api/statistics.service.ts
@@ -12,6 +13,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/balance.ts
+model/currency.ts
 model/datasetCloseInstruction.ts
 model/datasetInfo.ts
 model/datasetOpenInstruction.ts

@@ -27,12 +27,14 @@ namespace FinancesApi
             services.AddSingleton<ITransactionsService, TransactionsService>();
             services.AddSingleton<IBalanceService, BalanceService>();
             services.AddSingleton<IStatisticsService, StatisticsService>();
+            services.AddSingleton<ICurrenciesService, CurrenciesService>();
 
             services.AddSingleton(typeof(TransactionsDataFile));
             services.AddSingleton(typeof(TransactionAccountsDataFile));
             services.AddSingleton(typeof(TransactionCategoriesDataFile));
             services.AddSingleton(typeof(TransactionAutoCategoriesDataFile));
             services.AddSingleton(typeof(BalancesDataFile));
+            services.AddSingleton(typeof(CurrenciesDataFile));
             services.AddSingleton(typeof(DatasetInfoDataFile));
 
 
