@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DatasetService, TransactionAccount, TransactionCategory } from 'app/api/generated';
-import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { TransactionAccount, TransactionCategory } from 'app/api/generated';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
@@ -46,7 +46,13 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
                     this.filteredNumberOfRecords = transactions.length;
                     this.primaryAccountList = accounts;
                     this.primaryCategoryList = categories.filter(c => c.usageIndex > 0).sort((c1, c2) => c2.usageIndex - c1.usageIndex);
-                    this.secondaryCategoryList = categories.filter(c => c.usageIndex === 0).sort((c1, c2) => c2.title > c1.title ? -1 : 1);
+                    var secondaryCategories = categories.filter(c => c.usageIndex === 0);
+                    secondaryCategories = _.sort(secondaryCategories).by([
+                        { asc: c => c.deleted},
+                        { asc: c => c.title}
+                    ]);
+                    this.secondaryCategoryList = secondaryCategories;
+                    
                     this.loading = false;
                     this.prepareView();
                 })

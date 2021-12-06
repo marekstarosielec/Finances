@@ -14,6 +14,7 @@
 export interface TransactionCategory { 
     id?: string | null;
     title?: string | null;
+    deleted?: boolean;
     usageIndex?: number;
 }
 

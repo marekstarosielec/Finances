@@ -12,7 +12,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id)">
-                  <td>{{row.title}}</td>
+                  <td [class.deleted]="row.deleted">{{row.title}}</td>
               </tr>
             </tbody>
           </table>

@@ -161,7 +161,10 @@ namespace FinancesApi.Services
             if (edited == null)
                 _transactionCategoriesDataFile.Value.Add(category);
             else
+            {
                 edited.Title = category.Title;
+                edited.Deleted = category.Deleted;
+            }
             _transactionCategoriesDataFile.Save();
         }
 

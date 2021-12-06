@@ -56,6 +56,7 @@ export class TransactionComponent implements OnInit, OnDestroy{
                 this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((result: TransactionCategory[]) => {
                     this.categories = _.sort(result).by([
                         { desc: c => c.usageIndex},
+                        { asc: c => c.deleted},
                         { asc: c => c.title}
                     ]);
                 });

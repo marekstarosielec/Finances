@@ -19,7 +19,10 @@ export class TransactionCategoryComponent implements OnInit, OnDestroy{
     data: TransactionCategory;
     adding: boolean = false;
     form = new FormGroup({
-        title: new FormControl('', [Validators.required, Validators.minLength(3)])
+        id: new FormControl('', []),
+        usageIndex: new FormControl('', []),
+        title: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        deleted: new FormControl('', [])
     });
     constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location,
         private modalService: NgbModal) {}
@@ -31,8 +34,9 @@ export class TransactionCategoryComponent implements OnInit, OnDestroy{
                     this.adding = true;
                 } else { 
                     this.adding = false;
-                    this.transactionsService.transactionsCategoriesGet().subscribe((data: TransactionCategory[]) =>{
-                        this.data = data.find(ta => ta.id === params['id']);
+                    this.transactionsService.transactionsCategoriesGet().subscribe((result: TransactionCategory[]) =>{
+                        this.data = result.find(ta => ta.id === params['id']);
+                        this.form.setValue(this.data);
                     });
                 }
             }
@@ -44,7 +48,20 @@ export class TransactionCategoryComponent implements OnInit, OnDestroy{
     }
     
     isSavable(): boolean {
-        return this.form.valid && (this.adding || this.form.value.title!=this.data.title);
+        return this.form.valid && (this.adding || this.isFormChanged());
+    }
+
+    isFormChanged() : boolean {
+        if (!this.data)
+            return true;
+        
+        var props = Object.getOwnPropertyNames(this.data);
+        for (var i = 0; i < props.length; i++) {
+            if (this.data[props[i]] !== this.form.value[props[i]]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     isDeletable(): boolean {
@@ -56,19 +73,17 @@ export class TransactionCategoryComponent implements OnInit, OnDestroy{
             return;
         }
         if (this.adding) {
-            this.data = { id: uuidv4(), title: this.form.value.title }
-            this.transactionsService.transactionsCategoryPost(this.data).pipe(take(1)).subscribe(() =>
+            this.form.value.id = uuidv4();
+            this.transactionsService.transactionsCategoryPost(this.form.value).pipe(take(1)).subscribe(() =>
             {
                 this.location.back();
             });
         } else {
-            this.data.title = this.form.value.title;
-            this.transactionsService.transactionsCategoryPut(this.data).pipe(take(1)).subscribe(() =>
+            this.transactionsService.transactionsCategoryPut(this.form.value).pipe(take(1)).subscribe(() =>
             {
                 this.location.back();
             });
         }
-       
     }
 
     delete() {

@@ -3,7 +3,11 @@
   <button type="button" class="btn btn-outline-danger" (click)="open(content)" [disabled]="!isDeletable()">Usuń</button>
   <div class="form-group">
     <label for="account">Tytuł</label>
-    <input type="input" class="form-control" id="account" placeholder="Wpisz tytuł" [value]="data?.title" formControlName="title">
+    <input type="input" class="form-control" id="account" placeholder="Wpisz tytuł" formControlName="title">
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-check-input" id="deleted" formControlName="deleted">
+    <label class="form-check-label" for="deleted">Nieużywany</label>
   </div>
 </form>
 

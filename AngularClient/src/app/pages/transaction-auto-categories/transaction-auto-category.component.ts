@@ -7,6 +7,7 @@ import { take } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {v4 as uuidv4} from 'uuid';
+import * as _ from 'fast-sort';
 
 @Component({
     selector: 'transaction-auto-category',
@@ -31,7 +32,10 @@ export class TransactionAutoCategoryComponent implements OnInit, OnDestroy{
 
     ngOnInit(){
         this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((result: TransactionCategory[]) => {
-            this.categories = result;
+            this.categories = _.sort(result).by([
+                { asc: c => c.deleted},
+                { asc: c => c.title}
+            ]);
         });
         this.routeSubscription = this.route.params.subscribe(
             (params: Params) => {
@@ -44,6 +48,7 @@ export class TransactionAutoCategoryComponent implements OnInit, OnDestroy{
                     this.adding = false;
                     this.transactionsService.transactionsAutocategoriesGet().subscribe((result: TransactionAutoCategory[]) =>{
                         this.data = result.find(ta => ta.id === params['id']);
+                        this.form.setValue(this.data);
                     });
                 }
             }
