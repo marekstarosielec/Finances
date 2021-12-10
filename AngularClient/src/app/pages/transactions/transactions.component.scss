@@ -23,6 +23,10 @@ th
     width: 15em;
 }
 
+.filterDateDropdown {
+    width: 25em;
+}
+
 .date {
     white-space: nowrap;
 }
@@ -46,4 +50,8 @@ p {
 
 .positive {
     color: green;
+}
+
+.dateFilterLabel {
+    vertical-align: middle;
 }

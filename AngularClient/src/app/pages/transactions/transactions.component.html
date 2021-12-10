@@ -24,15 +24,34 @@
               <!-- <th (click)="sort('scrappingDate')">
                 Data pobrania
               </th> -->
-              <th (click)="sort('date')">
-                Data
+              <th>
+                <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown">
+                  <i class="fa fa-filter" ngbDropdownToggle></i>
+                  <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #df="ngbDatepicker" id="dateFrom" />
+                        <div class="input-group-append">
+                          <button (click)="df.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+                        </div>
+                        &nbsp;
+                        <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #dt="ngbDatepicker" id="dateTo" />
+                        <div class="input-group-append">
+                          <button (click)="dt.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+                        </div>
+                    </div>
+                    <button (click)="filterByDate(df._inputValue, dt._inputValue)" class="btn btn-outline-primary">Zastosuj</button>
+        
+
+                  </div>
+                </div>
+                <span (click)="sort('date')">&nbsp;Data</span>
               </th>
               <th>
                 <div ngbDropdown class="d-inline-block" #accountFilterDropdown="ngbDropdown">
                   <i class="fa fa-filter" ngbDropdownToggle></i>
                   <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
                     <div class="list-group filterElement">
-                      <div >&nbsp;<input type="radio" id="all" value="all" name="account" (click)="filterByAccount('');$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===''"><label for="all">&nbsp;Wszystkie</label></div>
+                      <div>&nbsp;<input type="radio" id="all" value="all" name="account" (click)="filterByAccount('');$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===''"><label for="all">&nbsp;Wszystkie</label></div>
                       <div *ngFor="let account of primaryAccountList">&nbsp;<input type="radio" id="{{account.title}}" value="{{account.title}}" name="account" (click)="filterByAccount(account.title);$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===account.title"><label for="{{account.title}}">&nbsp;{{account.title}}</label></div>
                     </div>
                   </div>

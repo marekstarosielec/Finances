@@ -22,6 +22,8 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
     public accountFilter: string = '';
     public categoryFilter: string = '';
     descriptionFilter: string = '';
+    dateFromFilter: string = '';
+    dateToFilter: string = '';
     numberOfRecords: number = 100;
     sortColumn: string = 'date';
     sortOrder: number = -1;
@@ -66,13 +68,14 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
             this.descriptionFilter = qp.description ? decodeURIComponent(qp.description) : "";
             this.sortColumn = qp.sortColumn ?? 'date';
             this.sortOrder = qp.sortOrder ?? -1;
+            this.dateFromFilter = qp.from ?? "";
+            this.dateToFilter = qp.to ?? "";
             this.prepareView();
         });
     }
 
     ngAfterViewInit(): void {
         this.subscription = this.searchTerm$.pipe(
-            filter(res => res.length > 2),
             debounceTime(500), 
             distinctUntilChanged()
         ).subscribe((text: string) => {
@@ -120,6 +123,15 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
             data = data.filter(d => d.bankInfo?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1
             || d.comment?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1);
         }
+        if (this.dateFromFilter != ''){
+            const f = new Date(this.dateFromFilter);
+            data = data.filter(d => new Date(d.date) >= f);            
+        }
+        if (this.dateToFilter != ''){
+            const t = new Date(this.dateToFilter);
+            data = data.filter(d => new Date(d.date) <= t);            
+        }
+
         this.filteredNumberOfRecords = data.length;
         
         if (this.sortOrder == -1)
@@ -179,7 +191,7 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
         this.router.navigate(["new"], { relativeTo: this.route});
     }
 
-    filterDescription(value: string){
-        console.log(value);
+    filterByDate(from: string, to: string) {
+        this.router.navigate(['/transactions'], { queryParams: {  from: from, to: to }, queryParamsHandling: "merge" });
     }
 }
