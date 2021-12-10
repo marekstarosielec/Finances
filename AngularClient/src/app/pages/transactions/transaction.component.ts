@@ -107,11 +107,19 @@ export class TransactionComponent implements OnInit, OnDestroy{
         if(!this.form.valid){
             return;
         }
-        var date = new Date();
-        date.setUTCFullYear(this.form.value.date.year, this.form.value.date.month-1, this.form.value.date.day);
-        date.setUTCHours(0,0,0,0);
-        this.form.value.date=date;
-
+        let originalDate = new Date(this.data.date);
+        if (this.form.value.date.year != originalDate.getFullYear() 
+            || this.form.value.date.month-1 != originalDate.getMonth()
+            || this.form.value.date.day != originalDate.getDay()
+        )
+        {
+            var date = new Date();
+            date.setUTCFullYear(this.form.value.date.year, this.form.value.date.month-1, this.form.value.date.day);
+            date.setUTCHours(0,0,0,0);
+            this.form.value.date=date;
+        } else  {
+            this.form.value.date=originalDate;
+        }
         if (this.adding) {
             this.form.value.id = uuidv4();
             this.transactionsService.transactionsTransactionPost(this.form.value).pipe(take(1)).subscribe(() =>
