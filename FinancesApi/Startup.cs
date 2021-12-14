@@ -26,6 +26,7 @@ namespace FinancesApi
             services.AddSingleton<ICompressionService, CompressionService>();
             services.AddSingleton<ITransactionsService, TransactionsService>();
             services.AddSingleton<IBalanceService, BalanceService>();
+            services.AddSingleton<IDocumentService, DocumentService>();
             services.AddSingleton<IStatisticsService, StatisticsService>();
             services.AddSingleton<ICurrenciesService, CurrenciesService>();
 
@@ -34,6 +35,7 @@ namespace FinancesApi
             services.AddSingleton(typeof(TransactionCategoriesDataFile));
             services.AddSingleton(typeof(TransactionAutoCategoriesDataFile));
             services.AddSingleton(typeof(BalancesDataFile));
+            services.AddSingleton(typeof(DocumentsDataFile));
             services.AddSingleton(typeof(CurrenciesDataFile));
             services.AddSingleton(typeof(DatasetInfoDataFile));
 

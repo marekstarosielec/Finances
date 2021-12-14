@@ -4,6 +4,7 @@ export * from './datasetCloseInstruction';
 export * from './datasetInfo';
 export * from './datasetOpenInstruction';
 export * from './datasetState';
+export * from './document';
 export * from './statisticsAll';
 export * from './statisticsBill';
 export * from './statisticsBills';

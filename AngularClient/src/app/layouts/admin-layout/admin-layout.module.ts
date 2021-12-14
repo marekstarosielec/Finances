@@ -27,6 +27,7 @@ import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-cat
 import { CCBalanceComponent } from 'app/pages/dashboard/cc-balance/cc-balance.component';
 import { ScrappingInfoComponent } from 'app/pages/dashboard/scrapping-info/scrapping-info.component';
 import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
+import { DocumentsComponent } from 'app/pages/documents/documents.component';
 
 @NgModule({
   imports: [
@@ -57,7 +58,8 @@ import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
     LoadingIndicatorComponent,
     CCBalanceComponent,
     ScrappingInfoComponent,
-    BillsComponent
+    BillsComponent,
+    DocumentsComponent
   ]
 })
 
