@@ -28,6 +28,7 @@ import { CCBalanceComponent } from 'app/pages/dashboard/cc-balance/cc-balance.co
 import { ScrappingInfoComponent } from 'app/pages/dashboard/scrapping-info/scrapping-info.component';
 import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
 import { DocumentsComponent } from 'app/pages/documents/documents.component';
+import { DocumentComponent } from 'app/pages/documents/document.component';
 
 @NgModule({
   imports: [
@@ -59,7 +60,8 @@ import { DocumentsComponent } from 'app/pages/documents/documents.component';
     CCBalanceComponent,
     ScrappingInfoComponent,
     BillsComponent,
-    DocumentsComponent
+    DocumentsComponent,
+    DocumentComponent
   ]
 })
 

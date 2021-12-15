@@ -22,7 +22,7 @@ export class DocumentsComponent implements OnInit{
     constructor (private documentsService: DocumentsService, private router: Router, private route: ActivatedRoute) {}
 
     ngOnInit(){
-        this.documentsService.documentsGet().subscribe( (documents: Document[]) => {
+        this.documentsService.documentsGet().pipe(take(1)).subscribe( (documents: Document[]) => {
             this.data = documents;
             this.prepareView();
         });
@@ -30,23 +30,23 @@ export class DocumentsComponent implements OnInit{
 
     sort(column: string)
     {
-        // if (column === this.sortColumn){
-        //     this.sortOrder = this.sortOrder * (-1);
-        // } else {
-        //     this.sortColumn = column;
-        //     this.sortOrder = -1;
-        // }
-        // this.prepareView();
+        if (column === this.sortColumn){
+            this.sortOrder = this.sortOrder * (-1);
+        } else {
+            this.sortColumn = column;
+            this.sortOrder = -1;
+        }
+        this.prepareView();
     }
 
     showAll() {
-        // this.showAllRecords = true;
-        // this.prepareView();
+        this.showAllRecords = true;
+        this.prepareView();
     }
 
     showSome(){
-        // this.showAllRecords = false;
-        // this.prepareView();
+        this.showAllRecords = false;
+        this.prepareView();
     }
 
     prepareView() {
@@ -58,16 +58,11 @@ export class DocumentsComponent implements OnInit{
         this.dataSubject.next(data);
     }
 
-    filterByAccount(account: string) {
-        // this.accountFilter = account;
-        // this.prepareView();
-    }
-
     selectRecord(id) {
-        // this.router.navigate([id], { relativeTo: this.route});
+        this.router.navigate([id], { relativeTo: this.route});
     }
 
     addNew() {
-        // this.router.navigate(["new"], { relativeTo: this.route});
+        this.router.navigate(["new"], { relativeTo: this.route});
     }
 }

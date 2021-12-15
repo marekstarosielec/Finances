@@ -41,7 +41,8 @@ namespace FinancesApi.Services
             TransactionAutoCategoriesDataFile transactionAutoCategoriesDataFile,
             BalancesDataFile balancesDataFile,
             DatasetInfoDataFile datasetInfoDataFile,
-            CurrenciesDataFile currenciesDataFile)
+            CurrenciesDataFile currenciesDataFile,
+            DocumentsDataFile documentsDataFile)
         {
             _basePath = configuration.GetValue<string>("DatasetPath");
             _datasetArchive.Location = _basePath;
@@ -52,6 +53,7 @@ namespace FinancesApi.Services
             _dataFiles.Add(transactionCategoriesDataFile.DataFile);
             _dataFiles.Add(transactionAutoCategoriesDataFile.DataFile);
             _dataFiles.Add(balancesDataFile.DataFile);
+            _dataFiles.Add(documentsDataFile.DataFile);
             _dataFiles.Add(currenciesDataFile.DataFile);
 
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();

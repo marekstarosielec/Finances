@@ -24,7 +24,7 @@ export class BalancesComponent implements OnInit{
     constructor (private balancesService: BalancesService, private transactionsService: TransactionsService, private router: Router, private route: ActivatedRoute) {}
 
     ngOnInit(){
-        this.balancesService.balancesGet().subscribe((balances: Balance[]) =>{
+        this.balancesService.balancesGet().pipe(take(1)).subscribe((balances: Balance[]) =>{
             this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((accounts: TransactionAccount[]) => {
                 this.data = balances;
                 this.accountList = accounts;

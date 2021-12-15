@@ -15,7 +15,7 @@ export interface Document {
     id?: string | null;
     number?: number;
     date?: string;
-    pages?: number;
+    pages?: number | null;
     description?: string | null;
     category?: string | null;
     invoiceNumber?: string | null;

@@ -7,7 +7,7 @@ namespace FinancesApi.Models
         public string Id { get; set; }
         public int Number { get; set; }
         public DateTime Date { get; set; }
-        public int Pages { get; set; }
+        public int? Pages { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
         public string InvoiceNumber { get; set; }

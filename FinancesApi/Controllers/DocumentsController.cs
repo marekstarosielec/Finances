@@ -23,6 +23,9 @@ namespace FinancesApi.Controllers
         [HttpGet]
         public IEnumerable<Document> Get() => _documentService.GetDocuments();
 
+        [HttpGet("number")]
+        public int GetMaxNumber() => _documentService.GetMaxDocumentNumber();
+
         [HttpGet("{id}")]
         public Document GetSingle(string id) => _documentService.GetDocuments(id).FirstOrDefault();
 

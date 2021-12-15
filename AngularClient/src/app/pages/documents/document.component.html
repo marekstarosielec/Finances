@@ -1,0 +1,77 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <button type="submit" class="btn btn-primary" [disabled]="!isSavable()">Zapisz</button>
+  <button type="button" class="btn btn-outline-danger" (click)="open(content)" [disabled]="!isDeletable()">Usuń</button>
+  <div class="form-group">
+    <label for="number">Numer</label>
+    <div class="input-group">
+      <input type="number" class="form-control" id="number" placeholder="Numer" formControlName="number">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="date">Data</label>
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #d="ngbDatepicker" id="date" formControlName="date" />
+      <div class="input-group-append">
+        <button (click)="d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="company">Firma</label>
+    <div class="input-group">
+      <input type="tex" class="form-control" id="company" placeholder="Firma" formControlName="company">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="description">Opis</label>
+    <div class="input-group">
+      <input type="tex" class="form-control" id="description" placeholder="Opis" formControlName="description">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="category">Kategoria</label>
+    <div class="input-group">
+      <input type="tex" class="form-control" id="category" placeholder="Kategoria" formControlName="category">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="invoiceNumber">Faktura</label>
+    <div class="input-group">
+      <input type="tex" class="form-control" id="invoiceNumber" placeholder="Faktura" formControlName="invoiceNumber">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="person">Osoba</label>
+    <div class="input-group">
+      <input type="tex" class="form-control" id="person" placeholder="Osoba" formControlName="person">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="car">Samochód</label>
+    <div class="input-group">
+      <input type="tex" class="form-control" id="car" placeholder="Samochód" formControlName="car">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="relatedObject">Rzecz</label>
+    <div class="input-group">
+      <input type="tex" class="form-control" id="relatedObject" placeholder="Rzecz" formControlName="relatedObject">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="guarantee">Gwarancja</label>
+    <div class="input-group">
+      <input type="tex" class="form-control" id="guarantee" placeholder="Gwarancja" formControlName="guarantee">
+    </div>
+  </div>
+</form>
+
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Na pewno?</h4>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('back')">Anuluj</button>
+      <button type="button" class="btn btn-outline-danger" (click)="modal.close('delete')">Usuń</button>
+    </div>
+  </ng-template>

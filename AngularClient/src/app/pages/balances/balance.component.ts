@@ -49,7 +49,6 @@ export class BalanceComponent implements OnInit, OnDestroy{
                     this.adding = false;
                     this.balancesService.balancesIdGet(params['id']).pipe(take(1)).subscribe((result: Balance) => {
                         this.data = result;
-                        console.log(result);
                         this.form.setValue(result);
                         let date = new Date(result.date);
                         this.form.controls['date'].setValue({year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()});
