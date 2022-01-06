@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { BalancesService } from './api/balances.service';
 import { CurrenciesService } from './api/currencies.service';
 import { DatasetService } from './api/dataset.service';
+import { DocumentDatasetService } from './api/documentDataset.service';
 import { DocumentsService } from './api/documents.service';
 import { MBankScrapperService } from './api/mBankScrapper.service';
 import { StatisticsService } from './api/statistics.service';

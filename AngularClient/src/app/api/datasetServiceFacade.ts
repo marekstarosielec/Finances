@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DatasetInfo, DatasetService, DatasetState } from "./generated";
 import { take } from "rxjs/operators";
-import { DatasetOpen } from "./generated/model/datasetOpen";
 import { DatasetCloseInstruction } from "./generated/model/datasetCloseInstruction";
 import { DatasetOpenInstruction } from "./generated/model/datasetOpenInstruction";
 

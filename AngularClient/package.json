@@ -10,7 +10,9 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "generate-client-api": "openapi-generator-cli generate -i http://localhost:5000/swagger/v1/swagger.json -g typescript-angular -o src/app/api/generated && @powershell ./api-client-fix.ps1",
-    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
+    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
+    "docsServer": "http-server ../../FinancesData/Dokumenty",
+    "all": "npm-run-all --parallel start docsServer"
   },
   "private": true,
   "dependencies": {

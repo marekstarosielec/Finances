@@ -23,6 +23,7 @@ namespace FinancesApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDatasetService, DatasetService>();
+            services.AddSingleton<IDocumentDatasetService, DocumentDatasetService>();
             services.AddSingleton<ICompressionService, CompressionService>();
             services.AddSingleton<ITransactionsService, TransactionsService>();
             services.AddSingleton<IBalanceService, BalanceService>();
@@ -38,6 +39,7 @@ namespace FinancesApi
             services.AddSingleton(typeof(DocumentsDataFile));
             services.AddSingleton(typeof(CurrenciesDataFile));
             services.AddSingleton(typeof(DatasetInfoDataFile));
+            services.AddSingleton(typeof(DocumentDatasetInfoDataFile));
 
 
             services.AddCors(); 

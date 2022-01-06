@@ -29,6 +29,7 @@ import { ScrappingInfoComponent } from 'app/pages/dashboard/scrapping-info/scrap
 import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
 import { DocumentsComponent } from 'app/pages/documents/documents.component';
 import { DocumentComponent } from 'app/pages/documents/document.component';
+import { DocumentStateComponent } from 'app/pages/document-state/document-state.component';
 
 @NgModule({
   imports: [
@@ -61,7 +62,8 @@ import { DocumentComponent } from 'app/pages/documents/document.component';
     ScrappingInfoComponent,
     BillsComponent,
     DocumentsComponent,
-    DocumentComponent
+    DocumentComponent,
+    DocumentStateComponent
   ]
 })
 

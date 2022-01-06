@@ -1,12 +1,20 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { TransactionAccount, TransactionCategory } from 'app/api/generated';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, ObjectUnsubscribedError, Subject, Subscription } from 'rxjs';
 import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, filter, map, take } from 'rxjs/operators';
 import * as _ from 'fast-sort';
+import * as l from 'lodash';
+
+export interface AmountSums {
+    amount: number;
+    currency: string;
+    incoming: number;
+    outgoing: number;
+}
 
 @Component({
     selector: 'transactions',
@@ -34,7 +42,7 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
     loading: boolean;
     subscription: Subscription;
     searchTerm$ = new Subject<string>();
-
+    totalAmounts: AmountSums[];
     constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService,
         private router: Router, private route: ActivatedRoute) {}
     
@@ -144,7 +152,15 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
                 { asc: t => t[this.sortColumn]},
                 { asc: t => t.id}
             ]);
-       
+        
+        this.totalAmounts =  l(data)
+            .groupBy('currency')
+            .map((objs, key) => ({
+                'currency': key,
+                'amount': l.sumBy(objs, 'amount'),
+                'incoming': l.sumBy(objs.filter(o => o.amount > 0), 'amount'),
+                'outgoing': l.sumBy(objs.filter(o => o.amount < 0), 'amount') }))
+            .value();
         if (this.numberOfRecords && this.numberOfRecords != 0) {
             data = data.slice(0, this.numberOfRecords);
         }

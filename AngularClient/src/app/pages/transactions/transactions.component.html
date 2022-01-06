@@ -3,18 +3,28 @@
 <div class="row" *ngIf="!loading">
   <div class="col-md-12">
     <div class="card">
-      <div class="card-header" *ngIf="numberOfRecords != 0 && currentNumberOfRecords < filteredNumberOfRecords && currentNumberOfRecords > 0">
-        Widoczne {{currentNumberOfRecords}} z {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showAll()">Pokaż wszystkie.</span>
+      <div class="card-header">
+        <span *ngIf="numberOfRecords != 0 && currentNumberOfRecords < filteredNumberOfRecords && currentNumberOfRecords > 0">
+          Widoczne {{currentNumberOfRecords}} z {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showAll()">Pokaż wszystkie.</span>
+        </span>
+        <span *ngIf="numberOfRecords == 0 && filteredNumberOfRecords > 0">
+          Widoczne wszystkie {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showSome()">Pokaż część.</span>
+        </span>
+        <span *ngIf="numberOfRecords != 0 && currentNumberOfRecords == filteredNumberOfRecords && currentNumberOfRecords > 0">
+          Widoczne wszystkie {{filteredNumberOfRecords}} rekordów.
+        </span>
+        <span *ngIf="currentNumberOfRecords == 0">
+          Brak rekordów.
+        </span>
+        <div *ngIf="currentNumberOfRecords > 0">
+          Suma: 
+          <div *ngFor="let amount of totalAmounts">
+            {{amount.amount | number:'1.2-2'}} {{amount.currency}} ({{amount.incoming | number:'1.2-2'}} / {{amount.outgoing | number:'1.2-2'}})
+          </div>
+        </div>
       </div>
-      <div class="card-header" *ngIf="numberOfRecords == 0 && filteredNumberOfRecords > 0">
-        Widoczne wszystkie {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showSome()">Pokaż część.</span>
-      </div>
-      <div class="card-header" *ngIf="numberOfRecords != 0 && currentNumberOfRecords == filteredNumberOfRecords && currentNumberOfRecords > 0">
-        Widoczne wszystkie {{filteredNumberOfRecords}} rekordów.
-      </div>
-      <div class="card-header" *ngIf="currentNumberOfRecords == 0">
-        Brak rekordów.
-      </div>
+
+    
       <div class="card-body">
         <button type="button" class="btn btn-primary" (click)="scrapButtonClick()">Pobierz z mBanku</button>
         <button (click)="addNew()" class="btn btn-secondary">Dodaj</button>

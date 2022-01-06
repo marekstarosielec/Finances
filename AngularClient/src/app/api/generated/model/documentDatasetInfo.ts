@@ -9,10 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DatasetState } from './datasetState';
 
 
-export interface DatasetCloseInstruction { 
-    password?: string | null;
-    makeBackups?: boolean;
+export interface DocumentDatasetInfo { 
+    state?: DatasetState;
+    lastCloseDate?: string;
+    error?: string | null;
 }
 

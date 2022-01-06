@@ -31,6 +31,7 @@ export class DocumentComponent implements OnInit, OnDestroy{
         car: new FormControl('', []),
         relatedObject: new FormControl('', []),
         guarantee: new FormControl('', []),
+        extension: new FormControl('', []),
     });
     
     constructor (private documentsService: DocumentsService, private route: ActivatedRoute, private location: Location,

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Document,DocumentsService } from 'app/api/generated';
-import { BehaviorSubject } from 'rxjs';
+import { DatasetState, Document,DocumentDatasetInfo,DocumentDatasetService,DocumentsService } from 'app/api/generated';
+import { BehaviorSubject, timer } from 'rxjs';
 import * as _ from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
+import { DocumentDatasetServiceFacade } from 'app/api/documentDatasetServiceFacade';
 
 @Component({
     selector: 'documents',
@@ -18,13 +19,16 @@ export class DocumentsComponent implements OnInit{
     sortOrder: number = -1;
     dataSubject = new BehaviorSubject(null);
     showAllRecords: boolean = false;
-    
-    constructor (private documentsService: DocumentsService, private router: Router, private route: ActivatedRoute) {}
+    documentsOpened: boolean;
+    constructor (private documentDatasetService: DocumentDatasetService, private documentsService: DocumentsService, private router: Router, private route: ActivatedRoute) {}
 
     ngOnInit(){
-        this.documentsService.documentsGet().pipe(take(1)).subscribe( (documents: Document[]) => {
-            this.data = documents;
-            this.prepareView();
+        this.documentDatasetService.documentDatasetGet().pipe(take(1)).subscribe((info: DocumentDatasetInfo) => {
+            this.documentsOpened = info.state == DatasetState.Opened;
+            this.documentsService.documentsGet().pipe(take(1)).subscribe( (documents: Document[]) => {
+                this.data = documents;
+                this.prepareView();
+            });
         });
     }
 
@@ -64,5 +68,13 @@ export class DocumentsComponent implements OnInit{
 
     addNew() {
         this.router.navigate(["new"], { relativeTo: this.route});
+    }
+
+    openDocument(document: Document) {
+        let fileName = document.number.toString();
+        while (fileName.length < 5)
+            fileName = '0' + fileName;
+        fileName = 'MX' + fileName + '.' + document.extension;
+        window.open("http://127.0.0.1:8080/" +fileName, "_blank", "noopener noreferrer");
     }
 }

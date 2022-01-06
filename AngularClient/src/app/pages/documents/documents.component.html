@@ -1,4 +1,5 @@
 <!-- <loading-indicator *ngIf="loading"></loading-indicator> -->
+<app-document-state></app-document-state>
 <div class="row" *ngIf="!loading">
   <div class="col-md-12">
     <div class="card">
@@ -30,22 +31,8 @@
               </th>
               <th>
                 Relacje
-              </th>
-              <!-- <th>
-                <div ngbDropdown class="d-inline-block" #accountFilterDropdown="ngbDropdown">
-                  <i class="fa fa-filter" ngbDropdownToggle></i>
-                  <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
-                    <div class="list-group filterElement">
-                      <div >&nbsp;<input type="radio" id="all" value="all" name="account" (click)="filterByAccount('');$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===''"><label for="all">&nbsp;Wszystkie</label></div>
-                      <div *ngFor="let account of accountList">&nbsp;<input type="radio" id="{{account.title}}" value="{{account.title}}" name="account" (click)="filterByAccount(account.title);$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===account.title"><label for="{{account.title}}">&nbsp;{{account.title}}</label></div>
-                    </div>
-                  </div>
-                </div>
-                <span (click)="sort('account')">&nbsp;Konto</span>
-              </th> -->
-              <!-- <th class="text-right" (click)="sort('amount')">
-                Kwota
-              </th> -->
+              </th>  
+              <th><!-- link to document --></th>
             </thead>
             <tbody>
               <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id)">
@@ -60,6 +47,7 @@
                   <p *ngIf="row.relatedObject" class="subcomment">{{row.relatedObject}}</p>
                   <p *ngIf="row.guarantee" class="subcomment">{{row.guarantee}}</p>
                 </td>
+                <td (click)="openDocument(row);$event.stopPropagation()"><span *ngIf="documentsOpened"> <i class="nc-icon nc-image"></i></span></td>
               </tr>
             </tbody>
           </table>

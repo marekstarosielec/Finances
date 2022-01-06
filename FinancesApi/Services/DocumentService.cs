@@ -1,7 +1,9 @@
 ﻿using FinancesApi.DataFiles;
 using FinancesApi.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace FinancesApi.Services
@@ -12,21 +14,30 @@ namespace FinancesApi.Services
         int GetMaxDocumentNumber();
         void SaveDocument(Document document);
         void DeleteDocument(string id);
-
     }
 
     public class DocumentService: IDocumentService
     {
         private readonly DocumentsDataFile _documentsDataFile;
+        private readonly IConfiguration _configuration;
 
-        public DocumentService(DocumentsDataFile documentsDataFile)
+        public DocumentService(DocumentsDataFile documentsDataFile, IConfiguration configuration)
         {
             _documentsDataFile = documentsDataFile;
+            _configuration = configuration;
         }
 
         public IList<Document> GetDocuments(string id = null)
         {
             _documentsDataFile.Load();
+            _documentsDataFile.Value.ForEach(d => {
+                if (File.Exists("c:\\Users\\marek\\source\\repos\\FinancesData\\Dokumenty\\MX" + d.Number.ToString().PadLeft(5, '0') + ".pdf"))
+                    d.Extension = "pdf";
+                else
+                    d.Extension = "jpg";
+
+            });
+            _documentsDataFile.Save();
             return string.IsNullOrWhiteSpace(id)
                  ? _documentsDataFile.Value
                  : _documentsDataFile.Value.Where(d => string.Equals(id, d.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();

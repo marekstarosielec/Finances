@@ -14,6 +14,7 @@
 export interface Document { 
     id?: string | null;
     number?: number;
+    extension?: string | null;
     date?: string;
     pages?: number | null;
     description?: string | null;

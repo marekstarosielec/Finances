@@ -5,6 +5,7 @@ export * from './datasetInfo';
 export * from './datasetOpenInstruction';
 export * from './datasetState';
 export * from './document';
+export * from './documentDatasetInfo';
 export * from './statisticsAll';
 export * from './statisticsBill';
 export * from './statisticsBills';

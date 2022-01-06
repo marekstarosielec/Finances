@@ -1,0 +1,110 @@
+<div class="row" *ngIf="isOpening()">
+  <div class="col-md-12">
+    <div class="card card-upgrade">
+      <div class="card-header text-center">
+        <h6 class="card-title">Otwieranie dostępu do dokumentów</h6>
+      </div>
+      <div class="card-body">
+        <div class="loader">
+          <svg class="circular">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
+          </svg>
+        </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row" *ngIf="isClosing()">
+  <div class="col-md-12">
+    <div class="card card-upgrade">
+      <div class="card-header text-center">
+        <h6 class="card-title">Zamykanie dostępu do dokumentów</h6>
+      </div>
+      <div class="card-body">
+        <div class="loader">
+          <svg class="circular">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
+          </svg>
+        </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row" *ngIf="canOpen()">
+    <div class="col-md-12">
+      <div class="card card-upgrade">
+        <div class="card-header text-center">
+          <h6 class="card-title">Dostęp do dokumentów jest zamknięty ({{ info?.lastCloseDate | date: 'yyyy-MM-dd'}})</h6>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="formOpen" (ngSubmit)="openSubmit()">
+            <div class="form-group">
+                <input 
+                    formControlName="password"
+                    id="name" 
+                    type="password" 
+                    class="form-control">
+            </div>
+            <div class="has-error" *ngIf="error" >  
+              {{error}}
+            </div>
+            <button class="btn btn-primary" type="submit" [disabled]="!formOpen.valid">Otwórz</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+<div class="row" *ngIf="canClose()">
+    <div class="col-md-12">
+      <div class="card card-upgrade">
+        <div class="card-header text-center">
+          <h6 class="card-title">Dostęp do dokumentów jest otwarty ({{ todayDate | date: 'yyyy-MM-dd'}})</h6>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="formClose" (ngSubmit)="closeSubmit()">
+            <div class="form-group">
+                <input 
+                    formControlName="password"
+                    id="password" 
+                    type="password" 
+                    class="form-control"
+                    placeholder="Hasło">
+            </div>
+            <div class="form-group">
+              <input 
+                formControlName="password2"
+                id="password2" 
+                type="password" 
+                class="form-control"
+                placeholder="Powtórz hasło">
+              <div class="has-error" *ngIf="formClose.controls.password2.errors?.differentPassword" >  
+                Hasła powinny być takie same
+              </div>
+          </div>
+          <div class="has-error" *ngIf="error" >  
+            {{error}}
+          </div>
+          <button class="btn btn-primary" type="submit" [disabled]="!formClose.valid">Zamknij</button>
+          <button class="btn btn-secondary" type="button" (click)="open(content)">Zamknij bez zapisywania</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Usunąć zmiany?</h4>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('back')">Anuluj</button>
+      <button type="button" class="btn btn-outline-danger" (click)="modal.close('delete')">Zamknij</button>
+    </div>
+  </ng-template>

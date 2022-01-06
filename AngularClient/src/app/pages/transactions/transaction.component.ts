@@ -107,7 +107,10 @@ export class TransactionComponent implements OnInit, OnDestroy{
         if(!this.form.valid){
             return;
         }
-        let originalDate = new Date(this.data.date);
+        let originalDate = new Date("1990-01-01");
+        if (this.data)
+            originalDate = new Date(this.data.date);
+
         if (this.form.value.date.year != originalDate.getFullYear() 
             || this.form.value.date.month-1 != originalDate.getMonth()
             || this.form.value.date.day != originalDate.getDay()
