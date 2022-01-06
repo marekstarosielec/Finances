@@ -1,16 +1,14 @@
-<!-- <loading-indicator *ngIf="loading"></loading-indicator> -->
-
 <div class="row" *ngIf="!loading">
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <span *ngIf="numberOfRecords != 0 && currentNumberOfRecords < filteredNumberOfRecords && currentNumberOfRecords > 0">
+        <span *ngIf="maximumVisibleNumberOfRecords != 0 && currentNumberOfRecords < filteredNumberOfRecords && currentNumberOfRecords > 0">
           Widoczne {{currentNumberOfRecords}} z {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showAll()">Pokaż wszystkie.</span>
         </span>
-        <span *ngIf="numberOfRecords == 0 && filteredNumberOfRecords > 0">
+        <span *ngIf="maximumVisibleNumberOfRecords == 0 && filteredNumberOfRecords > 0">
           Widoczne wszystkie {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showSome()">Pokaż część.</span>
         </span>
-        <span *ngIf="numberOfRecords != 0 && currentNumberOfRecords == filteredNumberOfRecords && currentNumberOfRecords > 0">
+        <span *ngIf="maximumVisibleNumberOfRecords != 0 && currentNumberOfRecords == filteredNumberOfRecords && currentNumberOfRecords > 0">
           Widoczne wszystkie {{filteredNumberOfRecords}} rekordów.
         </span>
         <span *ngIf="currentNumberOfRecords == 0">
@@ -19,7 +17,7 @@
         <div *ngIf="currentNumberOfRecords > 0">
           Suma: 
           <div *ngFor="let amount of totalAmounts">
-            {{amount.amount | number:'1.2-2'}} {{amount.currency}} ({{amount.incoming | number:'1.2-2'}} / {{amount.outgoing | number:'1.2-2'}})
+            {{amount.currency}}: {{amount.amount | number:'1.2-2'}} ({{amount.incoming | number:'1.2-2'}} / {{amount.outgoing | number:'1.2-2'}})
           </div>
         </div>
       </div>
@@ -38,20 +36,8 @@
                 <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown">
                   <i class="fa fa-filter" ngbDropdownToggle></i>
                   <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #df="ngbDatepicker" id="dateFrom" />
-                        <div class="input-group-append">
-                          <button (click)="df.toggle()" type="button"><i class="fa fa-calendar"></i></button>
-                        </div>
-                        &nbsp;
-                        <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #dt="ngbDatepicker" id="dateTo" />
-                        <div class="input-group-append">
-                          <button (click)="dt.toggle()" type="button"><i class="fa fa-calendar"></i></button>
-                        </div>
-                    </div>
-                    <button (click)="filterByDate(df._inputValue, dt._inputValue)" class="btn btn-outline-primary">Zastosuj</button>
-        
-
+                    <date-filter [dateFrom]="this.dateFromFilter" (dateChanged)="filterByDate($event)"></date-filter>
+                    <button (click)="filterByDateApply()" class="btn btn-outline-primary" ngbDropdownToggle>Zastosuj</button>
                   </div>
                 </div>
                 <span (click)="sort('date')">&nbsp;Data</span>
@@ -124,5 +110,4 @@
       </div>
     </div>
   </div>
-  
 </div>

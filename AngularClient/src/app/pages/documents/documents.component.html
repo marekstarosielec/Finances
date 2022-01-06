@@ -3,11 +3,19 @@
 <div class="row" *ngIf="!loading">
   <div class="col-md-12">
     <div class="card">
-      <div class="card-header" *ngIf="!showAllRecords">
-        Widoczne {{numberOfRecords}} z {{totalNumberOfRecords}} rekordów. <span class="showAll" (click)="showAll()">Pokaż wszystkie.</span>
-      </div>
-      <div class="card-header" *ngIf="showAllRecords">
-        Widoczne wszystkie {{totalNumberOfRecords}} rekordów. <span class="showAll" (click)="showSome()">Pokaż część.</span>
+      <div class="card-header">
+        <span *ngIf="maximumVisibleNumberOfRecords != 0 && currentNumberOfRecords < filteredNumberOfRecords && currentNumberOfRecords > 0">
+          Widoczne {{currentNumberOfRecords}} z {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showAll()">Pokaż wszystkie.</span>
+        </span>
+        <span *ngIf="maximumVisibleNumberOfRecords == 0 && filteredNumberOfRecords > 0">
+          Widoczne wszystkie {{filteredNumberOfRecords}} rekordów. <span class="showAll" (click)="showSome()">Pokaż część.</span>
+        </span>
+        <span *ngIf="maximumVisibleNumberOfRecords != 0 && currentNumberOfRecords == filteredNumberOfRecords && currentNumberOfRecords > 0">
+          Widoczne wszystkie {{filteredNumberOfRecords}} rekordów.
+        </span>
+        <span *ngIf="currentNumberOfRecords == 0">
+          Brak rekordów.
+        </span>
       </div>
       <div class="card-body">
         <button (click)="addNew()" class="btn btn-primary">Dodaj</button>
@@ -17,8 +25,15 @@
               <th (click)="sort('number')">
                 Numer
               </th>
-              <th (click)="sort('date')">
-                Data
+              <th>
+                <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown">
+                  <i class="fa fa-filter" ngbDropdownToggle></i>
+                  <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
+                    <date-filter [dateFrom]="this.dateFromFilter" (dateChanged)="filterByDate($event)"></date-filter>
+                    <button (click)="filterByDateApply()" class="btn btn-outline-primary" ngbDropdownToggle>Zastosuj</button>
+                  </div>
+                </div>
+                <span (click)="sort('date')">&nbsp;Data</span>
               </th>
               <th (click)="sort('company')">
                 Firma
@@ -37,7 +52,7 @@
             <tbody>
               <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id)">
                 <td>{{row.number}}</td>
-                <td>{{row.date | date: 'yyyy-MM-dd'}}</td>
+                <td class="date">{{row.date | date: 'yyyy-MM-dd'}}</td>
                 <td>{{row.company}}</td>
                 <td>{{row.description}}</td>
                 <td>{{row.invoiceNumber}}</td>

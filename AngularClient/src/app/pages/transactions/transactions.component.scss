@@ -13,6 +13,7 @@ th
 {
     overflow-x: hidden;
     overflow-y: hidden;
+    min-height: 400px;
 }
 
 .showAll{
@@ -39,11 +40,11 @@ p {
     font-style: italic;
 }
 
-
 .amount {
     font-weight:bold;
     white-space: nowrap;
 }
+
 .negative {
     color: red;
 }

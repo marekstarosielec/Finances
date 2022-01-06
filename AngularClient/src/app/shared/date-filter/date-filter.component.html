@@ -1,0 +1,46 @@
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="dateFilter" id="noFilter" [checked]="isNoFilter()" (click)="setDates()">
+    <label class="form-check-label" for="noFilter">
+        Wszystkie
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="dateFilter" id="currentMonth" [checked]="isCurrentMonth()" (click)="setDates(this.firstDayOfCurrentMonth, this.lastDayOfCurrentMonth)">
+    <label class="form-check-label" for="currentMonth">
+        Bieżący miesiąc
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="dateFilter" id="previousMonth" [checked]="isPreviousMonth()" (click)="setDates(this.firstDayOfPreviousMonth, this.lastDayOfPreviousMonth)">
+    <label class="form-check-label" for="previousMonth">
+        Poprzedni miesiąc
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="dateFilter" id="currentYear" [checked]="isCurrentYear()"  (click)="setDates(this.firstDayOfCurrentYear, this.lastDayOfCurrentYear)">
+    <label class="form-check-label" for="currentYear">
+        Bieżący rok
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="dateFilter" id="previousYear"  [checked]="isPreviousYear()" (click)="setDates(this.firstDayOfPreviousYear, this.lastDayOfPreviousYear)">
+    <label class="form-check-label" for="previousYear">
+        Poprzedni rok
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="dateFilter" id="custom" [checked]="isCustom()">
+    <label class="form-check-label" for="previousYear">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #df="ngbDatepicker" id="dateFrom" (keyup)="customFromChange($event)" (dateSelect)="customFromChange($event)" autocomplete="off" />
+            <div class="input-group-append">
+                <button (click)="df.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+            </div>
+            &nbsp;
+            <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #dt="ngbDatepicker" id="dateTo" (keyup)="customToChange($event)" (dateSelect)="customToChange($event)" autocomplete="off"/>
+            <div class="input-group-append">
+                <button (click)="dt.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+            </div>
+        </div>
+    </label>
+</div>

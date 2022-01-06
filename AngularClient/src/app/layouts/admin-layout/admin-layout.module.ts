@@ -30,6 +30,7 @@ import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
 import { DocumentsComponent } from 'app/pages/documents/documents.component';
 import { DocumentComponent } from 'app/pages/documents/document.component';
 import { DocumentStateComponent } from 'app/pages/document-state/document-state.component';
+import { DateFilterComponent } from 'app/shared/date-filter/date-filter.component';
 
 @NgModule({
   imports: [
@@ -63,7 +64,8 @@ import { DocumentStateComponent } from 'app/pages/document-state/document-state.
     BillsComponent,
     DocumentsComponent,
     DocumentComponent,
-    DocumentStateComponent
+    DocumentStateComponent,
+    DateFilterComponent
   ]
 })
 

@@ -8,6 +8,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, filter, map, take } from 'rxjs/operators';
 import * as _ from 'fast-sort';
 import * as l from 'lodash';
+import { DateChange } from 'app/shared/date-filter/date-filter.component';
 
 export interface AmountSums {
     amount: number;
@@ -30,21 +31,24 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
     public accountFilter: string = '';
     public categoryFilter: string = '';
     descriptionFilter: string = '';
-    dateFromFilter: string = '';
-    dateToFilter: string = '';
-    numberOfRecords: number = 100;
+    dateFromFilter: Date;
+    dateToFilter: Date;
     sortColumn: string = 'date';
     sortOrder: number = -1;
     filteredNumberOfRecords: number = 0;
     currentNumberOfRecords: number = 0;
     totalNumberOfRecords: number = 0;
+    maximumVisibleNumberOfRecords: number = 100;
     dataSubject = new BehaviorSubject(null);
     loading: boolean;
     subscription: Subscription;
     searchTerm$ = new Subject<string>();
     totalAmounts: AmountSums[];
-    constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService,
-        private router: Router, private route: ActivatedRoute) {}
+    constructor (
+        private transactionsService: TransactionsService, 
+        private mbankScrappingService: MBankScrapperService,
+        private router: Router, 
+        private route: ActivatedRoute) {}
     
     ngOnInit(){
         this.loading = true;
@@ -69,15 +73,22 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
             })
         });
         this.route.queryParams.subscribe((qp: Params) => {
-            this.numberOfRecords = qp.limit ?? 100;
-            if (this.numberOfRecords < 0) this.numberOfRecords = 100;
+            this.maximumVisibleNumberOfRecords = qp.limit ?? 100;
+            if (this.maximumVisibleNumberOfRecords < 0) this.maximumVisibleNumberOfRecords = 100;
             this.accountFilter = qp.account ? decodeURIComponent(qp.account) : "";
             this.categoryFilter = qp.category ? decodeURIComponent(qp.category) : "";
             this.descriptionFilter = qp.description ? decodeURIComponent(qp.description) : "";
             this.sortColumn = qp.sortColumn ?? 'date';
             this.sortOrder = qp.sortOrder ?? -1;
-            this.dateFromFilter = qp.from ?? "";
-            this.dateToFilter = qp.to ?? "";
+            if (qp.from)
+                this.dateFromFilter = new Date(qp.from);
+            else
+                this.dateFromFilter = undefined;
+            
+            if (qp.to)
+                this.dateToFilter = new Date(qp.to);
+            else
+                this.dateToFilter = undefined;
             this.prepareView();
         });
     }
@@ -131,13 +142,13 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
             data = data.filter(d => d.bankInfo?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1
             || d.comment?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1);
         }
-        if (this.dateFromFilter != ''){
-            const f = new Date(this.dateFromFilter);
-            data = data.filter(d => new Date(d.date) >= f);            
+        if (this.dateFromFilter != undefined){
+            data = data.filter(d => new Date(d.date) >= this.dateFromFilter);    
+            console.log('from', this.dateFromFilter);        
         }
-        if (this.dateToFilter != ''){
-            const t = new Date(this.dateToFilter);
-            data = data.filter(d => new Date(d.date) <= t);            
+        if (this.dateToFilter != undefined){
+            data = data.filter(d => new Date(d.date) <= this.dateToFilter);            
+            console.log('to', this.dateToFilter);
         }
 
         this.filteredNumberOfRecords = data.length;
@@ -161,8 +172,8 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
                 'incoming': l.sumBy(objs.filter(o => o.amount > 0), 'amount'),
                 'outgoing': l.sumBy(objs.filter(o => o.amount < 0), 'amount') }))
             .value();
-        if (this.numberOfRecords && this.numberOfRecords != 0) {
-            data = data.slice(0, this.numberOfRecords);
+        if (this.maximumVisibleNumberOfRecords && this.maximumVisibleNumberOfRecords != 0) {
+            data = data.slice(0, this.maximumVisibleNumberOfRecords);
         }
         this.currentNumberOfRecords = data.length;
         this.dataSubject.next(data);
@@ -207,7 +218,22 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
         this.router.navigate(["new"], { relativeTo: this.route});
     }
 
-    filterByDate(from: string, to: string) {
-        this.router.navigate(['/transactions'], { queryParams: {  from: from, to: to }, queryParamsHandling: "merge" });
+    filterByDate(event: DateChange) : void {
+        this.dateFromFilter = event.dateFrom;
+        this.dateToFilter = event.dateTo;
+    }
+
+    filterByDateApply() : void {
+        let from: string;
+        let to: string;
+        if (this.dateFromFilter != undefined)
+            from = this.dateFromFilter.getFullYear() + '-' + (this.dateFromFilter.getMonth()+1) + '-' + this.dateFromFilter.getDate();
+        if (this.dateToFilter != undefined)
+            to = this.dateToFilter.getFullYear() + '-' + (this.dateToFilter.getMonth()+1) + '-' + this.dateToFilter.getDate();
+        
+        this.router.navigate(['/transactions'], { queryParams: {  
+            from: from, 
+            to: to, 
+            }, queryParamsHandling: "merge" });
     }
 }

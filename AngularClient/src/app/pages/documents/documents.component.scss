@@ -12,13 +12,12 @@ th
 {
     overflow-x: hidden;
     overflow-y: hidden;
+    min-height: 400px;
 }
-
 
 .filterDropdown {
     width: 15em;
 }
-
 
 p {
     margin-bottom: 0;
@@ -26,4 +25,16 @@ p {
 .subcomment {
     font-size: small;
     font-style: italic;
+}
+
+.date {
+    white-space: nowrap;
+}
+
+.showAll{
+    cursor: pointer;
+}
+
+.filterDateDropdown {
+    width: 25em;
 }
