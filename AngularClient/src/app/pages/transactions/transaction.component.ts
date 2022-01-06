@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CurrenciesService, Currency, Transaction, TransactionAccount, TransactionCategory, TransactionsService } from 'app/api/generated';
-import { Subscription } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import {v4 as uuidv4} from 'uuid';
 import { Location } from '@angular/common';
@@ -47,19 +47,32 @@ export class TransactionComponent implements OnInit, OnDestroy{
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe(
             (params: Params) => {
-                this.currenciesService.currenciesGet().pipe(take(1)).subscribe((result: Currency[]) => {
-                    this.currencies = result;
-                });
-                this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((result: TransactionAccount[]) => {
-                    this.accounts = result;
-                });
-                this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((result: TransactionCategory[]) => {
-                    this.categories = _.sort(result).by([
-                        { desc: c => c.usageIndex},
-                        { asc: c => c.deleted},
-                        { asc: c => c.title}
-                    ]);
-                });
+                // this.currenciesService.currenciesGet().pipe(take(1)).subscribe((result: Currency[]) => {
+                //     this.currencies = result;
+                // });
+                // this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((result: TransactionAccount[]) => {
+                //     this.accounts = result;
+                // });
+                // this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((result: TransactionCategory[]) => {
+                //     this.categories = _.sort(result).by([
+                //         { desc: c => c.usageIndex},
+                //         { asc: c => c.deleted},
+                //         { asc: c => c.title}
+                //     ]);
+                // });
+                forkJoin([
+                    this.currenciesService.currenciesGet(), 
+                    this.transactionsService.transactionsAccountsGet(),
+                    this.transactionsService.transactionsCategoriesGet()]).pipe(take(1)).subscribe(
+                        ([currencies, transactionAccounts, transactionCategories]) => {
+                            this.currencies = currencies;
+                            this.accounts = transactionAccounts;
+                            this.categories = _.sort(transactionCategories).by([
+                                { desc: c => c.usageIndex},
+                                { asc: c => c.deleted},
+                                { asc: c => c.title}
+                            ]);
+                        });
                 if (params['id']==='new'){
                     this.adding = true;
                     let date = new Date();
