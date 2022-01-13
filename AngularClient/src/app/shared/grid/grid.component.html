@@ -1,15 +1,14 @@
-<table class="table table-hover overflow-auto table-striped">
+<div class="table-responsive">
+    <table class="table table-hover overflow-auto table-striped">
     <thead class="text-primary" *ngFor="let column of columns">
-      <th (click)="sort('title')">
-        {{column.title}}
-      </th>
+        <th (click)="sort(column)">
+            {{column.title}}
+        </th>
     </thead>
     <tbody>
-        <tr *ngFor="let row of data" (click)="this.rowClicked.emit(row);">
+        <tr *ngFor="let row of dataSubject | async" (click)="this.rowClicked.emit(row);">
             <td *ngFor="let column of columns">{{row[column.dataProperty]}}</td>
         </tr>
-      <!-- <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id)">
-          <td>{{row.title}}</td>
-      </tr> -->
     </tbody>
   </table>
+</div>

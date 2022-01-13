@@ -3,9 +3,8 @@
     <div class="card">
       <div class="card-body">
         <button (click)="addNew()" class="btn btn-primary">Dodaj</button>
-        <div class="table-responsive">
-          <grid [columns]="columns" [data]="data" (rowClicked)="selectRecord($event.id)"></grid>
-        </div>
+        <grid name="accounts" [columns]="columns" [data]="data" (rowClicked)="selectRecord($event.id)"
+          initialSortColumn="title" initialSortOrder=1></grid>
       </div>
     </div>
   </div>
