@@ -4,18 +4,7 @@
       <div class="card-body">
         <button (click)="addNew()" class="btn btn-primary">Dodaj</button>
         <div class="table-responsive">
-          <table class="table table-hover overflow-auto table-striped">
-            <thead class="text-primary">
-              <th (click)="sort('title')">
-                Nazwa
-              </th>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id)">
-                  <td>{{row.title}}</td>
-              </tr>
-            </tbody>
-          </table>
+          <grid [columns]="columns" [data]="data" (rowClicked)="selectRecord($event.id)"></grid>
         </div>
       </div>
     </div>

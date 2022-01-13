@@ -3,6 +3,7 @@ import { TransactionAccount } from 'app/api/generated';
 import { BehaviorSubject } from 'rxjs';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { ActivatedRoute, Router } from '@angular/router';
+import { GridColumn } from 'app/shared/grid/grid.component';
 
 @Component({
     selector: 'accounts',
@@ -16,6 +17,8 @@ export class AccountsComponent implements OnInit{
     sortOrder: number = 1;
     dataSubject = new BehaviorSubject(null);
     
+    columns: GridColumn[];
+
     constructor (private transactionsService: TransactionsService, private router: Router, private route: ActivatedRoute) {}
 
     ngOnInit(){
@@ -23,6 +26,7 @@ export class AccountsComponent implements OnInit{
             this.data = accounts;
             this.prepareView();
         });
+        this.columns = [ { title: 'Nazwa', dataProperty: 'title'}];
     }
 
     sort(column: string)

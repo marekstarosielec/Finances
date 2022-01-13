@@ -123,6 +123,7 @@ namespace MBankScrapper
                 }
                 title = title
                     .Replace("eKonto - ", "")
+                    .Replace("mBiznes konto walutowe EUR - ", "")
                     .Replace("eKonto walutowe EUR - ", "")
                     .Replace("eMax - ", "")
                     .Replace("mBiznes konto - ", "")
@@ -228,12 +229,13 @@ namespace MBankScrapper
                 await _browser.Click(GetAccountFilterXPath(accountNumber));
                 var title = await _browser.GetInnerText(GetAccountFilterXPath(accountNumber));
                 title = title
-                    .Replace("\n", "")
+                    .Replace("EUR mBiznes konto walutowe", "")
                     .Replace("EUR eKonto walutowe", "")
                     .Replace("eKonto", "")
                     .Replace("eMax", "")
                     .Replace("mBiznes konto", "")
                     .Replace("\nKonto VAT", "")
+                    .Replace("\n", "")
                     .Replace(" - ", "");
 
                 var a = _accounts.FirstOrDefault(ai => ai.Title == title);
