@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 export interface GridColumn {
     title: string;
     dataProperty: string;
+    filterComponent?: string;
 }
 
 @Component({
@@ -46,11 +47,8 @@ export class GridComponent implements OnInit, OnDestroy{
             this.params = new QueryParamsHandler(this.name, qp, this.initialSortColumn, this.initialSortOrder);
             // this.maximumVisibleNumberOfRecords = qp.limit ?? 100;
             // if (this.maximumVisibleNumberOfRecords < 0) this.maximumVisibleNumberOfRecords = 100;
-            // this.accountFilter = qp.account ? decodeURIComponent(qp.account) : "";
-            // this.categoryFilter = qp.category ? decodeURIComponent(qp.category) : "";
-            // this.descriptionFilter = qp.description ? decodeURIComponent(qp.description) : "";
-            //this.sortColumn = qp[] ?? 'date';
-            // this.sortOrder = qp.sortOrder ?? -1;
+
+
             // if (qp.from)
             //     this.dateFromFilter = new Date(qp.from);
             // else
@@ -72,9 +70,7 @@ export class GridComponent implements OnInit, OnDestroy{
     sort(column: GridColumn)
     {
         this.params.sort(column.dataProperty);
-        this.router.navigate([], { relativeTo: this.route,  
-            queryParams: this.params.getQueryParams(), 
-            queryParamsHandling: "merge" });
+        this.navigate();
     }
 
     prepareView() {
@@ -95,10 +91,6 @@ export class GridComponent implements OnInit, OnDestroy{
         // if (this.categoryFilter !== '') {
         //     data = data.filter(d => d.category === this.categoryFilter || (this.categoryFilter === 'missing' && !!!d.category));
         // }
-        // if (this.descriptionFilter !== '') {
-        //     data = data.filter(d => d.bankInfo?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1
-        //     || d.comment?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1);
-        // }
         // if (this.dateFromFilter != undefined){
         //     data = data.filter(d => new Date(d.date) >= this.dateFromFilter);    
         //     console.log('from', this.dateFromFilter);        
@@ -107,18 +99,10 @@ export class GridComponent implements OnInit, OnDestroy{
         //     data = data.filter(d => new Date(d.date) <= this.dateToFilter);            
         //     console.log('to', this.dateToFilter);
         // }
+        data = this.applyFiltering(data);
 
         // this.filteredNumberOfRecords = data.length;
-        if (this.params.sortOrder == -1)
-            data = fs.sort(data).by([
-                { desc: t => t[this.params.sortColumn]},
-                { asc: t => t.id}
-            ]);
-        else
-            data = fs.sort(data).by([
-                { asc: t => t[this.params.sortColumn]},
-                { asc: t => t.id}
-            ]);
+        data = this.applySorting(data);
         
         // this.totalAmounts =  l(data)
         //     .groupBy('currency')
@@ -133,5 +117,49 @@ export class GridComponent implements OnInit, OnDestroy{
         // }
         // this.currentNumberOfRecords = data.length;
        this.dataSubject.next(data);
+    }
+
+    freeTextFilter(column: GridColumn, filterValue: string) {
+        this.params.setFilter(column.dataProperty, filterValue);
+        this.navigate();
+    }
+
+    navigate(){
+        this.router.navigate([], { relativeTo: this.route,  
+            queryParams: this.params.getQueryParams(), 
+            queryParamsHandling: "merge" });
+    }
+
+    applyFiltering(data: any[]) : any[] {
+        if (!this.params.filters)
+            return data;
+        this.params.filters.forEach(fd => {
+            console.log(fd);
+            const gridColumn = this.getColumnFromDataProperty(fd.column);
+            if (gridColumn)
+            {
+                data = data.filter(d => d[gridColumn.dataProperty].toUpperCase().indexOf(fd.filterValue.toUpperCase()) > -1);
+            }
+        });
+        return data;
+    }
+
+    applySorting(data: any[]) : any[] {
+        if (this.params.sortOrder == -1)
+            data = fs.sort(data).by([
+                { desc: t => t[this.params.sortColumn]},
+                { asc: t => t.id}
+            ]);
+        else
+            data = fs.sort(data).by([
+                { asc: t => t[this.params.sortColumn]},
+                { asc: t => t.id}
+            ]);
+        
+        return data;
+    }
+
+    getColumnFromDataProperty(columnDataProperty: string) : GridColumn {
+        return this.columns.find(cd => cd.dataProperty == columnDataProperty);
     }
 }

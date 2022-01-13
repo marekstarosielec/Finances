@@ -23,7 +23,7 @@ export interface AmountSums {
     templateUrl: 'transactions.component.html',
     styleUrls: ['./transactions.component.scss']
 })
-export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
+export class TransactionsComponent implements OnInit, OnDestroy{
     data: Transaction[];
     primaryAccountList: TransactionAccount[];
     primaryCategoryList: TransactionCategory[];
@@ -41,8 +41,6 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
     maximumVisibleNumberOfRecords: number = 100;
     dataSubject = new BehaviorSubject(null);
     loading: boolean;
-    subscription: Subscription;
-    searchTerm$ = new Subject<string>();
     totalAmounts: AmountSums[];
     constructor (
         private transactionsService: TransactionsService, 
@@ -93,17 +91,12 @@ export class TransactionsComponent implements OnInit, OnDestroy, AfterViewInit{
         });
     }
 
-    ngAfterViewInit(): void {
-        this.subscription = this.searchTerm$.pipe(
-            debounceTime(500), 
-            distinctUntilChanged()
-        ).subscribe((text: string) => {
-            this.router.navigate(['/transactions'], { queryParams: {  description: encodeURIComponent(text) }, queryParamsHandling: "merge" });
-        });
+    freeTextFilter(text: string) {
+        this.router.navigate(['/transactions'], { queryParams: {  description: encodeURIComponent(text) }, queryParamsHandling: "merge" });
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+
     }
 
     scrapButtonClick(){

@@ -26,7 +26,7 @@ export class AccountsComponent implements OnInit{
             this.data = accounts;
             this.prepareView();
         });
-        this.columns = [ { title: 'Nazwa', dataProperty: 'title'}];
+        this.columns = [ { title: 'Nazwa', dataProperty: 'title', filterComponent: 'free-text'}];
     }
 
     sort(column: string)
