@@ -33,6 +33,7 @@ import { DocumentStateComponent } from 'app/pages/document-state/document-state.
 import { DateFilterComponent } from 'app/shared/date-filter/date-filter.component';
 import { GridComponent } from 'app/shared/grid/grid.component';
 import { FreeTextFilterComponent } from 'app/shared/free-text-filter/free-text-filter.component';
+import { ListPageComponent } from 'app/pages/list-page/list-page.component';
 
 @NgModule({
   imports: [
@@ -69,7 +70,8 @@ import { FreeTextFilterComponent } from 'app/shared/free-text-filter/free-text-f
     DocumentStateComponent,
     DateFilterComponent,
     FreeTextFilterComponent,
-    GridComponent
+    GridComponent,
+    ListPageComponent
   ]
 })
 

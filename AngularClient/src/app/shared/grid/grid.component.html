@@ -12,7 +12,7 @@
           </th>
     </thead>
     <tbody>
-        <tr *ngFor="let row of dataSubject | async" (click)="this.rowClicked.emit(row);">
+        <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id);">
             <td *ngFor="let column of columns">{{row[column.dataProperty]}}</td>
         </tr>
     </tbody>

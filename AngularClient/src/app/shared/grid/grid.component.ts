@@ -19,7 +19,6 @@ export interface GridColumn {
 export class GridComponent implements OnInit, OnDestroy{
     @Input() public name: string;
     @Input() public columns: GridColumn[];
-    @Output() public rowClicked = new EventEmitter<any>();
     @Input() public initialSortColumn: string;
     @Input() public initialSortOrder: number;
     
@@ -134,11 +133,11 @@ export class GridComponent implements OnInit, OnDestroy{
         if (!this.params.filters)
             return data;
         this.params.filters.forEach(fd => {
-            console.log(fd);
             const gridColumn = this.getColumnFromDataProperty(fd.column);
-            if (gridColumn)
+            if (gridColumn && fd.filterValue)
             {
-                data = data.filter(d => d[gridColumn.dataProperty].toUpperCase().indexOf(fd.filterValue.toUpperCase()) > -1);
+                data = data.filter(d => d[gridColumn.dataProperty] 
+                    && d[gridColumn.dataProperty].toUpperCase().indexOf(fd.filterValue.toUpperCase()) > -1);
             }
         });
         return data;
@@ -161,5 +160,9 @@ export class GridComponent implements OnInit, OnDestroy{
 
     getColumnFromDataProperty(columnDataProperty: string) : GridColumn {
         return this.columns.find(cd => cd.dataProperty == columnDataProperty);
+    }
+
+    selectRecord(id: string) { 
+        this.router.navigate([id], { relativeTo: this.route});
     }
 }

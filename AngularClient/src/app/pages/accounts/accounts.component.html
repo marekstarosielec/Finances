@@ -1,11 +1,1 @@
-<div class="row">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-body">
-        <button (click)="addNew()" class="btn btn-primary">Dodaj</button>
-        <grid name="accounts" [columns]="columns" [data]="data" (rowClicked)="selectRecord($event.id)"
-          initialSortColumn="title" initialSortOrder=1></grid>
-      </div>
-    </div>
-  </div>
-</div>
+<list-page name="accounts" [columns]="columns" [data]="data" initialSortColumn="title" initialSortOrder=1 ></list-page>

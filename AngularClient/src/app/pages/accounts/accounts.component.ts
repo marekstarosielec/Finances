@@ -2,55 +2,26 @@ import { Component, OnInit } from '@angular/core';
 import { TransactionAccount } from 'app/api/generated';
 import { BehaviorSubject } from 'rxjs';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
-import { ActivatedRoute, Router } from '@angular/router';
 import { GridColumn } from 'app/shared/grid/grid.component';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'accounts',
     moduleId: module.id,
-    templateUrl: 'accounts.component.html',
-    styleUrls: ['./accounts.component.scss']
+    template: `
+        <list-page name="accounts" [columns]="columns" [data]="data" initialSortColumn="title" initialSortOrder=1 ></list-page>
+    `
 })
 export class AccountsComponent implements OnInit{
-    data: TransactionAccount[] = [ {}];
-    sortColumn: string = 'title';
-    sortOrder: number = 1;
-    dataSubject = new BehaviorSubject(null);
-    
+    data: TransactionAccount[] = [{}]; 
     columns: GridColumn[];
 
-    constructor (private transactionsService: TransactionsService, private router: Router, private route: ActivatedRoute) {}
+    constructor (private transactionsService: TransactionsService) {}
 
     ngOnInit(){
-        this.transactionsService.transactionsAccountsGet().subscribe((accounts: TransactionAccount[]) =>{
+        this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((accounts: TransactionAccount[]) =>{
             this.data = accounts;
-            this.prepareView();
         });
         this.columns = [ { title: 'Nazwa', dataProperty: 'title', filterComponent: 'free-text'}];
-    }
-
-    sort(column: string)
-    {
-        if (column === this.sortColumn){
-            this.sortOrder = this.sortOrder * (-1);
-        } else {
-            this.sortColumn = column;
-            this.sortOrder = -1;
-        }
-        this.prepareView();
-    }
-
-    prepareView() {
-        let data = this.data;
-        data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0));
-        this.dataSubject.next(data);
-    }
-
-    selectRecord(id: string) {
-        this.router.navigate([id], { relativeTo: this.route});
-    }
-
-    addNew() {
-        this.router.navigate(["new"], { relativeTo: this.route});
     }
 }
