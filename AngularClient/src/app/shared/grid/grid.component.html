@@ -1,19 +1,19 @@
 <div class="table-responsive">
     <table class="table table-hover overflow-auto table-striped">
-    <thead class="text-primary" *ngFor="let column of columns">
-        <th>
-            <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='free-text'">
-              <i class="fa fa-filter" ngbDropdownToggle></i>
-              <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
-                <free-text-filter (filterChanged)="freeTextFilter(column, $event);"></free-text-filter>
-              </div>
+    <thead class="text-primary">
+        <th *ngFor="let column of columns">
+          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='free-text'">
+            <i class="fa fa-filter" ngbDropdownToggle></i>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
+              <free-text-filter (filterChanged)="freeTextFilter(column, $event);"></free-text-filter>
             </div>
-            <span (click)="sort(column)">{{column.title}}</span>
-          </th>
+          </div>
+          <span (click)="sort(column)">{{column.title}}</span>
+        </th>
     </thead>
     <tbody>
         <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id);">
-            <td *ngFor="let column of columns">{{row[column.dataProperty]}}</td>
+            <td *ngFor="let column of columns" [class.deleted]="row.deleted">{{row[column.dataProperty]}}</td>
         </tr>
     </tbody>
   </table>

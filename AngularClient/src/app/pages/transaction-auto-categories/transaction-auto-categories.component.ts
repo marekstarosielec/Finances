@@ -1,59 +1,37 @@
 import { Component, OnInit } from '@angular/core';
-import { TransactionAutoCategory, TransactionCategory } from 'app/api/generated';
-import { BehaviorSubject } from 'rxjs';
+import { TransactionAutoCategory } from 'app/api/generated';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
-import { ActivatedRoute, Router } from '@angular/router';
+import { GridColumn } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
+import { ToolbarElement, ToolbarElementAction } from '../list-page/list-page.component';
 
 @Component({
     selector: 'transaction-auto-categories',
     moduleId: module.id,
-    templateUrl: 'transaction-auto-categories.component.html',
-    styleUrls: ['./transaction-auto-categories.component.scss']
+    template: `
+        <list-page name="transaction-auto-categories" [columns]="columns" [data]="data" initialSortColumn="title" initialSortOrder=1 [toolbarElements]="toolbarElements" (toolbarElementClick)="toolbarElementClick($event)"></list-page>
+    `
 })
 export class TransactionAutoCategoriesComponent implements OnInit{
-    data: TransactionAutoCategory[] = [ {}];
-    sortColumn: string = 'category';
-    sortOrder: number = 1;
-    dataSubject = new BehaviorSubject(null);
-    
-    constructor (private transactionsService: TransactionsService, private router: Router, private route: ActivatedRoute) {}
+    data: TransactionAutoCategory[] = [{}]; 
+    columns: GridColumn[];
+    toolbarElements: ToolbarElement[] = [];
+
+    constructor (private transactionsService: TransactionsService) {}
 
     ngOnInit(){
-        this.transactionsService.transactionsAutocategoriesGet().subscribe((result: TransactionAutoCategory[]) =>{
-            this.data = result;
-            this.prepareView();
+        this.transactionsService.transactionsAutocategoriesGet().pipe(take(1)).subscribe((transactionAutoCategories: TransactionAutoCategory[]) =>{
+            this.data = transactionAutoCategories;
         });
+        this.columns = [ 
+            { title: 'Opis w banku', dataProperty: 'bankInfo', filterComponent: 'free-text'},
+            { title: 'Kategoria', dataProperty: 'category', filterComponent: 'free-text'},
+        ];
+        this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
+        this.toolbarElements.push({ name: 'apply', title: 'Zastosuj' });  
     }
 
-    sort(column: string)
-    {
-        if (column === this.sortColumn){
-            this.sortOrder = this.sortOrder * (-1);
-        } else {
-            this.sortColumn = column;
-            this.sortOrder = -1;
-        }
-        this.prepareView();
-    }
-
-    prepareView() {
-        let data = this.data;
-        data = data.sort((a,b) => (a[this.sortColumn] > b[this.sortColumn]) ? this.sortOrder : ((b[this.sortColumn] > a[this.sortColumn]) ? this.sortOrder * (-1) : 0));
-        this.dataSubject.next(data);
-    }
-
-    selectRecord(id: string) {
-        this.router.navigate([id], { relativeTo: this.route});
-    }
-
-    addNew() {
-        this.router.navigate(["new"], { relativeTo: this.route});
-    }
-
-    apply() {
-        this.transactionsService.transactionsAutocategorizePost().pipe(take(1)).subscribe(() =>{
-           
-        });
+    toolbarElementClick(toolbarElement: ToolbarElement) {
+        this.transactionsService.transactionsAutocategorizePost().pipe(take(1)).subscribe(() =>{});
     }
 }
