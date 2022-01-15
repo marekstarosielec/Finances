@@ -2,12 +2,21 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { QueryParamsHandler } from './queryParamsHandler';
 import * as fs from 'fast-sort';
-import { BehaviorSubject } from 'rxjs';
+import * as l from 'lodash';
+import { Subject } from 'rxjs';
+
 
 export interface GridColumn {
     title: string;
     dataProperty: string;
     filterComponent?: string;
+}
+
+export interface ViewChangedData {
+    totalNumberOfRecords: number;
+    maximumVisibleNumberOfRecords: number;
+    filteredData: any[];
+    displayedData: any[];
 }
 
 @Component({
@@ -26,15 +35,23 @@ export class GridComponent implements OnInit, OnDestroy{
     get data(): any[] {
         return this._data;
     }
-    
     @Input()
     set data(value: any[]) {
         this._data = value;
         this.prepareView();
     }
-    
+
+    @Input()
+    set maximumNumberOfRecordsToShow(value: number) {
+        this.params.setMaximumVisibleNumberOfRecords(value);
+        this.navigate();
+    }
+
+    @Output() public viewChanged = new EventEmitter<ViewChangedData>();
+    totalNumberOfRecords: number = 0;
+
     params: QueryParamsHandler;
-    dataSubject = new BehaviorSubject([]);
+    dataSubject = new Subject();
 
     constructor(
         private router: Router, 
@@ -44,19 +61,6 @@ export class GridComponent implements OnInit, OnDestroy{
     ngOnInit() {
         this.route.queryParams.subscribe((qp: Params) => {
             this.params = new QueryParamsHandler(this.name, qp, this.initialSortColumn, this.initialSortOrder);
-            // this.maximumVisibleNumberOfRecords = qp.limit ?? 100;
-            // if (this.maximumVisibleNumberOfRecords < 0) this.maximumVisibleNumberOfRecords = 100;
-
-
-            // if (qp.from)
-            //     this.dateFromFilter = new Date(qp.from);
-            // else
-            //     this.dateFromFilter = undefined;
-            
-            // if (qp.to)
-            //     this.dateToFilter = new Date(qp.to);
-            // else
-            //     this.dateToFilter = undefined;
             this.prepareView();
         });
     }
@@ -68,54 +72,30 @@ export class GridComponent implements OnInit, OnDestroy{
 
     sort(column: GridColumn)
     {
-        this.params.sort(column.dataProperty);
+        this.params.setSort(column.dataProperty);
         this.navigate();
     }
 
     prepareView() {
-        if (!this.params)
+        if (!this.params) {
             this.params = new QueryParamsHandler(this.name, {}, this.initialSortColumn, this.initialSortOrder);
-        
-        // if (!this.data)
-        // {
-        //     this.currentNumberOfRecords = 0;
-        //     this.filteredNumberOfRecords = 0;
-        //     return;
-        // }
+        }
+
+        if (!this.data) {
+            return;
+        }
 
         let data = this.data;
-        // if (this.accountFilter !== '') {
-        //     data = data.filter(d => d.account === this.accountFilter);
-        // }
-        // if (this.categoryFilter !== '') {
-        //     data = data.filter(d => d.category === this.categoryFilter || (this.categoryFilter === 'missing' && !!!d.category));
-        // }
-        // if (this.dateFromFilter != undefined){
-        //     data = data.filter(d => new Date(d.date) >= this.dateFromFilter);    
-        //     console.log('from', this.dateFromFilter);        
-        // }
-        // if (this.dateToFilter != undefined){
-        //     data = data.filter(d => new Date(d.date) <= this.dateToFilter);            
-        //     console.log('to', this.dateToFilter);
-        // }
-        data = this.applyFiltering(data);
-
-        // this.filteredNumberOfRecords = data.length;
-        data = this.applySorting(data);
         
-        // this.totalAmounts =  l(data)
-        //     .groupBy('currency')
-        //     .map((objs, key) => ({
-        //         'currency': key,
-        //         'amount': l.sumBy(objs, 'amount'),
-        //         'incoming': l.sumBy(objs.filter(o => o.amount > 0), 'amount'),
-        //         'outgoing': l.sumBy(objs.filter(o => o.amount < 0), 'amount') }))
-        //     .value();
-        // if (this.maximumVisibleNumberOfRecords && this.maximumVisibleNumberOfRecords != 0) {
-        //     data = data.slice(0, this.maximumVisibleNumberOfRecords);
-        // }
-        // this.currentNumberOfRecords = data.length;
-       this.dataSubject.next(data);
+        this.totalNumberOfRecords = data.length;
+        
+        data = this.applyFiltering(data);
+        const filteredData = l.clone(data);
+        data = this.applySorting(data);
+        data = this.applyMaximumVisibleNumberOfRecords(data);
+        const displayedData = l.clone(data);
+        this.dataSubject.next(data);
+        this.viewChanged.emit({ totalNumberOfRecords: this.totalNumberOfRecords, maximumVisibleNumberOfRecords: this.params.maximumVisibleNumberOfRecords, filteredData: filteredData, displayedData: displayedData });
     }
 
     freeTextFilter(column: GridColumn, filterValue: string) {
@@ -155,6 +135,13 @@ export class GridComponent implements OnInit, OnDestroy{
                 { asc: t => t.id}
             ]);
         
+        return data;
+    }
+
+    applyMaximumVisibleNumberOfRecords(data: any[]) : any[] {
+        if (this.params.maximumVisibleNumberOfRecords && this.params.maximumVisibleNumberOfRecords != 0) {
+            data = data.slice(0, this.params.maximumVisibleNumberOfRecords);
+        }
         return data;
     }
 

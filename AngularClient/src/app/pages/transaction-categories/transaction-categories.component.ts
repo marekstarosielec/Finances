@@ -12,7 +12,7 @@ import { take } from 'rxjs/operators';
     `
 })
 export class TransactionCategoriesComponent implements OnInit{
-    data: TransactionAccount[] = [{}]; 
+    data: TransactionAccount[]; 
     columns: GridColumn[];
 
     constructor (private transactionsService: TransactionsService) {}

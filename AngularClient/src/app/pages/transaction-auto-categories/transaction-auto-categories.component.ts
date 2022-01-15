@@ -13,7 +13,7 @@ import { ToolbarElement, ToolbarElementAction } from '../list-page/list-page.com
     `
 })
 export class TransactionAutoCategoriesComponent implements OnInit{
-    data: TransactionAutoCategory[] = [{}]; 
+    data: TransactionAutoCategory[]; 
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
 

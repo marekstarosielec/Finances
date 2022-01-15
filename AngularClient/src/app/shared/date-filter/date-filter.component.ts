@@ -128,7 +128,6 @@ export class DateFilterComponent implements OnInit, OnDestroy {
     private swapDateIfNeccessary(){
         if (this.dateFrom != undefined && this.dateTo != undefined && this.dateFrom > this.dateTo)
         {
-            console.log('swapping');
             const dateSwap = this.dateFrom;
             this.dateFrom = this.dateTo;
             this.dateTo = dateSwap;

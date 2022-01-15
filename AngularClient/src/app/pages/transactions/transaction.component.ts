@@ -47,19 +47,6 @@ export class TransactionComponent implements OnInit, OnDestroy{
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe(
             (params: Params) => {
-                // this.currenciesService.currenciesGet().pipe(take(1)).subscribe((result: Currency[]) => {
-                //     this.currencies = result;
-                // });
-                // this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((result: TransactionAccount[]) => {
-                //     this.accounts = result;
-                // });
-                // this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((result: TransactionCategory[]) => {
-                //     this.categories = _.sort(result).by([
-                //         { desc: c => c.usageIndex},
-                //         { asc: c => c.deleted},
-                //         { asc: c => c.title}
-                //     ]);
-                // });
                 forkJoin([
                     this.currenciesService.currenciesGet(), 
                     this.transactionsService.transactionsAccountsGet(),

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TransactionAccount } from 'app/api/generated';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
-import { GridColumn } from 'app/shared/grid/grid.component';
+import { GridColumn, ViewChangedData } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
 import { ToolbarElement, ToolbarElementAction } from '../list-page/list-page.component';
 
@@ -13,7 +13,7 @@ import { ToolbarElement, ToolbarElementAction } from '../list-page/list-page.com
     `
 })
 export class AccountsComponent implements OnInit{
-    data: TransactionAccount[] = [{}]; 
+    data: TransactionAccount[]; 
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
 

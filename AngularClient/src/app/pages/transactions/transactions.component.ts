@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TransactionAccount, TransactionCategory } from 'app/api/generated';
-import { BehaviorSubject, ObjectUnsubscribedError, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { Transaction } from '../../api/generated/model/transaction';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { debounceTime, distinctUntilChanged, filter, map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import * as _ from 'fast-sort';
 import * as l from 'lodash';
 import { DateChange } from 'app/shared/date-filter/date-filter.component';
@@ -136,12 +136,10 @@ export class TransactionsComponent implements OnInit, OnDestroy{
             || d.comment?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1);
         }
         if (this.dateFromFilter != undefined){
-            data = data.filter(d => new Date(d.date) >= this.dateFromFilter);    
-            console.log('from', this.dateFromFilter);        
+            data = data.filter(d => new Date(d.date) >= this.dateFromFilter);          
         }
         if (this.dateToFilter != undefined){
             data = data.filter(d => new Date(d.date) <= this.dateToFilter);            
-            console.log('to', this.dateToFilter);
         }
 
         this.filteredNumberOfRecords = data.length;
