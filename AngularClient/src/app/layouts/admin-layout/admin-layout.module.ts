@@ -34,6 +34,12 @@ import { DateFilterComponent } from 'app/shared/date-filter/date-filter.componen
 import { GridComponent } from 'app/shared/grid/grid.component';
 import { FreeTextFilterComponent } from 'app/shared/free-text-filter/free-text-filter.component';
 import { ListPageComponent } from 'app/pages/list-page/list-page.component';
+import { FormattedNumberPipe } from 'app/pipes/formattedNumber.component';
+import { FormattedAmountPipe } from 'app/pipes/formattedAmount.component';
+import { Transactions2Component } from 'app/pages/transactions/transactions2.component';
+import { FormattedDatePipe } from 'app/pipes/formattedDate.component';
+import { DynamicPipe } from 'app/pipes/dynamic.component';
+import { ListFilterComponent } from 'app/shared/list-filter/list-filter.component';
 
 @NgModule({
   imports: [
@@ -71,7 +77,13 @@ import { ListPageComponent } from 'app/pages/list-page/list-page.component';
     DateFilterComponent,
     FreeTextFilterComponent,
     GridComponent,
-    ListPageComponent
+    ListPageComponent,
+    FormattedNumberPipe,
+    FormattedAmountPipe,
+    Transactions2Component,
+    FormattedDatePipe,
+    DynamicPipe,
+    ListFilterComponent
   ]
 })
 

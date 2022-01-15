@@ -12,10 +12,19 @@ th
 {
     overflow-x: hidden;
     overflow-y: hidden;
+    min-height: 400px;
 }
 
 .d-inline-block {
     padding-right: 10px;
+}
+
+.filterFreeTextDropdown {
+    width: 15em;
+}
+
+.filterDateDropdown {
+    width: 25em;
 }
 
 .deleted {

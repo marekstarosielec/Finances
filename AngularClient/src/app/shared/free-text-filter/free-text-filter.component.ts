@@ -12,13 +12,14 @@ export class FreeTextFilterComponent implements OnInit, OnDestroy, AfterViewInit
     searchTerm$ = new Subject<string>();
     subscription: Subscription;
     
+    @Input() initialValue: string;
     @Output() filterChanged = new EventEmitter<string>()
 
     constructor() {
     }
 
     ngOnInit() {
-
+        
     }
 
     ngAfterViewInit(): void {
@@ -32,8 +33,7 @@ export class FreeTextFilterComponent implements OnInit, OnDestroy, AfterViewInit
         });
     }
 
-    ngOnDestroy()
-    {
+    ngOnDestroy() {
         this.subscription.unsubscribe();
     }
 }

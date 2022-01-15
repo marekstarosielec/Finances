@@ -209,12 +209,14 @@ export class TransactionsComponent implements OnInit, OnDestroy{
         this.router.navigate(["new"], { relativeTo: this.route});
     }
 
-    filterByDate(event: DateChange) : void {
+    // filterByDate(event: DateChange) : void {
+    //     this.dateFromFilter = event.dateFrom;
+    //     this.dateToFilter = event.dateTo;
+    // }
+
+    filterByDateApply(event: DateChange) : void {
         this.dateFromFilter = event.dateFrom;
         this.dateToFilter = event.dateTo;
-    }
-
-    filterByDateApply() : void {
         let from: string;
         let to: string;
         if (this.dateFromFilter != undefined)

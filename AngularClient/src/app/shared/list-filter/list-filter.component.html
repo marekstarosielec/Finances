@@ -1,0 +1,18 @@
+<div class="form-check">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" id="noFilterElement" [checked]="filterValue==undefined || filterValue==''" (click)="setFilter()">
+    <label class="form-check-label" for="noFilterElement">
+        Wszystkie
+    </label>
+</div>
+<div class="form-check">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" id="missing" [checked]="filterValue=='<missing>'" (click)="setFilter('<missing>')">
+    <label class="form-check-label" for="missing">
+        Puste
+    </label>
+</div>
+<div class="form-check" *ngFor="let element of list">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="element" [checked]="filterValue==element" (click)="setFilter(element)">
+    <label class="form-check-label" [for]="element">
+        {{element}}
+    </label>
+</div>

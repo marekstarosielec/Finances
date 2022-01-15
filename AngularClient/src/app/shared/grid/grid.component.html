@@ -4,8 +4,20 @@
         <th *ngFor="let column of columns">
           <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='free-text'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
-            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
-              <free-text-filter (filterChanged)="freeTextFilter(column, $event);"></free-text-filter>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterFreeTextDropdown">
+              <free-text-filter (filterChanged)="freeTextFilterApply(column, $event);" [initialValue]="getFilterValueFromParam(column)"></free-text-filter>
+            </div>
+          </div>
+          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='date'">
+            <i class="fa fa-filter" ngbDropdownToggle></i>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
+              <date-filter [dateFrom]="getDateFilterValueFromParam(column, true)" [dateTo]="getDateFilterValueFromParam(column, false)" (dateChanged)="dateFilterApply(column,$event)"></date-filter>
+            </div>
+          </div>
+          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='list'">
+            <i class="fa fa-filter" ngbDropdownToggle></i>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterListDropdown">
+              <list-filter [name]="column.dataProperty" [list]="column.filterComponentData" (filterChanged)="listFilterApply(column, $event)" [filterValue]="getFilterValueFromParam(column)"></list-filter>
             </div>
           </div>
           <span (click)="sort(column)">{{column.title}}</span>
@@ -13,7 +25,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id);">
-            <td *ngFor="let column of columns" [class.deleted]="row.deleted">{{row[column.dataProperty]}}</td>
+            <td *ngFor="let column of columns" [class.deleted]="row.deleted">{{row[column.dataProperty] | dynamic:column.pipe}}</td>
         </tr>
     </tbody>
   </table>

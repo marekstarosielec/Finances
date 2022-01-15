@@ -4,12 +4,15 @@ import { QueryParamsHandler } from './queryParamsHandler';
 import * as fs from 'fast-sort';
 import * as l from 'lodash';
 import { Subject } from 'rxjs';
+import { DateChange } from '../date-filter/date-filter.component';
 
 
 export interface GridColumn {
     title: string;
     dataProperty: string;
     filterComponent?: string;
+    filterComponentData?: any;
+    pipe?: string;
 }
 
 export interface ViewChangedData {
@@ -43,6 +46,8 @@ export class GridComponent implements OnInit, OnDestroy{
 
     @Input()
     set maximumNumberOfRecordsToShow(value: number) {
+        if (this.params.maximumVisibleNumberOfRecords === value)
+            return;
         this.params.setMaximumVisibleNumberOfRecords(value);
         this.navigate();
     }
@@ -86,7 +91,7 @@ export class GridComponent implements OnInit, OnDestroy{
         }
 
         let data = this.data;
-        
+
         this.totalNumberOfRecords = data.length;
         
         data = this.applyFiltering(data);
@@ -98,8 +103,18 @@ export class GridComponent implements OnInit, OnDestroy{
         this.viewChanged.emit({ totalNumberOfRecords: this.totalNumberOfRecords, maximumVisibleNumberOfRecords: this.params.maximumVisibleNumberOfRecords, filteredData: filteredData, displayedData: displayedData });
     }
 
-    freeTextFilter(column: GridColumn, filterValue: string) {
+    freeTextFilterApply(column: GridColumn, filterValue: string) {
         this.params.setFilter(column.dataProperty, filterValue);
+        this.navigate();
+    }
+    
+    dateFilterApply(column: GridColumn, dateChange: DateChange) : void {
+        this.params.setDateFilter(column.dataProperty, dateChange.dateFrom, dateChange.dateTo);
+        this.navigate();
+    }
+
+    listFilterApply(column: GridColumn, element: string) : void {
+        this.params.setFilter(column.dataProperty, element);
         this.navigate();
     }
 
@@ -114,13 +129,56 @@ export class GridComponent implements OnInit, OnDestroy{
             return data;
         this.params.filters.forEach(fd => {
             const gridColumn = this.getColumnFromDataProperty(fd.column);
-            if (gridColumn && fd.filterValue)
+            if (gridColumn && (fd.filterValue || fd.filterValue2))
             {
-                data = data.filter(d => d[gridColumn.dataProperty] 
-                    && d[gridColumn.dataProperty].toUpperCase().indexOf(fd.filterValue.toUpperCase()) > -1);
+                if (gridColumn.filterComponent=="free-text") {
+                    data = data.filter(d => d[gridColumn.dataProperty] 
+                        && d[gridColumn.dataProperty].toUpperCase().indexOf(fd.filterValue.toUpperCase()) > -1);
+                }
+                else if (gridColumn.filterComponent=="date") {
+                    if (fd.filterValue) {
+                        const from = new Date(fd.filterValue);
+                        data = data.filter(d => new Date(d[gridColumn.dataProperty]) >= from);
+                    }
+                    if (fd.filterValue2) {
+                        const to = new Date(fd.filterValue2);
+                        data = data.filter(d => new Date(d[gridColumn.dataProperty]) <= to);
+                    }
+                }
+                else if (gridColumn.filterComponent=="list") {
+                    data = data.filter(d =>    
+                        (fd.filterValue==='<missing>' && !d[gridColumn.dataProperty])
+                        || (!fd.filterValue)
+                        || (fd.filterValue == d[gridColumn.dataProperty])    
+                    );
+                }
             }
         });
         return data;
+    }
+
+    getFilterValueFromParam(column: GridColumn) : string {
+        let result: string = '';
+        this.params.filters.forEach(fd => {
+            if (fd.column == column.dataProperty) {
+                result = fd.filterValue;
+                return;
+            }
+        });
+        return result;
+    }
+
+    getDateFilterValueFromParam(column: GridColumn, from: boolean) : Date {
+        let result: Date;
+        this.params.filters.forEach(fd => {
+            if (fd.column == column.dataProperty) {
+                const valueToConvert = from ? fd.filterValue : fd.filterValue2;
+                if (!valueToConvert)
+                    return;
+                result = new Date(valueToConvert);
+            }
+        });
+        return result;
     }
 
     applySorting(data: any[]) : any[] {

@@ -23,13 +23,13 @@ export interface ToolbarElement {
                 <div class="card-header">
                     <ng-container *ngIf="currentView$ | async as currentView">
                         <span *ngIf="currentView.maximumVisibleNumberOfRecords != 0 && currentView.displayedData.length < currentView.filteredData.length && currentView.displayedData.length > 0">
-                            Widoczne {{currentView.displayedData.length}} z {{currentView.filteredData.length}} rekordów. <span class="showAll" (click)="maximumNumberOfRecordsToShow=0">Pokaż wszystkie.</span>
+                            Widoczne {{currentView.displayedData.length | formattedNumber}} z {{currentView.filteredData.length | formattedNumber}} rekordów. <span class="link" (click)="maximumNumberOfRecordsToShow=0">Pokaż wszystkie.</span>
                         </span>
                         <span *ngIf="currentView.maximumVisibleNumberOfRecords == 0 && currentView.filteredData.length > 0">
-                            Widoczne wszystkie {{currentView.filteredData.length}} rekordów. <span class="showAll" (click)="maximumNumberOfRecordsToShow=100">Pokaż pierwsze 100.</span>
+                            Widoczne wszystkie {{currentView.filteredData.length | formattedNumber}} rekordów. <span class="link" (click)="maximumNumberOfRecordsToShow=100">Pokaż pierwsze 100.</span>
                         </span>
                         <span *ngIf="currentView.maximumVisibleNumberOfRecords != 0 && currentView.displayedData.length == currentView.filteredData.length && currentView.displayedData.length > 0">
-                            Widoczne wszystkie {{currentView.displayedData?.length}} rekordów.
+                            Widoczne wszystkie {{currentView.displayedData?.length| formattedNumber}} rekordów.
                         </span>
                         <span *ngIf="currentView.displayedData.length == 0">
                             Brak rekordów.

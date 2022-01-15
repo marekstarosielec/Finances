@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 
 export interface DateChange {
     dateFrom?: Date;
@@ -12,12 +12,12 @@ export interface DateChange {
 })
 
 export class DateFilterComponent implements OnInit, OnDestroy {
-
     _dateFrom: Date;
     @Input()
     set dateFrom(value: Date) {
         this._dateFrom = value;
         this.swapDateIfNeccessary();
+        this.setCustomFrom();
     }
 
     get dateFrom() {
@@ -37,7 +37,6 @@ export class DateFilterComponent implements OnInit, OnDestroy {
 
     @Output() dateChanged = new EventEmitter<DateChange>()
 
-
     today: Date;
     firstDayOfCurrentMonth: Date;
     lastDayOfCurrentMonth: Date;
@@ -47,6 +46,8 @@ export class DateFilterComponent implements OnInit, OnDestroy {
     lastDayOfCurrentYear: Date;
     firstDayOfPreviousYear: Date;
     lastDayOfPreviousYear: Date;
+    newDateFrom: Date;
+    newDateTo: Date;
     
     constructor() {
     }
@@ -94,28 +95,31 @@ export class DateFilterComponent implements OnInit, OnDestroy {
 
     customFromChange(event: any) : void {
         if (event.year != undefined) {
-            this.dateFrom = new Date(event.year, event.month-1, event.day);
+            this.newDateFrom = new Date(event.year, event.month-1, event.day);
         } else if (event.srcElement.value) {
-            this.dateFrom = new Date(event.srcElement.value);
+            this.newDateFrom = new Date(event.srcElement.value);
         }  
         this.swapDateIfNeccessary();
-        this.dateChanged.emit({ dateFrom: this.dateFrom, dateTo : this.dateTo });
     }
 
     customToChange(event: any) : void {
         if (event.year != undefined) {
-            this.dateTo = new Date(event.year, event.month-1, event.day);
+            this.newDateTo = new Date(event.year, event.month-1, event.day);
         } else if (event.srcElement.value) {
-            this.dateTo = new Date(event.srcElement.value);
+            this.newDateTo = new Date(event.srcElement.value);
         }  
         this.swapDateIfNeccessary();
-        this.dateChanged.emit({ dateFrom: this.dateFrom, dateTo : this.dateTo });
+    }
+
+    setCustomFrom() {
+        // if (!this.isCustom() || !this.dateFrom)
+        //     this.customFrom = undefined;
+        // this.customFrom = { year: this.dateFrom.getFullYear(), month: this.dateFrom.getMonth() + 1, day: this.dateFrom.getDate()};
     }
 
     private setDates(dateFrom?: Date, dateTo?: Date) : void {
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
-        this.dateChanged.emit({ dateFrom: this.dateFrom, dateTo : this.dateTo });
+        this.newDateFrom = dateFrom;
+        this.newDateTo = dateTo;
     }
 
     private datesAreEqual(date1?: Date, date2?: Date) : boolean {
@@ -132,5 +136,9 @@ export class DateFilterComponent implements OnInit, OnDestroy {
             this.dateFrom = this.dateTo;
             this.dateTo = dateSwap;
         }
+    }
+
+    filterApply() {
+        this.dateChanged.emit({ dateFrom: this.newDateFrom, dateTo : this.newDateTo });
     }
 }

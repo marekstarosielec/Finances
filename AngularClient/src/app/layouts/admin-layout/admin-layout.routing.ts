@@ -22,12 +22,14 @@ import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-cat
 import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-categories/transaction-auto-categories.component';
 import { DocumentsComponent } from 'app/pages/documents/documents.component';
 import { DocumentComponent } from 'app/pages/documents/document.component';
+import { Transactions2Component } from 'app/pages/transactions/transactions2.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     // { path: 'user',           component: UserComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     { path: 'transactions',   component: TransactionsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'transactions/:id',   component: TransactionComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'transactions2',   component: Transactions2Component, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'accounts',   component: AccountsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'accounts/:id',   component: AccountComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'transaction-categories',   component: TransactionCategoriesComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
