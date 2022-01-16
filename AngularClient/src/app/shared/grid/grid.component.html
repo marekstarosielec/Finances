@@ -1,7 +1,7 @@
 <div class="table-responsive">
     <table class="table table-hover overflow-auto table-striped">
     <thead class="text-primary">
-        <th *ngFor="let column of columns">
+        <th *ngFor="let column of columns" [class.alignRight]="column.alignment=='right'">
           <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='free-text'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterFreeTextDropdown">
@@ -17,7 +17,7 @@
           <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='list'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterListDropdown">
-              <list-filter [name]="column.dataProperty" [list]="column.filterComponentData" (filterChanged)="listFilterApply(column, $event)" [filterValue]="getFilterValueFromParam(column)"></list-filter>
+              <list-filter [name]="column.dataProperty" [list]="column.filterComponentData" (filterChanged)="listFilterApply(column, $event)" [filterValue]="getFilterValueFromParam(column)" [listTitleProperty]="column.filterComponentData2"></list-filter>
             </div>
           </div>
           <span (click)="sort(column)">{{column.title}}</span>
@@ -25,7 +25,12 @@
     </thead>
     <tbody>
         <tr *ngFor="let row of dataSubject | async" (click)="selectRecord(row.id);">
-            <td *ngFor="let column of columns" [class.deleted]="row.deleted">{{row[column.dataProperty] | dynamic:column.pipe}}</td>
+            <td *ngFor="let column of columns" 
+              [class.deleted]="row.deleted" 
+              [class.alignRight]="column.alignment=='right'"
+              [class.negative]="column.conditionalFormatting=='amount' && row[column.dataProperty]<0"
+              [class.positive]="column.conditionalFormatting=='amount' && row[column.dataProperty]>0"
+            >{{row[column.dataProperty] | dynamic:column.pipe}}<span *ngIf="column.dataProperty2"> {{ row[column.dataProperty2]}}</span></td>
         </tr>
     </tbody>
   </table>

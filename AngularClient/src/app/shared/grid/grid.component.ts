@@ -6,13 +6,16 @@ import * as l from 'lodash';
 import { Subject } from 'rxjs';
 import { DateChange } from '../date-filter/date-filter.component';
 
-
 export interface GridColumn {
     title: string;
     dataProperty: string;
+    dataProperty2?: string;
     filterComponent?: string;
-    filterComponentData?: any;
+    filterComponentData?: any[];
+    filterComponentData2?: any;
     pipe?: string;
+    alignment?: string;
+    conditionalFormatting?: string;
 }
 
 export interface ViewChangedData {

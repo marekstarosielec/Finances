@@ -1,18 +1,24 @@
 <div class="form-check">
-    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" id="noFilterElement" [checked]="filterValue==undefined || filterValue==''" (click)="setFilter()">
-    <label class="form-check-label" for="noFilterElement">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="noFilterElement" [checked]="filterValue==undefined || filterValue==''" (click)="setFilter()">
+    <label class="form-check-label" [for]="noFilterElement">
         Wszystkie
     </label>
 </div>
 <div class="form-check">
-    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" id="missing" [checked]="filterValue=='<missing>'" (click)="setFilter('<missing>')">
-    <label class="form-check-label" for="missing">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="missingElement" [checked]="filterValue=='<missing>'" (click)="setFilter('<missing>')">
+    <label class="form-check-label" [for]="missingElement">
         Puste
     </label>
 </div>
-<div class="form-check" *ngFor="let element of list">
-    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="element" [checked]="filterValue==element" (click)="setFilter(element)">
-    <label class="form-check-label" [for]="element">
-        {{element}}
+<div class="form-check" *ngFor="let element of primaryList">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="name + '_' + element[listTitleProperty]" [checked]="filterValue==element[listTitleProperty]" (click)="setFilter(element[listTitleProperty])">
+    <label class="form-check-label" [for]="name + '_' + element[listTitleProperty]">
+        {{element[listTitleProperty]}}
     </label>
+</div>
+<div class="form-check" *ngIf="secondaryList?.length > 0">
+    <select class="form-control" (change)="setFilter($event.target.value)" [value]="filterValue">
+        <option></option>
+        <option *ngFor="let element of secondaryList">{{element[listTitleProperty]}}</option>
+    </select>
 </div>
