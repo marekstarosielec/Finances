@@ -5,6 +5,8 @@ import { GridColumn } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
 import { ToolbarElement, ToolbarElementAction } from '../list-page/list-page.component';
 import { forkJoin } from 'rxjs';
+import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
+import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
 
 @Component({
     selector: 'transactions',
@@ -21,19 +23,16 @@ export class Transactions2Component implements OnInit{
     constructor (private transactionsService: TransactionsService) {}
 
     ngOnInit(){
-        forkJoin([
-            this.transactionsService.transactionsGet(),
-            this.transactionsService.transactionsAccountsGet(),
-            this.transactionsService.transactionsCategoriesGet()
-            ])
+            this.transactionsService.transactionsGet()
             .pipe(take(1))
             .subscribe(result => {
-                this.data = result[0];
+                this.data = result;
                 this.columns = [ 
-                    { title: 'Data', dataProperty: 'date', pipe: 'date', filterComponent: 'date'},
-                    { title: 'Konto', dataProperty: 'account', filterComponent: 'list' , filterComponentData: result[1], filterComponentData2: 'title'},
-                    { title: 'Kategoria', dataProperty: 'category', filterComponent: 'list', filterComponentData: result[2], filterComponentData2: 'title'},
-                    { title: 'Kwota', dataProperty: 'amount', dataProperty2: 'currency', pipe: 'amount', alignment: 'right', conditionalFormatting: 'amount'}
+                    { title: 'Data', dataProperty: 'date', pipe: 'date', filterComponent: 'date', noWrap: true},
+                    { title: 'Konto', dataProperty: 'account', filterComponent: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions},
+                    { title: 'Kategoria', dataProperty: 'category', filterComponent: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions},
+                    { title: 'Kwota', dataProperty: 'amount', dataProperty2: 'currency', pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', filterComponent: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions},
+                    { title: 'Opis', dataProperty: 'description'}
                 ];
             });
     }

@@ -1,0 +1,14 @@
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" [id]="name + '_incoming'" [checked]="!incomingOutgoingValue || incomingOutgoingValue==='incoming'" (change)="setIncoming($event.target.checked)" />
+    <label class="form-check-label" [for]="name + '_incoming'">Przychodzące</label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" [id]="name + '_outgoing'" [checked]="!incomingOutgoingValue || incomingOutgoingValue==='outgoing'" (change)="setOutgoing($event.target.checked)"/>
+    <label class="form-check-label" [for]="name + '_outgoing'">Wychodzące</label>
+</div>
+<ng-container *ngFor="let currency of currencyList">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" [value]="currency.id" [id]="name + '_' + currency.id" [checked]="isCurrencySelected(currency.id)" (change)="setCurrency($event.target.value, $event.target.checked)" />
+        <label class="form-check-label" [for]="name + '_' + currency.id">{{currency.id}}</label>
+    </div>
+</ng-container>

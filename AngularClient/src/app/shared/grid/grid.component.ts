@@ -5,6 +5,7 @@ import * as fs from 'fast-sort';
 import * as l from 'lodash';
 import { Subject } from 'rxjs';
 import { DateChange } from '../date-filter/date-filter.component';
+import { AmountFilterValue } from '../amount-filter/amount-filter.component';
 
 export interface GridColumn {
     title: string;
@@ -13,9 +14,11 @@ export interface GridColumn {
     filterComponent?: string;
     filterComponentData?: any[];
     filterComponentData2?: any;
+    filterOptions?: any;
     pipe?: string;
     alignment?: string;
     conditionalFormatting?: string;
+    noWrap?: boolean;
 }
 
 export interface ViewChangedData {
@@ -121,6 +124,12 @@ export class GridComponent implements OnInit, OnDestroy{
         this.navigate();
     }
 
+    amountFilterApply(column: GridColumn, value: AmountFilterValue) : void {
+        this.params.setFilter(column.dataProperty, value.incomingOutgoing, undefined, 'incomingOutgoing');
+        this.params.setFilter(column.dataProperty, value.currency.join('|'), undefined, 'currency');
+        this.navigate();
+    }
+
     navigate(){
         this.router.navigate([], { relativeTo: this.route,  
             queryParams: this.params.getQueryParams(), 
@@ -132,13 +141,13 @@ export class GridComponent implements OnInit, OnDestroy{
             return data;
         this.params.filters.forEach(fd => {
             const gridColumn = this.getColumnFromDataProperty(fd.column);
-            if (gridColumn && (fd.filterValue || fd.filterValue2))
+            if (gridColumn)
             {
-                if (gridColumn.filterComponent=="free-text") {
+                if (gridColumn.filterComponent=="free-text" && fd.filterValue) {
                     data = data.filter(d => d[gridColumn.dataProperty] 
                         && d[gridColumn.dataProperty].toUpperCase().indexOf(fd.filterValue.toUpperCase()) > -1);
                 }
-                else if (gridColumn.filterComponent=="date") {
+                else if (gridColumn.filterComponent=="date" && (fd.filterValue || fd.filterValue2)) {
                     if (fd.filterValue) {
                         const from = new Date(fd.filterValue);
                         data = data.filter(d => new Date(d[gridColumn.dataProperty]) >= from);
@@ -148,11 +157,17 @@ export class GridComponent implements OnInit, OnDestroy{
                         data = data.filter(d => new Date(d[gridColumn.dataProperty]) <= to);
                     }
                 }
-                else if (gridColumn.filterComponent=="list") {
+                else if (gridColumn.filterComponent=="list" && fd.filterValue) {
                     data = data.filter(d =>    
                         (fd.filterValue==='<missing>' && !d[gridColumn.dataProperty])
                         || (!fd.filterValue)
                         || (fd.filterValue == d[gridColumn.dataProperty])    
+                    );
+                }
+                else if (gridColumn.filterComponent=="amount") {
+                    data = data.filter(d =>    
+                        (fd.filterValue==='incoming' && d[gridColumn.dataProperty] >= 0)
+                        || (fd.filterValue==='outgoing' && d[gridColumn.dataProperty] <= 0)
                     );
                 }
             }
@@ -169,6 +184,11 @@ export class GridComponent implements OnInit, OnDestroy{
             }
         });
         return result;
+    }
+
+    getAmountFilterValueFromParam(column: GridColumn) : AmountFilterValue {
+        const incomingOutgoingFilter = this.params.filters.find(f => f.column === column.dataProperty && f.appendix === 'incomingOutgoing')
+        return { incomingOutgoing: incomingOutgoingFilter?.filterValue, currency: [] } as AmountFilterValue;
     }
 
     getDateFilterValueFromParam(column: GridColumn, from: boolean) : Date {

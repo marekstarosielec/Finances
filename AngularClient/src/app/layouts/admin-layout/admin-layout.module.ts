@@ -40,6 +40,7 @@ import { Transactions2Component } from 'app/pages/transactions/transactions2.com
 import { FormattedDatePipe } from 'app/pipes/formattedDate.component';
 import { DynamicPipe } from 'app/pipes/dynamic.component';
 import { ListFilterComponent } from 'app/shared/list-filter/list-filter.component';
+import { AmountFilterComponent } from 'app/shared/amount-filter/amount-filter.component';
 
 @NgModule({
   imports: [
@@ -83,7 +84,8 @@ import { ListFilterComponent } from 'app/shared/list-filter/list-filter.componen
     Transactions2Component,
     FormattedDatePipe,
     DynamicPipe,
-    ListFilterComponent
+    ListFilterComponent,
+    AmountFilterComponent
   ]
 })
 

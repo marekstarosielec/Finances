@@ -6,6 +6,7 @@ tr
 th 
 {
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .table-responsive 
@@ -41,4 +42,8 @@ th
 
 .positive {
     color: green;
+}
+
+.noWrap {
+    white-space: nowrap;
 }

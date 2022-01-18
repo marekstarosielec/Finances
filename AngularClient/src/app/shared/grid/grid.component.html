@@ -17,7 +17,13 @@
           <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='list'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterListDropdown">
-              <list-filter [name]="column.dataProperty" [list]="column.filterComponentData" (filterChanged)="listFilterApply(column, $event)" [filterValue]="getFilterValueFromParam(column)" [listTitleProperty]="column.filterComponentData2"></list-filter>
+              <list-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="listFilterApply(column, $event)" [filterValue]="getFilterValueFromParam(column)"></list-filter>
+            </div>
+          </div>
+          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='amount'">
+            <i class="fa fa-filter" ngbDropdownToggle></i>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterAmountDropdown">
+              <amount-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="amountFilterApply(column, $event)" [filterValue]="getAmountFilterValueFromParam(column)"></amount-filter>
             </div>
           </div>
           <span (click)="sort(column)">{{column.title}}</span>
@@ -30,6 +36,7 @@
               [class.alignRight]="column.alignment=='right'"
               [class.negative]="column.conditionalFormatting=='amount' && row[column.dataProperty]<0"
               [class.positive]="column.conditionalFormatting=='amount' && row[column.dataProperty]>0"
+              [class.noWrap]="column.noWrap"
             >{{row[column.dataProperty] | dynamic:column.pipe}}<span *ngIf="column.dataProperty2"> {{ row[column.dataProperty2]}}</span></td>
         </tr>
     </tbody>
