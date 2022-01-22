@@ -36,22 +36,14 @@
                 <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown">
                   <i class="fa fa-filter" ngbDropdownToggle></i>
                   <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
-                    <date-filter [dateFrom]="this.dateFromFilter" (dateChanged)="filterByDateApply($event)"></date-filter>
+                    <!-- <date-filter [dateFrom]="this.dateFromFilter" (dateChanged)="filterByDateApply($event)"></date-filter> -->
                     <!-- <button (click)="filterByDateApply()" class="btn btn-outline-primary" ngbDropdownToggle>Zastosuj</button> -->
                   </div>
                 </div>
                 <span (click)="sort('date')">&nbsp;Data</span>
               </th>
               <th>
-                <div ngbDropdown class="d-inline-block" #accountFilterDropdown="ngbDropdown">
-                  <i class="fa fa-filter" ngbDropdownToggle></i>
-                  <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDropdown">
-                    <div class="list-group filterElement">
-                      <div>&nbsp;<input type="radio" id="all" value="all" name="account" (click)="filterByAccount('');$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===''"><label for="all">&nbsp;Wszystkie</label></div>
-                      <div *ngFor="let account of primaryAccountList">&nbsp;<input type="radio" id="{{account.title}}" value="{{account.title}}" name="account" (click)="filterByAccount(account.title);$event.stopPropagation();accountFilterDropdown.close();" [checked]="this.accountFilter===account.title"><label for="{{account.title}}">&nbsp;{{account.title}}</label></div>
-                    </div>
-                  </div>
-                </div>
+                
                 <span (click)="sort('account')">&nbsp;Konto</span>
               </th>
               <th>

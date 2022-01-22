@@ -1,11 +1,9 @@
 import { Params } from "@angular/router";
-import { filter } from "rxjs/operators";
 
 interface FilterDefinition {
     column: string;
     appendix?: string;
     filterValue: string;
-    filterValue2?: string;
 }
 
 export class QueryParamsHandler {
@@ -45,7 +43,7 @@ export class QueryParamsHandler {
                         filterName = filterName.replace('_' + appendix, '');
                     }
                 }
-                this.setFilter(filterName, params[property], params[property.replace('_filter_', '_filter2_')], appendix);
+                this.setFilter(filterName, params[property], appendix);
             }
         });
     }
@@ -63,8 +61,8 @@ export class QueryParamsHandler {
         }
     }
 
-    setFilter(column: string, filterValue: string, filterValue2?: string, appendix?: string){
-        const filterDefintion: FilterDefinition = { column: column, filterValue: filterValue, filterValue2: filterValue2, appendix: appendix };
+    setFilter(column: string, filterValue: string, appendix?: string){
+        const filterDefintion: FilterDefinition = { column: column, filterValue: filterValue === '' ? undefined : filterValue, appendix: appendix };
         let existing = this.filters.findIndex(fd => fd.column === column && ((!fd.appendix && !appendix) || fd.appendix === appendix));
         if (existing > -1)
             this.filters[existing] = filterDefintion;
@@ -72,22 +70,6 @@ export class QueryParamsHandler {
         {
             this.filters.push(filterDefintion);
         }
-    }
-
-    setDateFilter(column: string, dateFrom?: Date, dateTo?: Date){
-        let from: string;
-        let to: string;
-        if (dateFrom != undefined)
-            from = dateFrom.getFullYear() + '-' + (dateFrom.getMonth()+1) + '-' + dateFrom.getDate();
-        if (dateTo != undefined)
-            to = dateTo.getFullYear() + '-' + (dateTo.getMonth()+1) + '-' + dateTo.getDate();
-
-        const filterDefintion: FilterDefinition = { column: column, filterValue: from, filterValue2: to };
-        let existing = this.filters.findIndex(fd => fd.column === column);
-        if (existing > -1)
-            this.filters[existing] = filterDefintion;
-        else
-            this.filters.push(filterDefintion);
     }
 
     setMaximumVisibleNumberOfRecords(maximumVisibleNumberOfRecords: number) {
@@ -100,9 +82,8 @@ export class QueryParamsHandler {
         queryParams[this.name + '_sortOrder'] = this.sortOrder; 
         if (this.filters) {
             this.filters.forEach(fd => {
-                queryParams[this.name + '_filter_' + fd.column + '_' +  (fd.appendix ?? 'noAppendix')] = fd.filterValue;
-                if (fd.filterValue2) {
-                    queryParams[this.name + '_filter2_' + fd.column + '_' +  (fd.appendix ?? 'noAppendix')] = fd.filterValue2;
+                if (fd.filterValue) {
+                    queryParams[this.name + '_filter_' + fd.column + '_' +  (fd.appendix ?? 'noAppendix')] = fd.filterValue;
                 }
             });
         }

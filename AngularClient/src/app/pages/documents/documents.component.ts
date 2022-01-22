@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import * as _ from 'fast-sort';
 import { take } from 'rxjs/operators';
-import { DateChange } from 'app/shared/date-filter/date-filter.component';
 
 @Component({
     selector: 'documents',
@@ -132,10 +131,10 @@ export class DocumentsComponent implements OnInit{
         window.open("http://127.0.0.1:8080/" +fileName, "_blank", "noopener noreferrer");
     }
 
-    filterByDate(event: DateChange) : void {
-        this.dateFromFilter = event.dateFrom;
-        this.dateToFilter = event.dateTo;
-    }
+    // filterByDate(event: DateChange) : void {
+    //     this.dateFromFilter = event.dateFrom;
+    //     this.dateToFilter = event.dateTo;
+    // }
 
     filterByDateApply() : void {
         let from: string;

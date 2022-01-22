@@ -2,28 +2,34 @@
     <table class="table table-hover overflow-auto table-striped">
     <thead class="text-primary">
         <th *ngFor="let column of columns" [class.alignRight]="column.alignment=='right'">
-          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='free-text'">
+          <!-- <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='free-text'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterFreeTextDropdown">
               <free-text-filter (filterChanged)="freeTextFilterApply(column, $event);" [initialValue]="getFilterValueFromParam(column)"></free-text-filter>
             </div>
-          </div>
-          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='date'">
+          </div> -->
+          <!-- <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='date'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
               <date-filter [dateFrom]="getDateFilterValueFromParam(column, true)" [dateTo]="getDateFilterValueFromParam(column, false)" (dateChanged)="dateFilterApply(column,$event)"></date-filter>
+            </div>
+          </div> -->
+          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='date'">
+            <i class="fa fa-filter" ngbDropdownToggle></i>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
+              <date-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="dataFilteringService.addFilter(column, params, $event); navigate();" [filterValue]="dataFilteringService.getFilter(column, params)"></date-filter>
             </div>
           </div>
           <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='list'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterListDropdown">
-              <list-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="listFilterApply(column, $event)" [filterValue]="getFilterValueFromParam(column)"></list-filter>
+              <list-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="dataFilteringService.addFilter(column, params, $event); navigate();" [filterValue]="dataFilteringService.getFilter(column, params)"></list-filter>
             </div>
           </div>
           <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='amount'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterAmountDropdown">
-              <amount-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="amountFilterApply(column, $event)" [filterValue]="getAmountFilterValueFromParam(column)"></amount-filter>
+              <amount-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="dataFilteringService.addFilter(column, params, $event); navigate();" [filterValue]="dataFilteringService.getFilter(column, params)"></amount-filter>
             </div>
           </div>
           <span (click)="sort(column)">{{column.title}}</span>

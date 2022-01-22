@@ -7,7 +7,7 @@ export interface AmountFilterOptions {
 }
 
 export interface AmountFilterValue {
-    incomingOutgoing: string;
+    direction: string[];
     currency: string[];
 }
 
@@ -58,37 +58,74 @@ export class AmountFilterComponent implements OnInit, OnDestroy {
         ]);
     }
 
-    setIncoming(value: boolean) {
-        if (!value && !this.filterValue.incomingOutgoing) {
-            this.filterValue.incomingOutgoing = 'outgoing';
+    setIn(value: boolean) {
+        this.setDefaultDirections();
+            
+        if (!value) {
+            const pos = this.filterValue.direction.findIndex(d => d === 'in');
+            if (pos > -1) {
+                this.filterValue.direction.splice(pos,1);
+            }
         } else {
-            this.filterValue.incomingOutgoing = undefined;
+            const pos = this.filterValue.direction.findIndex(d => d === 'in');
+            if (pos === -1) {
+                this.filterValue.direction.push('in');
+            }
         }
         this.emitEvent();
     }
 
-    setOutgoing(value: boolean) {
-        if (!value && !this.filterValue.incomingOutgoing) {
-            this.filterValue.incomingOutgoing = 'incoming';
+    setOut(value: boolean) {
+        this.setDefaultDirections();
+
+        if (!value) {
+            const pos = this.filterValue.direction.findIndex(d => d === 'out');
+            if (pos > -1) {
+                this.filterValue.direction.splice(pos,1);
+            }
         } else {
-            this.filterValue.incomingOutgoing = undefined;
+            const pos = this.filterValue.direction.findIndex(d => d === 'out');
+            if (pos === -1) {
+                this.filterValue.direction.push('out');
+            }
         }
         this.emitEvent();
     }
 
-    setCurrency(currency: string, checked: boolean) {
-        // const pos = this.filterValue.currency.findIndex(c => c === currency);
-        // if (pos > -1 && !checked) {
-        //     this.filterValue.currency.splice(pos, 1);
-        // } else if (pos === -1 && checked){
-        //     this.filterValue.currency.push(currency);
-        // }
-        // console.log('currencies', this.filterValue.currency);
-        // this.emitEvent();
+    
+    isDirectionSelected(direction: string) {
+        this.setDefaultDirections();
+        return this.filterValue.direction.findIndex(d => d === direction) > -1;
+    }
+    
+
+    private setDefaultDirections() {
+        if (!this.filterValue.direction) {
+            this.filterValue.direction = ['in', 'out'];
+        }
     }
 
     isCurrencySelected(currency: string): boolean {
-        return this.filterValue.currency.length === 0 || this.filterValue.currency.findIndex(c => c === currency)>-1;
+        this.setDefaultCurrencies();
+        return this.filterValue.currency.findIndex(c => c === currency) > -1;
+    }
+
+    setCurrency(currency: string, checked: boolean) {
+        this.setDefaultCurrencies();
+        if (checked && this.filterValue.currency.indexOf(currency) === -1){
+            this.filterValue.currency.push(currency);
+        } else {
+            const pos = this.filterValue.currency.indexOf(currency);
+            this.filterValue.currency.splice(pos,1);
+        }
+        this.emitEvent();
+    }
+
+    private setDefaultCurrencies() {
+        if (!this.filterValue.currency) {
+            this.filterValue.currency = [];
+            this.currencyList.forEach(currency => this.filterValue.currency.push(currency.id));
+        }
     }
 
     private emitEvent() {

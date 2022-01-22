@@ -26,13 +26,13 @@
                 Numer
               </th>
               <th>
-                <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown">
+                <!-- <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown">
                   <i class="fa fa-filter" ngbDropdownToggle></i>
                   <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
                     <date-filter [dateFrom]="this.dateFromFilter" (dateChanged)="filterByDate($event)"></date-filter>
                     <button (click)="filterByDateApply()" class="btn btn-outline-primary" ngbDropdownToggle>Zastosuj</button>
                   </div>
-                </div>
+                </div> -->
                 <span (click)="sort('date')">&nbsp;Data</span>
               </th>
               <th (click)="sort('company')">

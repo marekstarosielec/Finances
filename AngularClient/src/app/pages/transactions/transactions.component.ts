@@ -8,7 +8,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 import * as _ from 'fast-sort';
 import * as l from 'lodash';
-import { DateChange } from 'app/shared/date-filter/date-filter.component';
 
 export interface AmountSums {
     amount: number;
@@ -214,19 +213,19 @@ export class TransactionsComponent implements OnInit, OnDestroy{
     //     this.dateToFilter = event.dateTo;
     // }
 
-    filterByDateApply(event: DateChange) : void {
-        this.dateFromFilter = event.dateFrom;
-        this.dateToFilter = event.dateTo;
-        let from: string;
-        let to: string;
-        if (this.dateFromFilter != undefined)
-            from = this.dateFromFilter.getFullYear() + '-' + (this.dateFromFilter.getMonth()+1) + '-' + this.dateFromFilter.getDate();
-        if (this.dateToFilter != undefined)
-            to = this.dateToFilter.getFullYear() + '-' + (this.dateToFilter.getMonth()+1) + '-' + this.dateToFilter.getDate();
+    // filterByDateApply(event: DateChange) : void {
+    //     this.dateFromFilter = event.dateFrom;
+    //     this.dateToFilter = event.dateTo;
+    //     let from: string;
+    //     let to: string;
+    //     if (this.dateFromFilter != undefined)
+    //         from = this.dateFromFilter.getFullYear() + '-' + (this.dateFromFilter.getMonth()+1) + '-' + this.dateFromFilter.getDate();
+    //     if (this.dateToFilter != undefined)
+    //         to = this.dateToFilter.getFullYear() + '-' + (this.dateToFilter.getMonth()+1) + '-' + this.dateToFilter.getDate();
         
-        this.router.navigate(['/transactions'], { queryParams: {  
-            from: from, 
-            to: to, 
-            }, queryParamsHandling: "merge" });
-    }
+    //     this.router.navigate(['/transactions'], { queryParams: {  
+    //         from: from, 
+    //         to: to, 
+    //         }, queryParamsHandling: "merge" });
+    // }
 }

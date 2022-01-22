@@ -2,6 +2,10 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import * as fs from 'fast-sort';
 import * as l from 'lodash';
 
+export interface ListFilterValue {
+    selectedValue: string;
+}
+
 export interface ListFilterOptions {
     idProperty: string;
     usageIndexPeriodDays?: number;
@@ -17,7 +21,7 @@ export interface ListFilterOptions {
 
 export class ListFilterComponent implements OnInit, OnDestroy {
     @Input() name: string;
-    @Input() filterValue: string;
+    @Input() filterValue: ListFilterValue;
     @Input() data: any[];
     @Input() options: ListFilterOptions;
 
@@ -26,7 +30,7 @@ export class ListFilterComponent implements OnInit, OnDestroy {
     noFilterElement: string;
     missingElement: string;
     otherElement: string;
-    @Output() filterChanged = new EventEmitter<string>()
+    @Output() filterChanged = new EventEmitter<ListFilterValue>()
 
     constructor() {
     }
@@ -44,7 +48,7 @@ export class ListFilterComponent implements OnInit, OnDestroy {
     }
 
     private setFilter(value?: string) : void {
-        this.filterValue = value;
+        this.filterValue = { selectedValue: value} as ListFilterValue;
         this.filterChanged.emit(this.filterValue);
     }
 

@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 
-export interface DateChange {
+export interface DateFilterOptions {
+}
+
+export interface DateFilterValue {
     dateFrom?: Date;
     dateTo?: Date;
 }
@@ -12,32 +15,27 @@ export interface DateChange {
 })
 
 export class DateFilterComponent implements OnInit, OnDestroy {
-    _dateFrom: Date;
+    @Input() name: string;
+    @Input() data: any[];
+    @Input() options: DateFilterOptions;
+    
+    _filterValue: DateFilterValue;
     @Input()
-    set dateFrom(value: Date) {
-        this._dateFrom = value;
-        this.swapDateIfNeccessary();
-        this.setCustomFrom();
+    set filterValue(value: DateFilterValue) {
+        this._filterValue = value;
+        this.swapDatesIfNeccessary();
     }
 
-    get dateFrom() {
-        return this._dateFrom;
+    get filterValue() {
+        return this._filterValue;
     }
 
-    _dateTo: Date;
-    @Input()
-    set dateTo(value: Date) {
-        this._dateTo = value;
-        this.swapDateIfNeccessary();
-    }
 
-    get dateTo() {
-        return this._dateTo;
-    }
-
-    @Output() dateChanged = new EventEmitter<DateChange>()
+    @Output() filterChanged = new EventEmitter<DateFilterValue>()
 
     today: Date;
+    beginningOfTime: Date;
+    endOfTime: Date;
     firstDayOfCurrentMonth: Date;
     lastDayOfCurrentMonth: Date;
     firstDayOfPreviousMonth: Date;
@@ -46,14 +44,14 @@ export class DateFilterComponent implements OnInit, OnDestroy {
     lastDayOfCurrentYear: Date;
     firstDayOfPreviousYear: Date;
     lastDayOfPreviousYear: Date;
-    newDateFrom: Date;
-    newDateTo: Date;
     
     constructor() {
     }
 
     ngOnInit() {
         this.today = new Date();          
+        this.beginningOfTime = new Date('1970-01-01');
+        this.endOfTime = new Date('2070-01-01');
         this.firstDayOfCurrentMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
         this.lastDayOfCurrentMonth = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 0);
         this.firstDayOfPreviousMonth = new Date(this.today.getFullYear(), this.today.getMonth() - 1, 1);
@@ -70,23 +68,24 @@ export class DateFilterComponent implements OnInit, OnDestroy {
     }
 
     isNoFilter() : boolean { 
-        return this.dateFrom == undefined && this.dateTo == undefined;
+        return (!this.filterValue.dateFrom || this.filterValue.dateFrom === this.beginningOfTime) 
+        && (!this.filterValue.dateTo || this.filterValue.dateTo === this.endOfTime);
     }
 
     isCurrentMonth() : boolean { 
-        return this.datesAreEqual(this.dateFrom, this.firstDayOfCurrentMonth) && this.datesAreEqual(this.dateTo, this.lastDayOfCurrentMonth);
+        return this.datesAreEqual(this.filterValue.dateFrom, this.firstDayOfCurrentMonth) && this.datesAreEqual(this.filterValue.dateTo, this.lastDayOfCurrentMonth);
     }
 
     isPreviousMonth() : boolean { 
-        return this.datesAreEqual(this.dateFrom, this.firstDayOfPreviousMonth) && this.datesAreEqual(this.dateTo, this.lastDayOfPreviousMonth);
+        return this.datesAreEqual(this.filterValue.dateFrom, this.firstDayOfPreviousMonth) && this.datesAreEqual(this.filterValue.dateTo, this.lastDayOfPreviousMonth);
     }
 
     isCurrentYear() : boolean { 
-        return this.datesAreEqual(this.dateFrom, this.firstDayOfCurrentYear) && this.datesAreEqual(this.dateTo, this.lastDayOfCurrentYear);
+        return this.datesAreEqual(this.filterValue.dateFrom, this.firstDayOfCurrentYear) && this.datesAreEqual(this.filterValue.dateTo, this.lastDayOfCurrentYear);
     }
 
     isPreviousYear() : boolean { 
-        return this.datesAreEqual(this.dateFrom, this.firstDayOfPreviousYear) && this.datesAreEqual(this.dateTo, this.lastDayOfPreviousYear);
+        return this.datesAreEqual(this.filterValue.dateFrom, this.firstDayOfPreviousYear) && this.datesAreEqual(this.filterValue.dateTo, this.lastDayOfPreviousYear);
     }
 
     isCustom() : boolean {
@@ -95,31 +94,28 @@ export class DateFilterComponent implements OnInit, OnDestroy {
 
     customFromChange(event: any) : void {
         if (event.year != undefined) {
-            this.newDateFrom = new Date(event.year, event.month-1, event.day);
+            this.filterValue.dateFrom = new Date(event.year, event.month-1, event.day);
         } else if (event.srcElement.value) {
-            this.newDateFrom = new Date(event.srcElement.value);
+            this.filterValue.dateFrom = new Date(event.srcElement.value);
         }  
-        this.swapDateIfNeccessary();
+        this.swapDatesIfNeccessary();
+        this.filterApply();
     }
 
     customToChange(event: any) : void {
         if (event.year != undefined) {
-            this.newDateTo = new Date(event.year, event.month-1, event.day);
+            this.filterValue.dateTo = new Date(event.year, event.month-1, event.day);
         } else if (event.srcElement.value) {
-            this.newDateTo = new Date(event.srcElement.value);
+            this.filterValue.dateTo = new Date(event.srcElement.value);
         }  
-        this.swapDateIfNeccessary();
-    }
-
-    setCustomFrom() {
-        // if (!this.isCustom() || !this.dateFrom)
-        //     this.customFrom = undefined;
-        // this.customFrom = { year: this.dateFrom.getFullYear(), month: this.dateFrom.getMonth() + 1, day: this.dateFrom.getDate()};
+        this.swapDatesIfNeccessary();
+        this.filterApply();
     }
 
     private setDates(dateFrom?: Date, dateTo?: Date) : void {
-        this.newDateFrom = dateFrom;
-        this.newDateTo = dateTo;
+        this.filterValue.dateFrom = dateFrom;
+        this.filterValue.dateTo = dateTo;
+        this.filterApply();
     }
 
     private datesAreEqual(date1?: Date, date2?: Date) : boolean {
@@ -129,16 +125,16 @@ export class DateFilterComponent implements OnInit, OnDestroy {
         return date1.getFullYear() == date2.getFullYear() && date1.getMonth() == date2.getMonth() && date1.getDate() == date2.getDate();
     }
 
-    private swapDateIfNeccessary(){
-        if (this.dateFrom != undefined && this.dateTo != undefined && this.dateFrom > this.dateTo)
+    private swapDatesIfNeccessary(){
+        if (this.filterValue.dateFrom != undefined && this.filterValue.dateTo != undefined && this.filterValue.dateFrom > this.filterValue.dateTo)
         {
-            const dateSwap = this.dateFrom;
-            this.dateFrom = this.dateTo;
-            this.dateTo = dateSwap;
+            const dateSwap = this.filterValue.dateFrom;
+            this.filterValue.dateFrom = this.filterValue.dateTo;
+            this.filterValue.dateTo = dateSwap;
         }
     }
 
     filterApply() {
-        this.dateChanged.emit({ dateFrom: this.newDateFrom, dateTo : this.newDateTo });
+        this.filterChanged.emit(this.filterValue);
     }
 }
