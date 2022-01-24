@@ -55,12 +55,16 @@ export class DataFilteringService {
   private getAmountFilter(column: GridColumn, params: QueryParamsHandler) : AmountFilterValue {
     const direction = params.filters.find(f => f.column === column.dataProperty && f.appendix === 'direction')?.filterValue?.split('|');
     const currency = params.filters.find(f => f.column === column.dataProperty && f.appendix === 'currency')?.filterValue?.split('|');
-    return { direction: direction, currency: currency } as AmountFilterValue;
+    const from = params.filters.find(f => f.column === column.dataProperty && f.appendix === 'from')?.filterValue;
+    const to = params.filters.find(f => f.column === column.dataProperty && f.appendix === 'to')?.filterValue;
+    return { direction: direction, currency: currency, from: from ? Number(from) : undefined, to: to ? Number(to) : undefined } as AmountFilterValue;
   }
 
   private addAmountFilter(column: GridColumn, params: QueryParamsHandler, value: AmountFilterValue) { 
     params.setFilter(column.dataProperty, value.direction.join('|'), 'direction');
     params.setFilter(column.dataProperty, value.currency.join('|'), 'currency');
+    params.setFilter(column.dataProperty, value.from ? value.from.toString() : "-99999999", 'from');
+    params.setFilter(column.dataProperty, value.to?.toString() ?? "99999999", 'to');
   }
 
   private applyAmountFilter(data: any[], column: GridColumn, params: QueryParamsHandler) : any[] {
@@ -76,7 +80,13 @@ export class DataFilteringService {
       data = data.filter(d => d[column.dataProperty] >= 0);
     }
     if (value.currency && options.currencyDataProperty) {
-      data = data.filter(c => value.currency.indexOf(c[options.currencyDataProperty]) > -1);
+      data = data.filter(d => value.currency.indexOf(d[options.currencyDataProperty]) > -1);
+    }
+    if (value.from && value.from>-99999999) {
+      data = data.filter(d => Math.abs(d[column.dataProperty]) > Math.abs(value.from) || (Math.abs(d[column.dataProperty]) * (-1)) < (Math.abs(value.from) * (-1)));
+    }
+    if (value.to && value.to<99999999) {
+      data = data.filter(d => Math.abs(d[column.dataProperty]) < Math.abs(value.to) || (Math.abs(d[column.dataProperty]) * (-1)) > (Math.abs(value.to) * (-1)));
     }
     return data;
   }

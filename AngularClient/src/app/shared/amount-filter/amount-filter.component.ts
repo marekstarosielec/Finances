@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import * as fs from 'fast-sort';
 import * as l from 'lodash';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 export interface AmountFilterOptions {
     currencyDataProperty: string;
@@ -9,6 +11,8 @@ export interface AmountFilterOptions {
 export interface AmountFilterValue {
     direction: string[];
     currency: string[];
+    from: number;
+    to: number;
 }
 
 @Component({
@@ -17,11 +21,15 @@ export interface AmountFilterValue {
     styleUrls: ['./amount-filter.component.scss']
 })
 
-export class AmountFilterComponent implements OnInit, OnDestroy {
+export class AmountFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     @Input() name: string;
     @Input() filterValue: AmountFilterValue;
     @Input() data: any[];
     @Input() options: AmountFilterOptions;
+
+    from$ = new Subject<Number>();
+    to$ = new Subject<Number>();
+    private ngUnsubscribe = new Subject();
 
     @Output() filterChanged = new EventEmitter<AmountFilterValue>()
 
@@ -39,7 +47,27 @@ export class AmountFilterComponent implements OnInit, OnDestroy {
 
     ngOnDestroy()
     {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
+    }
 
+    ngAfterViewInit(): void {
+        this.from$.pipe(
+            debounceTime(500), 
+            distinctUntilChanged(),
+            takeUntil(this.ngUnsubscribe)
+        ).subscribe((value: number) => {
+            this.filterValue.from = value;
+            this.emitEvent();
+        });
+        this.to$.pipe(
+            debounceTime(500), 
+            distinctUntilChanged(),
+            takeUntil(this.ngUnsubscribe)         
+        ).subscribe((value: number) => {
+            this.filterValue.to = value;
+            this.emitEvent();
+        });
     }
 
     buildCurrencyReferenceList(){

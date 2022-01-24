@@ -146,7 +146,7 @@ namespace FinancesApi.Services
             //_categories.Value.ForEach(c =>
             //    {
             //        c.Title = c.Title[0].ToString().ToUpper() + c.Title.Substring(1).ToLower();
-            //        c.UsageIndex = t.FirstOrDefault(tg => string.Equals(tg.Category, c.Title, StringComparison.InvariantCultureIgnoreCase))?.Count ?? 0;
+            //        c.UsageIndex   = t.FirstOrDefault(tg => string.Equals(tg.Category, c.Title, StringComparison.InvariantCultureIgnoreCase))?.Count ?? 0;
             //    }
             //);
             //_categories.Value.ForEach(c => c.Id = Guid.NewGuid().ToString());
