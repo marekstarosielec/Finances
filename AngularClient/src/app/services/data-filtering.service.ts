@@ -4,6 +4,7 @@ import { DateFilterValue } from 'app/shared/date-filter/date-filter.component';
 import { GridColumn } from 'app/shared/grid/grid.component';
 import { QueryParamsHandler } from 'app/shared/grid/queryParamsHandler';
 import { ListFilterValue } from 'app/shared/list-filter/list-filter.component';
+import { TextFilterOptions, TextFilterValue } from 'app/shared/text-filter/text-filter.component';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class DataFilteringService {
   public AmountFilterIdentifier : string = 'amount';
   public DateFilterIdentifier : string = 'date';
   public ListFilterIdentifier : string = 'list';
+  public TextFilterIdentifier : string = 'text';
   
   public getFilter(column: GridColumn, params: QueryParamsHandler) {
     if (column.filterComponent === this.AmountFilterIdentifier) {
@@ -23,10 +25,13 @@ export class DataFilteringService {
     if (column.filterComponent === this.ListFilterIdentifier) {
       return this.getListFilter(column, params);
     }
+    if (column.filterComponent === this.TextFilterIdentifier) {
+      return this.getTextFilter(column, params);
+    }
   }
 
   public addFilter(column: GridColumn, params: QueryParamsHandler, value: any) {
-    if (column.filterComponent === this.AmountFilterIdentifier) {
+     if (column.filterComponent === this.AmountFilterIdentifier) {
       return this.addAmountFilter(column, params, value);
     }    
     if (column.filterComponent === this.DateFilterIdentifier) {
@@ -34,6 +39,9 @@ export class DataFilteringService {
     }
     if (column.filterComponent === this.ListFilterIdentifier) {
       return this.addListFilter(column, params, value);
+    }
+    if (column.filterComponent === this.TextFilterIdentifier) {
+      return this.addTextFilter(column, params, value);
     }
   }
 
@@ -47,6 +55,9 @@ export class DataFilteringService {
       }
       if (column.filterComponent === this.ListFilterIdentifier) {
         data = this.applyListFilter(data, column, params);
+      }
+      if (column.filterComponent === this.TextFilterIdentifier) {
+        data = this.applyTextFilter(data, column, params);
       }
     });
     return data;
@@ -135,6 +146,29 @@ export class DataFilteringService {
         (value.selectedValue ==='<missing>' && !d[column.dataProperty])
         || (value.selectedValue === d[column.dataProperty]));
     }
+    return data;
+  }
+
+  private getTextFilter(column: GridColumn, params: QueryParamsHandler) : TextFilterValue {
+    const selectedValue = params.filters.find(f => f.column === column.dataProperty)?.filterValue;
+    return { selectedValue: !selectedValue || selectedValue === '<noFilter>' ? '' : selectedValue } as TextFilterValue;
+  }
+
+  private addTextFilter(column: GridColumn, params: QueryParamsHandler, value: TextFilterValue) { 
+    params.setFilter(column.dataProperty, !value.selectedValue || value.selectedValue==='' ? '<noFilter>' : value.selectedValue);
+  }
+
+  private applyTextFilter(data: any[], column: GridColumn, params: QueryParamsHandler) : any[] {
+    const value = this.getTextFilter(column, params) as ListFilterValue;
+    const options = column.filterOptions as TextFilterOptions;
+    if (!value || !column.dataProperty || !value.selectedValue || value.selectedValue === '<noFilter>') {
+      return data;
+    }
+    const search = value.selectedValue.toUpperCase();
+    data = data.filter(d => 
+      d[column.dataProperty]?.toUpperCase().indexOf(search) > -1
+      || (options?.additionalPropertyToSearch1 && d[options.additionalPropertyToSearch1]?.toUpperCase().indexOf(search) > -1)
+    );
     return data;
   }
 }

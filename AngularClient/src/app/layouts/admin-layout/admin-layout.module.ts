@@ -2,9 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 import { AdminLayoutRoutes } from './admin-layout.routing';
-
 import { DashboardComponent }       from '../../pages/dashboard/dashboard.component';
 import { UserComponent }            from '../../pages/user/user.component';
 import { TransactionsComponent }    from '../../pages/transactions/transactions.component';
@@ -32,7 +30,6 @@ import { DocumentComponent } from 'app/pages/documents/document.component';
 import { DocumentStateComponent } from 'app/pages/document-state/document-state.component';
 import { DateFilterComponent } from 'app/shared/date-filter/date-filter.component';
 import { GridComponent } from 'app/shared/grid/grid.component';
-import { FreeTextFilterComponent } from 'app/shared/free-text-filter/free-text-filter.component';
 import { ListPageComponent } from 'app/pages/list-page/list-page.component';
 import { FormattedNumberPipe } from 'app/pipes/formattedNumber.component';
 import { FormattedAmountPipe } from 'app/pipes/formattedAmount.component';
@@ -41,6 +38,7 @@ import { FormattedDatePipe } from 'app/pipes/formattedDate.component';
 import { DynamicPipe } from 'app/pipes/dynamic.component';
 import { ListFilterComponent } from 'app/shared/list-filter/list-filter.component';
 import { AmountFilterComponent } from 'app/shared/amount-filter/amount-filter.component';
+import { TextFilterComponent } from 'app/shared/text-filter/text-filter.component';
 
 @NgModule({
   imports: [
@@ -76,7 +74,7 @@ import { AmountFilterComponent } from 'app/shared/amount-filter/amount-filter.co
     DocumentComponent,
     DocumentStateComponent,
     DateFilterComponent,
-    FreeTextFilterComponent,
+    TextFilterComponent,
     GridComponent,
     ListPageComponent,
     FormattedNumberPipe,

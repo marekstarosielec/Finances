@@ -2,19 +2,29 @@ import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Outpu
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
+export interface TextFilterValue {
+    selectedValue: string;
+}
+
+export interface TextFilterOptions {
+    additionalPropertyToSearch1?: string
+}
+
 @Component({
-    selector: 'free-text-filter',
-    templateUrl: 'free-text-filter.component.html',
-    styleUrls: ['./free-text-filter.component.scss']
+    selector: 'text-filter',
+    templateUrl: 'text-filter.component.html',
+    styleUrls: ['./text-filter.component.scss']
 })
 
-export class FreeTextFilterComponent implements OnInit, OnDestroy, AfterViewInit {
+export class TextFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     searchTerm$ = new Subject<string>();
     subscription: Subscription;
     
-    @Input() initialValue: string;
-    @Output() filterChanged = new EventEmitter<string>()
-
+    @Input() name: string;
+    @Input() filterValue: TextFilterValue;
+    @Input() data: any[];
+    @Input() options: TextFilterOptions;
+    @Output() filterChanged = new EventEmitter<TextFilterValue>()
     constructor() {
     }
 
@@ -29,7 +39,8 @@ export class FreeTextFilterComponent implements OnInit, OnDestroy, AfterViewInit
             debounceTime(500), 
             distinctUntilChanged()
         ).subscribe((text: string) => {
-            this.filterChanged.emit(text);
+            this.filterValue.selectedValue = text;
+            this.filterChanged.emit(this.filterValue);
         });
     }
 

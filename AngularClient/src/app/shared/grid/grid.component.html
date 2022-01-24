@@ -8,12 +8,12 @@
               <free-text-filter (filterChanged)="freeTextFilterApply(column, $event);" [initialValue]="getFilterValueFromParam(column)"></free-text-filter>
             </div>
           </div> -->
-          <!-- <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='date'">
+          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='text'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
-            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
-              <date-filter [dateFrom]="getDateFilterValueFromParam(column, true)" [dateTo]="getDateFilterValueFromParam(column, false)" (dateChanged)="dateFilterApply(column,$event)"></date-filter>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterTextDropdown">
+              <text-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="dataFilteringService.addFilter(column, params, $event); navigate();" [filterValue]="dataFilteringService.getFilter(column, params)"></text-filter>
             </div>
-          </div> -->
+          </div>
           <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='date'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterDateDropdown">
@@ -43,7 +43,7 @@
               [class.negative]="column.conditionalFormatting=='amount' && row[column.dataProperty]<0"
               [class.positive]="column.conditionalFormatting=='amount' && row[column.dataProperty]>0"
               [class.noWrap]="column.noWrap"
-            >{{row[column.dataProperty] | dynamic:column.pipe}}<span *ngIf="column.dataProperty2"> {{ row[column.dataProperty2]}}</span></td>
+            ><p>{{row[column.dataProperty] | dynamic:column.pipe}}</p><p *ngIf="column.subDataProperty1" class="subDataProperty1"> {{ row[column.subDataProperty1]}}</p></td>
         </tr>
     </tbody>
   </table>

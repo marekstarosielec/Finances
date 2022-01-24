@@ -7,6 +7,7 @@ import { ToolbarElement, ToolbarElementAction } from '../list-page/list-page.com
 import { forkJoin } from 'rxjs';
 import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
 import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
+import { TextFilterOptions } from 'app/shared/text-filter/text-filter.component';
 
 @Component({
     selector: 'transactions',
@@ -31,8 +32,8 @@ export class Transactions2Component implements OnInit{
                     { title: 'Data', dataProperty: 'date', pipe: 'date', filterComponent: 'date', noWrap: true},
                     { title: 'Konto', dataProperty: 'account', filterComponent: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions},
                     { title: 'Kategoria', dataProperty: 'category', filterComponent: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions},
-                    { title: 'Kwota', dataProperty: 'amount', dataProperty2: 'currency', pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', filterComponent: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions},
-                    { title: 'Opis', dataProperty: 'description'}
+                    { title: 'Kwota', dataProperty: 'amount', pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', filterComponent: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions},
+                    { title: 'Opis', dataProperty: 'bankInfo', subDataProperty1: 'comment', filterComponent: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions}
                 ];
             });
     }
