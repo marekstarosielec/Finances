@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { ActivatedRoute, Router } from '@angular/router';
 import { GridColumn, ViewChangedData } from 'app/shared/grid/grid.component';
 import { Subject } from 'rxjs';
+import * as l from 'lodash';
 
 export enum ToolbarElementAction {
     AddNew
@@ -13,42 +14,28 @@ export interface ToolbarElement {
     defaultAction?: ToolbarElementAction;
 }
 
+export interface Summary {
+    name: string;
+    options: any;
+}
+
+export interface SummaryAmountCurrencyOptions {
+    amountProperty: string;
+    currencyProperty: string;
+}
+
+interface ViewAnalyticsData {
+    totalNumberOfRecords: number;
+    maximumVisibleNumberOfRecords: number;
+    filteredData: any[];
+    displayedData: any[];
+    amountCurrency: any;
+}
+
 @Component({
     selector: 'list-page',
     styleUrls: ['./list-page.component.scss'],
-    template: `
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <ng-container *ngIf="currentView$ | async as currentView">
-                        <span *ngIf="currentView.maximumVisibleNumberOfRecords != 0 && currentView.displayedData.length < currentView.filteredData.length && currentView.displayedData.length > 0">
-                            Widoczne {{currentView.displayedData.length | formattedNumber}} z {{currentView.filteredData.length | formattedNumber}} rekordów. <span class="link" (click)="maximumNumberOfRecordsToShow=0">Pokaż wszystkie.</span>
-                        </span>
-                        <span *ngIf="currentView.maximumVisibleNumberOfRecords == 0 && currentView.filteredData.length > 0">
-                            Widoczne wszystkie {{currentView.filteredData.length | formattedNumber}} rekordów. <span class="link" (click)="maximumNumberOfRecordsToShow=100">Pokaż pierwsze 100.</span>
-                        </span>
-                        <span *ngIf="currentView.maximumVisibleNumberOfRecords != 0 && currentView.displayedData.length == currentView.filteredData.length && currentView.displayedData.length > 0">
-                            Widoczne wszystkie {{currentView.displayedData?.length| formattedNumber}} rekordów.
-                        </span>
-                        <span *ngIf="currentView.displayedData.length == 0">
-                            Brak rekordów.
-                        </span> 
-                    </ng-container>
-                </div>
-                <div class="card-body">
-                    <ng-container *ngFor="let toolbarElement of toolbarElements">
-                        <button class="btn btn-primary" (click)="toolbarElementClicked(toolbarElement)">{{toolbarElement.title}}</button>
-                    </ng-container>
-                    <grid [name]="name" [columns]="columns" [data]="data"
-                        [initialSortColumn]="initialSortColumn" [initialSortOrder]="initialSortOrder"
-                        [maximumNumberOfRecordsToShow] = "maximumNumberOfRecordsToShow"
-                        (viewChanged)="viewChanged($event)"></grid>
-                </div>
-            </div>
-        </div>
-    </div>
-    `
+    templateUrl: 'list-page.component.html'
 })
 
 export class ListPageComponent implements OnInit, OnDestroy {
@@ -58,10 +45,11 @@ export class ListPageComponent implements OnInit, OnDestroy {
     @Input() public initialSortColumn: string;
     @Input() public initialSortOrder: number;
     @Input() public toolbarElements: ToolbarElement[];
+    @Input() public summaries: Summary[];
     @Output() public toolbarElementClick = new EventEmitter<ToolbarElement>();
 
     maximumNumberOfRecordsToShow: Number = 100;
-    public currentView$: Subject<ViewChangedData> = new Subject<ViewChangedData>();
+    public currentView$: Subject<ViewAnalyticsData> = new Subject<ViewAnalyticsData>();
 
     constructor(private router: Router, private route: ActivatedRoute) {
     }
@@ -69,6 +57,7 @@ export class ListPageComponent implements OnInit, OnDestroy {
     ngOnInit() {
         if (!this.toolbarElements)
             this.toolbarElements = [{ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew}];
+
     }
 
     ngOnDestroy()
@@ -85,7 +74,28 @@ export class ListPageComponent implements OnInit, OnDestroy {
     
     viewChanged(viewChangedData: ViewChangedData) {
         setTimeout(() => {
-            this.currentView$.next(viewChangedData);
+            let result = {
+                totalNumberOfRecords: viewChangedData.totalNumberOfRecords,
+                maximumVisibleNumberOfRecords: viewChangedData.maximumVisibleNumberOfRecords,
+                filteredData: viewChangedData.filteredData,
+                displayedData: viewChangedData.displayedData
+            } as ViewAnalyticsData;
+            if (this.summaries.find(s => s.name === 'amount-currency')){
+                const option = this.summaries.find(s => s.name === 'amount-currency').options as SummaryAmountCurrencyOptions;
+                if (option) {
+                    result.amountCurrency = {
+                        amounts: l(viewChangedData.filteredData)
+                        .groupBy(option.currencyProperty)
+                        .map((objs, key) => ({
+                            'currency': key,
+                            'amount': l.sumBy(objs, option.amountProperty),
+                            'incoming': l.sumBy(objs.filter(o => o[option.amountProperty] > 0), option.amountProperty),
+                            'outgoing': l.sumBy(objs.filter(o => o[option.amountProperty] < 0), option.amountProperty) }))
+                        .value()
+                    };
+                }
+            }
+            this.currentView$.next(result);
         }, 0);
     }
 }

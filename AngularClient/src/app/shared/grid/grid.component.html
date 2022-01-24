@@ -2,12 +2,6 @@
     <table class="table table-hover overflow-auto table-striped">
     <thead class="text-primary">
         <th *ngFor="let column of columns" [class.alignRight]="column.alignment=='right'">
-          <!-- <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='free-text'">
-            <i class="fa fa-filter" ngbDropdownToggle></i>
-            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterFreeTextDropdown">
-              <free-text-filter (filterChanged)="freeTextFilterApply(column, $event);" [initialValue]="getFilterValueFromParam(column)"></free-text-filter>
-            </div>
-          </div> -->
           <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.filterComponent==='text'">
             <i class="fa fa-filter" ngbDropdownToggle></i>
             <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterTextDropdown">
