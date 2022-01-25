@@ -80,7 +80,7 @@ export class ListPageComponent implements OnInit, OnDestroy {
                 filteredData: viewChangedData.filteredData,
                 displayedData: viewChangedData.displayedData
             } as ViewAnalyticsData;
-            if (this.summaries.find(s => s.name === 'amount-currency')){
+            if (this.summaries?.find(s => s.name === 'amount-currency')){
                 const option = this.summaries.find(s => s.name === 'amount-currency').options as SummaryAmountCurrencyOptions;
                 if (option) {
                     result.amountCurrency = {

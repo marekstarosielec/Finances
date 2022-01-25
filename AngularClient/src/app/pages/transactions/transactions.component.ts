@@ -1,231 +1,48 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TransactionAccount, TransactionCategory } from 'app/api/generated';
-import { BehaviorSubject } from 'rxjs';
-import { MBankScrapperService } from '../../api/generated/api/mBankScrapper.service';
+import { Component, OnInit } from '@angular/core';
+import { MBankScrapperService, Transaction } from 'app/api/generated';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
-import { Transaction } from '../../api/generated/model/transaction';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { GridColumn } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
-import * as _ from 'fast-sort';
-import * as l from 'lodash';
-
-export interface AmountSums {
-    amount: number;
-    currency: string;
-    incoming: number;
-    outgoing: number;
-}
+import { Summary, SummaryAmountCurrencyOptions, ToolbarElement, ToolbarElementAction } from '../list-page/list-page.component';
+import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
+import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
+import { TextFilterOptions } from 'app/shared/text-filter/text-filter.component';
 
 @Component({
     selector: 'transactions',
     moduleId: module.id,
-    templateUrl: 'transactions.component.html',
-    styleUrls: ['./transactions.component.scss']
+    template: `
+        <list-page name="transactions" [columns]="columns" [data]="data" initialSortColumn="date" initialSortOrder=-1 [summaries]="summaries" [toolbarElements]="toolbarElements" (toolbarElementClick)="toolbarElementClick($event)"></list-page>
+    `
 })
-export class TransactionsComponent implements OnInit, OnDestroy{
-    data: Transaction[];
-    primaryAccountList: TransactionAccount[];
-    primaryCategoryList: TransactionCategory[];
-    secondaryCategoryList: TransactionCategory[];
-    public accountFilter: string = '';
-    public categoryFilter: string = '';
-    descriptionFilter: string = '';
-    dateFromFilter: Date;
-    dateToFilter: Date;
-    sortColumn: string = 'date';
-    sortOrder: number = -1;
-    filteredNumberOfRecords: number = 0;
-    currentNumberOfRecords: number = 0;
-    totalNumberOfRecords: number = 0;
-    maximumVisibleNumberOfRecords: number = 100;
-    dataSubject = new BehaviorSubject(null);
-    loading: boolean;
-    totalAmounts: AmountSums[];
-    constructor (
-        private transactionsService: TransactionsService, 
-        private mbankScrappingService: MBankScrapperService,
-        private router: Router, 
-        private route: ActivatedRoute) {}
-    
+export class TransactionsComponent implements OnInit{
+    data: Transaction[]; 
+    columns: GridColumn[];
+    toolbarElements: ToolbarElement[] = [];
+    summaries: Summary[] = [];
+    constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService) {}
+
     ngOnInit(){
-        this.loading = true;
-        this.transactionsService.transactionsGet().subscribe((transactions: Transaction[]) =>{
-            this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((accounts: TransactionAccount[]) => {
-                this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((categories: TransactionCategory[]) => {
-                    this.data = transactions;
-                    this.totalNumberOfRecords = transactions.length;
-                    this.filteredNumberOfRecords = transactions.length;
-                    this.primaryAccountList = accounts;
-                    this.primaryCategoryList = categories.filter(c => c.usageIndex > 0).sort((c1, c2) => c2.usageIndex - c1.usageIndex);
-                    var secondaryCategories = categories.filter(c => c.usageIndex === 0);
-                    secondaryCategories = _.sort(secondaryCategories).by([
-                        { asc: c => c.deleted},
-                        { asc: c => c.title}
-                    ]);
-                    this.secondaryCategoryList = secondaryCategories;
-                    
-                    this.loading = false;
-                    this.prepareView();
-                })
-            })
-        });
-        this.route.queryParams.subscribe((qp: Params) => {
-            this.maximumVisibleNumberOfRecords = qp.limit ?? 100;
-            if (this.maximumVisibleNumberOfRecords < 0) this.maximumVisibleNumberOfRecords = 100;
-            this.accountFilter = qp.account ? decodeURIComponent(qp.account) : "";
-            this.categoryFilter = qp.category ? decodeURIComponent(qp.category) : "";
-            this.descriptionFilter = qp.description ? decodeURIComponent(qp.description) : "";
-            this.sortColumn = qp.sortColumn ?? 'date';
-            this.sortOrder = qp.sortOrder ?? -1;
-            if (qp.from)
-                this.dateFromFilter = new Date(qp.from);
-            else
-                this.dateFromFilter = undefined;
-            
-            if (qp.to)
-                this.dateToFilter = new Date(qp.to);
-            else
-                this.dateToFilter = undefined;
-            this.prepareView();
+        this.transactionsService.transactionsGet()
+        .pipe(take(1))
+        .subscribe(result => {
+            this.data = result;
+            this.summaries.push( { name: 'amount-currency', options: { amountProperty: 'amount', currencyProperty: 'currency' } as SummaryAmountCurrencyOptions})
+            this.toolbarElements.push({ name: 'mBank', title: 'mBank' });  
+            this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
+            this.columns = [ 
+                { title: 'Data', dataProperty: 'date', pipe: 'date', filterComponent: 'date', noWrap: true},
+                { title: 'Konto', dataProperty: 'account', filterComponent: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions},
+                { title: 'Kategoria', dataProperty: 'category', filterComponent: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions},
+                { title: 'Kwota', dataProperty: 'amount', pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', filterComponent: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions},
+                { title: 'Opis', dataProperty: 'bankInfo', subDataProperty1: 'comment', filterComponent: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions}
+            ];
         });
     }
 
-    freeTextFilter(text: string) {
-        this.router.navigate(['/transactions'], { queryParams: {  description: encodeURIComponent(text) }, queryParamsHandling: "merge" });
-    }
-
-    ngOnDestroy(): void {
-
-    }
-
-    scrapButtonClick(){
-        this.mbankScrappingService.mBankScrapperPost().subscribe(t => {
+    toolbarElementClick(toolbarElement: ToolbarElement) {
+        this.mbankScrappingService.mBankScrapperPost().pipe(take(1)).subscribe(t => {
             console.log(t);
         })
     }
-
-    sort(column: string)
-    {
-        if (column === this.sortColumn){
-            this.sortOrder = this.sortOrder * (-1);
-        } else {
-            this.sortColumn = column;
-            this.sortOrder = -1;
-        }
-        this.router.navigate(['/transactions'], { queryParams: { sortColumn: this.sortColumn, sortOrder: this.sortOrder }, queryParamsHandling: "merge" });
-    }
-
-    prepareView() {
-        if (!this.data)
-        {
-            this.currentNumberOfRecords = 0;
-            this.filteredNumberOfRecords = 0;
-            return;
-        }
-
-        let data = this.data;
-        if (this.accountFilter !== '') {
-            data = data.filter(d => d.account === this.accountFilter);
-        }
-        if (this.categoryFilter !== '') {
-            data = data.filter(d => d.category === this.categoryFilter || (this.categoryFilter === 'missing' && !!!d.category));
-        }
-        if (this.descriptionFilter !== '') {
-            data = data.filter(d => d.bankInfo?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1
-            || d.comment?.toUpperCase().indexOf(this.descriptionFilter.toUpperCase()) > -1);
-        }
-        if (this.dateFromFilter != undefined){
-            data = data.filter(d => new Date(d.date) >= this.dateFromFilter);          
-        }
-        if (this.dateToFilter != undefined){
-            data = data.filter(d => new Date(d.date) <= this.dateToFilter);            
-        }
-
-        this.filteredNumberOfRecords = data.length;
-        
-        if (this.sortOrder == -1)
-            data = _.sort(data).by([
-                { desc: t => t[this.sortColumn]},
-                { asc: t => t.id}
-            ]);
-        else
-            data = _.sort(data).by([
-                { asc: t => t[this.sortColumn]},
-                { asc: t => t.id}
-            ]);
-        
-        this.totalAmounts =  l(data)
-            .groupBy('currency')
-            .map((objs, key) => ({
-                'currency': key,
-                'amount': l.sumBy(objs, 'amount'),
-                'incoming': l.sumBy(objs.filter(o => o.amount > 0), 'amount'),
-                'outgoing': l.sumBy(objs.filter(o => o.amount < 0), 'amount') }))
-            .value();
-        if (this.maximumVisibleNumberOfRecords && this.maximumVisibleNumberOfRecords != 0) {
-            data = data.slice(0, this.maximumVisibleNumberOfRecords);
-        }
-        this.currentNumberOfRecords = data.length;
-        this.dataSubject.next(data);
-    }
-
-    showAll() {
-        this.router.navigate(['/transactions'], { queryParams: { limit: 0 }, queryParamsHandling: "merge" });
-    }
-
-    showSome(){
-        this.router.navigate(['/transactions'], { queryParams: {  limit: 100 }, queryParamsHandling: "merge" });
-    }
-
-    filterByAccount(account: string) {
-        this.router.navigate(['/transactions'], { queryParams: {  account: encodeURIComponent(account) }, queryParamsHandling: "merge" });
-    }
-
-    filterByCategory(category: string) {
-        this.router.navigate(['/transactions'], { queryParams: {  category: encodeURIComponent(category) }, queryParamsHandling: "merge" });
-    }
-
-    isFilteredByCategory(category: string) : boolean {
-        if (category==='all' && this.categoryFilter=='') return true;
-        if (category==='missing' && this.categoryFilter=='missing') return true;
-        if (this.primaryCategoryList.filter(c => c.title === category).length > 0) return true;
-        if (category==='other' && this.secondaryCategoryList.filter(c => c.title === this.categoryFilter).length > 0) return true;
-        return false;
-    }
-
-    getCategorySecondaryFilter() {
-        const search = decodeURIComponent(this.categoryFilter);
-        if (this.secondaryCategoryList.filter(c => c.title === search).length > 0)
-            return search;
-        return undefined;
-    }
-
-    selectTransaction(id: string) {
-        this.router.navigate([id], { relativeTo: this.route});
-    }
-
-    addNew() {
-        this.router.navigate(["new"], { relativeTo: this.route});
-    }
-
-    // filterByDate(event: DateChange) : void {
-    //     this.dateFromFilter = event.dateFrom;
-    //     this.dateToFilter = event.dateTo;
-    // }
-
-    // filterByDateApply(event: DateChange) : void {
-    //     this.dateFromFilter = event.dateFrom;
-    //     this.dateToFilter = event.dateTo;
-    //     let from: string;
-    //     let to: string;
-    //     if (this.dateFromFilter != undefined)
-    //         from = this.dateFromFilter.getFullYear() + '-' + (this.dateFromFilter.getMonth()+1) + '-' + this.dateFromFilter.getDate();
-    //     if (this.dateToFilter != undefined)
-    //         to = this.dateToFilter.getFullYear() + '-' + (this.dateToFilter.getMonth()+1) + '-' + this.dateToFilter.getDate();
-        
-    //     this.router.navigate(['/transactions'], { queryParams: {  
-    //         from: from, 
-    //         to: to, 
-    //         }, queryParamsHandling: "merge" });
-    // }
 }

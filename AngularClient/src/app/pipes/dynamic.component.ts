@@ -23,7 +23,7 @@ import { FormattedNumberPipe } from './formattedNumber.component';
             const numberPipe = new FormattedNumberPipe();
             return numberPipe.transform(value);
          default:
-            return value.toString();
+            return value?.toString();
       }
    } 
  } 
