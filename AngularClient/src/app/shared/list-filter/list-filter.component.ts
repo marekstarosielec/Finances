@@ -90,13 +90,19 @@ export class ListFilterComponent implements OnInit, OnDestroy {
             { asc: l => l.id}
         ]);
 
+        this.secondaryList = [];
         const secondaryCandidates = l.countBy(this.data, this.options.idProperty);
         let secondaryCandidatesArray = [];  
         Object.keys(secondaryCandidates).map(function(key){  
-            secondaryCandidatesArray.push({ id: key, usageIndex:primaryCandidates[key]})  
+            secondaryCandidatesArray.push({ id: key, usageIndex:secondaryCandidates[key]})  
             return secondaryCandidatesArray;  
         });  
-        this.secondaryList = secondaryCandidatesArray.filter(l => l.usageIndex < this.options.usageIndexThreshold);
+        this.secondaryList = []
+        secondaryCandidatesArray.forEach(element => {
+            if (this.primaryList.findIndex(p => p.id === element.id) === -1) {
+                this.secondaryList.push({ id: element.id});
+            }
+        });
         this.secondaryList = fs.sort(this.secondaryList).by([
             { asc: l => l.id}
         ]);

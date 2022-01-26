@@ -1,13 +1,30 @@
-import { formatDate } from "@angular/common";
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
-import { __classPrivateFieldSet } from "tslib";
+import { FormControl, FormGroup, ValidatorFn, Validators } from "@angular/forms";
+import * as l from 'lodash';
+import * as fs from 'fast-sort';
+import { FormattedAmountPipe } from "app/pipes/formattedAmount.component";
 
 export interface DetailsViewField {
     title: string;
     dataProperty: string;
     component: string;
     readonly?: boolean;
+    options?: any;
+}
+
+export interface DetailsViewFieldListOptions {
+    referenceList: any[];
+    referenceListIdField: string;
+    usageIndexPeriodDays?: number;
+    usageIndexPeriodDateProperty?: string;
+    usageIndexThreshold?: number;
+    usageIndexData?: any[];
+}
+
+export interface DetailsViewFieldAmountOptions {
+    currencyList: any[];
+    currencyListIdField: string;
+    currencyDataProperty: string;
 }
 
 export interface DetailsViewDefinition {
@@ -44,6 +61,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
         this.prepareView();
     }
 
+    numberRegEx = /\-?\d*\.?\d{1,2}/;
 
     ngOnInit() {
 
@@ -60,15 +78,64 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
         }
         let data = {};
         this.viewDefinition.fields.forEach((field : DetailsViewField) => {
-            if (field.component === 'date') {
-                console.log(formatDate(this.data[field.dataProperty], 'yyyy-MM-dd', 'en'));
-                controls[field.dataProperty] = new FormControl(formatDate(this.data[field.dataProperty], 'yyyy-MM-dd', 'en'), []);
-            } else {
-                controls[field.dataProperty] = new FormControl(undefined, []);
+            const validators : ValidatorFn[] = [];
+            if (field.component==='amount') {
+                validators.push(Validators.pattern(this.numberRegEx))
+                if (field.options?.currencyDataProperty) {
+                    controls[field.options?.currencyDataProperty] = new FormControl(undefined, []);
+                    data[field.options?.currencyDataProperty] = this.data[field.options?.currencyDataProperty];
+                }
             }
+        
+            controls[field.dataProperty] = new FormControl(undefined, validators);
             data[field.dataProperty] = this.data[field.dataProperty];
-        })
+        });
         this.form = new FormGroup(controls);
         this.form.setValue(data);
+        this.viewDefinition.fields.forEach((field : DetailsViewField) => {
+            if (field.component === 'date') {
+                const date = new Date(this.data[field.dataProperty]);
+                const dtpDate = {year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()};
+                this.form.controls[field.dataProperty].setValue(dtpDate);
+            } 
+            if (field.component === 'list') {
+                if (!field.options) {
+                    field.options = {};
+                }
+                field.options.referenceList = this.buildReferenceListOnUsageIndex(field);
+            } 
+            if (field.component === 'amount') {
+                const amountPipe = new FormattedAmountPipe();
+                this.form.controls[field.dataProperty].setValue(amountPipe.transform(data[field.dataProperty]));
+            } 
+        });
+    }
+
+    private buildReferenceListOnUsageIndex(field: DetailsViewField) : any[] {
+        if (!field?.options?.usageIndexData || !field?.options?.usageIndexPeriodDateProperty || !field?.options?.usageIndexPeriodDays || !field?.options?.usageIndexThreshold) {
+            return field.options?.referenceList;
+        }
+        const usageIndexPeriodStart = new Date(new Date().setDate(new Date().getDate() - field.options.usageIndexPeriodDays));
+        const usageFilter = field.options.usageIndexData.filter(r => new Date(r[field.options.usageIndexPeriodDateProperty])>=usageIndexPeriodStart )
+        const primaryCandidates = l.countBy(usageFilter, field.dataProperty);
+        let primaryCandidatesArray = [];  
+        Object.keys(primaryCandidates).map(function(key){  
+            let result = { id: key, usageIndex:primaryCandidates[key]};
+            result[field.options.referenceListIdField] = key;
+            primaryCandidatesArray.push(result);
+            return primaryCandidatesArray;  
+        });   
+        let resultList = primaryCandidatesArray.filter(l => l.usageIndex >= field.options.usageIndexThreshold);
+        resultList = fs.sort(resultList).by([
+            { asc: l => l.id}
+        ]);
+        field.options?.referenceList.forEach(element => {
+            if (resultList.findIndex(p => p[field.options.referenceListIdField] === element[field.options.referenceListIdField]) === -1) {
+                let result = {};
+                result[field.options.referenceListIdField] = element[field.options.referenceListIdField];
+                resultList.push(result);
+            }
+        });
+        return resultList;
     }
 }

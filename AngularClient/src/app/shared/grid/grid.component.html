@@ -37,7 +37,7 @@
               [class.negative]="column.conditionalFormatting=='amount' && row[column.dataProperty]<0"
               [class.positive]="column.conditionalFormatting=='amount' && row[column.dataProperty]>0"
               [class.noWrap]="column.noWrap"
-            ><p>{{row[column.dataProperty] | dynamic:column.pipe}}</p><p *ngIf="column.subDataProperty1" class="subDataProperty1"> {{ row[column.subDataProperty1]}}</p></td>
+            ><p>{{row[column.dataProperty] | dynamic:column.pipe}}<ng-container *ngIf="column.additionalDataProperty1"> {{row[column.additionalDataProperty1]}}</ng-container></p><p *ngIf="column.subDataProperty1" class="subDataProperty1"> {{ row[column.subDataProperty1]}}</p></td>
         </tr>
     </tbody>
   </table>

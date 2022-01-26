@@ -9,9 +9,9 @@ import { DataFilteringService } from 'app/services/data-filtering.service';
 export interface GridColumn {
     title: string;
     dataProperty: string;
+    additionalDataProperty1?: string;
     subDataProperty1?: string;
     filterComponent?: string;
-    filterComponentData?: any[];
     filterOptions?: any;
     pipe?: string;
     alignment?: string;
