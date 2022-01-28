@@ -3,10 +3,11 @@ import { MBankScrapperService, Transaction } from 'app/api/generated';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { GridColumn } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
-import { Summary, SummaryAmountCurrencyOptions, ToolbarElement, ToolbarElementAction } from '../list-page/list-page.component';
+import { Summary, SummaryAmountCurrencyOptions} from '../list-page/list-page.component';
 import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
 import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
 import { TextFilterOptions } from 'app/shared/text-filter/text-filter.component';
+import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar';
 
 @Component({
     selector: 'transactions',

@@ -1,4 +1,14 @@
-<form [formGroup]="form" (ngSubmit)="submit()">
+<form [formGroup]="form">
+    <!-- <button type="submit" class="btn btn-primary" [disabled]="!isSavable()">Zapisz</button> -->
+    <!-- <button type="input" class="btn btn-primary" [disabled]="adding" (click)="addAutoCategory()">Nowa autokategoria</button> -->
+    <!-- <button type="button" class="btn btn-outline-danger" (click)="open(content)" [disabled]="!isDeletable()">Usuń</button> -->
+    <ng-container *ngFor="let toolbarElement of toolbarElements">
+        <button class="btn" *ngIf="toolbarElement.defaultAction!==toolbarElementAction.Delete || data"
+        [class.btn-primary]="toolbarElement.defaultAction!==toolbarElementAction.Delete" 
+        [class.btn-secondary]="toolbarElement.defaultAction===toolbarElementAction.Delete"
+        [class.btn-outline-danger]="toolbarElement.defaultAction===toolbarElementAction.Delete"
+        (click)="toolbarElement.defaultAction===toolbarElementAction.Delete ? open(content) : toolbarElementClicked(toolbarElement)">{{toolbarElement.title}}</button>
+    </ng-container>
     <ng-container *ngFor="let field of viewDefinition?.fields">
         <div class="form-group" *ngIf="field.component==='multiline-text'">
             <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
@@ -21,7 +31,7 @@
             <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
             <select class="form-control" [id]="name + '_' + field.dataProperty"  [formControlName]="field.dataProperty">
               <option></option>
-              <option *ngFor="let record of field.options.referenceList" [selected]="record[field.options.referenceListIdField]===data[field.dataProperty]">{{record[field.options.referenceListIdField]}}</option>
+              <option *ngFor="let record of field.options.referenceList" [selected]="data && record[field.options.referenceListIdField]===data[field.dataProperty]">{{record[field.options.referenceListIdField]}}</option>
             </select>
         </div>
         <div class="form-group" *ngIf="field.component==='amount'">
@@ -30,10 +40,20 @@
               <input type="text" class="form-control" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty">
               <div class="input-group-append" *ngIf="field.options?.currencyList">
                 <select class="form-control" [id]="name + '_' + field.options.currencyDataProperty" [formControlName]="field.options.currencyDataProperty">
-                  <option *ngFor="let currency of field.options?.currencyList" [selected]="currency[field.options.currencyListIdField]===data[field.options.currencyDataProperty]">{{currency[field.options.currencyListIdField]}}</option>
+                  <option *ngFor="let currency of field.options?.currencyList" [selected]="data && currency[field.options.currencyListIdField]===data[field.options.currencyDataProperty]">{{currency[field.options.currencyListIdField]}}</option>
                 </select>
               </div>
             </div>
         </div>
     </ng-container>
 </form>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Na pewno?</h4>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('back')">Anuluj</button>
+      <button type="button" class="btn btn-outline-danger" (click)="modal.close('delete')">Usuń</button>
+    </div>
+  </ng-template>

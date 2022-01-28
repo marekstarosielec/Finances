@@ -1,8 +1,10 @@
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { FormControl, FormGroup, ValidatorFn, Validators } from "@angular/forms";
 import * as l from 'lodash';
 import * as fs from 'fast-sort';
 import { FormattedAmountPipe } from "app/pipes/formattedAmount.component";
+import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "../models/toolbar";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 
 export interface DetailsViewField {
     title: string;
@@ -10,6 +12,7 @@ export interface DetailsViewField {
     component: string;
     readonly?: boolean;
     options?: any;
+    required?: boolean;
 }
 
 export interface DetailsViewFieldListOptions {
@@ -60,55 +63,111 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
         this._data = value;
         this.prepareView();
     }
-
+    @Input() public toolbarElements: ToolbarElement[];
+    @Output() public toolbarElementClick = new EventEmitter<ToolbarElementWithData>();
+    toolbarElementAction: typeof ToolbarElementAction = ToolbarElementAction;
     numberRegEx = /\-?\d*\.?\d{1,2}/;
 
-    ngOnInit() {
+    constructor(private modalService: NgbModal) {
 
+    }
+    
+    ngOnInit() {
+        if (!this.toolbarElements) {
+            this.toolbarElements = [
+                { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges},
+                { name: 'delete', title: 'Usuń', defaultAction: ToolbarElementAction.Delete}];
+        }
     }
 
     ngOnDestroy() {
   
     }
 
+    toolbarElementClicked(toolbarElement: ToolbarElement) {
+        console.log(toolbarElement);
+        if (toolbarElement.defaultAction === ToolbarElementAction.SaveChanges) {
+            if (!this.form.valid) {
+                return;
+            }
+            
+            let data = this.data ?? {};
+
+            this.viewDefinition.fields.forEach((field : DetailsViewField) => {
+                if (field.component === 'date'){
+                    let month =  '0' + this.form.value.date.month;
+                    if (month.length > 2) {
+                        month = month.substring(month.length-2);
+                    }
+                    let day =  '0' + this.form.value.date.day;
+                    if (day.length > 2) {
+                        day = day.substring(day.length-2);
+                    }
+                    data[field.dataProperty] = this.form.value.date.year + '-' + month + '-' + day + 'T00:00:00Z';
+                } else if (field.component === 'amount') {
+                    data[field.dataProperty] = +(this.form.controls[field.dataProperty].value.replace(",",".").replace(" ",""));
+                    if (field.options?.currencyDataProperty) {
+                        data[field.options?.currencyDataProperty] = this.form.controls[field.options?.currencyDataProperty].value;
+                    }
+                } else {
+                    data[field.dataProperty] = this.form.controls[field.dataProperty].value;
+                }
+            });
+            this.toolbarElementClick.emit({ toolbarElement: toolbarElement, data: data} as ToolbarElementWithData);
+        } 
+    }
+
     private prepareView() {
         let controls = {};
-        if (!this.viewDefinition?.fields || !this.data) {
+        if (!this.viewDefinition?.fields) {
             return;
         }
         let data = {};
         this.viewDefinition.fields.forEach((field : DetailsViewField) => {
             const validators : ValidatorFn[] = [];
+            if (field.required && field.component !== 'list') {
+                validators.push(Validators.required);
+            }
+
             if (field.component==='amount') {
                 validators.push(Validators.pattern(this.numberRegEx))
                 if (field.options?.currencyDataProperty) {
-                    controls[field.options?.currencyDataProperty] = new FormControl(undefined, []);
-                    data[field.options?.currencyDataProperty] = this.data[field.options?.currencyDataProperty];
+                    controls[field.options.currencyDataProperty] = new FormControl(undefined, []);
+                    data[field.options.currencyDataProperty] = this.data ? this.data[field.options.currencyDataProperty] : '';
                 }
+                if (this.data) {
+                    const amountPipe = new FormattedAmountPipe();
+                    data[field.dataProperty] = amountPipe.transform(this.data[field.dataProperty]);
+                } else {
+                    data[field.dataProperty] = '';
+                }
+                controls[field.dataProperty] = new FormControl(undefined, validators);
             }
-        
-            controls[field.dataProperty] = new FormControl(undefined, validators);
-            data[field.dataProperty] = this.data[field.dataProperty];
-        });
-        this.form = new FormGroup(controls);
-        this.form.setValue(data);
-        this.viewDefinition.fields.forEach((field : DetailsViewField) => {
-            if (field.component === 'date') {
-                const date = new Date(this.data[field.dataProperty]);
+            else if (field.component === 'date') {
+                let date = new Date();
+                if (this.data) { 
+                    date = new Date(this.data[field.dataProperty]);
+                }
                 const dtpDate = {year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()};
-                this.form.controls[field.dataProperty].setValue(dtpDate);
-            } 
-            if (field.component === 'list') {
+                data[field.dataProperty] = dtpDate;
+                controls[field.dataProperty] = new FormControl(undefined, validators);  
+            } else if (field.component === 'list') {
                 if (!field.options) {
                     field.options = {};
                 }
                 field.options.referenceList = this.buildReferenceListOnUsageIndex(field);
-            } 
-            if (field.component === 'amount') {
-                const amountPipe = new FormattedAmountPipe();
-                this.form.controls[field.dataProperty].setValue(amountPipe.transform(data[field.dataProperty]));
-            } 
+                controls[field.dataProperty] = new FormControl(undefined, validators);
+                data[field.dataProperty] = this.data ? this.data[field.dataProperty] : '';
+            } else if (field.component === 'text') {
+                controls[field.dataProperty] = new FormControl(undefined, validators);
+                data[field.dataProperty] = this.data ? this.data[field.dataProperty] : '';
+            } else if (field.component === 'multiline-text') {
+                controls[field.dataProperty] = new FormControl(undefined, validators);
+                data[field.dataProperty] = this.data ? this.data[field.dataProperty] : '';
+            }
         });
+        this.form = new FormGroup(controls);
+        this.form.setValue(data);
     }
 
     private buildReferenceListOnUsageIndex(field: DetailsViewField) : any[] {
@@ -137,5 +196,14 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
             }
         });
         return resultList;
+    }
+
+    open(content) {
+        this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+           if (result === 'delete') {
+                const toolbarElement = this.toolbarElements.filter(t => t.defaultAction === ToolbarElementAction.Delete)[0];
+                this.toolbarElementClick.emit({ toolbarElement: toolbarElement, data: this.data} as ToolbarElementWithData)
+           }
+        }, (reason) => { });
     }
 }

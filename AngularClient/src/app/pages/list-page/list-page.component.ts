@@ -3,16 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GridColumn, ViewChangedData } from 'app/shared/grid/grid.component';
 import { Subject } from 'rxjs';
 import * as l from 'lodash';
-
-export enum ToolbarElementAction {
-    AddNew
-}
-
-export interface ToolbarElement {
-    name: string;
-    title: string;
-    defaultAction?: ToolbarElementAction;
-}
+import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar';
 
 export interface Summary {
     name: string;
@@ -55,9 +46,9 @@ export class ListPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        if (!this.toolbarElements)
+        if (!this.toolbarElements) {
             this.toolbarElements = [{ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew}];
-
+        }
     }
 
     ngOnDestroy()
@@ -66,10 +57,11 @@ export class ListPageComponent implements OnInit, OnDestroy {
     }
 
     toolbarElementClicked(toolbarElement: ToolbarElement) {
-        if (toolbarElement.defaultAction === ToolbarElementAction.AddNew)
+        if (toolbarElement.defaultAction === ToolbarElementAction.AddNew) {
             this.router.navigate(["new"], { relativeTo: this.route});
-        else
+        } else {
             this.toolbarElementClick.emit(toolbarElement);
+        }
     }
     
     viewChanged(viewChangedData: ViewChangedData) {

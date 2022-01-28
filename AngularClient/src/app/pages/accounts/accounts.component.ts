@@ -3,7 +3,7 @@ import { TransactionAccount } from 'app/api/generated';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { GridColumn, ViewChangedData } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
-import { ToolbarElement, ToolbarElementAction } from '../list-page/list-page.component';
+import { ToolbarElement } from 'app/shared/models/toolbar';
 
 @Component({
     selector: 'accounts',

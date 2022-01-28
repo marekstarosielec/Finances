@@ -107,7 +107,11 @@ namespace FinancesApi.Services
             _transactionsFile.Load();
             var editedTransaction = _transactionsFile.Value.FirstOrDefault(t => string.Equals(transaction.Id, t.Id, StringComparison.InvariantCultureIgnoreCase));
             if (editedTransaction == null)
+            {
+                if (string.IsNullOrWhiteSpace(transaction.Id))
+                    transaction.Id = Guid.NewGuid().ToString();
                 _transactionsFile.Value.Add(transaction);
+            }
             else
             {
                 editedTransaction.ScrappingDate = transaction.ScrappingDate;
