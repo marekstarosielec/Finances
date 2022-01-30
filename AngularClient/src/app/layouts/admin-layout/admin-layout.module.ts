@@ -38,7 +38,6 @@ import { DynamicPipe } from 'app/pipes/dynamic.component';
 import { ListFilterComponent } from 'app/shared/list-filter/list-filter.component';
 import { AmountFilterComponent } from 'app/shared/amount-filter/amount-filter.component';
 import { TextFilterComponent } from 'app/shared/text-filter/text-filter.component';
-import { Transaction2Component } from 'app/pages/transactions/transaction2.component';
 import { DetailsViewComponent } from 'app/shared/details-view/details-view.component';
 
 @NgModule({
@@ -84,7 +83,6 @@ import { DetailsViewComponent } from 'app/shared/details-view/details-view.compo
     DynamicPipe,
     ListFilterComponent,
     AmountFilterComponent,
-    Transaction2Component,
     DetailsViewComponent
   ]
 })

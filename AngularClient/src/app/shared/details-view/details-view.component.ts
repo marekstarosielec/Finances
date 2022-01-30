@@ -85,8 +85,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
     }
 
     toolbarElementClicked(toolbarElement: ToolbarElement) {
-        console.log(toolbarElement);
-        if (toolbarElement.defaultAction === ToolbarElementAction.SaveChanges) {
+        if (toolbarElement.defaultAction === ToolbarElementAction.SaveChanges || !toolbarElement.defaultAction) {
             if (!this.form.valid) {
                 return;
             }
@@ -125,7 +124,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
         let data = {};
         this.viewDefinition.fields.forEach((field : DetailsViewField) => {
             const validators : ValidatorFn[] = [];
-            if (field.required && field.component !== 'list') {
+            if (field.required/* && field.component !== 'list'*/) {
                 validators.push(Validators.required);
             }
 
@@ -175,7 +174,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
             return field.options?.referenceList;
         }
         const usageIndexPeriodStart = new Date(new Date().setDate(new Date().getDate() - field.options.usageIndexPeriodDays));
-        const usageFilter = field.options.usageIndexData.filter(r => new Date(r[field.options.usageIndexPeriodDateProperty])>=usageIndexPeriodStart )
+        const usageFilter = field.options.usageIndexData.filter(r => new Date(r[field.options.usageIndexPeriodDateProperty])>=usageIndexPeriodStart)
         const primaryCandidates = l.countBy(usageFilter, field.dataProperty);
         let primaryCandidatesArray = [];  
         Object.keys(primaryCandidates).map(function(key){  

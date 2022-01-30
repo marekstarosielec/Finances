@@ -30,7 +30,7 @@
         <div class="form-group" *ngIf="field.component==='list'">
             <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
             <select class="form-control" [id]="name + '_' + field.dataProperty"  [formControlName]="field.dataProperty">
-              <option></option>
+              <option value=""></option>
               <option *ngFor="let record of field.options.referenceList" [selected]="data && record[field.options.referenceListIdField]===data[field.dataProperty]">{{record[field.options.referenceListIdField]}}</option>
             </select>
         </div>

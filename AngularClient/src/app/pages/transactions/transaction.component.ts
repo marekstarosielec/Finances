@@ -1,158 +1,87 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CurrenciesService, Currency, Transaction, TransactionAccount, TransactionCategory, TransactionsService } from 'app/api/generated';
-import { forkJoin, Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-import {v4 as uuidv4} from 'uuid';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute, Params, Router } from "@angular/router";
+import { CurrenciesService, TransactionsService } from "app/api/generated";
+import { DetailsViewDefinition, DetailsViewField, DetailsViewFieldAmountOptions, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
+import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
+import { forkJoin, Subscription } from "rxjs";
 import { Location } from '@angular/common';
-import * as _ from 'fast-sort';
+import { take } from "rxjs/operators";
 
 @Component({
-    selector: 'transaction',
     moduleId: module.id,
-    templateUrl: 'transaction.component.html',
-    styleUrls: ['./transaction.component.scss']
+    template: `
+        <details-view [viewDefinition]="viewDefinition" [data]="data" [toolbarElements]="toolbarElements" (toolbarElementClick)="toolbarElementClick($event)"></details-view>
+    `
 })
-export class TransactionComponent implements OnInit, OnDestroy{
+
+export class TransactionComponent implements OnInit, OnDestroy {
+    viewDefinition: DetailsViewDefinition;
+    data: any;
     private routeSubscription: Subscription;
-    data: Transaction;
-    accounts: TransactionAccount[];
-    categories: TransactionCategory[];
-    currencies: Currency[];
-    adding: boolean = false;
-    form = new FormGroup({
-        scrappingDate: new FormControl(undefined, []),
-        status: new FormControl('', []),
-        id: new FormControl('', []),
-        date: new FormControl('', []),
-        source: new FormControl('', []),
-        account: new FormControl('', [Validators.required]),
-        category: new FormControl('', [Validators.required]),
-        amount: new FormControl('', [Validators.required]),
-        description: new FormControl('', []),
-        title: new FormControl('', []),
-        text: new FormControl('', []),
-        bankInfo: new FormControl('', []),
-        comment: new FormControl('', []),
-        currency: new FormControl('', []),
-        details: new FormControl('', []),
-        person: new FormControl('', [])
-    });
+    toolbarElements: ToolbarElement[] = [];
     
-    constructor (private transactionsService: TransactionsService, private route: ActivatedRoute, private location: Location,
-        private router: Router, private modalService: NgbModal, private currenciesService: CurrenciesService) {}
+    constructor(private transactionsService: TransactionsService, 
+        private currenciesService: CurrenciesService, 
+        private route: ActivatedRoute, 
+        private location: Location,
+        private router: Router) {  
+    }
 
     ngOnInit(){
-        this.routeSubscription = this.route.params.subscribe(
-            (params: Params) => {
-                forkJoin([
-                    this.currenciesService.currenciesGet(), 
-                    this.transactionsService.transactionsAccountsGet(),
-                    this.transactionsService.transactionsCategoriesGet()]).pipe(take(1)).subscribe(
-                        ([currencies, transactionAccounts, transactionCategories]) => {
-                            this.currencies = currencies;
-                            this.accounts = transactionAccounts;
-                            this.categories = _.sort(transactionCategories).by([
-                                { desc: c => c.usageIndex},
-                                { asc: c => c.deleted},
-                                { asc: c => c.title}
-                            ]);
-                        });
-                if (params['id']==='new'){
-                    this.adding = true;
-                    let date = new Date();
-                    this.form.controls['currency'].setValue('PLN');
-                    this.form.controls['date'].setValue({year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()});
-                } else { 
-                    this.adding = false;
-                    this.transactionsService.transactionsIdGet(params['id']).pipe(take(1)).subscribe((result: Transaction) => {
-                        this.data = result;
-                        this.form.setValue(result);
-                        let date = new Date(result.date);
-                        this.form.controls['date'].setValue({year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()});
-                    });
-                }
-            }
-        );
-    }
-
-    ngOnDestroy() {
-            this.routeSubscription.unsubscribe();
-    }
-
-    isSavable(): boolean {
-        return this.form.valid && (this.adding || this.isFormChanged());
-    }
-
-    isFormChanged() : boolean {
-        if (!this.data)
-            return true;
-        
-        var props = Object.getOwnPropertyNames(this.data);
-        for (var i = 0; i < props.length; i++) {
-            if (this.data[props[i]] !== this.form.value[props[i]]) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    isDeletable(): boolean {
-        return !this.adding;
-    }
-
-    submit() {
-        if(!this.form.valid){
-            return;
-        }
-        let originalDate = new Date("1990-01-01");
-        if (this.data)
-            originalDate = new Date(this.data.date);
-
-        if (this.form.value.date.year != originalDate.getFullYear() 
-            || this.form.value.date.month-1 != originalDate.getMonth()
-            || this.form.value.date.day != originalDate.getDay()
-        )
-        {
-            var date = new Date();
-            date.setUTCFullYear(this.form.value.date.year, this.form.value.date.month-1, this.form.value.date.day);
-            date.setUTCHours(0,0,0,0);
-            this.form.value.date=date;
-        } else  {
-            this.form.value.date=originalDate;
-        }
-        if (this.adding) {
-            this.form.value.id = uuidv4();
-            this.transactionsService.transactionsTransactionPost(this.form.value).pipe(take(1)).subscribe(() =>
-            {
-                this.location.back();
-            });
-        } else {
-            this.transactionsService.transactionsTransactionPut(this.form.value).pipe(take(1)).subscribe(() =>
-            {
-                this.location.back();
-            });
-        }
-       
-    }
-
-    delete() {
-        this.transactionsService.transactionsTransactionIdDelete(this.data.id).pipe(take(1)).subscribe(() =>
-        {
-            this.location.back();
+        this.routeSubscription = this.route.params.subscribe((params: Params) => {
+            forkJoin([
+                this.transactionsService.transactionsGet(),
+                this.transactionsService.transactionsAccountsGet(),
+                this.transactionsService.transactionsCategoriesGet(),
+                this.currenciesService.currenciesGet(), 
+                ])
+                .pipe(take(1)).subscribe(([transactions, accounts, categories, currencies]) => {
+                    this.toolbarElements.push(
+                        { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges} as ToolbarElement,
+                        { name: 'delete', title: 'Usuń', defaultAction: ToolbarElementAction.Delete} as ToolbarElement,
+                        { name: 'auto-category', title: 'Autokategoria'} as ToolbarElement);
+                    this.data = transactions.filter(t => t.id == params['id'])[0];
+                    this.viewDefinition = {
+                        fields: [
+                            { title: 'Data', dataProperty: 'date', component: 'date', required: true} as DetailsViewField,
+                            { title: 'Konto', dataProperty: 'account', component: 'list', required: true, options: { referenceList: accounts, referenceListIdField: 'title'} as DetailsViewFieldListOptions} as DetailsViewField,
+                            { title: 'Kategoria', dataProperty: 'category', component: 'list', required: true, options: { referenceList: categories, referenceListIdField: 'title', usageIndexData: transactions, usageIndexPeriodDays: 40, usageIndexPeriodDateProperty: 'date', usageIndexThreshold: 5} as DetailsViewFieldListOptions} as DetailsViewField,
+                            { title: 'Kwota', dataProperty: 'amount', component: 'amount', required: true, options: { currencyList: currencies, currencyListIdField: 'code', currencyDataProperty: 'currency'} as DetailsViewFieldAmountOptions} as DetailsViewField,
+                            { title: 'Opis w banku', dataProperty: 'bankInfo', component: 'multiline-text', readonly: true} as DetailsViewField,
+                            { title: 'Komentarz', dataProperty: 'comment', component: 'text'} as DetailsViewField,
+                            { title: 'Szczegóły', dataProperty: 'details', component: 'text'} as DetailsViewField,
+                            { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField
+                        ]
+                    };
+                });
         });
     }
 
-    open(content) {
-        this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
-           if (result === 'delete')
-                this.delete();
-        }, (reason) => { });
+    ngOnDestroy(){
+        this.routeSubscription.unsubscribe();
     }
 
-    addAutoCategory() {
-        this.router.navigate(['transaction-auto-categories','new'], { queryParams: {  bankInfo: encodeURIComponent(this.data.bankInfo) }})
+    
+    toolbarElementClick(toolbarElementWithData: ToolbarElementWithData) {
+        if (toolbarElementWithData.toolbarElement.defaultAction === ToolbarElementAction.SaveChanges) {
+            if (this.data) {
+                this.transactionsService.transactionsTransactionPut(toolbarElementWithData.data).pipe(take(1)).subscribe(() =>
+                {
+                    this.location.back();
+                });
+            } else {
+                this.transactionsService.transactionsTransactionPost(toolbarElementWithData.data).pipe(take(1)).subscribe(() =>
+                {
+                    this.location.back();
+                });
+            }
+        } else if (toolbarElementWithData.toolbarElement.defaultAction === ToolbarElementAction.Delete) {
+            this.transactionsService.transactionsTransactionIdDelete(toolbarElementWithData.data.id).pipe(take(1)).subscribe(() =>
+            {
+                this.location.back();
+            });
+        } else if (toolbarElementWithData.toolbarElement.name==='auto-category') {
+            this.router.navigate(['transaction-auto-categories','new'], { queryParams: {  bankInfo: encodeURIComponent(toolbarElementWithData.data.bankInfo) }})
+        }
     }
 }

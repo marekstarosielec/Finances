@@ -11,7 +11,6 @@ import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.com
 import { DatasetStateGuard } from 'app/guards/datasetStateGuard';
 import { DatasetState } from 'app/api/generated';
 import { LoadingIndicatorComponent } from 'app/shared/loading-indicator/loading-indicator.component';
-import { TransactionComponent } from 'app/pages/transactions/transaction.component';
 import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
 import { TransactionCategoriesComponent } from 'app/pages/transaction-categories/transaction-categories.component';
@@ -22,13 +21,13 @@ import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-cat
 import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-categories/transaction-auto-categories.component';
 import { DocumentsComponent } from 'app/pages/documents/documents.component';
 import { DocumentComponent } from 'app/pages/documents/document.component';
-import { Transaction2Component } from 'app/pages/transactions/transaction2.component';
+import { TransactionComponent } from 'app/pages/transactions/transaction.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     // { path: 'user',           component: UserComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     { path: 'transactions',   component: TransactionsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
-    { path: 'transactions/:id',   component: Transaction2Component, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'transactions/:id',   component: TransactionComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'accounts',   component: AccountsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'accounts/:id',   component: AccountComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'transaction-categories',   component: TransactionCategoriesComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
