@@ -62,7 +62,11 @@ namespace FinancesApi.Services
             _transactionAccountsDataFile.Load();
             var editedAccount = _transactionAccountsDataFile.Value.FirstOrDefault(a => string.Equals(account.Id, a.Id, StringComparison.InvariantCultureIgnoreCase));
             if (editedAccount == null)
+            {
+                if (string.IsNullOrWhiteSpace(account.Id))
+                    account.Id = Guid.NewGuid().ToString();
                 _transactionAccountsDataFile.Value.Add(account);
+            }
             else
                 editedAccount.Title = account.Title;
             _transactionAccountsDataFile.Save();
@@ -163,7 +167,11 @@ namespace FinancesApi.Services
             _transactionCategoriesDataFile.Load();
             var edited = _transactionCategoriesDataFile.Value.FirstOrDefault(c => string.Equals(category.Id, c.Id, StringComparison.InvariantCultureIgnoreCase));
             if (edited == null)
+            {
+                if (string.IsNullOrWhiteSpace(category.Id))
+                    category.Id = Guid.NewGuid().ToString();
                 _transactionCategoriesDataFile.Value.Add(category);
+            }
             else
             {
                 edited.Title = category.Title;
@@ -190,7 +198,11 @@ namespace FinancesApi.Services
             _transactionAutoCategoriesDataFile.Load();
             var edited = _transactionAutoCategoriesDataFile.Value.FirstOrDefault(ac => string.Equals(autoCategory.Id, ac.Id, StringComparison.InvariantCultureIgnoreCase));
             if (edited == null)
+            {
+                if (string.IsNullOrWhiteSpace(autoCategory.Id))
+                    autoCategory.Id = Guid.NewGuid().ToString();
                 _transactionAutoCategoriesDataFile.Value.Add(autoCategory);
+            }
             else
             {
                 edited.BankInfo = autoCategory.BankInfo;
