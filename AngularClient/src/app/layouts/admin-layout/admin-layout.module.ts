@@ -17,11 +17,9 @@ import { TransactionComponent } from 'app/pages/transactions/transaction.compone
 import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
 import { TransactionCategoriesComponent } from 'app/pages/transaction-categories/transaction-categories.component';
-import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
 import { BalancesComponent } from 'app/pages/balances/balances.component';
 import { BalanceComponent } from 'app/pages/balances/balance.component';
 import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-categories/transaction-auto-categories.component';
-import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-categories/transaction-auto-category.component';
 import { CCBalanceComponent } from 'app/pages/dashboard/cc-balance/cc-balance.component';
 import { ScrappingInfoComponent } from 'app/pages/dashboard/scrapping-info/scrapping-info.component';
 import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
@@ -39,6 +37,8 @@ import { ListFilterComponent } from 'app/shared/list-filter/list-filter.componen
 import { AmountFilterComponent } from 'app/shared/amount-filter/amount-filter.component';
 import { TextFilterComponent } from 'app/shared/text-filter/text-filter.component';
 import { DetailsViewComponent } from 'app/shared/details-view/details-view.component';
+import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
+import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-categories/transaction-auto-category.component';
 
 @NgModule({
   imports: [
@@ -56,7 +56,6 @@ import { DetailsViewComponent } from 'app/shared/details-view/details-view.compo
     AccountsComponent,
     AccountComponent,
     TransactionCategoriesComponent,
-    TransactionCategoryComponent,
     TransactionAutoCategoriesComponent,
     TransactionAutoCategoryComponent,
     BalancesComponent,
@@ -83,7 +82,8 @@ import { DetailsViewComponent } from 'app/shared/details-view/details-view.compo
     DynamicPipe,
     ListFilterComponent,
     AmountFilterComponent,
-    DetailsViewComponent
+    DetailsViewComponent,
+    TransactionCategoryComponent
   ]
 })
 

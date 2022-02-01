@@ -9,7 +9,7 @@ import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar'
     selector: 'transaction-auto-categories',
     moduleId: module.id,
     template: `
-        <list-page name="transaction-auto-categories" [columns]="columns" [data]="data" initialSortColumn="title" initialSortOrder=1 [toolbarElements]="toolbarElements" (toolbarElementClick)="toolbarElementClick($event)"></list-page>
+        <list-page name="transaction-auto-categories" [columns]="columns" [data]="data" initialSortColumn="bankInfo" initialSortOrder=1 [toolbarElements]="toolbarElements" (toolbarElementClick)="toolbarElementClick($event)"></list-page>
     `
 })
 export class TransactionAutoCategoriesComponent implements OnInit{

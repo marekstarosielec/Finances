@@ -13,6 +13,7 @@ export interface DetailsViewField {
     readonly?: boolean;
     options?: any;
     required?: boolean;
+    defaultValue?: any;
 }
 
 export interface DetailsViewFieldListOptions {
@@ -85,7 +86,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
     }
 
     toolbarElementClicked(toolbarElement: ToolbarElement) {
-        if (toolbarElement.defaultAction === ToolbarElementAction.SaveChanges || !toolbarElement.defaultAction) {
+        if (toolbarElement.defaultAction === ToolbarElementAction.SaveChanges) {
             if (!this.form.valid) {
                 return;
             }
@@ -108,12 +109,16 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                     if (field.options?.currencyDataProperty) {
                         data[field.options?.currencyDataProperty] = this.form.controls[field.options?.currencyDataProperty].value;
                     }
+                } else if (field.component === 'checkbox') {
+                    data[field.dataProperty] = this.form.controls[field.dataProperty].value ? true : false;
                 } else {
                     data[field.dataProperty] = this.form.controls[field.dataProperty].value;
                 }
             });
             this.toolbarElementClick.emit({ toolbarElement: toolbarElement, data: data} as ToolbarElementWithData);
-        } 
+        } else {
+            this.toolbarElementClick.emit({ toolbarElement: toolbarElement} as ToolbarElementWithData);
+        }
     }
 
     private prepareView() {
@@ -124,7 +129,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
         let data = {};
         this.viewDefinition.fields.forEach((field : DetailsViewField) => {
             const validators : ValidatorFn[] = [];
-            if (field.required/* && field.component !== 'list'*/) {
+            if (field.required) {
                 validators.push(Validators.required);
             }
 
@@ -163,6 +168,13 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
             } else if (field.component === 'multiline-text') {
                 controls[field.dataProperty] = new FormControl(undefined, validators);
                 data[field.dataProperty] = this.data ? this.data[field.dataProperty] : '';
+            } else if (field.component === 'checkbox') {
+                controls[field.dataProperty] = new FormControl(undefined, validators);
+                data[field.dataProperty] = this.data ? this.data[field.dataProperty] : '';
+            } 
+
+            if (!this.data && field.defaultValue) {
+                data[field.dataProperty] = field.defaultValue;
             }
         });
         this.form = new FormGroup(controls);
@@ -178,10 +190,12 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
         const primaryCandidates = l.countBy(usageFilter, field.dataProperty);
         let primaryCandidatesArray = [];  
         Object.keys(primaryCandidates).map(function(key){  
-            let result = { id: key, usageIndex:primaryCandidates[key]};
-            result[field.options.referenceListIdField] = key;
-            primaryCandidatesArray.push(result);
-            return primaryCandidatesArray;  
+            if (key != 'null') {
+                let result = { id: key, usageIndex:primaryCandidates[key]};
+                result[field.options.referenceListIdField] = key;
+                primaryCandidatesArray.push(result);
+                return primaryCandidatesArray;  
+            }
         });   
         let resultList = primaryCandidatesArray.filter(l => l.usageIndex >= field.options.usageIndexThreshold);
         resultList = fs.sort(resultList).by([

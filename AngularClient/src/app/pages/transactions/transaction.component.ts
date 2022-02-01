@@ -81,7 +81,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
                 this.location.back();
             });
         } else if (toolbarElementWithData.toolbarElement.name==='auto-category') {
-            this.router.navigate(['transaction-auto-categories','new'], { queryParams: {  bankInfo: encodeURIComponent(toolbarElementWithData.data.bankInfo) }})
+            this.router.navigate(['transaction-auto-categories','new'], { queryParams: {  bankInfo: encodeURIComponent(this.data.bankInfo) }})
         }
     }
 }

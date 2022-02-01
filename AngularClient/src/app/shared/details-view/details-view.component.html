@@ -1,7 +1,4 @@
 <form [formGroup]="form">
-    <!-- <button type="submit" class="btn btn-primary" [disabled]="!isSavable()">Zapisz</button> -->
-    <!-- <button type="input" class="btn btn-primary" [disabled]="adding" (click)="addAutoCategory()">Nowa autokategoria</button> -->
-    <!-- <button type="button" class="btn btn-outline-danger" (click)="open(content)" [disabled]="!isDeletable()">Usuń</button> -->
     <ng-container *ngFor="let toolbarElement of toolbarElements">
         <button class="btn" *ngIf="toolbarElement.defaultAction!==toolbarElementAction.Delete || data"
         [class.btn-primary]="toolbarElement.defaultAction!==toolbarElementAction.Delete" 
@@ -11,39 +8,45 @@
     </ng-container>
     <ng-container *ngFor="let field of viewDefinition?.fields">
         <div class="form-group" *ngIf="field.component==='multiline-text'">
-            <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
-            <textarea class="form-control" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty" [readonly]="field.readonly"></textarea> 
+          <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
+          <textarea class="form-control" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty" [readonly]="field.readonly"></textarea> 
         </div>
         <div class="form-group" *ngIf="field.component==='text'">
-            <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
-            <input type="input" class="form-control" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty" [readonly]="field.readonly">
+          <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
+          <input type="input" class="form-control" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty" [readonly]="field.readonly">
         </div>
         <div class="form-group" *ngIf="field.component==='date'">
-            <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #d="ngbDatepicker" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty" [readonly]="field.readonly" />
-                <div class="input-group-append">
-                    <button (click)="d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
-                </div>
+          <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="rrrr-mm-dd" ngbDatepicker #d="ngbDatepicker" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty" [readonly]="field.readonly" />
+            <div class="input-group-append">
+              <button (click)="d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
             </div>
+          </div>
         </div>
         <div class="form-group" *ngIf="field.component==='list'">
-            <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
-            <select class="form-control" [id]="name + '_' + field.dataProperty"  [formControlName]="field.dataProperty">
-              <option value=""></option>
-              <option *ngFor="let record of field.options.referenceList" [selected]="data && record[field.options.referenceListIdField]===data[field.dataProperty]">{{record[field.options.referenceListIdField]}}</option>
-            </select>
+          <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
+          <select class="form-control" [id]="name + '_' + field.dataProperty"  [formControlName]="field.dataProperty">
+            <option value=""></option>
+            <option *ngFor="let record of field.options.referenceList" [selected]="data && record[field.options.referenceListIdField]===data[field.dataProperty]">{{record[field.options.referenceListIdField]}}</option>
+          </select>
         </div>
         <div class="form-group" *ngIf="field.component==='amount'">
-            <label [for]="name + '_' + field.dataProperty">Kwota</label>
-            <div class="input-group">
-              <input type="text" class="form-control" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty">
-              <div class="input-group-append" *ngIf="field.options?.currencyList">
-                <select class="form-control" [id]="name + '_' + field.options.currencyDataProperty" [formControlName]="field.options.currencyDataProperty">
-                  <option *ngFor="let currency of field.options?.currencyList" [selected]="data && currency[field.options.currencyListIdField]===data[field.options.currencyDataProperty]">{{currency[field.options.currencyListIdField]}}</option>
-                </select>
-              </div>
+          <label [for]="name + '_' + field.dataProperty">Kwota</label>
+          <div class="input-group">
+            <input type="text" class="form-control" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty">
+            <div class="input-group-append" *ngIf="field.options?.currencyList">
+              <select class="form-control" [id]="name + '_' + field.options.currencyDataProperty" [formControlName]="field.options.currencyDataProperty">
+                <option *ngFor="let currency of field.options?.currencyList" [selected]="data && currency[field.options.currencyListIdField]===data[field.options.currencyDataProperty]">{{currency[field.options.currencyListIdField]}}</option>
+              </select>
             </div>
+          </div>
+        </div>
+        <div class="form-group" *ngIf="field.component==='checkbox'">
+          <div class="input-group">
+            <label [for]="name + '_' + field.dataProperty" class="form-check-label">{{field.title}}</label>
+            <input type="checkbox" class="form-check-input" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty" [readonly]="field.readonly">
+          </div>
         </div>
     </ng-container>
 </form>
