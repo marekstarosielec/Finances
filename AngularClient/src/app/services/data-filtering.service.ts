@@ -16,47 +16,47 @@ export class DataFilteringService {
   public TextFilterIdentifier : string = 'text';
   
   public getFilter(column: GridColumn, params: QueryParamsHandler) {
-    if (column.filterComponent === this.AmountFilterIdentifier) {
+    if (column.component === this.AmountFilterIdentifier) {
       return this.getAmountFilter(column, params);
     }
-    if (column.filterComponent === this.DateFilterIdentifier) {
+    if (column.component === this.DateFilterIdentifier) {
       return this.getDateFilter(column, params);
     }    
-    if (column.filterComponent === this.ListFilterIdentifier) {
+    if (column.component === this.ListFilterIdentifier) {
       return this.getListFilter(column, params);
     }
-    if (column.filterComponent === this.TextFilterIdentifier) {
+    if (column.component === this.TextFilterIdentifier) {
       return this.getTextFilter(column, params);
     }
   }
 
   public addFilter(column: GridColumn, params: QueryParamsHandler, value: any) {
-     if (column.filterComponent === this.AmountFilterIdentifier) {
+     if (column.component === this.AmountFilterIdentifier) {
       return this.addAmountFilter(column, params, value);
     }    
-    if (column.filterComponent === this.DateFilterIdentifier) {
+    if (column.component === this.DateFilterIdentifier) {
       return this.addDateFilter(column, params, value);
     }
-    if (column.filterComponent === this.ListFilterIdentifier) {
+    if (column.component === this.ListFilterIdentifier) {
       return this.addListFilter(column, params, value);
     }
-    if (column.filterComponent === this.TextFilterIdentifier) {
+    if (column.component === this.TextFilterIdentifier) {
       return this.addTextFilter(column, params, value);
     }
   }
 
   public applyFilters(data: any[], columns: GridColumn[], params: QueryParamsHandler) : any[] {
     columns.forEach(column => {
-      if (column.filterComponent === this.AmountFilterIdentifier) {
+      if (column.component === this.AmountFilterIdentifier) {
         data = this.applyAmountFilter(data, column, params);
       }
-      if (column.filterComponent === this.DateFilterIdentifier) {
+      if (column.component === this.DateFilterIdentifier) {
         data = this.applyDateFilter(data, column, params);
       }
-      if (column.filterComponent === this.ListFilterIdentifier) {
+      if (column.component === this.ListFilterIdentifier) {
         data = this.applyListFilter(data, column, params);
       }
-      if (column.filterComponent === this.TextFilterIdentifier) {
+      if (column.component === this.TextFilterIdentifier) {
         data = this.applyTextFilter(data, column, params);
       }
     });
@@ -161,13 +161,17 @@ export class DataFilteringService {
   private applyTextFilter(data: any[], column: GridColumn, params: QueryParamsHandler) : any[] {
     const value = this.getTextFilter(column, params) as ListFilterValue;
     const options = column.filterOptions as TextFilterOptions;
-    if (!value || !column.dataProperty || !value.selectedValue || value.selectedValue === '<noFilter>') {
+    if (!value || !value.selectedValue || value.selectedValue === '<noFilter>') {
       return data;
     }
     const search = value.selectedValue.toUpperCase();
+    
     data = data.filter(d => 
-      d[column.dataProperty]?.toUpperCase().indexOf(search) > -1
-      || (options?.additionalPropertyToSearch1 && d[options.additionalPropertyToSearch1]?.toUpperCase().indexOf(search) > -1)
+      d[column.dataProperty]?.toString().toUpperCase().indexOf(search) > -1
+      || (options?.additionalPropertyToSearch1 && d[options.additionalPropertyToSearch1]?.toString().toUpperCase().indexOf(search) > -1)
+      || (options?.additionalPropertyToSearch2 && d[options.additionalPropertyToSearch2]?.toString().toUpperCase().indexOf(search) > -1)
+      || (options?.additionalPropertyToSearch3 && d[options.additionalPropertyToSearch3]?.toString().toUpperCase().indexOf(search) > -1)
+      || (options?.additionalPropertyToSearch4 && d[options.additionalPropertyToSearch4]?.toString().toUpperCase().indexOf(search) > -1)
     );
     return data;
   }

@@ -32,11 +32,11 @@ export class TransactionsComponent implements OnInit{
             this.toolbarElements.push({ name: 'mBank', title: 'mBank' });  
             this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
             this.columns = [ 
-                { title: 'Data', dataProperty: 'date', pipe: 'date', filterComponent: 'date', noWrap: true},
-                { title: 'Konto', dataProperty: 'account', filterComponent: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions},
-                { title: 'Kategoria', dataProperty: 'category', filterComponent: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions},
-                { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', filterComponent: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions},
-                { title: 'Opis', dataProperty: 'bankInfo', subDataProperty1: 'comment', filterComponent: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions}
+                { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true},
+                { title: 'Konto', dataProperty: 'account', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions},
+                { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions},
+                { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions},
+                { title: 'Opis', dataProperty: 'bankInfo', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions}
             ];
         });
     }

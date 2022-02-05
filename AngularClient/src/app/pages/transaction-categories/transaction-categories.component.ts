@@ -21,6 +21,6 @@ export class TransactionCategoriesComponent implements OnInit{
         this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((transactionCategories: TransactionCategory[]) =>{
             this.data = transactionCategories;
         });
-        this.columns = [ { title: 'Nazwa', dataProperty: 'title', filterComponent: 'free-text'}];
+        this.columns = [ { title: 'Nazwa', dataProperty: 'title', component: 'free-text'}];
     }
 }

@@ -8,6 +8,9 @@ export interface TextFilterValue {
 
 export interface TextFilterOptions {
     additionalPropertyToSearch1?: string
+    additionalPropertyToSearch2?: string
+    additionalPropertyToSearch3?: string
+    additionalPropertyToSearch4?: string
 }
 
 @Component({

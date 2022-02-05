@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GridColumn, ViewChangedData } from 'app/shared/grid/grid.component';
+import { GridColumn, RowClickedData, ViewChangedData } from 'app/shared/grid/grid.component';
 import { Subject } from 'rxjs';
 import * as l from 'lodash';
 import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar';
@@ -38,7 +38,8 @@ export class ListPageComponent implements OnInit, OnDestroy {
     @Input() public toolbarElements: ToolbarElement[];
     @Input() public summaries: Summary[];
     @Output() public toolbarElementClick = new EventEmitter<ToolbarElement>();
-
+    @Output() public rowClicked = new EventEmitter<RowClickedData>();
+    
     maximumNumberOfRecordsToShow: Number = 100;
     public currentView$: Subject<ViewAnalyticsData> = new Subject<ViewAnalyticsData>();
 
@@ -89,5 +90,9 @@ export class ListPageComponent implements OnInit, OnDestroy {
             }
             this.currentView$.next(result);
         }, 0);
+    }
+
+    rowClickedEvent(rowClickedData: RowClickedData) {
+        this.rowClicked.emit(rowClickedData);
     }
 }

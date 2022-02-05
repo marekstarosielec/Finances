@@ -24,8 +24,8 @@ export class TransactionAutoCategoriesComponent implements OnInit{
             this.data = transactionAutoCategories;
         });
         this.columns = [ 
-            { title: 'Opis w banku', dataProperty: 'bankInfo', filterComponent: 'free-text'},
-            { title: 'Kategoria', dataProperty: 'category', filterComponent: 'free-text'},
+            { title: 'Opis w banku', dataProperty: 'bankInfo', component: 'free-text'},
+            { title: 'Kategoria', dataProperty: 'category', component: 'free-text'},
         ];
         this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
         this.toolbarElements.push({ name: 'apply', title: 'Zastosuj' });  

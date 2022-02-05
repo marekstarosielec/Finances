@@ -11,12 +11,16 @@ export interface GridColumn {
     dataProperty: string;
     additionalDataProperty1?: string;
     subDataProperty1?: string;
-    filterComponent?: string;
+    subDataProperty2?: string;
+    subDataProperty3?: string;
+    subDataProperty4?: string;
+    component?: string;
     filterOptions?: any;
     pipe?: string;
     alignment?: string;
     conditionalFormatting?: string;
     noWrap?: boolean;
+    customEvent?: boolean;
 }
 
 export interface ViewChangedData {
@@ -24,6 +28,11 @@ export interface ViewChangedData {
     maximumVisibleNumberOfRecords: number;
     filteredData: any[];
     displayedData: any[];
+}
+
+export interface RowClickedData {
+    row: any[];
+    column: GridColumn;
 }
 
 @Component({
@@ -57,6 +66,7 @@ export class GridComponent implements OnInit, OnDestroy{
     }
 
     @Output() public viewChanged = new EventEmitter<ViewChangedData>();
+    @Output() public rowClicked = new EventEmitter<RowClickedData>();
     totalNumberOfRecords: number = 0;
 
     params: QueryParamsHandler;
@@ -136,7 +146,11 @@ export class GridComponent implements OnInit, OnDestroy{
         return data;
     }
 
-    selectRecord(id: string) { 
-        this.router.navigate([id], { relativeTo: this.route});
+    selectRecord(row: any, column: GridColumn) { 
+        if (column.customEvent) {
+            this.rowClicked.emit({ row: row, column: column} as RowClickedData)
+        } else {
+            this.router.navigate([row.id], { relativeTo: this.route});
+        }
     }
 }

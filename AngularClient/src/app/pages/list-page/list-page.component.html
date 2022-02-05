@@ -42,7 +42,8 @@
                 <grid [name]="name" [columns]="columns" [data]="data"
                     [initialSortColumn]="initialSortColumn" [initialSortOrder]="initialSortOrder"
                     [maximumNumberOfRecordsToShow] = "maximumNumberOfRecordsToShow"
-                    (viewChanged)="viewChanged($event)"></grid>
+                    (viewChanged)="viewChanged($event)"
+                    (rowClicked)="rowClickedEvent($event)"></grid>
             </div>
         </div>
     </div>
