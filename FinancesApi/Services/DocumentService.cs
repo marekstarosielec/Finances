@@ -11,7 +11,6 @@ namespace FinancesApi.Services
     public interface IDocumentService
     {
         IList<Document> GetDocuments(string id = null);
-        int GetMaxDocumentNumber();
         void SaveDocument(Document document);
         void DeleteDocument(string id);
     }
@@ -43,18 +42,16 @@ namespace FinancesApi.Services
                  : _documentsDataFile.Value.Where(d => string.Equals(id, d.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
-        public int GetMaxDocumentNumber()
-        {
-            _documentsDataFile.Load();
-            return _documentsDataFile.Value.OrderByDescending(d => d.Number).First().Number;
-        }
-
         public void SaveDocument(Document document)
         {
             _documentsDataFile.Load();
             var edited = _documentsDataFile.Value.FirstOrDefault(d => d.Number == document.Number);
             if (edited == null)
+            {
+                if (string.IsNullOrWhiteSpace(document.Id))
+                    document.Id = Guid.NewGuid().ToString();
                 _documentsDataFile.Value.Add(document);
+            }
             else
             {
                 edited.Date = document.Date;

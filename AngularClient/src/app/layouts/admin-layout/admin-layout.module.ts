@@ -23,7 +23,6 @@ import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-c
 import { CCBalanceComponent } from 'app/pages/dashboard/cc-balance/cc-balance.component';
 import { ScrappingInfoComponent } from 'app/pages/dashboard/scrapping-info/scrapping-info.component';
 import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
-import { DocumentComponent } from 'app/pages/documents/document.component';
 import { DocumentStateComponent } from 'app/pages/document-state/document-state.component';
 import { DateFilterComponent } from 'app/shared/date-filter/date-filter.component';
 import { GridComponent } from 'app/shared/grid/grid.component';
@@ -39,6 +38,7 @@ import { DetailsViewComponent } from 'app/shared/details-view/details-view.compo
 import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
 import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-categories/transaction-auto-category.component';
 import { DocumentsComponent } from 'app/pages/documents/documents.component';
+import { DocumentComponent } from 'app/pages/documents/document.component';
 
 @NgModule({
   imports: [
@@ -83,7 +83,7 @@ import { DocumentsComponent } from 'app/pages/documents/documents.component';
     ListFilterComponent,
     AmountFilterComponent,
     DetailsViewComponent,
-    TransactionCategoryComponent
+    TransactionCategoryComponent,
   ]
 })
 

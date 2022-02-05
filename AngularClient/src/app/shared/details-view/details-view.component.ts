@@ -151,6 +151,8 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                 let date = new Date();
                 if (this.data) { 
                     date = new Date(this.data[field.dataProperty]);
+                } else if (field.defaultValue){
+                    date = new Date(field.defaultValue);
                 }
                 const dtpDate = {year: date.getFullYear(), month:date.getMonth()+1, day: date.getDate()};
                 data[field.dataProperty] = dtpDate;
@@ -173,7 +175,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                 data[field.dataProperty] = this.data ? this.data[field.dataProperty] : '';
             } 
 
-            if (!this.data && field.defaultValue) {
+            if (!this.data && field.defaultValue && field.component !== 'date') {
                 data[field.dataProperty] = field.defaultValue;
             }
         });

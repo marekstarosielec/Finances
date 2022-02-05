@@ -28,8 +28,7 @@ export class DocumentsComponent implements OnInit{
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
 
-    constructor (private documentDatasetService: DocumentDatasetService, 
-        private documentsService: DocumentsService, 
+    constructor (private documentsService: DocumentsService, 
         private router: Router, 
         private route: ActivatedRoute) {}
 
@@ -46,7 +45,15 @@ export class DocumentsComponent implements OnInit{
                 { title: '', dataProperty: 'nc-image', component: 'icon', customEvent: true},
             ];
 
-            this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
+            this.toolbarElements.push(
+                { name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew},
+                { name: 'phone', title: 'Telefon'},
+                { name: 'internet', title: 'Internet'},
+                { name: 'ciklumTools', title: 'Ciklum narzędzia'},
+                { name: 'fuel', title: 'Paliwo'},
+                { name: 'mazda', title: 'Mazda'},
+                { name: 'invoice', title: 'Faktura'},
+                );
         });
     }
     
@@ -59,6 +66,6 @@ export class DocumentsComponent implements OnInit{
     }
 
     toolbarElementClick(toolbarElement: ToolbarElement) {
-        // this.transactionsService.transactionsAutocategorizePost().pipe(take(1)).subscribe(() =>{});
+        this.router.navigate(["new", toolbarElement.name], { relativeTo: this.route});
     }
 }

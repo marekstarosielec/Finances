@@ -81,9 +81,9 @@ export class ListPageComponent implements OnInit, OnDestroy {
                         .groupBy(option.currencyProperty)
                         .map((objs, key) => ({
                             'currency': key,
-                            'amount': l.sumBy(objs, option.amountProperty),
-                            'incoming': l.sumBy(objs.filter(o => o[option.amountProperty] > 0), option.amountProperty),
-                            'outgoing': l.sumBy(objs.filter(o => o[option.amountProperty] < 0), option.amountProperty) }))
+                            'amount': l.sumBy(objs, option.amountProperty) ?? 0,
+                            'incoming': l.sumBy(objs.filter(o => o[option.amountProperty] > 0), option.amountProperty) ?? 0,
+                            'outgoing': l.sumBy(objs.filter(o => o[option.amountProperty] < 0), option.amountProperty) ?? 0}))
                         .value()
                     };
                 }

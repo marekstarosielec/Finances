@@ -117,15 +117,16 @@ namespace FinancesApi.Services
 
         private void MakeNonCompressedBackups()
         {
-            _fileBackupLocations.ForEach(location =>
+            foreach (var location in _fileBackupLocations)
             {
                 var destinationLocation = Path.Combine(location, "Dokumenty");
                 Directory.CreateDirectory(destinationLocation);
-                documentFiles.ForEach(dataFile =>
+                foreach (var dataFile in documentFiles)
                 {
                     var destinationFile = Path.Combine(destinationLocation, Path.GetFileName(dataFile));
                     try
                     {
+                        Console.WriteLine($"Copying {dataFile} to { destinationFile}");
                         File.Copy(dataFile, destinationFile, true);
                     }
                     catch (Exception e)
@@ -133,9 +134,9 @@ namespace FinancesApi.Services
                         //Failure during copy is critical.
                         throw new Exception($"Nie udało się skopiować zbioru do {destinationFile}", e);
                     }
-                });
+                };
                 File.Copy(_documentDatasetInfoDataFile.DataFile.FileNameWithLocation, Path.Combine(location, _documentDatasetInfoDataFile.DataFile.FileName), true);
-            });
+            };
         }
 
         private void MakeCompressedBackups(string password)
