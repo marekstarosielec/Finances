@@ -8,6 +8,7 @@ import { forkJoin } from 'rxjs';
 import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
 import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Summary, SummaryAmountCategoryOptions, SummaryAmountCurrencyOptions } from '../list-page/list-page.component';
 
 @Component({
     moduleId: module.id,
@@ -19,7 +20,8 @@ import { ActivatedRoute, Router } from '@angular/router';
         initialSortColumn="date" 
         initialSortOrder=-1 
         [toolbarElements]="toolbarElements"
-        (rowClicked)="rowClickedEvent($event)">
+        (rowClicked)="rowClickedEvent($event)"
+        [summaries]="summaries">
         </list-page>
     `
 })
@@ -27,7 +29,8 @@ export class SkodaListComponent implements OnInit{
     data: any[]; 
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
-
+    summaries: Summary[] = [];
+    
     constructor (private skodaService: SkodaService, 
         private transactionsService: TransactionsService,
         private documentsService: DocumentsService,
@@ -52,6 +55,7 @@ export class SkodaListComponent implements OnInit{
                 { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
             ];
             this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
+            this.summaries.push( { name: 'amount-category', options: { amountProperty: 'amount', categoryProperty: 'category', showDirectioned: false } as SummaryAmountCategoryOptions})            
         });
     }
 

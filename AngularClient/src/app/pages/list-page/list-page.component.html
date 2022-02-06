@@ -3,8 +3,8 @@
         <div class="card">
             <div class="card-header">
                 <div class="container">
-                    <div class="row">
-                        <div class="col-6">
+                    <div class="d-flex justify-content-between">
+                        <div>
                             <ng-container *ngIf="currentView$ | async as currentView">
                                 <span *ngIf="currentView.maximumVisibleNumberOfRecords != 0 && currentView.displayedData.length < currentView.filteredData.length && currentView.displayedData.length > 0">
                                     Widoczne {{currentView.displayedData.length | formattedNumber}} z {{currentView.filteredData.length | formattedNumber}} rekordów. <span class="link" (click)="maximumNumberOfRecordsToShow=0">Pokaż wszystkie.</span>
@@ -20,13 +20,34 @@
                                 </span> 
                             </ng-container>
                         </div>
-                        <div class="col-6 text-right">
+                        <div>
                             <ng-container *ngIf="currentView$ | async as currentView">
                                 <ng-container *ngFor="let summary of summaries">
                                     <ng-container *ngIf="summary.name==='amount-currency' && currentView.amountCurrency">
-                                        <div *ngFor="let amount of currentView.amountCurrency.amounts">
-                                            {{amount.currency}}: {{amount.amount | formattedAmount}} ({{amount.incoming | formattedAmount}} / {{amount.outgoing | formattedAmount}})
-                                        </div>
+                                        <table>
+                                            <tr *ngFor="let amount of currentView.amountCurrency.amounts">
+                                                <td>{{amount.currency}}:</td>
+                                                <td class="text-right">{{amount.amount | formattedAmount}}</td>
+                                                <td *ngIf="currentView.amountCurrency.options.showDirectioned==true || currentView.amountCurrency.options.showDirectioned===undefined" class="text-right">{{amount.incoming | formattedAmount}}</td>
+                                                <td *ngIf="currentView.amountCurrency.options.showDirectioned==true || currentView.amountCurrency.options.showDirectioned===undefined" class="text-right">{{amount.outgoing | formattedAmount}}</td>
+                                            </tr>
+                                        </table>
+                                    </ng-container>
+                                    <ng-container *ngIf="summary.name==='amount-category' && currentView.amountCategory">
+                                        <table>
+                                            <tr *ngFor="let amount of currentView.amountCategory.amounts">
+                                                <td>{{amount.category}}:</td>
+                                                <td class="text-right">{{amount.amount | formattedAmount}}</td>
+                                                <td *ngIf="currentView.amountCategory.options.showDirectioned==true || currentView.amountCategory.options.showDirectioned===undefined" class="text-right">{{amount.incoming | formattedAmount}}</td>
+                                                <td *ngIf="currentView.amountCategory.options.showDirectioned==true || currentView.amountCategory.options.showDirectioned===undefined" class="text-right">{{amount.outgoing | formattedAmount}}</td>
+                                            </tr>
+                                            <tr class="sum">
+                                                <td>Łącznie:</td>
+                                                <td>{{currentView.amountCategory.totals.amount | formattedAmount}}</td>
+                                                <td *ngIf="currentView.amountCategory.options.showDirectioned==true || currentView.amountCategory.options.showDirectioned===undefined">{{currentView.amountCategory.totals.incoming | formattedAmount}}</td>
+                                                <td *ngIf="currentView.amountCategory.options.showDirectioned==true || currentView.amountCategory.options.showDirectioned===undefined">{{currentView.amountCategory.totals.outgoing | formattedAmount}}</td>
+                                            </tr> 
+                                        </table>
                                     </ng-container>
                                 </ng-container>
                             </ng-container>

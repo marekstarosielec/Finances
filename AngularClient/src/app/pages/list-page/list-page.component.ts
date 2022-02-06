@@ -15,12 +15,19 @@ export interface SummaryAmountCurrencyOptions {
     currencyProperty: string;
 }
 
+export interface SummaryAmountCategoryOptions {
+    amountProperty: string;
+    categoryProperty: string;
+    showDirectioned?: boolean;
+}
+
 interface ViewAnalyticsData {
     totalNumberOfRecords: number;
     maximumVisibleNumberOfRecords: number;
     filteredData: any[];
     displayedData: any[];
     amountCurrency: any;
+    amountCategory: any;
 }
 
 @Component({
@@ -76,8 +83,9 @@ export class ListPageComponent implements OnInit, OnDestroy {
             if (this.summaries?.find(s => s.name === 'amount-currency')){
                 const option = this.summaries.find(s => s.name === 'amount-currency').options as SummaryAmountCurrencyOptions;
                 if (option) {
+                    const summaryData = viewChangedData.filteredData.filter(e => e[option.currencyProperty]);
                     result.amountCurrency = {
-                        amounts: l(viewChangedData.filteredData)
+                        amounts: l(summaryData)
                         .groupBy(option.currencyProperty)
                         .map((objs, key) => ({
                             'currency': key,
@@ -86,6 +94,28 @@ export class ListPageComponent implements OnInit, OnDestroy {
                             'outgoing': l.sumBy(objs.filter(o => o[option.amountProperty] < 0), option.amountProperty) ?? 0}))
                         .value()
                     };
+                    result.amountCurrency['options'] = option;
+                }
+            }
+            if (this.summaries?.find(s => s.name === 'amount-category')){
+                const option = this.summaries.find(s => s.name === 'amount-category').options as SummaryAmountCategoryOptions;
+                if (option) {
+                    const summaryData = viewChangedData.filteredData.filter(e => e[option.amountProperty] && e[option.categoryProperty]);
+                    result.amountCategory = {
+                        amounts: l(summaryData)
+                        .groupBy(option.categoryProperty)
+                        .map((objs, key) => ({
+                            'category': key,
+                            'amount': l.sumBy(objs, option.amountProperty) ?? 0,
+                            'incoming': l.sumBy(objs.filter(o => o[option.amountProperty] > 0), option.amountProperty) ?? 0,
+                            'outgoing': l.sumBy(objs.filter(o => o[option.amountProperty] < 0), option.amountProperty) ?? 0}))
+                        .value()
+                    };
+                    const total = l.sumBy(summaryData, option.amountProperty);
+                    const totalIncoming = l.sumBy(summaryData.filter(s => s[option.amountProperty] > 0), option.amountProperty);
+                    const totalOutgoing = l.sumBy(summaryData.filter(s => s[option.amountProperty] < 0), option.amountProperty);
+                    result.amountCategory['totals'] = { amount: total, incoming: totalIncoming, outgoing: totalOutgoing};
+                    result.amountCategory['options'] = option;
                 }
             }
             this.currentView$.next(result);

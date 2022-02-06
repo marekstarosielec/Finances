@@ -10,3 +10,11 @@
 .container {
     margin: 0px;
 }
+
+td {
+    padding-right: 1em;
+}
+
+.sum > td { 
+    border-top-style: double;
+}
