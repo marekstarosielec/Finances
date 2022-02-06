@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TransactionsService } from 'app/api/generated';
+import { DocumentsService, TransactionsService } from 'app/api/generated';
 import { SkodaService } from '../../api/generated/api/skoda.service'
 import { GridColumn, RowClickedData } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
@@ -30,16 +30,17 @@ export class SkodaListComponent implements OnInit{
 
     constructor (private skodaService: SkodaService, 
         private transactionsService: TransactionsService,
+        private documentsService: DocumentsService,
         private router: Router, 
         private route: ActivatedRoute) {}
 
     ngOnInit(){
-        forkJoin([this.skodaService.skodaGet(), this.transactionsService.transactionsGet()])
-        .pipe(take(1)).subscribe(([skoda, transactions]) =>{
+        forkJoin([this.skodaService.skodaGet(), this.transactionsService.transactionsGet(), this.documentsService.documentsGet()])
+        .pipe(take(1)).subscribe(([skoda, transactions, documents]) =>{
             const skodaMeter = skoda.map(e => ({ ...e, category: 'Licznik' }));
             const skodaTransactions = transactions.filter(f => f.category?.toUpperCase().indexOf("SKODA") > -1);
-            
-            const allTransactions = [...skodaMeter, ...skodaTransactions];
+            const skodaDocuments = documents.filter(f => f.car?.toUpperCase().indexOf("GWE5533K") > -1).map(d => ({...d,  category: "Dokument", comment: d.description, showImage: 1}));
+            const allTransactions = [...skodaMeter, ...skodaTransactions, ...skodaDocuments];
             this.data = allTransactions;
 
             this.columns = [ 
@@ -48,6 +49,7 @@ export class SkodaListComponent implements OnInit{
                 { title: 'Licznik', dataProperty: 'meter', component: 'text', alignment: 'right', customEvent: true},
                 { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions, customEvent: true},
                 { title: 'Komentarz', dataProperty: 'comment', component: 'text', customEvent: true},
+                { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
             ];
             this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
         });
@@ -56,8 +58,17 @@ export class SkodaListComponent implements OnInit{
     rowClickedEvent(rowClickedData: RowClickedData) {
         if (rowClickedData.row['category']==='Licznik') {
             this.router.navigate([rowClickedData.row['id']], { relativeTo: this.route});
+        } else if (rowClickedData.row['category']==='Dokument' && rowClickedData.column.dataProperty!=='showImage') {
+            this.router.navigate(['documents', rowClickedData.row['id']]);
+        } else if (rowClickedData.row['category']==='Dokument' && rowClickedData.column.dataProperty==='showImage') {
+            let fileName = rowClickedData.row['number'].toString();
+            while (fileName.length < 5)
+                fileName = '0' + fileName;
+            fileName = 'MX' + fileName + '.' + rowClickedData.row['extension'];
+            window.open("http://127.0.0.1:8080/" +fileName, "_blank", "noopener noreferrer");
         } else {
             this.router.navigate(['transactions', rowClickedData.row['id']]);
         } 
     }
+        
 }

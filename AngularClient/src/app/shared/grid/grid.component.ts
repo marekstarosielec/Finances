@@ -18,6 +18,7 @@ export interface GridColumn {
     filterOptions?: any;
     pipe?: string;
     alignment?: string;
+    image?: string;
     conditionalFormatting?: string;
     noWrap?: boolean;
     customEvent?: boolean;

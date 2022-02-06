@@ -42,7 +42,7 @@ export class DocumentsComponent implements OnInit{
                 { title: 'Opis', dataProperty: 'description', component: 'text'},
                 { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text', noWrap: true},
                 { title: 'Relacje', dataProperty: '', component: 'text', subDataProperty1: 'person', subDataProperty2: 'car', subDataProperty3: 'relatedObject', subDataProperty4: 'guarantee', filterOptions: { additionalPropertyToSearch1: 'person', additionalPropertyToSearch2: 'car', additionalPropertyToSearch3: 'relatedObject', additionalPropertyToSearch4: 'guarantee' } as TextFilterOptions},
-                { title: '', dataProperty: 'nc-image', component: 'icon', customEvent: true},
+                { title: '', dataProperty: 'nc-image', component: 'icon', image: 'nc-image', customEvent: true},
             ];
 
             this.toolbarElements.push(
