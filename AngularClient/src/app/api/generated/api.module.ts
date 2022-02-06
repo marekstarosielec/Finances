@@ -8,6 +8,7 @@ import { DatasetService } from './api/dataset.service';
 import { DocumentDatasetService } from './api/documentDataset.service';
 import { DocumentsService } from './api/documents.service';
 import { MBankScrapperService } from './api/mBankScrapper.service';
+import { SkodaService } from './api/skoda.service';
 import { StatisticsService } from './api/statistics.service';
 import { TransactionsService } from './api/transactions.service';
 

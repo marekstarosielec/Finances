@@ -23,6 +23,6 @@ export class AccountsComponent implements OnInit{
         this.transactionsService.transactionsAccountsGet().pipe(take(1)).subscribe((accounts: TransactionAccount[]) =>{
             this.data = accounts;
         });
-        this.columns = [ { title: 'Nazwa', dataProperty: 'title', component: 'free-text'}];
+        this.columns = [ { title: 'Nazwa', dataProperty: 'title', component: 'text'}];
     }
 }

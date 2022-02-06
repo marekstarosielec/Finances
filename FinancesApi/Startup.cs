@@ -1,3 +1,4 @@
+using FinancesApi.Controllers;
 using FinancesApi.DataFiles;
 using FinancesApi.Services;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,7 @@ namespace FinancesApi
             services.AddSingleton<IDocumentService, DocumentService>();
             services.AddSingleton<IStatisticsService, StatisticsService>();
             services.AddSingleton<ICurrenciesService, CurrenciesService>();
+            services.AddSingleton<ISkodaService, SkodaService>();
 
             services.AddSingleton(typeof(TransactionsDataFile));
             services.AddSingleton(typeof(TransactionAccountsDataFile));
@@ -40,6 +42,7 @@ namespace FinancesApi
             services.AddSingleton(typeof(CurrenciesDataFile));
             services.AddSingleton(typeof(DatasetInfoDataFile));
             services.AddSingleton(typeof(DocumentDatasetInfoDataFile));
+            services.AddSingleton(typeof(SkodaDataFile));
 
 
             services.AddCors(); 

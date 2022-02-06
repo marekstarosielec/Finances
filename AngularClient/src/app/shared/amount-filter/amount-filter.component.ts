@@ -78,9 +78,10 @@ export class AmountFilterComponent implements OnInit, OnDestroy, AfterViewInit {
         const t = l.groupBy(this.data, this.options.currencyDataProperty);
         let arr = [];  
         Object.keys(t).map(function(key){  
-            arr.push({ id: key });
+            arr.push({ id: key =='undefined' ? 'brak' : key});
             return arr;  
-        });   
+        });  
+
         this.currencyList = fs.sort(arr).by([
             { asc: l => l.id}
         ]);

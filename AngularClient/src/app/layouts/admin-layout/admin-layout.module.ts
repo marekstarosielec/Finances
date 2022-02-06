@@ -39,6 +39,8 @@ import { TransactionCategoryComponent } from 'app/pages/transaction-categories/t
 import { TransactionAutoCategoryComponent } from 'app/pages/transaction-auto-categories/transaction-auto-category.component';
 import { DocumentsComponent } from 'app/pages/documents/documents.component';
 import { DocumentComponent } from 'app/pages/documents/document.component';
+import { SkodaListComponent } from 'app/pages/skoda/skoda-list.component';
+import { SkodaDetailsComponent } from 'app/pages/skoda/skoda-details.component';
 
 @NgModule({
   imports: [
@@ -84,6 +86,8 @@ import { DocumentComponent } from 'app/pages/documents/document.component';
     AmountFilterComponent,
     DetailsViewComponent,
     TransactionCategoryComponent,
+    SkodaListComponent,
+    SkodaDetailsComponent
   ]
 })
 

@@ -39,6 +39,7 @@ namespace FinancesApi.Services
             TransactionAccountsDataFile transactionAccountsDataFile,
             TransactionCategoriesDataFile transactionCategoriesDataFile,
             TransactionAutoCategoriesDataFile transactionAutoCategoriesDataFile,
+            SkodaDataFile skodaDataFile,
             BalancesDataFile balancesDataFile,
             DatasetInfoDataFile datasetInfoDataFile,
             CurrenciesDataFile currenciesDataFile,
@@ -55,6 +56,7 @@ namespace FinancesApi.Services
             _dataFiles.Add(balancesDataFile.DataFile);
             _dataFiles.Add(documentsDataFile.DataFile);
             _dataFiles.Add(currenciesDataFile.DataFile);
+            _dataFiles.Add(skodaDataFile.DataFile);
 
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
             _datasetBackupLocations = configuration.GetSection("DatasetBackups").Get<List<string>>(); 

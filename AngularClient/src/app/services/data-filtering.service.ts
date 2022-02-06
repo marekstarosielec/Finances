@@ -91,7 +91,8 @@ export class DataFilteringService {
       data = data.filter(d => d[column.dataProperty] >= 0);
     }
     if (value.currency && options.currencyDataProperty) {
-      data = data.filter(d => value.currency.indexOf(d[options.currencyDataProperty]) > -1);
+      console.log(value.currency);
+      data = data.filter(d => value.currency.indexOf(d[options.currencyDataProperty] ?? 'brak') > -1);
     }
     if (value.from && value.from>-99999999) {
       data = data.filter(d => Math.abs(d[column.dataProperty]) > Math.abs(value.from) || (Math.abs(d[column.dataProperty]) * (-1)) < (Math.abs(value.from) * (-1)));

@@ -100,7 +100,6 @@ export class GridComponent implements OnInit, OnDestroy{
         if (!this.params) {
             this.params = new QueryParamsHandler(this.name, {}, this.initialSortColumn, this.initialSortOrder);
         }
-
         if (!this.data) {
             return;
         }
@@ -108,7 +107,7 @@ export class GridComponent implements OnInit, OnDestroy{
         let data = this.data;
 
         this.totalNumberOfRecords = data.length;
-
+   
         data = this.dataFilteringService.applyFilters(data, this.columns, this.params);
         const filteredData = l.clone(data);
         data = this.applySorting(data);
