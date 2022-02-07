@@ -25,6 +25,7 @@ namespace FinancesApi
         {
             services.AddSingleton<IDatasetService, DatasetService>();
             services.AddSingleton<IDocumentDatasetService, DocumentDatasetService>();
+            services.AddSingleton<IAccountingDatasetService, AccountingDatasetService>();
             services.AddSingleton<ICompressionService, CompressionService>();
             services.AddSingleton<ITransactionsService, TransactionsService>();
             services.AddSingleton<IBalanceService, BalanceService>();
@@ -32,6 +33,7 @@ namespace FinancesApi
             services.AddSingleton<IStatisticsService, StatisticsService>();
             services.AddSingleton<ICurrenciesService, CurrenciesService>();
             services.AddSingleton<ISkodaService, SkodaService>();
+            services.AddSingleton<IMazdaService, MazdaService>();
 
             services.AddSingleton(typeof(TransactionsDataFile));
             services.AddSingleton(typeof(TransactionAccountsDataFile));
@@ -40,10 +42,12 @@ namespace FinancesApi
             services.AddSingleton(typeof(BalancesDataFile));
             services.AddSingleton(typeof(DocumentsDataFile));
             services.AddSingleton(typeof(CurrenciesDataFile));
-            services.AddSingleton(typeof(DatasetInfoDataFile));
-            services.AddSingleton(typeof(DocumentDatasetInfoDataFile));
             services.AddSingleton(typeof(SkodaDataFile));
+            services.AddSingleton(typeof(MazdaDataFile));
 
+            services.AddTransient(typeof(DatasetInfoDataFile));
+            services.AddTransient(typeof(DocumentDatasetInfoDataFile));
+            services.AddTransient(typeof(AccountingDatasetInfoDataFile));
 
             services.AddCors(); 
             services.AddControllers();

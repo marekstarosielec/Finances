@@ -10,6 +10,8 @@ namespace FinancesApi.Services
 
     public class Jsonfile<T>
     {
+        private static readonly Object obj = new Object();
+
         public DataFile DataFile { get; }
 
         public T Value { get; private set; }
@@ -40,8 +42,11 @@ namespace FinancesApi.Services
 
         public void Save()
         {
-            var serializedValue = JsonSerializer.Serialize(Value);
-            File.WriteAllText(DataFile.FileNameWithLocation, serializedValue);
+            lock (obj)
+            {
+                var serializedValue = JsonSerializer.Serialize(Value);
+                File.WriteAllText(DataFile.FileNameWithLocation, serializedValue);
+            }
         }
     }
 }

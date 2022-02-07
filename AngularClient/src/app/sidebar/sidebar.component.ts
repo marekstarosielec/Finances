@@ -19,11 +19,13 @@ export const ROUTES: RouteInfo[] = [
     { path: '/balances',  title: 'Salda',        icon:'nc-money-coins',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/documents',  title: 'Dokumenty',        icon:'nc-single-copy-04',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/skoda',  title: 'Skoda',        icon:'nc-bus-front-12',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
+    { path: '/mazda',  title: 'Mazda',        icon:'nc-bus-front-12',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
+    { path: '/accounting',  title: 'Księgowość',        icon:'nc-paper',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError, DatasetState.Closed, DatasetState.OpeningError, DatasetState.UnknownError, DatasetState.Opening, DatasetState.Closing] },
     // { path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '', availableInStates: [DatasetState.Opened] },
     /*{ path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '', availableInStates: [DatasetState.Opened] },
     { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '', availableInStates: [DatasetState.Opened] },
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '', availableInStates: [DatasetState.Opened] },*/
-    { path: '/opendataset',   title: 'Otwórz zbiór',      icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Closed, , DatasetState.OpeningError] },
+    { path: '/opendataset',   title: 'Otwórz zbiór',      icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Closed, DatasetState.OpeningError] },
     { path: '/closedataset',  title: 'Zamknij zbiór',     icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
 ];
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DocumentsService, TransactionsService } from 'app/api/generated';
-import { SkodaService } from '../../api/generated/api/skoda.service'
+import { MazdaService } from '../../api/generated/api/mazda.service'
 import { GridColumn, RowClickedData } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
 import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar';
@@ -8,13 +8,13 @@ import { forkJoin } from 'rxjs';
 import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
 import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Summary, SummaryAmountCategoryOptions, SummaryAmountCurrencyOptions } from '../list-page/list-page.component';
+import { Summary, SummaryAmountCategoryOptions } from '../list-page/list-page.component';
 
 @Component({
     moduleId: module.id,
     template: `
         <list-page 
-        name="skoda" 
+        name="mazda" 
         [columns]="columns" 
         [data]="data" 
         initialSortColumn="date" 
@@ -25,25 +25,25 @@ import { Summary, SummaryAmountCategoryOptions, SummaryAmountCurrencyOptions } f
         </list-page>
     `
 })
-export class SkodaListComponent implements OnInit{
+export class MazdaListComponent implements OnInit{
     data: any[]; 
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
     summaries: Summary[] = [];
     
-    constructor (private skodaService: SkodaService, 
+    constructor (private mazdaService: MazdaService, 
         private transactionsService: TransactionsService,
         private documentsService: DocumentsService,
         private router: Router, 
         private route: ActivatedRoute) {}
 
     ngOnInit(){
-        forkJoin([this.skodaService.skodaGet(), this.transactionsService.transactionsGet(), this.documentsService.documentsGet()])
-        .pipe(take(1)).subscribe(([skoda, transactions, documents]) =>{
-            const skodaMeter = skoda.map(e => ({ ...e, category: 'Licznik' }));
-            const skodaTransactions = transactions.filter(f => f.category?.toUpperCase().indexOf("SKODA") > -1);
-            const skodaDocuments = documents.filter(f => f.car?.toUpperCase().indexOf("GWE5533K") > -1).map(d => ({...d,  category: "Dokument", comment: d.description, showImage: 1}));
-            const allTransactions = [...skodaMeter, ...skodaTransactions, ...skodaDocuments];
+        forkJoin([this.mazdaService.mazdaGet(), this.transactionsService.transactionsGet(), this.documentsService.documentsGet()])
+        .pipe(take(1)).subscribe(([mazda, transactions, documents]) =>{
+            const mazdaMeter = mazda.map(e => ({ ...e, category: 'Licznik' }));
+            const mazdaTransactions = transactions.filter(f => f.category?.toUpperCase().indexOf("MAZDA") > -1);
+            const mazdaDocuments = documents.filter(f => f.car?.toUpperCase().indexOf("GA839ES") > -1).map(d => ({...d,  category: "Dokument", comment: d.description, showImage: 1}));
+            const allTransactions = [...mazdaMeter, ...mazdaTransactions, ...mazdaDocuments];
             this.data = allTransactions;
 
             this.columns = [ 
@@ -57,7 +57,7 @@ export class SkodaListComponent implements OnInit{
             this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
             this.summaries.push( { name: 'amount-category', options: { amountProperty: 'amount', categoryProperty: 'category', showDirectioned: false } as SummaryAmountCategoryOptions})            
 
-            // const meterData = skoda.filter(s => s.meter && s.meter > 0).sort((s1, s2) => s1.date < s2.date ? -1 : 1);
+            // const meterData = mazda.filter(s => s.meter && s.meter > 0).sort((s1, s2) => s1.date < s2.date ? -1 : 1);
             // const usageData = [];
             // const usageStats = [];
             // let previousDate;

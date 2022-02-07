@@ -1,3 +1,4 @@
+export * from './accountingDatasetInfo';
 export * from './balance';
 export * from './currency';
 export * from './datasetCloseInstruction';
@@ -6,6 +7,7 @@ export * from './datasetOpenInstruction';
 export * from './datasetState';
 export * from './document';
 export * from './documentDatasetInfo';
+export * from './mazda';
 export * from './skoda';
 export * from './statisticsAll';
 export * from './statisticsBill';

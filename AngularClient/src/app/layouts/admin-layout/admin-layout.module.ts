@@ -41,6 +41,9 @@ import { DocumentsComponent } from 'app/pages/documents/documents.component';
 import { DocumentComponent } from 'app/pages/documents/document.component';
 import { SkodaListComponent } from 'app/pages/skoda/skoda-list.component';
 import { SkodaDetailsComponent } from 'app/pages/skoda/skoda-details.component';
+import { MazdaListComponent } from 'app/pages/mazda/mazda-list.component';
+import { MazdaDetailsComponent } from 'app/pages/mazda/mazda-details.component';
+import { AccountingStateComponent } from 'app/pages/accounting-state/accounting-state.component';
 
 @NgModule({
   imports: [
@@ -58,6 +61,7 @@ import { SkodaDetailsComponent } from 'app/pages/skoda/skoda-details.component';
     AccountsComponent,
     AccountComponent,
     TransactionCategoriesComponent,
+    TransactionCategoryComponent,
     TransactionAutoCategoriesComponent,
     TransactionAutoCategoryComponent,
     BalancesComponent,
@@ -85,9 +89,12 @@ import { SkodaDetailsComponent } from 'app/pages/skoda/skoda-details.component';
     ListFilterComponent,
     AmountFilterComponent,
     DetailsViewComponent,
-    TransactionCategoryComponent,
     SkodaListComponent,
-    SkodaDetailsComponent
+    SkodaDetailsComponent,
+    MazdaListComponent,
+    MazdaDetailsComponent,
+    AccountingStateComponent,
+    
   ]
 })
 

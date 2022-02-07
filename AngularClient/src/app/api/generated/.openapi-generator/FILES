@@ -1,6 +1,7 @@
 .gitignore
 README.md
 api.module.ts
+api/accountingDataset.service.ts
 api/api.ts
 api/balances.service.ts
 api/currencies.service.ts
@@ -8,6 +9,7 @@ api/dataset.service.ts
 api/documentDataset.service.ts
 api/documents.service.ts
 api/mBankScrapper.service.ts
+api/mazda.service.ts
 api/skoda.service.ts
 api/statistics.service.ts
 api/transactions.service.ts
@@ -15,6 +17,7 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/accountingDatasetInfo.ts
 model/balance.ts
 model/currency.ts
 model/datasetCloseInstruction.ts
@@ -23,6 +26,7 @@ model/datasetOpenInstruction.ts
 model/datasetState.ts
 model/document.ts
 model/documentDatasetInfo.ts
+model/mazda.ts
 model/models.ts
 model/skoda.ts
 model/statisticsAll.ts

@@ -2,12 +2,14 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
+import { AccountingDatasetService } from './api/accountingDataset.service';
 import { BalancesService } from './api/balances.service';
 import { CurrenciesService } from './api/currencies.service';
 import { DatasetService } from './api/dataset.service';
 import { DocumentDatasetService } from './api/documentDataset.service';
 import { DocumentsService } from './api/documents.service';
 import { MBankScrapperService } from './api/mBankScrapper.service';
+import { MazdaService } from './api/mazda.service';
 import { SkodaService } from './api/skoda.service';
 import { StatisticsService } from './api/statistics.service';
 import { TransactionsService } from './api/transactions.service';
