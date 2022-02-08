@@ -5,6 +5,7 @@ import * as fs from 'fast-sort';
 import { FormattedAmountPipe } from "app/pipes/formattedAmount.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "../models/toolbar";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { FormattedNumberPipe } from "app/pipes/formattedNumber.component";
 
 export interface DetailsViewField {
     title: string;
@@ -105,12 +106,14 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                     }
                     data[field.dataProperty] = this.form.value.date.year + '-' + month + '-' + day + 'T00:00:00Z';
                 } else if (field.component === 'amount') {
-                    data[field.dataProperty] = +(this.form.controls[field.dataProperty].value.replace(",",".").replace(" ",""));
+                    data[field.dataProperty] = +(this.form.controls[field.dataProperty].value.replace(",",".").replace(" ","").replace(" ",""));
                     if (field.options?.currencyDataProperty) {
                         data[field.options?.currencyDataProperty] = this.form.controls[field.options?.currencyDataProperty].value;
                     }
                 } else if (field.component === 'checkbox') {
                     data[field.dataProperty] = this.form.controls[field.dataProperty].value ? true : false;
+                } else if (field.component === 'number') {
+                    data[field.dataProperty] = +(this.form.controls[field.dataProperty].value.replace(",",".").replace(" ","").replace(" ",""));
                 } else {
                     data[field.dataProperty] = this.form.controls[field.dataProperty].value;
                 }
@@ -173,7 +176,15 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
             } else if (field.component === 'checkbox') {
                 controls[field.dataProperty] = new FormControl(undefined, validators);
                 data[field.dataProperty] = this.data ? this.data[field.dataProperty] : '';
-            } 
+            } else if (field.component === 'number') {
+                controls[field.dataProperty] = new FormControl(undefined, validators);
+                let source = '';
+                if (this.data) {
+                    const numberPipe = new FormattedNumberPipe();
+                    source = numberPipe.transform(this.data[field.dataProperty]);
+                }
+                data[field.dataProperty] = source;
+            }
 
             if (!this.data && field.defaultValue && field.component !== 'date') {
                 data[field.dataProperty] = field.defaultValue;

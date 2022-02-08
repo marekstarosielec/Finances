@@ -26,6 +26,12 @@
               <amount-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="dataFilteringService.addFilter(column, params, $event); navigate();" [filterValue]="dataFilteringService.getFilter(column, params)"></amount-filter>
             </div>
           </div>
+          <div ngbDropdown class="d-inline-block" #descriptionFilterDropdown="ngbDropdown" *ngIf="column.component==='number'">
+            <i class="fa fa-filter" ngbDropdownToggle></i>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm1" class="filterNumberDropdown">
+              <number-filter [name]="column.dataProperty" [data]="data" [options]="column.filterOptions" (filterChanged)="dataFilteringService.addFilter(column, params, $event); navigate();" [filterValue]="dataFilteringService.getFilter(column, params)"></number-filter>
+            </div>
+          </div>
           <span (click)="sort(column)">{{column.title}}</span>
         </th>
     </thead>

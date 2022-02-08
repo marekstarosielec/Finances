@@ -16,7 +16,6 @@ export class DocumentStateComponent implements OnInit, OnDestroy {
   public info: DocumentDatasetInfo;
   private subscriptions: Subscription = new Subscription();
   public todayDate : Date = new Date();
-  error: string;
   formOpen = new FormGroup({
       password: new FormControl('', [Validators.required, Validators.minLength(8)])
   });
@@ -36,10 +35,6 @@ export class DocumentStateComponent implements OnInit, OnDestroy {
       if (info?.state == DatasetState.Opening || info?.state == DatasetState.Closing){
         setTimeout(() =>this.documentDatasetServiceFacade.refreshDataset(), 1000);
       }
-      if (info.state == DatasetState.OpeningError || info.state == DatasetState.ClosingError) 
-        this.error = info.error;
-      else
-        this.error = '';
     }));
   }
 

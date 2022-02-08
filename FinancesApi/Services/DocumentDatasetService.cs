@@ -21,11 +21,13 @@ namespace FinancesApi.Services
     public class DocumentDatasetService : IDocumentDatasetService
     {
         private string _basePath;
-      
+        private string _archiveFile;
+        private string _decompressedFolder;
+        private readonly IConfiguration _configuration;
+
         private readonly ICompressionService _compressionService;
         private readonly DocumentDatasetInfoDataFile _documentDatasetInfoDataFile;
-        private readonly DataFile _datasetArchive = new DataFile { FileName = "Dokumenty.zip" };
-        
+
         private readonly List<string> _fileBackupLocations;
         private readonly List<string> _datasetBackupLocations;
 
@@ -34,26 +36,31 @@ namespace FinancesApi.Services
             ICompressionService compressionService,
             DocumentDatasetInfoDataFile documentDatasetInfoDataFile)
         {
-            _basePath = Path.Combine(configuration.GetValue<string>("DatasetPath"), "Dokumenty");
-            _datasetArchive.Location = _basePath;
+            _configuration = configuration;
+            
+            _basePath = Path.Combine(configuration.GetValue<string>("DatasetPath"));
+            _archiveFile = Path.Combine(_basePath, "Dokumenty.zip");
+            _decompressedFolder = Path.Combine(_basePath, "Dokumenty");
 
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
             _datasetBackupLocations = configuration.GetSection("DatasetBackups").Get<List<string>>(); 
             
             _compressionService = compressionService;
             _documentDatasetInfoDataFile = documentDatasetInfoDataFile;
+            _documentDatasetInfoDataFile.Load();
         }
 
         public DocumentDatasetInfo GetInfo()
         {
             try
             {
-                _documentDatasetInfoDataFile.Load();
-                return _documentDatasetInfoDataFile.Value;
+                var local = new DocumentDatasetInfoDataFile(_configuration);
+                local.Load();
+                return local.Value;
             }
             catch (Exception e)
             {
-                return new DocumentDatasetInfo { State = DatasetState.UnknownError, Error = e.Message };
+                return new DocumentDatasetInfo { State = DatasetState.UnknownError, Message = e.Message };
             }
         }
 
@@ -63,7 +70,7 @@ namespace FinancesApi.Services
             if (_documentDatasetInfoDataFile.Value.State != DatasetState.Closed && _documentDatasetInfoDataFile.Value.State != DatasetState.OpeningError)
                 return _documentDatasetInfoDataFile.Value;
             _documentDatasetInfoDataFile.Value.State = DatasetState.Opening;
-            _documentDatasetInfoDataFile.Value.Error = string.Empty;
+            _documentDatasetInfoDataFile.Value.Message = string.Empty;
             _documentDatasetInfoDataFile.Save();
 
             new Thread(() => {
@@ -79,7 +86,7 @@ namespace FinancesApi.Services
             if (_documentDatasetInfoDataFile.Value.State != DatasetState.Opened && _documentDatasetInfoDataFile.Value.State != DatasetState.ClosingError)
                 return _documentDatasetInfoDataFile.Value;
             _documentDatasetInfoDataFile.Value.State = DatasetState.Closing;
-            _documentDatasetInfoDataFile.Value.Error = string.Empty;
+            _documentDatasetInfoDataFile.Value.Message = string.Empty;
             _documentDatasetInfoDataFile.Save();
 
             new Thread(() =>
@@ -87,21 +94,20 @@ namespace FinancesApi.Services
                 try
                 {
                     if (makeBackups) MakeBackups(password);
-
-                    documentFiles.ForEach(dataFile => File.Delete(dataFile));
+                    RemoveSource();
 
                     _documentDatasetInfoDataFile.Load();
                     _documentDatasetInfoDataFile.Value.State = DatasetState.Closed;
                     if (makeBackups)
                         _documentDatasetInfoDataFile.Value.LastCloseDate = DateTime.Now;
-                    _documentDatasetInfoDataFile.Value.Error = string.Empty;
+                    _documentDatasetInfoDataFile.Value.Message = string.Empty;
                     _documentDatasetInfoDataFile.Save();
                 }
                 catch (Exception e)
                 {
                     _documentDatasetInfoDataFile.Load();
                     _documentDatasetInfoDataFile.Value.State = DatasetState.ClosingError;
-                    _documentDatasetInfoDataFile.Value.Error = e.Message;
+                    _documentDatasetInfoDataFile.Value.Message = e.Message;
                     _documentDatasetInfoDataFile.Save();
                 }
             }).Start();
@@ -121,12 +127,17 @@ namespace FinancesApi.Services
             {
                 var destinationLocation = Path.Combine(location, "Dokumenty");
                 Directory.CreateDirectory(destinationLocation);
-                foreach (var dataFile in documentFiles)
+                foreach (var dataFile in Directory.GetFiles(destinationLocation))
                 {
                     var destinationFile = Path.Combine(destinationLocation, Path.GetFileName(dataFile));
                     try
                     {
-                        Console.WriteLine($"Copying {dataFile} to { destinationFile}");
+                        if (File.Exists(destinationFile) && new FileInfo(destinationFile).Length == new FileInfo(dataFile).Length)
+                            continue;
+
+                        _documentDatasetInfoDataFile.Load();
+                        _documentDatasetInfoDataFile.Value.Message = $"Kopiowanie {Path.GetFileName(dataFile)} do {destinationLocation}";
+                        _documentDatasetInfoDataFile.Save(); 
                         File.Copy(dataFile, destinationFile, true);
                     }
                     catch (Exception e)
@@ -141,19 +152,24 @@ namespace FinancesApi.Services
 
         private void MakeCompressedBackups(string password)
         {
-            File.Delete(_datasetArchive.FileNameWithLocation);
-            _compressionService.Compress(documentFiles, _datasetArchive.FileNameWithLocation, password);
-            
-            _datasetBackupLocations.ForEach(location =>
+            _documentDatasetInfoDataFile.Load();
+            _documentDatasetInfoDataFile.Value.Message = "Tworzenie archiwum";
+            _documentDatasetInfoDataFile.Save();
+            _compressionService.Compress(_archiveFile, password, _decompressedFolder);
+
+            _datasetBackupLocations.ForEach(destinationLocation =>
             {
                 try
                 {
-                    File.Copy(_datasetArchive.FileNameWithLocation, Path.Combine(location, _datasetArchive.FileName), true);
+                    _documentDatasetInfoDataFile.Load();
+                    _documentDatasetInfoDataFile.Value.Message = $"Kopiowanie archiwum do {destinationLocation}";
+                    _documentDatasetInfoDataFile.Save();
+                    File.Copy(_archiveFile, Path.Combine(destinationLocation, "Dokumenty.zip"), true);
                 }
                 catch (Exception e)
                 {
                     //Failure during copy is critical.
-                    throw new Exception($"Nie udało się skopiować zbioru do {location}", e);
+                    throw new Exception($"Nie udało się skopiować zbioru do {destinationLocation}", e);
                 }
             });
         }
@@ -162,22 +178,22 @@ namespace FinancesApi.Services
         {
             try
             {
-                _compressionService.Decompress(_datasetArchive.FileNameWithLocation, password);
+                _compressionService.Decompress(_archiveFile, password, _decompressedFolder);
                 _documentDatasetInfoDataFile.Load();
                 _documentDatasetInfoDataFile.Value.State = DatasetState.Opened;
-                _documentDatasetInfoDataFile.Value.Error = string.Empty;
+                _documentDatasetInfoDataFile.Value.Message = string.Empty;
                 _documentDatasetInfoDataFile.Save();
             }
             catch(Exception e)
             {
                 _documentDatasetInfoDataFile.Load();
                 _documentDatasetInfoDataFile.Value.State = DatasetState.OpeningError;
-                _documentDatasetInfoDataFile.Value.Error = string.Equals(e.Message, "invalid password", StringComparison.InvariantCultureIgnoreCase) ? "Nieprawidłowe hasło" : e.Message;
+                _documentDatasetInfoDataFile.Value.Message = string.Equals(e.Message, "invalid password", StringComparison.InvariantCultureIgnoreCase) ? "Nieprawidłowe hasło" : e.Message;
                 _documentDatasetInfoDataFile.Save();
             }
         }
 
-        private List<string> documentFiles => Directory.GetFiles(_datasetArchive.Location).ToList().Where(f => f != _datasetArchive.FileNameWithLocation).ToList();
+        private void RemoveSource() => Directory.Delete(_decompressedFolder, true);
 
     }
 }

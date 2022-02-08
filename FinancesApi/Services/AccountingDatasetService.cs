@@ -24,7 +24,7 @@ namespace FinancesApi.Services
         private string _basePath;
         private string _archiveFile;
         private string _decompressedFolder;
-
+        private readonly IConfiguration _configuration;
         private readonly ICompressionService _compressionService;
         private readonly AccountingDatasetInfoDataFile _accountingDatasetInfoDataFile;
         
@@ -36,12 +36,14 @@ namespace FinancesApi.Services
             ICompressionService compressionService,
             AccountingDatasetInfoDataFile accountingDatasetInfoDataFile)
         {
+            _configuration = configuration;
+            
             _basePath = Path.Combine(configuration.GetValue<string>("DatasetPath"));;
             _archiveFile = Path.Combine(_basePath, "Księgowość.zip");
             _decompressedFolder = Path.Combine(_basePath, "Księgowość");
 
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
-            _datasetBackupLocations = configuration.GetSection("DatasetBackups").Get<List<string>>(); 
+            _datasetBackupLocations = configuration.GetSection("DatasetBackups").Get<List<string>>();
             
             _compressionService = compressionService;
             _accountingDatasetInfoDataFile = accountingDatasetInfoDataFile;
@@ -52,7 +54,9 @@ namespace FinancesApi.Services
         {
             try
             {
-                return _accountingDatasetInfoDataFile.Value;
+                var local = new AccountingDatasetInfoDataFile(_configuration);
+                local.Load(); 
+                return local.Value;
             }
             catch (Exception e)
             {

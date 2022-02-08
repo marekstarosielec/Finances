@@ -9,6 +9,6 @@ namespace FinancesApi.Models
 
         public DateTime LastCloseDate { get; set; }
 
-        public string Error { get; set; }
+        public string Message { get; set; }
     }
 }

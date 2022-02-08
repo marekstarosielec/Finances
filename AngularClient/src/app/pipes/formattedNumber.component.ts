@@ -11,6 +11,6 @@ import {
     transform(value: number): string { 
       if (!value)
          return "";
-      return value.toLocaleString('pl-pl', {maximumFractionDigits : 0});
+      return value.toLocaleString('pl-pl', {maximumFractionDigits : 4});
     } 
  } 

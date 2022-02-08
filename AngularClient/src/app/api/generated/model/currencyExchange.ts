@@ -9,12 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DatasetState } from './datasetState';
 
 
-export interface DocumentDatasetInfo { 
-    state?: DatasetState;
-    lastCloseDate?: string;
-    message?: string | null;
+export interface CurrencyExchange { 
+    id?: string | null;
+    date?: string;
+    code?: string | null;
+    rate?: number;
 }
 

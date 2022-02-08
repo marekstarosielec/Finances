@@ -10,9 +10,12 @@
             <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
           </svg>
         </div>
+        <div class="message" *ngIf="info?.message" >  
+          {{info?.message}}
         </div>
       </div>
     </div>
+  </div>
 </div>
 
 <div class="row" *ngIf="isClosing()">
@@ -27,9 +30,12 @@
             <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
           </svg>
         </div>
+        <div class="message" *ngIf="info?.message" >  
+          {{info?.message}}
         </div>
       </div>
     </div>
+  </div>
 </div>
 
 <div class="row" *ngIf="canOpen()">
@@ -47,8 +53,8 @@
                     type="password" 
                     class="form-control">
             </div>
-            <div class="has-error" *ngIf="error" >  
-              {{error}}
+            <div class="message" *ngIf="info?.message" >  
+              {{info?.message}}
             </div>
             <button class="btn btn-primary" type="submit" [disabled]="!formOpen.valid">Otwórz</button>
         </form>
@@ -82,12 +88,12 @@
                 type="password" 
                 class="form-control"
                 placeholder="Powtórz hasło">
-              <div class="has-error" *ngIf="formClose.controls.password2.errors?.differentPassword" >  
+              <div class="error" *ngIf="formClose.controls.password2.errors?.differentPassword" >  
                 Hasła powinny być takie same
               </div>
           </div>
-          <div class="has-error" *ngIf="error" >  
-            {{error}}
+          <div class="message" *ngIf="info?.message" >  
+            {{info?.message}}
           </div>
           <button class="btn btn-primary" type="submit" [disabled]="!formClose.valid">Zamknij</button>
           <button class="btn btn-secondary" type="button" (click)="open(content)">Zamknij bez zapisywania</button>

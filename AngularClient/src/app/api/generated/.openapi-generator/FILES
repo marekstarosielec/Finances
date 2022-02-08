@@ -5,6 +5,7 @@ api/accountingDataset.service.ts
 api/api.ts
 api/balances.service.ts
 api/currencies.service.ts
+api/currencyExchange.service.ts
 api/dataset.service.ts
 api/documentDataset.service.ts
 api/documents.service.ts
@@ -20,6 +21,7 @@ index.ts
 model/accountingDatasetInfo.ts
 model/balance.ts
 model/currency.ts
+model/currencyExchange.ts
 model/datasetCloseInstruction.ts
 model/datasetInfo.ts
 model/datasetOpenInstruction.ts

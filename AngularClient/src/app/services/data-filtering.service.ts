@@ -4,6 +4,7 @@ import { DateFilterValue } from 'app/shared/date-filter/date-filter.component';
 import { GridColumn } from 'app/shared/grid/grid.component';
 import { QueryParamsHandler } from 'app/shared/grid/queryParamsHandler';
 import { ListFilterValue } from 'app/shared/list-filter/list-filter.component';
+import { NumberFilterValue } from 'app/shared/number-filter/number-filter.component';
 import { TextFilterOptions, TextFilterValue } from 'app/shared/text-filter/text-filter.component';
 
 @Injectable({
@@ -14,6 +15,7 @@ export class DataFilteringService {
   public DateFilterIdentifier : string = 'date';
   public ListFilterIdentifier : string = 'list';
   public TextFilterIdentifier : string = 'text';
+  public NumberFilterIdentifier : string = 'number';
   
   public getFilter(column: GridColumn, params: QueryParamsHandler) {
     if (column.component === this.AmountFilterIdentifier) {
@@ -27,6 +29,9 @@ export class DataFilteringService {
     }
     if (column.component === this.TextFilterIdentifier) {
       return this.getTextFilter(column, params);
+    }
+    if (column.component === this.NumberFilterIdentifier) {
+      return this.getNumberFilter(column, params);
     }
   }
 
@@ -43,6 +48,9 @@ export class DataFilteringService {
     if (column.component === this.TextFilterIdentifier) {
       return this.addTextFilter(column, params, value);
     }
+    if (column.component === this.NumberFilterIdentifier) {
+      return this.addNumberFilter(column, params, value);
+    }
   }
 
   public applyFilters(data: any[], columns: GridColumn[], params: QueryParamsHandler) : any[] {
@@ -58,6 +66,9 @@ export class DataFilteringService {
       }
       if (column.component === this.TextFilterIdentifier) {
         data = this.applyTextFilter(data, column, params);
+      }
+      if (column.component === this.NumberFilterIdentifier) {
+        data = this.applyNumberFilter(data, column, params);
       }
     });
     return data;
@@ -174,6 +185,31 @@ export class DataFilteringService {
       || (options?.additionalPropertyToSearch3 && d[options.additionalPropertyToSearch3]?.toString().toUpperCase().indexOf(search) > -1)
       || (options?.additionalPropertyToSearch4 && d[options.additionalPropertyToSearch4]?.toString().toUpperCase().indexOf(search) > -1)
     );
+    return data;
+  }
+
+  private getNumberFilter(column: GridColumn, params: QueryParamsHandler) : NumberFilterValue {
+    const from = params.filters.find(f => f.column === column.dataProperty && f.appendix === 'from')?.filterValue;
+    const to = params.filters.find(f => f.column === column.dataProperty && f.appendix === 'to')?.filterValue;
+    return { from: from ? from: -99999999, to: to ? to : 99999999 } as NumberFilterValue;
+  }
+
+  private addNumberFilter(column: GridColumn, params: QueryParamsHandler, value: NumberFilterValue) { 
+    params.setFilter(column.dataProperty, value.from?.toString(), 'from');
+    params.setFilter(column.dataProperty, value.to?.toString(), 'to');
+  }
+
+  private applyNumberFilter(data: any[], column: GridColumn, params: QueryParamsHandler) : any[] {
+    const value = this.getNumberFilter(column, params) as NumberFilterValue;    
+    if (!value || !column.dataProperty) {
+      return data;
+    }
+    if (value.from) {
+      data = data.filter(d => d[column.dataProperty] >= value.from);
+    }
+    if (value.to) {
+      data = data.filter(d => d[column.dataProperty] <= value.to);
+    }
     return data;
   }
 }

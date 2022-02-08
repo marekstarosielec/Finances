@@ -68,8 +68,14 @@ $width: 100px;
 }
 
 
-.has-error {
+.error {
   color: red;
+  text-align: left;
+  font-size: smaller;
+}
+
+.message {
+  color: lightgray;
   text-align: left;
   font-size: smaller;
 }

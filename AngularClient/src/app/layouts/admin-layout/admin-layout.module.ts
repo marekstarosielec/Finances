@@ -44,6 +44,9 @@ import { SkodaDetailsComponent } from 'app/pages/skoda/skoda-details.component';
 import { MazdaListComponent } from 'app/pages/mazda/mazda-list.component';
 import { MazdaDetailsComponent } from 'app/pages/mazda/mazda-details.component';
 import { AccountingStateComponent } from 'app/pages/accounting-state/accounting-state.component';
+import { CurrencyExchangeListComponent } from 'app/pages/currency-exchange/currency-exchange-list.component';
+import { CurrencyExchangeDetailsComponent } from 'app/pages/currency-exchange/currency-exchange-details.component';
+import { NumberFilterComponent } from 'app/shared/number-filter/number-filter.component';
 
 @NgModule({
   imports: [
@@ -94,7 +97,9 @@ import { AccountingStateComponent } from 'app/pages/accounting-state/accounting-
     MazdaListComponent,
     MazdaDetailsComponent,
     AccountingStateComponent,
-    
+    CurrencyExchangeListComponent,
+    CurrencyExchangeDetailsComponent,
+    NumberFilterComponent
   ]
 })
 

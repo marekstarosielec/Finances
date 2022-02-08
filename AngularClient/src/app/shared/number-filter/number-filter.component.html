@@ -1,0 +1,12 @@
+<div class="form-group">
+    <div class="input-group">
+        <label [for]="name + '_from'" class="amount-label">Od:</label>
+        <input type="number" class="form-control" [id]="name + '_from'" (keyup)="from$.next($event.target.value)" [value]="filterValue?.from && filterValue?.from>-99999999 ? filterValue.from : undefined">
+    </div>
+</div>
+<div class="form-group">
+    <div class="input-group">
+        <label [for]="name + '_to'" class="amount-label">Do:</label>
+        <input type="number" class="form-control" [id]="name + '_to'" (keyup)="to$.next($event.target.value)" [value]="filterValue?.to && filterValue?.to<99999999 ? filterValue.to : undefined">
+    </div>
+</div>
