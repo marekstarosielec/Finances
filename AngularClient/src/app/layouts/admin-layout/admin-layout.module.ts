@@ -47,6 +47,10 @@ import { AccountingStateComponent } from 'app/pages/accounting-state/accounting-
 import { CurrencyExchangeListComponent } from 'app/pages/currency-exchange/currency-exchange-list.component';
 import { CurrencyExchangeDetailsComponent } from 'app/pages/currency-exchange/currency-exchange-details.component';
 import { NumberFilterComponent } from 'app/shared/number-filter/number-filter.component';
+import { ElectricityListComponent } from 'app/pages/electricity/electricity-list.component';
+import { ElectricityDetailsComponent } from 'app/pages/electricity/electricity-details.component';
+import { GasListComponent } from 'app/pages/gas/gas-list.component';
+import { GasDetailsComponent } from 'app/pages/gas/gas-details.component';
 
 @NgModule({
   imports: [
@@ -99,7 +103,11 @@ import { NumberFilterComponent } from 'app/shared/number-filter/number-filter.co
     AccountingStateComponent,
     CurrencyExchangeListComponent,
     CurrencyExchangeDetailsComponent,
-    NumberFilterComponent
+    NumberFilterComponent,
+    ElectricityListComponent,
+    ElectricityDetailsComponent,
+    GasListComponent,
+    GasDetailsComponent
   ]
 })
 

@@ -8,6 +8,8 @@ export * from './datasetOpenInstruction';
 export * from './datasetState';
 export * from './document';
 export * from './documentDatasetInfo';
+export * from './electricity';
+export * from './gas';
 export * from './mazda';
 export * from './skoda';
 export * from './statisticsAll';

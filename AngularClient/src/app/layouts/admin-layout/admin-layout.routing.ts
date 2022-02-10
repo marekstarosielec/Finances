@@ -29,6 +29,10 @@ import { MazdaDetailsComponent } from 'app/pages/mazda/mazda-details.component';
 import { AccountingStateComponent } from 'app/pages/accounting-state/accounting-state.component';
 import { CurrencyExchangeListComponent } from 'app/pages/currency-exchange/currency-exchange-list.component';
 import { CurrencyExchangeDetailsComponent } from 'app/pages/currency-exchange/currency-exchange-details.component';
+import { ElectricityListComponent } from 'app/pages/electricity/electricity-list.component';
+import { ElectricityDetailsComponent } from 'app/pages/electricity/electricity-details.component';
+import { GasListComponent } from 'app/pages/gas/gas-list.component';
+import { GasDetailsComponent } from 'app/pages/gas/gas-details.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
@@ -53,7 +57,11 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'accounting',   component: AccountingStateComponent },
     { path: 'currency-exchange',   component: CurrencyExchangeListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'currency-exchange/:id',   component: CurrencyExchangeDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
-   // { path: 'typography',     component: TypographyComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
+    { path: 'electricity',   component: ElectricityListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'electricity/:id',   component: ElectricityDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'gas',   component: GasListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'gas/:id',   component: GasDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+     // { path: 'typography',     component: TypographyComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
      { path: 'icons',          component: IconsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     // { path: 'notifications',  component: NotificationsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     { path: 'opendataset',    component: OpenDatasetComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Closed, DatasetState.OpeningError]} },

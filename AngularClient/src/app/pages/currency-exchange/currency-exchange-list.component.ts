@@ -12,7 +12,7 @@ import { NbpService } from 'app/services/nbp.service';
         [columns]="columns" 
         [data]="data" 
         initialSortColumn="date" 
-        initialSortOrder=1
+        initialSortOrder=-1
         [toolbarElements]="toolbarElements" 
         (toolbarElementClick)="toolbarElementClick($event)">
         </list-page>
@@ -39,21 +39,27 @@ export class CurrencyExchangeListComponent implements OnInit{
     }
 
     toolbarElementClick(toolbarElement: ToolbarElement) {
-        let currentDate = new Date(2022,1,1);
+        const sorted = this.data.sort((d1,d2) => d1.date > d2.date ? -1 : 1);
+        const lastDate = new Date(sorted[0].date);
+        let currentDate = new Date();
+        currentDate.setUTCFullYear(lastDate.getFullYear());
+        currentDate.setUTCMonth(lastDate.getMonth());
+        currentDate.setUTCDate(lastDate.getDate());
+        currentDate.setUTCHours(0,0,0,0);
         const today = new Date();
         while (currentDate <= today) {
-            console.log(currentDate.toISOString());
-            const currentDataIndex = this.data.findIndex(c => c.date === currentDate.toISOString());
+            const currentDataIndex = this.data.findIndex(c => c.date === currentDate.toISOString().replace(/.\d+Z$/g, "Z"));
             const currentDay = currentDate.getDay();
             if (currentDataIndex === -1 && currentDay > 0 && currentDay < 6){
                 this.nbpService.ratesGet(currentDate).pipe(take(1)).subscribe((rates) => {
-                    console.log(rates);
+                    let date = new Date(rates.rates[0].effectiveDate);
+                    date.setUTCHours(0,0,0,0);
+        
                     const data = {  
-                        date: new Date(rates.rates[0].effectiveDate).toISOString(),
+                        date: date.toISOString(),
                         code: 'EUR',
                         rate: rates.rates[0].mid
                     } as CurrencyExchange;
-                    console.log(data);
                     this.currencyExchangeService.currencyExchangeCurrencyExchangePost(data).pipe(take(1)).subscribe(() =>
                     {
                     });

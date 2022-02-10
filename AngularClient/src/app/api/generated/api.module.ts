@@ -9,6 +9,8 @@ import { CurrencyExchangeService } from './api/currencyExchange.service';
 import { DatasetService } from './api/dataset.service';
 import { DocumentDatasetService } from './api/documentDataset.service';
 import { DocumentsService } from './api/documents.service';
+import { ElectricityService } from './api/electricity.service';
+import { GasService } from './api/gas.service';
 import { MBankScrapperService } from './api/mBankScrapper.service';
 import { MazdaService } from './api/mazda.service';
 import { SkodaService } from './api/skoda.service';

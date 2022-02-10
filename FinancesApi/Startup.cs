@@ -35,6 +35,8 @@ namespace FinancesApi
             services.AddSingleton<ICurrencyExchangeService, CurrencyExchangeService>();
             services.AddSingleton<ISkodaService, SkodaService>();
             services.AddSingleton<IMazdaService, MazdaService>();
+            services.AddSingleton<IElectricityService, ElectricityService>();
+            services.AddSingleton<IGasService, GasService>();
 
             services.AddSingleton(typeof(TransactionsDataFile));
             services.AddSingleton(typeof(TransactionAccountsDataFile));
@@ -46,6 +48,8 @@ namespace FinancesApi
             services.AddSingleton(typeof(CurrencyExchangeDataFile));
             services.AddSingleton(typeof(SkodaDataFile));
             services.AddSingleton(typeof(MazdaDataFile));
+            services.AddSingleton(typeof(ElectricityDataFile));
+            services.AddSingleton(typeof(GasDataFile));
 
             services.AddTransient(typeof(DatasetInfoDataFile));
             services.AddTransient(typeof(DocumentDatasetInfoDataFile));

@@ -9,6 +9,8 @@ api/currencyExchange.service.ts
 api/dataset.service.ts
 api/documentDataset.service.ts
 api/documents.service.ts
+api/electricity.service.ts
+api/gas.service.ts
 api/mBankScrapper.service.ts
 api/mazda.service.ts
 api/skoda.service.ts
@@ -28,6 +30,8 @@ model/datasetOpenInstruction.ts
 model/datasetState.ts
 model/document.ts
 model/documentDatasetInfo.ts
+model/electricity.ts
+model/gas.ts
 model/mazda.ts
 model/models.ts
 model/skoda.ts

@@ -16,7 +16,7 @@ namespace FinancesApi.Services
     public class CurrencyExchangeService : ICurrencyExchangeService
     {
         private readonly CurrencyExchangeDataFile _currencyExchangeDataFile;
-
+        private object _saving = new object();
         public CurrencyExchangeService(CurrencyExchangeDataFile currencyExchangeDataFile)
         {
             _currencyExchangeDataFile = currencyExchangeDataFile;
@@ -37,21 +37,24 @@ namespace FinancesApi.Services
 
         public void Save(CurrencyExchange currencyExchange)
         {
-            _currencyExchangeDataFile.Load();
-            var editedAccount = _currencyExchangeDataFile.Value.FirstOrDefault(a => string.Equals(currencyExchange.Id, a.Id, StringComparison.InvariantCultureIgnoreCase));
-            if (editedAccount == null)
+            lock(_saving)
             {
-                if (string.IsNullOrWhiteSpace(currencyExchange.Id))
-                    currencyExchange.Id = Guid.NewGuid().ToString();
-                _currencyExchangeDataFile.Value.Add(currencyExchange);
+                _currencyExchangeDataFile.Load();
+                var editedAccount = _currencyExchangeDataFile.Value.FirstOrDefault(a => string.Equals(currencyExchange.Id, a.Id, StringComparison.InvariantCultureIgnoreCase));
+                if (editedAccount == null)
+                {
+                    if (string.IsNullOrWhiteSpace(currencyExchange.Id))
+                        currencyExchange.Id = Guid.NewGuid().ToString();
+                    _currencyExchangeDataFile.Value.Add(currencyExchange);
+                }
+                else
+                {
+                    editedAccount.Date = currencyExchange.Date;
+                    editedAccount.Code = currencyExchange.Code;
+                    editedAccount.Rate = currencyExchange.Rate;
+                }
+                _currencyExchangeDataFile.Save();
             }
-            else
-            {
-                editedAccount.Date = currencyExchange.Date;
-                editedAccount.Code = currencyExchange.Code;
-                editedAccount.Rate = currencyExchange.Rate;
-            }
-            _currencyExchangeDataFile.Save();
         }
     }
 }
