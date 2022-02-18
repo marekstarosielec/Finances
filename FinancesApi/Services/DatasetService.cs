@@ -42,6 +42,7 @@ namespace FinancesApi.Services
             SkodaDataFile skodaDataFile,
             MazdaDataFile mazdaDataFile,
             ElectricityDataFile electricityDataFile,
+            GasDataFile gasDataFile,
             BalancesDataFile balancesDataFile,
             DatasetInfoDataFile datasetInfoDataFile,
             CurrenciesDataFile currenciesDataFile,
@@ -62,6 +63,7 @@ namespace FinancesApi.Services
             _dataFiles.Add(skodaDataFile.DataFile);
             _dataFiles.Add(mazdaDataFile.DataFile);
             _dataFiles.Add(electricityDataFile.DataFile);
+            _dataFiles.Add(gasDataFile.DataFile);
             _dataFiles.Add(currencyExchangeData.DataFile);
 
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();

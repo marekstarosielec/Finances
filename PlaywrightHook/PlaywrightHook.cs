@@ -35,9 +35,17 @@ namespace PlaywrightHook
         public async Task WaitForPage(string url) => 
             await _page.WaitForURLAsync(url, new PageWaitForURLOptions { Timeout = 0, WaitUntil = WaitUntilState.NetworkIdle  });
 
-        public async Task WaitForPage(Regex regex) =>
-            await _page.WaitForURLAsync(regex, new PageWaitForURLOptions { Timeout = 0, WaitUntil = WaitUntilState.NetworkIdle });
+        public Task WaitForPage(params Regex[] regex)
+        {
+            Func<string, bool> predicate = url =>
+            {
+                foreach (var reg in regex)
+                    if (reg.IsMatch(url)) return true;
+                return false;
+            };
 
+            return _page.WaitForURLAsync(predicate, new PageWaitForURLOptions { Timeout = 0, WaitUntil = WaitUntilState.NetworkIdle });
+        }
         public async Task<bool> IsElementPresent(string xpath) => 
             (await _page.QuerySelectorAsync(xpath, new PageQuerySelectorOptions { })) != null;
 

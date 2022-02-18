@@ -125,9 +125,10 @@ namespace FinancesApi.Services
         {
             foreach (var location in _fileBackupLocations)
             {
+                var sourceLocation = Path.Combine(_documentDatasetInfoDataFile.DataFile.Location, "Dokumenty");
                 var destinationLocation = Path.Combine(location, "Dokumenty");
                 Directory.CreateDirectory(destinationLocation);
-                foreach (var dataFile in Directory.GetFiles(destinationLocation))
+                foreach (var dataFile in Directory.GetFiles(sourceLocation))
                 {
                     var destinationFile = Path.Combine(destinationLocation, Path.GetFileName(dataFile));
                     try

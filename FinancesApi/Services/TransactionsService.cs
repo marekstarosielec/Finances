@@ -23,7 +23,8 @@ namespace FinancesApi.Services
         IList<TransactionAutoCategory> GetAutoCategories();
         void SaveAutoCategory(TransactionAutoCategory category);
         void DeleteAutoCategory(string id);
-        
+
+        string GetAutoCategory(Transaction transaction);
         void ApplyAutoCategories();
     }
 
@@ -216,6 +217,13 @@ namespace FinancesApi.Services
             _transactionAutoCategoriesDataFile.Load();
             _transactionAutoCategoriesDataFile.Value.RemoveAll(c => string.Equals(id, c.Id, StringComparison.InvariantCultureIgnoreCase));
             _transactionAutoCategoriesDataFile.Save();
+        }
+
+        public string GetAutoCategory(Transaction transaction)
+        {
+            _transactionAutoCategoriesDataFile.Load();
+            var autoCategory = _transactionAutoCategoriesDataFile.Value.FirstOrDefault(ac => transaction.BankInfo.Contains(ac.BankInfo, StringComparison.InvariantCultureIgnoreCase));
+            return autoCategory?.Category;
         }
 
         public void ApplyAutoCategories()

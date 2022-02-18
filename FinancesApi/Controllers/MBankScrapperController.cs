@@ -38,23 +38,27 @@ namespace FinancesApi.Controllers
                             transaction.Date = transaction.Date.Substring(0,3) + "0" + transaction.Date.Substring(3);
 
                         DateTime.TryParseExact(transaction.Date, "dd'.'MM'.'yyyy", null, System.Globalization.DateTimeStyles.AssumeUniversal, out var transactionDate);
-                        
+
+                        var transactionModel = new Models.Transaction
+                        {
+                            Id = transaction.Id,
+                            Text = transaction.Text,
+                            Title = transaction.Title,
+                            Description = transaction.Description,
+                            Amount = transaction.Amount,
+                            Account = transaction.Account,
+                            Date = transactionDate.ToUniversalTime(),
+                            Source = "mbank scrapper",
+                            Currency = transaction.Currency,
+                            ScrappingDate = DateTime.Now
+                        };
+                        transactionModel.Category = _transactionService.GetAutoCategory(transactionModel);
+
                         _transactionService.SaveTransaction(
-                            new Models.Transaction { 
-                                Id = transaction.Id, 
-                                Text = transaction.Text, 
-                                Title = transaction.Title, 
-                                Description = transaction.Description, 
-                                Amount = transaction.Amount,
-                                Account = transaction.Account, 
-                                Date= transactionDate.ToUniversalTime(), 
-                                Source = "mbank scrapper", 
-                                Currency = transaction.Currency,
-                                ScrappingDate = DateTime.Now
-                            }, false);
+                            transactionModel, false);
                     }
                 });
-                _transactionService.ApplyAutoCategories();
+                //_transactionService.ApplyAutoCategories();
             }
             catch (Exception e)
             {

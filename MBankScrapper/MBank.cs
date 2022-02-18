@@ -83,7 +83,7 @@ namespace MBankScrapper
         private async Task Logout()
         {
             await _browser.Click("//a[@data-test-id='logout:link']");
-            await _browser.WaitForPage(new Regex("https://www.mbank.pl/logoutpage.*"));
+            await _browser.WaitForPage(new Regex("https://www.mbank.pl/logoutpage.*"), new Regex("https://online.mbank.pl/pl/Login"), new Regex("https://online.mbank.pl/errors/session.html"));
         }
 
         private async Task GoToAccountsPage()

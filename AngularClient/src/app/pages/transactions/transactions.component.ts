@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MBankScrapperService, Transaction } from 'app/api/generated';
+import { MBankScrapperService, SantanderScrapperService, Transaction } from 'app/api/generated';
 import { TransactionsService } from '../../api/generated/api/transactions.service'
 import { GridColumn } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
@@ -21,7 +21,7 @@ export class TransactionsComponent implements OnInit{
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
     summaries: Summary[] = [];
-    constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService) {}
+    constructor (private transactionsService: TransactionsService, private mbankScrappingService: MBankScrapperService, private santanderScrapperService: SantanderScrapperService) {}
 
     ngOnInit(){
         this.transactionsService.transactionsGet()
@@ -30,6 +30,7 @@ export class TransactionsComponent implements OnInit{
             this.data = result;
             this.summaries.push( { name: 'amount-currency', options: { amountProperty: 'amount', currencyProperty: 'currency' } as SummaryAmountCurrencyOptions})
             this.toolbarElements.push({ name: 'mBank', title: 'mBank' });  
+            this.toolbarElements.push({ name: 'santander', title: 'Santander' });  
             this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
             this.columns = [ 
                 { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true},
@@ -42,8 +43,15 @@ export class TransactionsComponent implements OnInit{
     }
 
     toolbarElementClick(toolbarElement: ToolbarElement) {
-        this.mbankScrappingService.mBankScrapperPost().pipe(take(1)).subscribe(t => {
-            console.log(t);
-        })
+        if (toolbarElement.name === 'mBank') {
+            this.mbankScrappingService.mBankScrapperPost().pipe(take(1)).subscribe(t => {
+                console.log(t);
+            });
+        }
+        if (toolbarElement.name === 'santander') {
+            this.santanderScrapperService.santanderScrapperPost().pipe(take(1)).subscribe(t => {
+                console.log(t);
+            });
+        }
     }
 }

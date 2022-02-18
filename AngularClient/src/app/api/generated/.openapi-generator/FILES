@@ -13,6 +13,7 @@ api/electricity.service.ts
 api/gas.service.ts
 api/mBankScrapper.service.ts
 api/mazda.service.ts
+api/santanderScrapper.service.ts
 api/skoda.service.ts
 api/statistics.service.ts
 api/transactions.service.ts

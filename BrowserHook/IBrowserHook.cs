@@ -11,7 +11,7 @@ namespace BrowserHook
 
         Task WaitForPage(string url);
 
-        Task WaitForPage(Regex regex);
+        Task WaitForPage(params Regex[] regex);
 
         Task WaitForElement(string xpath, bool continueOnTimeout = false, int timeoutMilliseconds = 30000);
 
