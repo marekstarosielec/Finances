@@ -22,7 +22,17 @@ export interface ListFilterOptions {
 export class ListFilterComponent implements OnInit, OnDestroy {
     @Input() name: string;
     @Input() filterValue: ListFilterValue;
-    @Input() data: any[];
+    
+    private _data: any[];
+    get data(): any[] {
+        return this._data;
+    }
+    @Input()
+    set data(value: any[]) {
+        this._data = value;
+        this.buildReferenceList();
+    }
+
     @Input() options: ListFilterOptions;
 
     primaryList: any[];

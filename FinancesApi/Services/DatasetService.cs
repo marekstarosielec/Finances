@@ -154,7 +154,7 @@ namespace FinancesApi.Services
                     catch (Exception e)
                     {
                         //Failure during copy is critical.
-                        throw new Exception($"Nie udało się skopiować zbioru do {dataFile.FileNameWithLocation}", e);
+                        throw new Exception($"Nie udało się skopiować zbioru do {Path.Combine(location, dataFile.FileName)}", e);
                     }
                 });
                 File.Copy(_datasetInfoDataFile.DataFile.FileNameWithLocation, Path.Combine(location, _datasetInfoDataFile.DataFile.FileName), true);

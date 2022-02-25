@@ -4,6 +4,7 @@ import { GridColumn, RowClickedData, ViewChangedData } from 'app/shared/grid/gri
 import { Subject } from 'rxjs';
 import * as l from 'lodash';
 import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar';
+import { SubViewService } from 'app/services/subview.service';
 
 export interface Summary {
     name: string;
@@ -50,10 +51,11 @@ export class ListPageComponent implements OnInit, OnDestroy {
     maximumNumberOfRecordsToShow: Number = 100;
     public currentView$: Subject<ViewAnalyticsData> = new Subject<ViewAnalyticsData>();
 
-    constructor(private router: Router, private route: ActivatedRoute) {
+    constructor(private router: Router, private route: ActivatedRoute, private subviewService: SubViewService) {
     }
 
     ngOnInit() {
+
         if (!this.toolbarElements) {
             this.toolbarElements = [{ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew}];
         }
@@ -61,7 +63,7 @@ export class ListPageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy()
     {
-
+        this.subviewService.subviews.next([]);
     }
 
     toolbarElementClicked(toolbarElement: ToolbarElement) {

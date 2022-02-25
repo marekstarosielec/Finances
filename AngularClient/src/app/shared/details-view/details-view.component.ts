@@ -6,6 +6,7 @@ import { FormattedAmountPipe } from "app/pipes/formattedAmount.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "../models/toolbar";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { FormattedNumberPipe } from "app/pipes/formattedNumber.component";
+import { FormattedAmountWithEmptyPipe } from "app/pipes/formattedAmountWithEmpty.component";
 
 export interface DetailsViewField {
     title: string;
@@ -30,6 +31,7 @@ export interface DetailsViewFieldAmountOptions {
     currencyList: any[];
     currencyListIdField: string;
     currencyDataProperty: string;
+    allowEmpty: boolean;
 }
 
 export interface DetailsViewDefinition {
@@ -106,9 +108,13 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                     }
                     data[field.dataProperty] = this.form.value.date.year + '-' + month + '-' + day + 'T00:00:00Z';
                 } else if (field.component === 'amount') {
-                    data[field.dataProperty] = +(this.form.controls[field.dataProperty].value.replace(",",".").replace(" ","").replace(" ",""));
-                    if (field.options?.currencyDataProperty) {
-                        data[field.options?.currencyDataProperty] = this.form.controls[field.options?.currencyDataProperty].value;
+                    if (field.options.allowEmpty && !this.form.controls[field.dataProperty].value){
+                       //No value set.
+                    } else {
+                        data[field.dataProperty] = +(this.form.controls[field.dataProperty].value.replace(",",".").replace(" ","").replace(" ",""));
+                        if (field.options?.currencyDataProperty) {
+                            data[field.options?.currencyDataProperty] = this.form.controls[field.options?.currencyDataProperty].value;
+                        }
                     }
                 } else if (field.component === 'checkbox') {
                     data[field.dataProperty] = this.form.controls[field.dataProperty].value ? true : false;
@@ -140,11 +146,16 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                 validators.push(Validators.pattern(this.numberRegEx))
                 if (field.options?.currencyDataProperty) {
                     controls[field.options.currencyDataProperty] = new FormControl(undefined, []);
-                    data[field.options.currencyDataProperty] = this.data ? this.data[field.options.currencyDataProperty] : '';
+                    data[field.options.currencyDataProperty] = this.data ? this.data[field.options.currencyDataProperty] : 'PLN';
                 }
                 if (this.data) {
-                    const amountPipe = new FormattedAmountPipe();
-                    data[field.dataProperty] = amountPipe.transform(this.data[field.dataProperty]);
+                    if (field.options.allowEmpty){
+                        const amountWithEmptyPipe = new FormattedAmountWithEmptyPipe();
+                        data[field.dataProperty] = amountWithEmptyPipe.transform(this.data[field.dataProperty]);
+                    } else {
+                        const amountPipe = new FormattedAmountPipe();
+                        data[field.dataProperty] = amountPipe.transform(this.data[field.dataProperty]);
+                    }
                 } else {
                     data[field.dataProperty] = '';
                 }
@@ -195,8 +206,14 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
     }
 
     private buildReferenceListOnUsageIndex(field: DetailsViewField) : any[] {
+        const referenceList = field.options?.referenceListIdField 
+            ? fs.sort(field.options?.referenceList).by([
+                { asc: l => l[field.options?.referenceListIdField]}
+            ])
+            :field.options?.referenceList;
+
         if (!field?.options?.usageIndexData || !field?.options?.usageIndexPeriodDateProperty || !field?.options?.usageIndexPeriodDays || !field?.options?.usageIndexThreshold) {
-            return field.options?.referenceList;
+            return referenceList;
         }
         const usageIndexPeriodStart = new Date(new Date().setDate(new Date().getDate() - field.options.usageIndexPeriodDays));
         const usageFilter = field.options.usageIndexData.filter(r => new Date(r[field.options.usageIndexPeriodDateProperty])>=usageIndexPeriodStart)
@@ -214,7 +231,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
         resultList = fs.sort(resultList).by([
             { asc: l => l.id}
         ]);
-        field.options?.referenceList.forEach(element => {
+        referenceList.forEach(element => {
             if (resultList.findIndex(p => p[field.options.referenceListIdField] === element[field.options.referenceListIdField]) === -1) {
                 let result = {};
                 result[field.options.referenceListIdField] = element[field.options.referenceListIdField];

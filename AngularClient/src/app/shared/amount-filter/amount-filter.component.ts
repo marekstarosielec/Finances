@@ -24,7 +24,20 @@ export interface AmountFilterValue {
 export class AmountFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     @Input() name: string;
     @Input() filterValue: AmountFilterValue;
-    @Input() data: any[];
+
+    private _data: any[];
+    get data(): any[] {
+        return this._data;
+    }
+    @Input()
+    set data(value: any[]) {
+        this._data = value;
+        if (this.filterValue) {
+            this.filterValue.currency = [];
+        }
+        this.buildCurrencyReferenceList();
+    }
+
     @Input() options: AmountFilterOptions;
 
     from$ = new Subject<Number>();
@@ -39,9 +52,6 @@ export class AmountFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnInit() {
-        if (this.filterValue) {
-            this.filterValue.currency = [];
-        }
         this.buildCurrencyReferenceList();
     }
 
@@ -71,7 +81,7 @@ export class AmountFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     buildCurrencyReferenceList(){
-        if (!this.options || !this.options.currencyDataProperty) {
+        if (!this.options || !this.options.currencyDataProperty || !this.data) {
             return;
         }
 

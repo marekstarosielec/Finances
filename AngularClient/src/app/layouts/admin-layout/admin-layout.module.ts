@@ -17,8 +17,6 @@ import { TransactionComponent } from 'app/pages/transactions/transaction.compone
 import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
 import { TransactionCategoriesComponent } from 'app/pages/transaction-categories/transaction-categories.component';
-import { BalancesComponent } from 'app/pages/balances/balances.component';
-import { BalanceComponent } from 'app/pages/balances/balance.component';
 import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-categories/transaction-auto-categories.component';
 import { CCBalanceComponent } from 'app/pages/dashboard/cc-balance/cc-balance.component';
 import { ScrappingInfoComponent } from 'app/pages/dashboard/scrapping-info/scrapping-info.component';
@@ -51,6 +49,11 @@ import { ElectricityListComponent } from 'app/pages/electricity/electricity-list
 import { ElectricityDetailsComponent } from 'app/pages/electricity/electricity-details.component';
 import { GasListComponent } from 'app/pages/gas/gas-list.component';
 import { GasDetailsComponent } from 'app/pages/gas/gas-details.component';
+import { BalanceListComponent } from 'app/pages/balances/balance-list.component';
+import { BalanceDetailsComponent } from 'app/pages/balances/balance-details.component';
+import { BalanceSummaryListComponent } from 'app/pages/balances/balance-summary-list.component';
+import { FormattedAmountWithEmptyPipe } from 'app/pipes/formattedAmountWithEmpty.component';
+import { BalanceSummaryDetailsComponent } from 'app/pages/balances/balance-summary-details.component';
 
 @NgModule({
   imports: [
@@ -71,8 +74,6 @@ import { GasDetailsComponent } from 'app/pages/gas/gas-details.component';
     TransactionCategoryComponent,
     TransactionAutoCategoriesComponent,
     TransactionAutoCategoryComponent,
-    BalancesComponent,
-    BalanceComponent,
     OpenDatasetComponent,
     CloseDatasetComponent,
     TypographyComponent,
@@ -91,6 +92,7 @@ import { GasDetailsComponent } from 'app/pages/gas/gas-details.component';
     ListPageComponent,
     FormattedNumberPipe,
     FormattedAmountPipe,
+    FormattedAmountWithEmptyPipe,
     FormattedDatePipe,
     DynamicPipe,
     ListFilterComponent,
@@ -107,7 +109,11 @@ import { GasDetailsComponent } from 'app/pages/gas/gas-details.component';
     ElectricityListComponent,
     ElectricityDetailsComponent,
     GasListComponent,
-    GasDetailsComponent
+    GasDetailsComponent,
+    BalanceListComponent,
+    BalanceDetailsComponent,
+    BalanceSummaryListComponent,
+    BalanceSummaryDetailsComponent
   ]
 })
 

@@ -32,7 +32,7 @@
           </select>
         </div>
         <div class="form-group" *ngIf="field.component==='amount'">
-          <label [for]="name + '_' + field.dataProperty">Kwota</label>
+          <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>
           <div class="input-group">
             <input type="text" class="form-control" [id]="name + '_' + field.dataProperty" [formControlName]="field.dataProperty">
             <div class="input-group-append" *ngIf="field.options?.currencyList">

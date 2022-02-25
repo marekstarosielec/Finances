@@ -161,7 +161,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                                { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text'} as DetailsViewField,
                                { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
                                { title: 'Samochód', dataProperty: 'car', component: 'text'} as DetailsViewField,
-                               { title: 'Rzecz', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
+                               { title: 'Rzecz/Sprawa', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
                                { title: 'Gwarancja', dataProperty: 'guarantee', component: 'text'} as DetailsViewField,
                            ]
                        };
@@ -177,7 +177,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                                 { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text'} as DetailsViewField,
                                 { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
                                 { title: 'Samochód', dataProperty: 'car', component: 'text'} as DetailsViewField,
-                                { title: 'Rzecz', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
+                                { title: 'Rzecz/Sprawa', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
                                 { title: 'Gwarancja', dataProperty: 'guarantee', component: 'text'} as DetailsViewField,
                             ]
                         };

@@ -44,8 +44,8 @@
               [class.positive]="column.conditionalFormatting=='amount' && row[column.dataProperty]>0"
               [class.noWrap]="column.noWrap"
               (click)="selectRecord(row, column);">
-              <p *ngIf="column.dataProperty && row[column.dataProperty] && column.component!='icon'">{{row[column.dataProperty] | dynamic:column.pipe}}
-                <ng-container *ngIf="column.additionalDataProperty1 && row[column.additionalDataProperty1]"> {{row[column.additionalDataProperty1]}}</ng-container>
+              <p *ngIf="column.dataProperty && column.component!='icon'">{{row[column.dataProperty] | dynamic:column.pipe}}
+                <ng-container *ngIf="column.additionalDataProperty1 "> {{row[column.additionalDataProperty1]}}</ng-container>
               </p>
               <p *ngIf="column.subDataProperty1 && row[column.subDataProperty1]" class="subDataProperty1"> {{ row[column.subDataProperty1]}}</p>
               <p *ngIf="column.subDataProperty2 && row[column.subDataProperty2]" class="subDataProperty1"> {{ row[column.subDataProperty2]}}</p>

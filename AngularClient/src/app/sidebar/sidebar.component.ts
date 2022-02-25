@@ -16,7 +16,7 @@ export interface RouteInfo {
 export const ROUTES: RouteInfo[] = [
     { path: '/dashboard',     title: 'Pulpit',         icon:'nc-bank',       class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError]  },
     { path: '/transactions',  title: 'Tranzakcje',        icon:'nc-tile-56',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
-    { path: '/balances',  title: 'Salda',        icon:'nc-money-coins',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
+    { path: '/balancesummary',  title: 'Salda',        icon:'nc-money-coins',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/documents',  title: 'Dokumenty',        icon:'nc-single-copy-04',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/skoda',  title: 'Skoda',        icon:'nc-bus-front-12',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/mazda',  title: 'Mazda',        icon:'nc-bus-front-12',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },

@@ -1,46 +1,60 @@
-import { Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Renderer2, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { ROUTES } from '../../sidebar/sidebar.component';
 import { Router } from '@angular/router';
 import { Location} from '@angular/common';
 import { DatasetInfo, DatasetService, DatasetState } from 'app/api/generated';
 import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
 import { Subscription } from 'rxjs';
+import { SubviewDefinition, SubViewService } from 'app/services/subview.service';
 
 @Component({
     moduleId: module.id,
     selector: 'navbar-cmp',
-    templateUrl: 'navbar.component.html'
+    templateUrl: 'navbar.component.html',
+    styleUrls: ['./navbar.component.scss']
 })
 
-export class NavbarComponent implements OnInit{
+export class NavbarComponent implements OnInit, OnDestroy{
     private listTitles: any[];
     location: Location;
     listsShouldBeVisible: boolean = false;
     private nativeElement: Node;
     private toggleButton;
     private sidebarVisible: boolean;
+    private subviews: SubviewDefinition[];
 
     public isCollapsed = true;
     @ViewChild("navbar-cmp", {static: false}) button;
 
     private dataServiceSubscription: Subscription;
+    private subviewSubscription: Subscription;
+    
     constructor(location:Location, private renderer : Renderer2, private element : ElementRef, private router: Router,
-      private datasetServiceFacade: DatasetServiceFacade) {
+      private datasetServiceFacade: DatasetServiceFacade, private subviewService: SubViewService) {
         this.location = location;
         this.nativeElement = element.nativeElement;
         this.sidebarVisible = false;
     }
 
     ngOnInit(){
-        this.listTitles = ROUTES.filter(listTitle => listTitle);
-        var navbar : HTMLElement = this.element.nativeElement;
-        this.toggleButton = navbar.getElementsByClassName('navbar-toggle')[0];
-        this.router.events.subscribe((event) => {
-          this.sidebarClose();
-       });
-       this.dataServiceSubscription = this.datasetServiceFacade.getDatasetInfo().subscribe((datasetInfo: DatasetInfo) => {
-          this.listsShouldBeVisible = datasetInfo?.state === DatasetState.Opened || datasetInfo?.state === DatasetState.ClosingError;
-        });    
+      this.listTitles = ROUTES.filter(listTitle => listTitle);
+      var navbar : HTMLElement = this.element.nativeElement;
+      this.toggleButton = navbar.getElementsByClassName('navbar-toggle')[0];
+      this.router.events.subscribe((event) => {
+        this.sidebarClose();
+      });
+      this.dataServiceSubscription = this.datasetServiceFacade.getDatasetInfo().subscribe((datasetInfo: DatasetInfo) => {
+        this.listsShouldBeVisible = datasetInfo?.state === DatasetState.Opened || datasetInfo?.state === DatasetState.ClosingError;
+      });    
+      this.subviewSubscription = this.subviewService.subviews.subscribe((subviews: SubviewDefinition[]) => {
+        this.subviews = subviews;
+      });
+      
+    }
+
+    ngOnDestroy(): void {
+      this.dataServiceSubscription.unsubscribe();
+      this.subviewSubscription.unsubscribe();
     }
     getTitle(){
       // var titlee = this.location.prepareExternalUrl(this.location.path());

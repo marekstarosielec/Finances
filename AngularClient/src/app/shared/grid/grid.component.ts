@@ -47,7 +47,7 @@ export class GridComponent implements OnInit, OnDestroy{
     @Input() public columns: GridColumn[];
     @Input() public initialSortColumn: string;
     @Input() public initialSortOrder: number;
-    
+
     private _data: any[];
     get data(): any[] {
         return this._data;
@@ -113,6 +113,7 @@ export class GridComponent implements OnInit, OnDestroy{
         const filteredData = l.clone(data);
         data = this.applySorting(data);
         data = this.applyMaximumVisibleNumberOfRecords(data);
+
         const displayedData = l.clone(data);
         this.dataSubject.next(data);
         this.viewChanged.emit({ totalNumberOfRecords: this.totalNumberOfRecords, maximumVisibleNumberOfRecords: this.params.maximumVisibleNumberOfRecords, filteredData: filteredData, displayedData: displayedData });

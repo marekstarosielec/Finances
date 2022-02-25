@@ -172,7 +172,7 @@ namespace MBankScrapper
             while (await _browser.IsElementPresent(accountXPath(accountIndex)))
             {
                 var titleXPath = $"{accountXPath(accountIndex)}/descendant::p";
-                var amountXPath = $"{accountXPath(accountIndex)}/descendant::span[2]";
+                var amountXPath = $"{accountXPath(accountIndex)}/descendant::span[3]";
 
                 if (!await _browser.IsElementPresent(titleXPath))
                 {
@@ -180,6 +180,11 @@ namespace MBankScrapper
                     continue;
                 }
                 var title = await _browser.GetInnerText(titleXPath);
+                if (title == "VISA PAYWAVE" || title == "MASTERCARD PAYPASS")
+                {
+                    accountIndex++;
+                    continue;
+                }
                 var balance = "0";
                 if (await _browser.IsElementPresent(amountXPath))
                     balance = await _browser.GetInnerText(amountXPath);

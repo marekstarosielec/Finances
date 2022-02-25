@@ -26,6 +26,14 @@ namespace FinancesApi.Services
         public IList<Balance> GetBalances(string id = null)
         {
             _balancesDataFile.Load();
+            for (var x = _balancesDataFile.Value.Count - 1; x > 0; x--)
+            {
+                if (_balancesDataFile.Value[x].Account=="VISA PAYWAVE" || _balancesDataFile.Value[x].Account == "MASTERCARD PAYPASS")
+                {
+                    _balancesDataFile.Value.RemoveAt(x);
+                }
+            }
+            _balancesDataFile.Save();
             return string.IsNullOrWhiteSpace(id)
                 ? _balancesDataFile.Value
                 : _balancesDataFile.Value.Where(b => string.Equals(id, b.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
@@ -35,7 +43,20 @@ namespace FinancesApi.Services
         {
             _balancesDataFile.Load();
             _balancesDataFile.Value.RemoveAll(b => b.Account == balance.Account && b.Date.Date == balance.Date.Date);
-            _balancesDataFile.Value.Add(balance);
+            var edited = _balancesDataFile.Value.FirstOrDefault(a => string.Equals(balance.Id, a.Id, StringComparison.InvariantCultureIgnoreCase));
+            if (edited == null)
+            {
+                if (string.IsNullOrWhiteSpace(balance.Id))
+                    balance.Id = Guid.NewGuid().ToString();
+                _balancesDataFile.Value.Add(balance);
+            }
+            else
+            {
+                edited.Date = balance.Date;
+                edited.Account = balance.Account;
+                edited.Amount = balance.Amount;
+                edited.Currency = balance.Currency;
+            }
             _balancesDataFile.Save();
         }
 

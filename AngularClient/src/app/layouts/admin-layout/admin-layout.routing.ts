@@ -14,8 +14,6 @@ import { LoadingIndicatorComponent } from 'app/shared/loading-indicator/loading-
 import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
 import { TransactionCategoriesComponent } from 'app/pages/transaction-categories/transaction-categories.component';
-import { BalancesComponent } from 'app/pages/balances/balances.component';
-import { BalanceComponent } from 'app/pages/balances/balance.component';
 import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-categories/transaction-auto-categories.component';
 import { TransactionComponent } from 'app/pages/transactions/transaction.component';
 import { TransactionCategoryComponent } from 'app/pages/transaction-categories/transaction-category.component';
@@ -33,6 +31,10 @@ import { ElectricityListComponent } from 'app/pages/electricity/electricity-list
 import { ElectricityDetailsComponent } from 'app/pages/electricity/electricity-details.component';
 import { GasListComponent } from 'app/pages/gas/gas-list.component';
 import { GasDetailsComponent } from 'app/pages/gas/gas-details.component';
+import { BalanceListComponent } from 'app/pages/balances/balance-list.component';
+import { BalanceDetailsComponent } from 'app/pages/balances/balance-details.component';
+import { BalanceSummaryListComponent } from 'app/pages/balances/balance-summary-list.component';
+import { BalanceSummaryDetailsComponent } from 'app/pages/balances/balance-summary-details.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
@@ -45,8 +47,10 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'transaction-categories/:id',   component: TransactionCategoryComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'transaction-auto-categories',   component: TransactionAutoCategoriesComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'transaction-auto-categories/:id',   component: TransactionAutoCategoryComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
-    { path: 'balances',   component: BalancesComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
-    { path: 'balances/:id',   component: BalanceComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'balances',   component: BalanceListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'balances/:id',   component: BalanceDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'balancesummary',   component: BalanceSummaryListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'balancesummary/:id',   component: BalanceSummaryDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'skoda',   component: SkodaListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'skoda/:id',   component: SkodaDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'mazda',   component: MazdaListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },

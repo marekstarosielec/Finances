@@ -17,6 +17,16 @@
       <span class="navbar-toggler-bar navbar-kebab"></span>
       <span class="navbar-toggler-bar navbar-kebab"></span>
     </button>
+    <div class="collapse navbar-collapse justify-content-start" id="collapseExampleLeft" [ngbCollapse]="isCollapsed">
+      <ng-container *ngIf="subviews.length > 1">
+        <div *ngFor="let subview of subviews">
+          <a [routerLink]="subview.link">
+            <ng-container *ngIf="subview.title">{{subview.title}}</ng-container> 
+            <ng-container *ngIf="subview.icon"><i [class]="'icon nc-icon ' + subview.icon"></i></ng-container> 
+          </a>
+        </div>
+      </ng-container>
+    </div>
     <div class="collapse navbar-collapse justify-content-end" id="collapseExample" [ngbCollapse]="isCollapsed">
       <!-- <form>
         <div class="input-group no-border">
