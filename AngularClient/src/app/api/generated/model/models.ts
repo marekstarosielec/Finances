@@ -20,3 +20,5 @@ export * from './transaction';
 export * from './transactionAccount';
 export * from './transactionAutoCategory';
 export * from './transactionCategory';
+export * from './tutoring';
+export * from './tutoringList';

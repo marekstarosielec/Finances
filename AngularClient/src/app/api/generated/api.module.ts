@@ -17,6 +17,8 @@ import { SantanderScrapperService } from './api/santanderScrapper.service';
 import { SkodaService } from './api/skoda.service';
 import { StatisticsService } from './api/statistics.service';
 import { TransactionsService } from './api/transactions.service';
+import { TutoringService } from './api/tutoring.service';
+import { TutoringListService } from './api/tutoringList.service';
 
 @NgModule({
   imports:      [],

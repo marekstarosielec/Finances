@@ -48,6 +48,9 @@
                                         </tr> 
                                     </table>
                                 </ng-container>
+                                <ng-container *ngIf="summary.name==='total-number' && currentView.totalNumber">
+                                    <div>Łącznie: {{currentView.totalNumber}}</div>
+                                </ng-container>
                             </ng-container>
                         </ng-container>
                     </div>

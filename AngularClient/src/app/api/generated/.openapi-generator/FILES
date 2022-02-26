@@ -17,6 +17,8 @@ api/santanderScrapper.service.ts
 api/skoda.service.ts
 api/statistics.service.ts
 api/transactions.service.ts
+api/tutoring.service.ts
+api/tutoringList.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -44,4 +46,6 @@ model/transaction.ts
 model/transactionAccount.ts
 model/transactionAutoCategory.ts
 model/transactionCategory.ts
+model/tutoring.ts
+model/tutoringList.ts
 variables.ts

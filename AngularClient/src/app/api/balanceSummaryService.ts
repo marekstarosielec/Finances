@@ -14,7 +14,7 @@ export class BalanceSummaryService {
     }
 
     GetSummary() {
-        return this.balanceService.balancesGet().pipe(map((balances: Balance[]) => {
+        return this.balanceService.balancesGet().pipe(take(1), map((balances: Balance[]) => {
             balances = fs.sort(balances).by([
                 { desc: l => l['date']}
             ]);

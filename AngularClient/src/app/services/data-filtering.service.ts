@@ -203,10 +203,10 @@ export class DataFilteringService {
     if (!value || !column.dataProperty) {
       return data;
     }
-    if (value.from) {
+    if (value.from && value.from>-99999999) {
       data = data.filter(d => d[column.dataProperty] >= value.from);
     }
-    if (value.to) {
+    if (value.to && value.to<99999999) {
       data = data.filter(d => d[column.dataProperty] <= value.to);
     }
     return data;

@@ -22,6 +22,10 @@ export interface SummaryAmountCategoryOptions {
     showDirectioned?: boolean;
 }
 
+export interface SummaryTotalNumberOptions {
+    numberProperty: string;
+}
+
 interface ViewAnalyticsData {
     totalNumberOfRecords: number;
     maximumVisibleNumberOfRecords: number;
@@ -29,6 +33,7 @@ interface ViewAnalyticsData {
     displayedData: any[];
     amountCurrency: any;
     amountCategory: any;
+    totalNumber: any;
 }
 
 @Component({
@@ -118,6 +123,13 @@ export class ListPageComponent implements OnInit, OnDestroy {
                     const totalOutgoing = l.sumBy(summaryData.filter(s => s[option.amountProperty] < 0), option.amountProperty);
                     result.amountCategory['totals'] = { amount: total, incoming: totalIncoming, outgoing: totalOutgoing};
                     result.amountCategory['options'] = option;
+                }
+            }
+            if (this.summaries?.find(s => s.name === 'total-number')){
+                const option = this.summaries.find(s => s.name === 'total-number').options as SummaryTotalNumberOptions;
+                if (option) {
+                    const summaryData = viewChangedData.filteredData.filter(e => e[option.numberProperty]).map(e => e[option.numberProperty]);
+                    result.totalNumber = l.sum(summaryData);
                 }
             }
             this.currentView$.next(result);

@@ -9,7 +9,7 @@ import {
  
  export class FormattedNumberPipe implements PipeTransform { 
     transform(value: number): string { 
-      if (!value)
+      if (!value && value !== 0)
          return "";
       return value.toLocaleString('pl-pl', {maximumFractionDigits : 4});
     } 

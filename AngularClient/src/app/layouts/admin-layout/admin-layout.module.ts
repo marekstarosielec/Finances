@@ -54,6 +54,11 @@ import { BalanceDetailsComponent } from 'app/pages/balances/balance-details.comp
 import { BalanceSummaryListComponent } from 'app/pages/balances/balance-summary-list.component';
 import { FormattedAmountWithEmptyPipe } from 'app/pipes/formattedAmountWithEmpty.component';
 import { BalanceSummaryDetailsComponent } from 'app/pages/balances/balance-summary-details.component';
+import { TutoringListService } from 'app/api/generated';
+import { TutoringListListComponent } from 'app/pages/tutoring-list/tutoring-list-list.component';
+import { TutoringListDetailsComponent } from 'app/pages/tutoring-list/tutoring-list-details.component';
+import { TutoringListComponent } from 'app/pages/tutoring/tutoring-list.component';
+import { TutoringDetailsComponent } from 'app/pages/tutoring/tutoring-details.component';
 
 @NgModule({
   imports: [
@@ -113,7 +118,11 @@ import { BalanceSummaryDetailsComponent } from 'app/pages/balances/balance-summa
     BalanceListComponent,
     BalanceDetailsComponent,
     BalanceSummaryListComponent,
-    BalanceSummaryDetailsComponent
+    BalanceSummaryDetailsComponent,
+    TutoringListListComponent,
+    TutoringListDetailsComponent,
+    TutoringListComponent,
+    TutoringDetailsComponent
   ]
 })
 

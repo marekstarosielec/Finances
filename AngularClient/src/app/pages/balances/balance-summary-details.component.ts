@@ -46,7 +46,8 @@ export class BalanceSummaryDetailsComponent implements OnInit, OnDestroy {
                         const accountTitle = this.sanitizeAccountTitle(account.title);
                         if (!this.data.hasOwnProperty(accountTitle)) {
                             this.data[accountTitle] = undefined;
-                            this.data[accountTitle + '_currency'] = '';
+                            this.data[accountTitle + '_currency'] = 'PLN';
+                            this.data[accountTitle + '_title'] = account.title;
                         }
                         this.viewDefinition.fields.push(
                             { title: account.title, dataProperty: accountTitle, component: 'amount', required: false, options: { currencyList: currencies, currencyListIdField: 'code', currencyDataProperty: accountTitle + '_currency', allowEmpty: true} as DetailsViewFieldAmountOptions} as DetailsViewField
