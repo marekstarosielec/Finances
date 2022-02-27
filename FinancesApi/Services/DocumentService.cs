@@ -3,6 +3,7 @@ using FinancesApi.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -19,27 +20,79 @@ namespace FinancesApi.Services
     {
         private readonly DocumentsDataFile _documentsDataFile;
         private readonly IConfiguration _configuration;
+        private readonly IDocumentDatasetService _documentDatasetService;
 
-        public DocumentService(DocumentsDataFile documentsDataFile, IConfiguration configuration)
+        public DocumentService(DocumentsDataFile documentsDataFile, IConfiguration configuration, IDocumentDatasetService documentDatasetService)
         {
             _documentsDataFile = documentsDataFile;
             _configuration = configuration;
+            _documentDatasetService = documentDatasetService;
         }
 
         public IList<Document> GetDocuments(string id = null)
         {
-            _documentsDataFile.Load();
-            _documentsDataFile.Value.ForEach(d => {
-                if (File.Exists("c:\\Users\\marek\\source\\repos\\FinancesData\\Dokumenty\\MX" + d.Number.ToString().PadLeft(5, '0') + ".pdf"))
-                    d.Extension = "pdf";
-                else
-                    d.Extension = "jpg";
+            var merger = new Dictionary<string, Document>();
+            var basePath = _configuration.GetValue<string>("DatasetPath");
+            var documentsPath = Path.Combine(basePath, "Dokumenty");
+            var datasetOpened = _documentDatasetService.GetInfo().State == DatasetState.Opened && Directory.Exists(documentsPath);
 
+            Dictionary<string, string> documentFiles = datasetOpened ? GetDocumentFiles(documentsPath) : new Dictionary<string, string>();
+
+            string number;
+            _documentsDataFile.Load();
+            _documentsDataFile.Value.ForEach(d =>
+            {
+                number = ConvertNumberToFileName(d.Number);
+
+                d.FileAvailable = false;
+                if (documentFiles.ContainsKey(number))
+                {
+                    d.FileAvailable = true;
+                    d.Extension = Path.GetExtension(documentFiles[number]).TrimStart('.');
+                }
+                merger[number] = d;
             });
-            _documentsDataFile.Save();
+
+            bool requiresUpdate = false;
+            foreach (var document in documentFiles.Keys)
+            {
+                if (merger.ContainsKey(document))
+                    continue;
+                //Found file which is not in the list.
+                merger[document] = new Document
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Number = ConvertFileNameToNumber(document),
+                    FileAvailable = true,
+                    Extension = Path.GetExtension(documentFiles[document]).TrimStart('.'),
+                    Date = DateTime.Now
+                };
+                requiresUpdate = true;
+            };
+            var result = merger.Values.ToList();
+            if (requiresUpdate)
+            {
+                _documentsDataFile.Value.Clear();
+                result.ForEach(r => _documentsDataFile.Value.Add(r));
+                _documentsDataFile.Save();
+            }
+
             return string.IsNullOrWhiteSpace(id)
-                 ? _documentsDataFile.Value
-                 : _documentsDataFile.Value.Where(d => string.Equals(id, d.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                 ? result
+                 : result.Where(d => string.Equals(id, d.Id, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
+
+        private Dictionary<string, string> GetDocumentFiles(string documentsPath)
+        {
+            var documents = new Dictionary<string, string>();
+            Directory.EnumerateFiles(documentsPath).ToList().ForEach(f =>
+            {
+                if (IsDocumentFile(f))
+                {
+                    documents[Path.GetFileNameWithoutExtension(f)] = f;
+                }
+            });
+            return documents;
         }
 
         public void SaveDocument(Document document)
@@ -74,6 +127,29 @@ namespace FinancesApi.Services
             _documentsDataFile.Load();
             _documentsDataFile.Value.RemoveAll(b => string.Equals(id, b.Id, StringComparison.InvariantCultureIgnoreCase));
             _documentsDataFile.Save();
+        }
+
+        private string ConvertNumberToFileName(int number) => "MX" + number.ToString().PadLeft(5, '0');
+        private int ConvertFileNameToNumber(string input)
+        {
+            if (!int.TryParse(input.Substring(2), NumberStyles.None, null, out var result))
+                return 0;
+            return result;
+        }
+
+        private bool IsDocumentFile(string fileName)
+        {
+            var f = Path.GetFileNameWithoutExtension(fileName);
+            if (f.Length != 7)
+                return false;
+
+            if (!f.ToUpper().StartsWith("MX"))
+                return false;
+
+            if (!int.TryParse(f.Substring(2), NumberStyles.None, null, out var result))
+                return false;
+
+            return true;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace FinancesApi.Services
         {
             _configuration = configuration;
             
-            _basePath = Path.Combine(configuration.GetValue<string>("DatasetPath"));;
+            _basePath = configuration.GetValue<string>("DatasetPath");
             _archiveFile = Path.Combine(_basePath, "Księgowość.zip");
             _decompressedFolder = Path.Combine(_basePath, "Księgowość");
 

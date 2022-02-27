@@ -25,5 +25,6 @@ export interface Document {
     car?: string | null;
     relatedObject?: string | null;
     guarantee?: string | null;
+    fileAvailable?: boolean;
 }
 
