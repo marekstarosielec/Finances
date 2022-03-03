@@ -1,11 +1,15 @@
 <form [formGroup]="form">
-    <ng-container *ngFor="let toolbarElement of toolbarElements">
-        <button class="btn" *ngIf="toolbarElement.defaultAction!==toolbarElementAction.Delete || data"
-        [class.btn-primary]="toolbarElement.defaultAction!==toolbarElementAction.Delete" 
-        [class.btn-secondary]="toolbarElement.defaultAction===toolbarElementAction.Delete"
-        [class.btn-outline-danger]="toolbarElement.defaultAction===toolbarElementAction.Delete"
-        (click)="toolbarElement.defaultAction===toolbarElementAction.Delete ? open(content) : toolbarElementClicked(toolbarElement)">{{toolbarElement.title}}</button>
-    </ng-container>
+    <div>
+      <ng-container *ngFor="let toolbarElement of toolbarElements">
+          <button class="btn" *ngIf="toolbarElement.defaultAction!==toolbarElementAction.Delete || data"
+          [class.btn-primary]="toolbarElement.defaultAction!==toolbarElementAction.Delete" 
+          [class.btn-secondary]="toolbarElement.defaultAction===toolbarElementAction.Delete"
+          [class.btn-outline-danger]="toolbarElement.defaultAction===toolbarElementAction.Delete"
+          [class.pull-right]="toolbarElement.align==='right'"
+          [class]="toolbarElement.image ? 'nc-icon ' + toolbarElement.image : ''" 
+          (click)="toolbarElement.defaultAction===toolbarElementAction.Delete ? open(content) : toolbarElementClicked(toolbarElement)">{{toolbarElement.title}}</button>
+      </ng-container>
+    </div>
     <ng-container *ngFor="let field of viewDefinition?.fields">
         <div class="form-group" *ngIf="field.component==='multiline-text'">
           <label [for]="name + '_' + field.dataProperty">{{field.title}}</label>

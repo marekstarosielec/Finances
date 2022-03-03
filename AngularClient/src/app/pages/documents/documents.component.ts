@@ -47,12 +47,12 @@ export class DocumentsComponent implements OnInit{
 
             this.toolbarElements.push(
                 { name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew},
-                { name: 'phone', title: 'Telefon'},
-                { name: 'internet', title: 'Internet'},
-                { name: 'ciklumTools', title: 'Ciklum narzędzia'},
-                { name: 'fuel', title: 'Paliwo'},
-                { name: 'mazda', title: 'Mazda'},
-                { name: 'invoice', title: 'Faktura'},
+                // { name: 'phone', title: 'Telefon'},
+                // { name: 'internet', title: 'Internet'},
+                // { name: 'ciklumTools', title: 'Ciklum narzędzia'},
+                // { name: 'fuel', title: 'Paliwo'},
+                // { name: 'mazda', title: 'Mazda'},
+                // { name: 'invoice', title: 'Faktura'},
                 );
         });
     }

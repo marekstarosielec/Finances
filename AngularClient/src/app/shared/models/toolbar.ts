@@ -8,8 +8,10 @@ export enum ToolbarElementAction {
 
 export interface ToolbarElement {
     name: string;
-    title: string;
+    title?: string;
     defaultAction?: ToolbarElementAction;
+    align?: string;
+    image?: string;
 }
 
 export interface ToolbarElementWithData {
