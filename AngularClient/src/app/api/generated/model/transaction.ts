@@ -28,5 +28,6 @@ export interface Transaction {
     currency?: string | null;
     details?: string | null;
     person?: string | null;
+    caseName?: string | null;
 }
 

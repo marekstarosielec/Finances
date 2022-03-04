@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System.IO;
 
 namespace FinancesApi
 {
@@ -38,7 +37,8 @@ namespace FinancesApi
             services.AddSingleton<IElectricityService, ElectricityService>();
             services.AddSingleton<IGasService, GasService>();
             services.AddSingleton<ITutoringListService, TutoringListService>();
-            services.AddSingleton<ITutoringService, TutoringService>();
+            services.AddSingleton<ITutoringService, TutoringService>(); 
+            services.AddSingleton<ICaseListService, CaseListService>();
 
             services.AddSingleton(typeof(TransactionsDataFile));
             services.AddSingleton(typeof(TransactionAccountsDataFile));
@@ -54,6 +54,7 @@ namespace FinancesApi
             services.AddSingleton(typeof(GasDataFile));
             services.AddSingleton(typeof(TutoringListDataFile));
             services.AddSingleton(typeof(TutoringDataFile));
+            services.AddSingleton(typeof(CaseListDataFile));
 
             services.AddTransient(typeof(DatasetInfoDataFile));
             services.AddTransient(typeof(DocumentDatasetInfoDataFile));

@@ -118,6 +118,7 @@ namespace FinancesApi.Services
                 edited.Car = document.Car;
                 edited.RelatedObject = document.RelatedObject;
                 edited.Guarantee = document.Guarantee;
+                edited.CaseName = document.CaseName;
             }
             _documentsDataFile.Save();
         }

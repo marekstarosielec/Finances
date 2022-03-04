@@ -135,6 +135,7 @@ namespace FinancesApi.Services
                     editedTransaction.Comment = transaction.Comment;
                     editedTransaction.Person = transaction.Person;
                     editedTransaction.Details = transaction.Details;
+                    editedTransaction.CaseName = transaction.CaseName;
                 }
             }
             _transactionsFile.Save();

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { CurrenciesService, TransactionsService } from "app/api/generated";
+import { CaseListService, CurrenciesService, TransactionsService } from "app/api/generated";
 import { DetailsViewDefinition, DetailsViewField, DetailsViewFieldAmountOptions, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
@@ -23,6 +23,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     constructor(private transactionsService: TransactionsService, 
         private currenciesService: CurrenciesService, 
         private route: ActivatedRoute, 
+        private caseListService: CaseListService,
         private location: Location,
         private router: Router) {  
     }
@@ -34,8 +35,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
                 this.transactionsService.transactionsAccountsGet(),
                 this.transactionsService.transactionsCategoriesGet(),
                 this.currenciesService.currenciesGet(), 
+                this.caseListService.caseListGet()
                 ])
-                .pipe(take(1)).subscribe(([transactions, accounts, categories, currencies]) => {
+                .pipe(take(1)).subscribe(([transactions, accounts, categories, currencies, caseList]) => {
                     this.toolbarElements.push(
                         { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges} as ToolbarElement,
                         { name: 'delete', title: 'Usuń', defaultAction: ToolbarElementAction.Delete} as ToolbarElement,
@@ -50,7 +52,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
                             { title: 'Opis w banku', dataProperty: 'bankInfo', component: 'multiline-text', readonly: true} as DetailsViewField,
                             { title: 'Komentarz', dataProperty: 'comment', component: 'text'} as DetailsViewField,
                             { title: 'Szczegóły', dataProperty: 'details', component: 'text'} as DetailsViewField,
-                            { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField
+                            { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
+                            { title: 'Sprawa', dataProperty: 'caseName', component: 'list', required: false, options: { referenceList: caseList, referenceListIdField: 'name'} as DetailsViewFieldListOptions} as DetailsViewField,
+                           
                         ]
                     };
                 });

@@ -4,6 +4,7 @@ api.module.ts
 api/accountingDataset.service.ts
 api/api.ts
 api/balances.service.ts
+api/caseList.service.ts
 api/currencies.service.ts
 api/currencyExchange.service.ts
 api/dataset.service.ts
@@ -25,6 +26,7 @@ git_push.sh
 index.ts
 model/accountingDatasetInfo.ts
 model/balance.ts
+model/caseList.ts
 model/currency.ts
 model/currencyExchange.ts
 model/datasetCloseInstruction.ts

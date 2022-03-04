@@ -41,18 +41,12 @@ export class DocumentsComponent implements OnInit{
                 { title: 'Firma', dataProperty: 'company', component: 'text'},
                 { title: 'Opis', dataProperty: 'description', component: 'text'},
                 { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text', noWrap: true},
-                { title: 'Relacje', dataProperty: '', component: 'text', subDataProperty1: 'person', subDataProperty2: 'car', subDataProperty3: 'relatedObject', subDataProperty4: 'guarantee', filterOptions: { additionalPropertyToSearch1: 'person', additionalPropertyToSearch2: 'car', additionalPropertyToSearch3: 'relatedObject', additionalPropertyToSearch4: 'guarantee' } as TextFilterOptions},
+                { title: 'Relacje', dataProperty: '', component: 'text', subDataProperty1: 'person', subDataProperty2: 'car', subDataProperty3: 'relatedObject', subDataProperty4: 'caseName', filterOptions: { additionalPropertyToSearch1: 'person', additionalPropertyToSearch2: 'car', additionalPropertyToSearch3: 'relatedObject', additionalPropertyToSearch4: 'caseName' } as TextFilterOptions},
                 { title: '', dataProperty: 'fileAvailable', component: 'icon', image: 'nc-image', conditionalFormatting: 'bool', customEvent: true},
             ];
 
             this.toolbarElements.push(
                 { name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew},
-                // { name: 'phone', title: 'Telefon'},
-                // { name: 'internet', title: 'Internet'},
-                // { name: 'ciklumTools', title: 'Ciklum narzędzia'},
-                // { name: 'fuel', title: 'Paliwo'},
-                // { name: 'mazda', title: 'Mazda'},
-                // { name: 'invoice', title: 'Faktura'},
                 );
         });
     }

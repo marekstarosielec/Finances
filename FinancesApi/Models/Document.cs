@@ -20,5 +20,6 @@ namespace FinancesApi.Models
         public string RelatedObject { get; set; }
         public string Guarantee { get; set; }
         public bool FileAvailable { get; set; }
+        public string CaseName { get; set; }
     }
 }

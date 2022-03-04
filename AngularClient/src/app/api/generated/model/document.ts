@@ -26,5 +26,6 @@ export interface Document {
     relatedObject?: string | null;
     guarantee?: string | null;
     fileAvailable?: boolean;
+    caseName?: string | null;
 }
 

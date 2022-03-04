@@ -1,5 +1,6 @@
 export * from './accountingDatasetInfo';
 export * from './balance';
+export * from './caseList';
 export * from './currency';
 export * from './currencyExchange';
 export * from './datasetCloseInstruction';

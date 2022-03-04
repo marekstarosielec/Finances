@@ -60,5 +60,6 @@ namespace FinancesApi.Models
         //Osoba
         public string Person { get; set; }
 
+        public string CaseName { get; set; }
     }
 }

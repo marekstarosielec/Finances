@@ -39,6 +39,9 @@ import { TutoringListListComponent } from 'app/pages/tutoring-list/tutoring-list
 import { TutoringListDetailsComponent } from 'app/pages/tutoring-list/tutoring-list-details.component';
 import { TutoringDetailsComponent } from 'app/pages/tutoring/tutoring-details.component';
 import { TutoringListComponent } from 'app/pages/tutoring/tutoring-list.component';
+import { CaseListListComponent } from 'app/pages/case-list/case-list-list.component';
+import { CaseListDetailsComponent } from 'app/pages/case-list/case-list-details.component';
+import { CaseListComponent } from 'app/pages/case/case-list.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
@@ -79,5 +82,8 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'tutoring-list/:id',   component: TutoringListDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'tutoring',   component: TutoringListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'tutoring/:id',   component: TutoringDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
-   
+    { path: 'case-list',   component: CaseListListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'case-list/:id',   component: CaseListDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'case',   component: CaseListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    
 ];

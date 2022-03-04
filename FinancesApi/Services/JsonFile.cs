@@ -1,6 +1,7 @@
 ﻿using FinancesApi.Models;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -31,8 +32,16 @@ namespace FinancesApi.Services
 
         public void Load()
         {
-            if (string.IsNullOrWhiteSpace(DataFile.FileName) || !File.Exists(DataFile.FileNameWithLocation))
+            if (string.IsNullOrWhiteSpace(DataFile.FileName))
                 throw new FileNotFoundException();
+
+            if (!File.Exists(DataFile.FileNameWithLocation))
+            {
+                if (typeof(IEnumerable).IsAssignableFrom(typeof(T)))
+                    File.WriteAllText(DataFile.FileNameWithLocation, "[]");
+                else
+                    File.WriteAllText(DataFile.FileNameWithLocation, "{}");
+            }
             string jsonString = File.ReadAllText(DataFile.FileNameWithLocation, Encoding.Latin1);
             Value = JsonSerializer.Deserialize<T>(jsonString, new JsonSerializerOptions
             {

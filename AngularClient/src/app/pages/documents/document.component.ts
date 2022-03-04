@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
-import { DocumentsService, Document } from "app/api/generated";
-import { DetailsViewComponent, DetailsViewDefinition, DetailsViewField } from "app/shared/details-view/details-view.component";
+import { DocumentsService, Document, CaseListService } from "app/api/generated";
+import { DetailsViewComponent, DetailsViewDefinition, DetailsViewField, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
 import { take } from "rxjs/operators";
@@ -27,7 +27,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
     @ViewChild('detailsView', { static: true }) component: ElementRef<DetailsViewComponent>;
     documents: Document[];
 
-    constructor(private documentsService: DocumentsService, 
+    constructor(private documentsService: DocumentsService,  private caseListService: CaseListService,
         private route: ActivatedRoute, 
         private location: Location) {  
     }
@@ -35,8 +35,8 @@ export class DocumentComponent implements OnInit, OnDestroy {
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe((params: Params) => {
             forkJoin([
-                this.documentsService.documentsGet()])
-                .pipe(take(1)).subscribe(([documents]) => {
+                this.documentsService.documentsGet(), this.caseListService.caseListGet()])
+                .pipe(take(1)).subscribe(([documents, caseList]) => {
                     this.documents = documents as Document[];
                     this.data = documents.filter(t => t.id == params['id'])[0];
                     let allDocumentNumbers = documents.map(item => item.number).filter(val => !isNaN(val));
@@ -52,8 +52,10 @@ export class DocumentComponent implements OnInit, OnDestroy {
                             { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text'} as DetailsViewField,
                             { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
                             { title: 'Samochód', dataProperty: 'car', component: 'text'} as DetailsViewField,
-                            { title: 'Rzecz/Sprawa', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
+                            { title: 'Rzecz', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
                             { title: 'Gwarancja', dataProperty: 'guarantee', component: 'text'} as DetailsViewField,
+                            { title: 'Sprawa', dataProperty: 'caseName', component: 'list', required: false, options: { referenceList: caseList, referenceListIdField: 'name'} as DetailsViewFieldListOptions} as DetailsViewField,
+                           
                         ]
                     };
 
