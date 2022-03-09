@@ -15,7 +15,8 @@ namespace FinancesApi.Services
 
         AccountingDatasetInfo Open(string password);
 
-        AccountingDatasetInfo Close(string password, bool makeBackups);
+        AccountingDatasetInfo Close(string password, bool makeBackups, bool runInThread = true);
+
         void Execute();
     }
 
@@ -70,7 +71,7 @@ namespace FinancesApi.Services
             if (_accountingDatasetInfoDataFile.Value.State != DatasetState.Closed && _accountingDatasetInfoDataFile.Value.State != DatasetState.OpeningError)
                 return _accountingDatasetInfoDataFile.Value;
             _accountingDatasetInfoDataFile.Value.State = DatasetState.Opening;
-            _accountingDatasetInfoDataFile.Value.Message = string.Empty;
+            _accountingDatasetInfoDataFile.Value.Message = "";
             _accountingDatasetInfoDataFile.Save();
 
             new Thread(() => {
@@ -80,7 +81,7 @@ namespace FinancesApi.Services
         }
             
 
-        public AccountingDatasetInfo Close(string password, bool makeBackups)
+        public AccountingDatasetInfo Close(string password, bool makeBackups, bool runInThread = true)
         {
             _accountingDatasetInfoDataFile.Load();
             if (_accountingDatasetInfoDataFile.Value.State != DatasetState.Opened && _accountingDatasetInfoDataFile.Value.State != DatasetState.ClosingError)
@@ -89,30 +90,37 @@ namespace FinancesApi.Services
             _accountingDatasetInfoDataFile.Value.Message = string.Empty;
             _accountingDatasetInfoDataFile.Save();
 
-            new Thread(() =>
-            {
-                try
+            if (runInThread)
+                new Thread(() =>
                 {
-                    if (makeBackups) MakeAllBackups(password);
-                    RemoveSource();
-                    
-                    _accountingDatasetInfoDataFile.Load();
-                    _accountingDatasetInfoDataFile.Value.State = DatasetState.Closed;
-                    if (makeBackups)
-                        _accountingDatasetInfoDataFile.Value.LastCloseDate = DateTime.Now;
-                    _accountingDatasetInfoDataFile.Value.Message = string.Empty;
-                    _accountingDatasetInfoDataFile.Save();
-                }
-                catch (Exception e)
-                {
-                    _accountingDatasetInfoDataFile.Load();
-                    _accountingDatasetInfoDataFile.Value.State = DatasetState.ClosingError;
-                    _accountingDatasetInfoDataFile.Value.Message = e.Message;
-                    _accountingDatasetInfoDataFile.Save();
-                }
-            }).Start();
-            
+                    PerformClosing(password, makeBackups);
+                }).Start();
+            else
+                PerformClosing(password, makeBackups);
             return _accountingDatasetInfoDataFile.Value;
+        }
+
+        private void PerformClosing(string password, bool makeBackups)
+        {
+            try
+            {
+                if (makeBackups) MakeAllBackups(password);
+                RemoveSource();
+
+                _accountingDatasetInfoDataFile.Load();
+                _accountingDatasetInfoDataFile.Value.State = DatasetState.Closed;
+                if (makeBackups)
+                    _accountingDatasetInfoDataFile.Value.LastCloseDate = DateTime.Now;
+                _accountingDatasetInfoDataFile.Value.Message = string.Empty;
+                _accountingDatasetInfoDataFile.Save();
+            }
+            catch (Exception e)
+            {
+                _accountingDatasetInfoDataFile.Load();
+                _accountingDatasetInfoDataFile.Value.State = DatasetState.ClosingError;
+                _accountingDatasetInfoDataFile.Value.Message = e.Message;
+                _accountingDatasetInfoDataFile.Save();
+            }
         }
 
         private void MakeAllBackups(string password)
@@ -156,6 +164,7 @@ namespace FinancesApi.Services
                     //Failure during copy is critical.
                     throw new Exception($"Nie udało się skopiować zbioru do {destinationLocation}", e);
                 }
+                if (string.IsNullOrWhiteSpace(password)) File.Copy(_accountingDatasetInfoDataFile.DataFile.FileNameWithLocation, Path.Combine(destinationLocation, _accountingDatasetInfoDataFile.DataFile.FileName), true);
             });
         }
 

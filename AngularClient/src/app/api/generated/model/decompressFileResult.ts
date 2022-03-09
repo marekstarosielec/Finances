@@ -11,10 +11,7 @@
  */
 
 
-export interface TransactionAccount { 
-    id?: string | null;
-    title?: string | null;
-    currency?: string | null;
-    deleted?: boolean;
+export interface DecompressFileResult { 
+    path?: string | null;
 }
 

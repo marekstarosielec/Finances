@@ -8,9 +8,9 @@ api/caseList.service.ts
 api/currencies.service.ts
 api/currencyExchange.service.ts
 api/dataset.service.ts
-api/documentDataset.service.ts
 api/documents.service.ts
 api/electricity.service.ts
+api/file.service.ts
 api/gas.service.ts
 api/mBankScrapper.service.ts
 api/mazda.service.ts
@@ -33,8 +33,9 @@ model/datasetCloseInstruction.ts
 model/datasetInfo.ts
 model/datasetOpenInstruction.ts
 model/datasetState.ts
+model/decompressFileInstruction.ts
+model/decompressFileResult.ts
 model/document.ts
-model/documentDatasetInfo.ts
 model/electricity.ts
 model/gas.ts
 model/mazda.ts

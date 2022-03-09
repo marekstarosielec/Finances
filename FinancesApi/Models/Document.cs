@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 
 namespace FinancesApi.Models
 {
@@ -7,8 +6,6 @@ namespace FinancesApi.Models
     {
         public string Id { get; set; }
         public int Number { get; set; }
-
-        public string Extension { get; set; }
         public DateTime Date { get; set; }
         public int? Pages { get; set; }
         public string Description { get; set; }
@@ -19,7 +16,6 @@ namespace FinancesApi.Models
         public string Car { get; set; }
         public string RelatedObject { get; set; }
         public string Guarantee { get; set; }
-        public bool FileAvailable { get; set; }
         public string CaseName { get; set; }
     }
 }

@@ -20,13 +20,11 @@ namespace FinancesApi.Services
     {
         private readonly DocumentsDataFile _documentsDataFile;
         private readonly IConfiguration _configuration;
-        private readonly IDocumentDatasetService _documentDatasetService;
 
-        public DocumentService(DocumentsDataFile documentsDataFile, IConfiguration configuration, IDocumentDatasetService documentDatasetService)
+        public DocumentService(DocumentsDataFile documentsDataFile, IConfiguration configuration)
         {
             _documentsDataFile = documentsDataFile;
             _configuration = configuration;
-            _documentDatasetService = documentDatasetService;
         }
 
         public IList<Document> GetDocuments(string id = null)
@@ -34,22 +32,14 @@ namespace FinancesApi.Services
             var merger = new Dictionary<string, Document>();
             var basePath = _configuration.GetValue<string>("DatasetPath");
             var documentsPath = Path.Combine(basePath, "Dokumenty");
-            var datasetOpened = _documentDatasetService.GetInfo().State == DatasetState.Opened && Directory.Exists(documentsPath);
-
-            Dictionary<string, string> documentFiles = datasetOpened ? GetDocumentFiles(documentsPath) : new Dictionary<string, string>();
+            
+            Dictionary<string, string> documentFiles = GetDocumentFiles(documentsPath);
 
             string number;
             _documentsDataFile.Load();
             _documentsDataFile.Value.ForEach(d =>
             {
                 number = ConvertNumberToFileName(d.Number);
-
-                d.FileAvailable = false;
-                if (documentFiles.ContainsKey(number))
-                {
-                    d.FileAvailable = true;
-                    d.Extension = Path.GetExtension(documentFiles[number]).TrimStart('.');
-                }
                 merger[number] = d;
             });
 
@@ -63,8 +53,6 @@ namespace FinancesApi.Services
                 {
                     Id = Guid.NewGuid().ToString(),
                     Number = ConvertFileNameToNumber(document),
-                    FileAvailable = true,
-                    Extension = Path.GetExtension(documentFiles[document]).TrimStart('.'),
                     Date = DateTime.Now
                 };
                 requiresUpdate = true;
@@ -85,12 +73,10 @@ namespace FinancesApi.Services
         private Dictionary<string, string> GetDocumentFiles(string documentsPath)
         {
             var documents = new Dictionary<string, string>();
-            Directory.EnumerateFiles(documentsPath).ToList().ForEach(f =>
+            Directory.EnumerateFileSystemEntries(documentsPath).ToList().ForEach(f =>
             {
                 if (IsDocumentFile(f))
-                {
                     documents[Path.GetFileNameWithoutExtension(f)] = f;
-                }
             });
             return documents;
         }

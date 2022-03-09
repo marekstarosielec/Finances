@@ -1,8 +1,6 @@
 ﻿using FinancesApi.Models;
 using FinancesApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.IO;
 
 namespace FinancesApi.Controllers
 {
@@ -31,6 +29,5 @@ namespace FinancesApi.Controllers
         {
             return Ok(_datasetService.Close(instruction.Password));
         }
-
     }
 }

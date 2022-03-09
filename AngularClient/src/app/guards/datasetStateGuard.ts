@@ -21,13 +21,13 @@ export class DatasetStateGuard implements CanActivate {
         const states = route.data["states"] as Array<DatasetState>;
         if (states.includes(this.datasetState))
             return true;
-        
+
         if (this.datasetState === DatasetState.Closed)
-            this.router.navigate(['/opendataset']);
-        if (this.datasetState === DatasetState.Opened)
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/dataset']);
+        // if (this.datasetState === DatasetState.Opened)
+        //     this.router.navigate(['/dashboard']);
         if (this.datasetState === DatasetState.Opening || this.datasetState === DatasetState.Closing)
-            this.router.navigate(['/loading']);
+            this.router.navigate(['/dataset']);
         return false;
     }
 }

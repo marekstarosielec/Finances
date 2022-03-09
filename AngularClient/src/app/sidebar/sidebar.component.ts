@@ -22,15 +22,16 @@ export const ROUTES: RouteInfo[] = [
     { path: '/mazda',  title: 'Mazda',        icon:'nc-bus-front-12',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/electricity',  title: 'Prąd',        icon:'nc-bulb-63',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/gas',  title: 'Gaz',        icon:'nc-atom',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
-    { path: '/accounting',  title: 'Księgowość',        icon:'nc-paper',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError, DatasetState.Closed, DatasetState.OpeningError, DatasetState.UnknownError, DatasetState.Opening, DatasetState.Closing] },
+    { path: '/accounting',  title: 'Księgowość',        icon:'nc-paper',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
  //{ path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '', availableInStates: [DatasetState.Opened] },
     /*{ path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '', availableInStates: [DatasetState.Opened] },
     { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '', availableInStates: [DatasetState.Opened] },
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '', availableInStates: [DatasetState.Opened] },*/
     { path: '/tutoring',  title: 'Zajęcia dodatkowe',        icon:'nc-ruler-pencil',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/case',  title: 'Sprawy',        icon:'nc-briefcase-24',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
-    { path: '/opendataset',   title: 'Otwórz zbiór',      icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Closed, DatasetState.OpeningError] },
-    { path: '/closedataset',  title: 'Zamknij zbiór',     icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
+    { path: '/dataset',   title: 'Otwórz zbiór',      icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Closed, DatasetState.OpeningError] },
+    { path: '/dataset',  title: 'Zamknij zbiór',     icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
+    
 ];
 
 @Component({

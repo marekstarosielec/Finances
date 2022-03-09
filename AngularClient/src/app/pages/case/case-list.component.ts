@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { DocumentsService, TransactionsService, Document } from 'app/api/generated';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DocumentsService, TransactionsService, Document, FileService, DecompressFileResult } from 'app/api/generated';
 import { GridColumn, RowClickedData } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
 import { ToolbarElement } from 'app/shared/models/toolbar';
@@ -8,6 +8,8 @@ import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.comp
 import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Summary } from '../list-page/list-page.component';
+import { SettingsService } from 'app/api/settingsService';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     moduleId: module.id,
@@ -22,6 +24,23 @@ import { Summary } from '../list-page/list-page.component';
         (rowClicked)="rowClickedEvent($event)"
         [summaries]="summaries">
         </list-page>
+
+        <ng-template #password let-modal>
+            <div class="modal-header">
+                <h4 class="modal-title" id="modal-basic-title">Podaj hasło</h4>
+            </div>
+            <div class="modal-body">
+                <input 
+                    #password
+                    id="password" 
+                    type="password" 
+                    class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" (click)="modal.close('')">Anuluj</button>
+                <button type="button" class="btn btn-outline-danger" (click)="modal.close(password.value)">Otwórz</button>
+            </div>
+        </ng-template>
     `
 })
 export class CaseListComponent implements OnInit{
@@ -29,10 +48,14 @@ export class CaseListComponent implements OnInit{
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
     summaries: Summary[] = [];
+    @ViewChild('password', { static: true }) password: ElementRef;
     
     constructor (
         private transactionsService: TransactionsService,
         private documentsService: DocumentsService,
+        private fileService: FileService,
+        private settingService: SettingsService,
+        private modalService: NgbModal,
         private router: Router, 
         private route: ActivatedRoute) {}
 
@@ -47,8 +70,7 @@ export class CaseListComponent implements OnInit{
                 amount: t.amount,
                 description: t.description,
                 showImage: 0,
-                number: undefined,
-                extension: undefined
+                number: undefined
             }));
             const documentsWithCase = documents.filter(d => d.caseName).map(d => ({ 
                 id: d.id,
@@ -58,8 +80,7 @@ export class CaseListComponent implements OnInit{
                 amount: undefined,
                 description: d.description,
                 showImage: 1,
-                number: d.number,
-                extension: d.extension
+                number: d.number
             }));
             this.data = [...transactionsWithCase, ...documentsWithCase];
             this.columns = [ 
@@ -80,12 +101,26 @@ export class CaseListComponent implements OnInit{
         } else if (rowClickedData.row['category']==='document' && rowClickedData.column.dataProperty!=='showImage') {
             this.router.navigate(['documents', rowClickedData.row['id']]);
         } else if (rowClickedData.row['category']==='document' && rowClickedData.column.dataProperty==='showImage') {
-            let fileName = rowClickedData.row['number'].toString();
-            while (fileName.length < 5)
-                fileName = '0' + fileName;
-            fileName = 'MX' + fileName + '.' + rowClickedData.row['extension'];
-            window.open("http://127.0.0.1:8080/" +fileName, "_blank", "noopener noreferrer");
+            if (!this.settingService.CurrentPassword)
+            {
+                this.modalService.open(this.password, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+                    this.settingService.CurrentPassword = result;
+                    this.openFile(rowClickedData);
+                 }, (reason) => { });
+            } else {
+                this.openFile(rowClickedData);
+            }
         }
     }
+     
+    openFile(rowClickedData: RowClickedData) {
+        if (!this.settingService.CurrentPassword){
+            return;
+        }
         
+        let number = rowClickedData.row['number'];
+        this.fileService.filePost({ number: number, password: this.settingService.CurrentPassword}).pipe(take(1)).subscribe((result: DecompressFileResult) => {
+            window.open("http://127.0.0.1:8080" + result.path, "_blank", "noopener noreferrer");
+        });
+    }
 }

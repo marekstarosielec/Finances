@@ -32,7 +32,8 @@ export class AccountComponent implements OnInit, OnDestroy {
                     this.data = accounts.filter(t => t.id == params['id'])[0];
                     this.viewDefinition = {
                         fields: [
-                            { title: 'Nazwa', dataProperty: 'title', component: 'text', required: true} as DetailsViewField
+                            { title: 'Nazwa', dataProperty: 'title', component: 'text', required: true} as DetailsViewField,
+                            { title: 'Nieużywany', dataProperty: 'deleted', component: 'checkbox'} as DetailsViewField
                         ]
                     };
                 });

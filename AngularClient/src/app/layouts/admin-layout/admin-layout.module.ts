@@ -9,10 +9,7 @@ import { TransactionsComponent }    from '../../pages/transactions/transactions.
 import { TypographyComponent }      from '../../pages/typography/typography.component';
 import { IconsComponent }           from '../../pages/icons/icons.component';
 import { NotificationsComponent }   from '../../pages/notifications/notifications.component';
-import { OpenDatasetComponent }         from '../../pages/open-dataset/open-dataset.component';
-import { LoadingIndicatorComponent } from '../../shared/loading-indicator/loading-indicator.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.component';
 import { TransactionComponent } from 'app/pages/transactions/transaction.component';
 import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
@@ -21,7 +18,6 @@ import { TransactionAutoCategoriesComponent } from 'app/pages/transaction-auto-c
 import { CCBalanceComponent } from 'app/pages/dashboard/cc-balance/cc-balance.component';
 import { ScrappingInfoComponent } from 'app/pages/dashboard/scrapping-info/scrapping-info.component';
 import { BillsComponent } from 'app/pages/dashboard/bills/bills.component';
-import { DocumentStateComponent } from 'app/pages/document-state/document-state.component';
 import { DateFilterComponent } from 'app/shared/date-filter/date-filter.component';
 import { GridComponent } from 'app/shared/grid/grid.component';
 import { ListPageComponent } from 'app/pages/list-page/list-page.component';
@@ -61,6 +57,7 @@ import { TutoringDetailsComponent } from 'app/pages/tutoring/tutoring-details.co
 import { CaseListListComponent } from 'app/pages/case-list/case-list-list.component';
 import { CaseListDetailsComponent } from 'app/pages/case-list/case-list-details.component';
 import { CaseListComponent } from 'app/pages/case/case-list.component';
+import { DatasetComponent } from 'app/pages/dataset/dataset.component';
 
 @NgModule({
   imports: [
@@ -81,18 +78,14 @@ import { CaseListComponent } from 'app/pages/case/case-list.component';
     TransactionCategoryComponent,
     TransactionAutoCategoriesComponent,
     TransactionAutoCategoryComponent,
-    OpenDatasetComponent,
-    CloseDatasetComponent,
     TypographyComponent,
     IconsComponent,
     NotificationsComponent,
-    LoadingIndicatorComponent,
     CCBalanceComponent,
     ScrappingInfoComponent,
     BillsComponent,
     DocumentsComponent,
     DocumentComponent,
-    DocumentStateComponent,
     DateFilterComponent,
     TextFilterComponent,
     GridComponent,
@@ -127,7 +120,8 @@ import { CaseListComponent } from 'app/pages/case/case-list.component';
     TutoringDetailsComponent,
     CaseListListComponent,
     CaseListDetailsComponent,
-    CaseListComponent
+    CaseListComponent,
+    DatasetComponent
   ]
 })
 

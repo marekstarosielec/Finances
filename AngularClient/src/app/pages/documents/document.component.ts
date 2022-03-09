@@ -1,11 +1,13 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
-import { DocumentsService, Document, CaseListService } from "app/api/generated";
+import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult } from "app/api/generated";
 import { DetailsViewComponent, DetailsViewDefinition, DetailsViewField, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
 import { take } from "rxjs/operators";
 import { Location } from '@angular/common';
+import { SettingsService } from "app/api/settingsService";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
     moduleId: module.id,
@@ -16,6 +18,23 @@ import { Location } from '@angular/common';
         [data]="data"  
         [toolbarElements]="toolbarElements" 
         (toolbarElementClick)="toolbarElementClick($event)"></details-view>
+
+        <ng-template #password let-modal>
+            <div class="modal-header">
+                <h4 class="modal-title" id="modal-basic-title">Podaj hasło</h4>
+            </div>
+            <div class="modal-body">
+                <input 
+                    #password
+                    id="password" 
+                    type="password" 
+                    class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" (click)="modal.close('')">Anuluj</button>
+                <button type="button" class="btn btn-outline-danger" (click)="modal.close(password.value)">Otwórz</button>
+            </div>
+        </ng-template>
     `
 })
 
@@ -25,10 +44,14 @@ export class DocumentComponent implements OnInit, OnDestroy {
     toolbarElements: ToolbarElement[] = [];
     private routeSubscription: Subscription;
     @ViewChild('detailsView', { static: true }) component: ElementRef<DetailsViewComponent>;
+    @ViewChild('password', { static: true }) password: ElementRef;
     documents: Document[];
 
     constructor(private documentsService: DocumentsService,  private caseListService: CaseListService,
         private route: ActivatedRoute, 
+        private settingService: SettingsService,
+        private fileService: FileService,
+        private modalService: NgbModal,
         private location: Location) {  
     }
 
@@ -100,11 +123,15 @@ export class DocumentComponent implements OnInit, OnDestroy {
         } else if (toolbarElementWithData.toolbarElement.name === 'invoice') {
             component.form.controls['pages'].setValue(1);
         } else if (toolbarElementWithData.toolbarElement.name === 'open') {
-            let fileName = this.data['number'].toString();
-            while (fileName.length < 5)
-                fileName = '0' + fileName;
-            fileName = 'MX' + fileName + '.' + this.data['extension'];
-            window.open("http://127.0.0.1:8080/" +fileName, "_blank", "noopener noreferrer");
+            if (!this.settingService.CurrentPassword)
+            {
+                this.modalService.open(this.password, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+                    this.settingService.CurrentPassword = result;
+                    this.openFile();
+                }, (reason) => { });
+            } else {
+                this.openFile();
+            }
         } else if (toolbarElementWithData.toolbarElement.name === 'mazda') {
             let defaultDate = new Date();
             let invoiceNumberDate='XX/XX'
@@ -193,5 +220,16 @@ export class DocumentComponent implements OnInit, OnDestroy {
             component.form.controls['invoiceNumber'].setValue('F/XXXXXXXX/' + invoiceNumberDate);
             component.form.controls['description'].setValue('Telefon');
         }
+    }
+
+    openFile() {
+        if (!this.settingService.CurrentPassword){
+            return;
+        }
+        
+        let number = this.data['number'];
+        this.fileService.filePost({ number: number, password: this.settingService.CurrentPassword}).pipe(take(1)).subscribe((result: DecompressFileResult) => {
+            window.open("http://127.0.0.1:8080" + result.path, "_blank", "noopener noreferrer");
+        });
     }
 }

@@ -14,7 +14,6 @@
 export interface Document { 
     id?: string | null;
     number?: number;
-    extension?: string | null;
     date?: string;
     pages?: number | null;
     description?: string | null;
@@ -25,7 +24,6 @@ export interface Document {
     car?: string | null;
     relatedObject?: string | null;
     guarantee?: string | null;
-    fileAvailable?: boolean;
     caseName?: string | null;
 }
 

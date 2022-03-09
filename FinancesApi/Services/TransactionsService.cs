@@ -69,7 +69,10 @@ namespace FinancesApi.Services
                 _transactionAccountsDataFile.Value.Add(account);
             }
             else
+            {
                 editedAccount.Title = account.Title;
+                editedAccount.Deleted = account.Deleted;
+            }
             _transactionAccountsDataFile.Save();
         }
 
@@ -82,26 +85,7 @@ namespace FinancesApi.Services
 
         public IList<Transaction> GetTransactions(string id = null)
         {
-            //_transactionCategoriesDataFile.Load();
-            //_transactionsFile.Value.ForEach(t =>
-            //{
-            //    if (_transactionCategoriesDataFile.Value.FirstOrDefault(c => c.Title == t.Category) == null)
-            //    {
-            //        var match = _transactionCategoriesDataFile.Value.FirstOrDefault(c => string.Equals(c.Title, t.Category, StringComparison.InvariantCultureIgnoreCase));
-            //        if (match != null)
-            //            t.Category = match.Title;
-            //        else if (string.Equals(t.Category, "mazda inne", StringComparison.InvariantCultureIgnoreCase))
-            //            t.Category = "Mazda eksploatacja";
-            //        else if (string.Equals(t.Category, "kot", StringComparison.InvariantCultureIgnoreCase))
-            //            t.Category = "Koty";
-            //        else if (t.Category == null) { }
-            //        else
-            //        {
-
-            //        }
-            //    }
-            //});
-            //_transactionsFile.Save();
+            _transactionsFile.Load();
             return string.IsNullOrWhiteSpace(id)
                 ? _transactionsFile.Value
                 : _transactionsFile.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
@@ -151,16 +135,6 @@ namespace FinancesApi.Services
         public IList<TransactionCategory> GetCategories()
         {
             _transactionCategoriesDataFile.Load();
-            //_transactions.Load();
-            //var t = _transactions.Value.Where(_ => _.Date > DateTime.Now.AddDays(-14)).GroupBy(k => k.Category).Select(g=> new { Category = g.Key, Count = g.Count() }).ToList();
-            //_categories.Value.ForEach(c =>
-            //    {
-            //        c.Title = c.Title[0].ToString().ToUpper() + c.Title.Substring(1).ToLower();
-            //        c.UsageIndex   = t.FirstOrDefault(tg => string.Equals(tg.Category, c.Title, StringComparison.InvariantCultureIgnoreCase))?.Count ?? 0;
-            //    }
-            //);
-            //_categories.Value.ForEach(c => c.Id = Guid.NewGuid().ToString());
-            //_categories.Save();
             return _transactionCategoriesDataFile.Value;
         }
 

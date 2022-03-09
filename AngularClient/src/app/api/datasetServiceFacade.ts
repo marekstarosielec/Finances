@@ -4,6 +4,7 @@ import { DatasetInfo, DatasetService, DatasetState } from "./generated";
 import { take } from "rxjs/operators";
 import { DatasetCloseInstruction } from "./generated/model/datasetCloseInstruction";
 import { DatasetOpenInstruction } from "./generated/model/datasetOpenInstruction";
+import { SettingsService } from "./settingsService";
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +13,7 @@ export class DatasetServiceFacade {
 
     private datasetInfo$: BehaviorSubject<DatasetInfo> = new BehaviorSubject({ state: DatasetState.Opening});
 
-    constructor(private datasetService: DatasetService) {
+    constructor(private datasetService: DatasetService, private settingsService: SettingsService) {
         this.refreshDataset();
     }
 
@@ -27,9 +28,10 @@ export class DatasetServiceFacade {
     }
 
     openDataset(password: string) {
-        let instruction : DatasetOpenInstruction = { password: password};
+        let instruction : DatasetOpenInstruction = { password: password };
         this.datasetService.datasetOpenPost(instruction).subscribe((result:DatasetInfo) => {
             this.datasetInfo$.next(result);
+            this.settingsService.CurrentPassword = password;
         });
     }
 

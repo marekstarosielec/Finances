@@ -37,8 +37,10 @@ export class BalanceSummaryListComponent implements OnInit{
                 { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true},
             ];
             accounts.forEach(account => {
-                const accountTitle = this.sanitizeAccountTitle(account.title);
-                this.columns.push({ title: account.title, dataProperty: accountTitle, additionalDataProperty1: accountTitle + '_currency',  pipe: 'amountwithempty', alignment: 'right', noWrap:true, component: 'amount', filterOptions: { currencyDataProperty: accountTitle + '_currency'} as AmountFilterOptions});
+                if (!account.deleted) {
+                    const accountTitle = this.sanitizeAccountTitle(account.title);
+                    this.columns.push({ title: account.title, dataProperty: accountTitle, additionalDataProperty1: accountTitle + '_currency',  pipe: 'amountwithempty', alignment: 'right', noWrap:true, component: 'amount', filterOptions: { currencyDataProperty: accountTitle + '_currency'} as AmountFilterOptions});
+                }
             });
         });
     }

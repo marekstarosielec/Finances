@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { DocumentDatasetService, DocumentsService, Document } from 'app/api/generated';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DocumentsService, Document, FileService, DecompressFileResult } from 'app/api/generated';
 import { GridColumn, RowClickedData } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
 import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TextFilterOptions } from 'app/shared/text-filter/text-filter.component';
+import { SettingsService } from 'app/api/settingsService';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'transaction-auto-categories',
     moduleId: module.id,
     template: `
-        <app-document-state></app-document-state>
         <list-page 
         name="documents" 
         [columns]="columns" 
@@ -21,16 +22,36 @@ import { TextFilterOptions } from 'app/shared/text-filter/text-filter.component'
         (toolbarElementClick)="toolbarElementClick($event)"
         (rowClicked)="rowClickedEvent($event)"
         ></list-page>
+        
+        <ng-template #password let-modal>
+            <div class="modal-header">
+                <h4 class="modal-title" id="modal-basic-title">Podaj hasło</h4>
+            </div>
+            <div class="modal-body">
+                <input 
+                    #password
+                    id="password" 
+                    type="password" 
+                    class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" (click)="modal.close('')">Anuluj</button>
+                <button type="button" class="btn btn-outline-danger" (click)="modal.close(password.value)">Otwórz</button>
+            </div>
+        </ng-template>
     `
 })
 export class DocumentsComponent implements OnInit{
     data: Document[]; 
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
-
-    constructor (private documentsService: DocumentsService, 
+    @ViewChild('password', { static: true }) password: ElementRef;
+    
+    constructor (private documentsService: DocumentsService, private fileService: FileService,
         private router: Router, 
-        private route: ActivatedRoute) {}
+        private route: ActivatedRoute,
+        private settingService: SettingsService,
+        private modalService: NgbModal) {}
 
     ngOnInit(){
         this.documentsService.documentsGet().pipe(take(1)).subscribe((documents: Document[]) => {
@@ -42,7 +63,7 @@ export class DocumentsComponent implements OnInit{
                 { title: 'Opis', dataProperty: 'description', component: 'text'},
                 { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text', noWrap: true},
                 { title: 'Relacje', dataProperty: '', component: 'text', subDataProperty1: 'person', subDataProperty2: 'car', subDataProperty3: 'relatedObject', subDataProperty4: 'caseName', filterOptions: { additionalPropertyToSearch1: 'person', additionalPropertyToSearch2: 'car', additionalPropertyToSearch3: 'relatedObject', additionalPropertyToSearch4: 'caseName' } as TextFilterOptions},
-                { title: '', dataProperty: 'fileAvailable', component: 'icon', image: 'nc-image', conditionalFormatting: 'bool', customEvent: true},
+                { title: '', dataProperty: '', component: 'icon', image: 'nc-image', customEvent: true},
             ];
 
             this.toolbarElements.push(
@@ -52,14 +73,29 @@ export class DocumentsComponent implements OnInit{
     }
     
     rowClickedEvent(rowClickedData: RowClickedData) {
-        let fileName = rowClickedData.row['number'].toString();
-        while (fileName.length < 5)
-            fileName = '0' + fileName;
-        fileName = 'MX' + fileName + '.' + rowClickedData.row['extension'];
-        window.open("http://127.0.0.1:8080/" +fileName, "_blank", "noopener noreferrer");
+        if (!this.settingService.CurrentPassword)
+        {
+            this.modalService.open(this.password, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+                this.settingService.CurrentPassword = result;
+                this.openFile(rowClickedData);
+             }, (reason) => { });
+        } else {
+            this.openFile(rowClickedData);
+        }
     }
 
     toolbarElementClick(toolbarElement: ToolbarElement) {
         this.router.navigate(["new", toolbarElement.name], { relativeTo: this.route});
+    }
+
+    openFile(rowClickedData: RowClickedData) {
+        if (!this.settingService.CurrentPassword){
+            return;
+        }
+        
+        let number = rowClickedData.row['number'];
+        this.fileService.filePost({ number: number, password: this.settingService.CurrentPassword}).pipe(take(1)).subscribe((result: DecompressFileResult) => {
+            window.open("http://127.0.0.1:8080" + result.path, "_blank", "noopener noreferrer");
+        });
     }
 }

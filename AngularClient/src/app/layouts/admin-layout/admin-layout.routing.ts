@@ -6,11 +6,8 @@ import { TransactionsComponent } from '../../pages/transactions/transactions.com
 import { TypographyComponent } from '../../pages/typography/typography.component';
 import { IconsComponent } from '../../pages/icons/icons.component';
 import { NotificationsComponent } from '../../pages/notifications/notifications.component';
-import { OpenDatasetComponent } from '../../pages/open-dataset/open-dataset.component';
-import { CloseDatasetComponent } from 'app/pages/close-dataset/close-dataset.component';
 import { DatasetStateGuard } from 'app/guards/datasetStateGuard';
 import { DatasetState } from 'app/api/generated';
-import { LoadingIndicatorComponent } from 'app/shared/loading-indicator/loading-indicator.component';
 import { AccountsComponent } from 'app/pages/accounts/accounts.component';
 import { AccountComponent } from 'app/pages/accounts/account.component';
 import { TransactionCategoriesComponent } from 'app/pages/transaction-categories/transaction-categories.component';
@@ -42,6 +39,7 @@ import { TutoringListComponent } from 'app/pages/tutoring/tutoring-list.componen
 import { CaseListListComponent } from 'app/pages/case-list/case-list-list.component';
 import { CaseListDetailsComponent } from 'app/pages/case-list/case-list-details.component';
 import { CaseListComponent } from 'app/pages/case/case-list.component';
+import { DatasetComponent } from 'app/pages/dataset/dataset.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
@@ -65,7 +63,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'documents',   component: DocumentsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'documents/:id',   component: DocumentComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'documents/:id/:type',   component: DocumentComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
-    { path: 'accounting',   component: AccountingStateComponent },
+    { path: 'accounting',   component: AccountingStateComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'currency-exchange',   component: CurrencyExchangeListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'currency-exchange/:id',   component: CurrencyExchangeDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'electricity',   component: ElectricityListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
@@ -75,9 +73,7 @@ export const AdminLayoutRoutes: Routes = [
      // { path: 'typography',     component: TypographyComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
      { path: 'icons',          component: IconsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     // { path: 'notifications',  component: NotificationsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
-    { path: 'opendataset',    component: OpenDatasetComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Closed, DatasetState.OpeningError]} },
-    { path: 'closedataset',   component: CloseDatasetComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
-    { path: 'loading',        component: LoadingIndicatorComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opening, DatasetState.Closing, DatasetState.OpeningError, DatasetState.ClosingError]} },
+    { path: 'dataset',   component: DatasetComponent},
     { path: 'tutoring-list',   component: TutoringListListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'tutoring-list/:id',   component: TutoringListDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'tutoring',   component: TutoringListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
