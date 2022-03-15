@@ -29,6 +29,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '', availableInStates: [DatasetState.Opened] },*/
     { path: '/tutoring',  title: 'Zajęcia dodatkowe',        icon:'nc-ruler-pencil',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/case',  title: 'Sprawy',        icon:'nc-briefcase-24',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
+    { path: '/settlement',   title: 'Rozliczenia',      icon:'nc-chart-bar-32',  class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/dataset',   title: 'Otwórz zbiór',      icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Closed, DatasetState.OpeningError] },
     { path: '/dataset',  title: 'Zamknij zbiór',     icon:'nc-spaceship',  class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     

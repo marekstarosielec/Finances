@@ -40,6 +40,8 @@ import { CaseListListComponent } from 'app/pages/case-list/case-list-list.compon
 import { CaseListDetailsComponent } from 'app/pages/case-list/case-list-details.component';
 import { CaseListComponent } from 'app/pages/case/case-list.component';
 import { DatasetComponent } from 'app/pages/dataset/dataset.component';
+import { SettlementListComponent } from 'app/pages/settlement/settlement-list.component';
+import { SettlementDetailsComponent } from 'app/pages/settlement/settlement-details.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
@@ -81,5 +83,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'case-list',   component: CaseListListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'case-list/:id',   component: CaseListDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'case',   component: CaseListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'settlement',   component: SettlementListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'settlement/:id',   component: SettlementDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     
 ];

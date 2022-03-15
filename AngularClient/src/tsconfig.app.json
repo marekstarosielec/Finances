@@ -3,7 +3,13 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "",
-    "types": []
+    "types": [],
+    "target": "es2016",
+    "lib": [
+        "es2017",
+        "dom",
+        "scripthost"
+    ],
   },
   "exclude": [
     "test.ts",

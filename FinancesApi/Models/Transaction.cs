@@ -61,5 +61,7 @@ namespace FinancesApi.Models
         public string Person { get; set; }
 
         public string CaseName { get; set; }
+
+        public string Settlement { get; set; }
     }
 }

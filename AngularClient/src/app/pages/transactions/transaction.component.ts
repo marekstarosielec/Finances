@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { CaseListService, CurrenciesService, TransactionsService } from "app/api/generated";
+import { CaseListService, CurrenciesService, SettlementService, TransactionsService } from "app/api/generated";
 import { DetailsViewDefinition, DetailsViewField, DetailsViewFieldAmountOptions, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
@@ -24,6 +24,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
         private currenciesService: CurrenciesService, 
         private route: ActivatedRoute, 
         private caseListService: CaseListService,
+        private settlementService: SettlementService,
         private location: Location,
         private router: Router) {  
     }
@@ -35,14 +36,14 @@ export class TransactionComponent implements OnInit, OnDestroy {
                 this.transactionsService.transactionsAccountsGet(),
                 this.transactionsService.transactionsCategoriesGet(),
                 this.currenciesService.currenciesGet(), 
-                this.caseListService.caseListGet()
+                this.caseListService.caseListGet(),
+                this.settlementService.settlementGet()
                 ])
-                .pipe(take(1)).subscribe(([transactions, accounts, categories, currencies, caseList]) => {
+                .pipe(take(1)).subscribe(([transactions, accounts, categories, currencies, caseList, settlementList]) => {
                     this.toolbarElements.push(
                         { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges} as ToolbarElement,
                         { name: 'delete', title: 'Usuń', defaultAction: ToolbarElementAction.Delete} as ToolbarElement,
                         { name: 'auto-category', title: 'Autokategoria'} as ToolbarElement);
-                    this.data = transactions.filter(t => t.id == params['id'])[0];
                     this.viewDefinition = {
                         fields: [
                             { title: 'Data', dataProperty: 'date', component: 'date', required: true} as DetailsViewField,
@@ -54,9 +55,10 @@ export class TransactionComponent implements OnInit, OnDestroy {
                             { title: 'Szczegóły', dataProperty: 'details', component: 'text'} as DetailsViewField,
                             { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
                             { title: 'Sprawa', dataProperty: 'caseName', component: 'list', required: false, options: { referenceList: caseList, referenceListIdField: 'name'} as DetailsViewFieldListOptions} as DetailsViewField,
-                           
+                            { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title'} as DetailsViewFieldListOptions} as DetailsViewField,
                         ]
                     };
+                    this.data = transactions.filter(t => t.id == params['id'])[0];    
                 });
         });
     }

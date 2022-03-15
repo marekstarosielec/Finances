@@ -55,7 +55,8 @@ namespace FinancesApi.Services
             CurrencyExchangeDataFile currencyExchangeData,
             TutoringListDataFile tutoringListDataFile,
             TutoringDataFile tutoringDataFile,
-            CaseListDataFile caseListDataFile)
+            CaseListDataFile caseListDataFile,
+            SettlementDataFile settlementDataFile)
         {
             _basePath = configuration.GetValue<string>("DatasetPath");
             _datasetArchive.Location = _basePath;
@@ -76,6 +77,7 @@ namespace FinancesApi.Services
             _dataFiles.Add(tutoringListDataFile.DataFile);
             _dataFiles.Add(tutoringDataFile.DataFile);
             _dataFiles.Add(caseListDataFile.DataFile);
+            _dataFiles.Add(settlementDataFile.DataFile);
 
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
             _datasetBackupLocations = configuration.GetSection("DatasetBackups").Get<List<string>>();

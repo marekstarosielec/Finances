@@ -15,6 +15,7 @@ api/gas.service.ts
 api/mBankScrapper.service.ts
 api/mazda.service.ts
 api/santanderScrapper.service.ts
+api/settlement.service.ts
 api/skoda.service.ts
 api/statistics.service.ts
 api/transactions.service.ts
@@ -40,6 +41,7 @@ model/electricity.ts
 model/gas.ts
 model/mazda.ts
 model/models.ts
+model/settlement.ts
 model/skoda.ts
 model/statisticsAll.ts
 model/statisticsBill.ts

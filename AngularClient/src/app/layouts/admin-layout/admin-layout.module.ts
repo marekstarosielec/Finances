@@ -58,6 +58,8 @@ import { CaseListListComponent } from 'app/pages/case-list/case-list-list.compon
 import { CaseListDetailsComponent } from 'app/pages/case-list/case-list-details.component';
 import { CaseListComponent } from 'app/pages/case/case-list.component';
 import { DatasetComponent } from 'app/pages/dataset/dataset.component';
+import { SettlementListComponent } from 'app/pages/settlement/settlement-list.component';
+import { SettlementDetailsComponent } from 'app/pages/settlement/settlement-details.component';
 
 @NgModule({
   imports: [
@@ -121,7 +123,9 @@ import { DatasetComponent } from 'app/pages/dataset/dataset.component';
     CaseListListComponent,
     CaseListDetailsComponent,
     CaseListComponent,
-    DatasetComponent
+    DatasetComponent,
+    SettlementListComponent,
+    SettlementDetailsComponent
   ]
 })
 

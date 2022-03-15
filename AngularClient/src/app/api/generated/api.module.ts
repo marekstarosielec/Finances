@@ -15,6 +15,7 @@ import { GasService } from './api/gas.service';
 import { MBankScrapperService } from './api/mBankScrapper.service';
 import { MazdaService } from './api/mazda.service';
 import { SantanderScrapperService } from './api/santanderScrapper.service';
+import { SettlementService } from './api/settlement.service';
 import { SkodaService } from './api/skoda.service';
 import { StatisticsService } from './api/statistics.service';
 import { TransactionsService } from './api/transactions.service';

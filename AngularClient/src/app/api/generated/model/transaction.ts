@@ -29,5 +29,6 @@ export interface Transaction {
     details?: string | null;
     person?: string | null;
     caseName?: string | null;
+    settlement?: string | null;
 }
 

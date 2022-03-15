@@ -87,7 +87,7 @@ namespace FinancesApi.Services
         {
             _transactionsFile.Load();
             return string.IsNullOrWhiteSpace(id)
-                ? _transactionsFile.Value
+                ? _transactionsFile.Value.OrderByDescending(t => t.Date).ToList()
                 : _transactionsFile.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
@@ -120,6 +120,7 @@ namespace FinancesApi.Services
                     editedTransaction.Person = transaction.Person;
                     editedTransaction.Details = transaction.Details;
                     editedTransaction.CaseName = transaction.CaseName;
+                    editedTransaction.Settlement = transaction.Settlement;
                 }
             }
             _transactionsFile.Save();

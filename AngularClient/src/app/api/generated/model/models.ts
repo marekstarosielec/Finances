@@ -13,6 +13,7 @@ export * from './document';
 export * from './electricity';
 export * from './gas';
 export * from './mazda';
+export * from './settlement';
 export * from './skoda';
 export * from './statisticsAll';
 export * from './statisticsBill';

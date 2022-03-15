@@ -42,7 +42,7 @@ namespace FinancesApi.Services
             foreach (var location in _fileBackupLocations)
             {
                 var destinationFolderMain = Path.Combine(location, "Dokumenty");
-                var existingFolders = Directory.EnumerateDirectories(destinationFolderMain).ToDictionary<string, string>(_ => Path.GetFileName(_));
+                var existingFolders = Directory.EnumerateDirectories(destinationFolderMain).ToDictionary(_ => Path.GetFileName(_));
                 foreach (var folder in Directory.EnumerateDirectories(_fileFolder))
                 {
                     var folderName = Path.GetFileName(folder);
