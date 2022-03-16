@@ -5,7 +5,7 @@ import { forkJoin } from 'rxjs';
 import { SettlementService } from 'app/api/generated';
 import { Summary } from '../list-page/list-page.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormGroup } from '@angular/forms';
+import { ToolbarElement } from 'app/shared/models/toolbar';
 
 @Component({
     moduleId: module.id,
@@ -17,7 +17,8 @@ import { FormGroup } from '@angular/forms';
         initialSortColumn="date" 
         initialSortOrder=-1
         (rowClicked)="rowClickedEvent($event)"
-        [summaries]="summaries">
+        [summaries]="summaries"
+        [toolbarElements]="toolbarElements">
         </list-page>
     `
 })
@@ -25,6 +26,7 @@ export class SettlementListComponent implements OnInit{
     data: any[]; 
     columns: GridColumn[];
     summaries: Summary[] = [];
+    toolbarElements: ToolbarElement[] = [];
     
     constructor (private settlementService: SettlementService, 
         private router: Router, 
@@ -39,6 +41,7 @@ export class SettlementListComponent implements OnInit{
             this.columns = [ 
                 { title: 'Data', dataProperty: 'title', component: 'text'},
                 { title: 'Zysk', dataProperty: 'revenue', pipe: 'number', component: 'text', alignment: 'right'},
+                { title: 'Kurs', dataProperty: 'exchangeRatio', pipe: 'number', component: 'text', alignment: 'right'},
                 { title: 'Komentarz', dataProperty: 'comment', component: 'text'}
             ];
          });

@@ -223,6 +223,9 @@ namespace MBankScrapper
         private async Task ScrapTransactions()
         {
             await ShowAllAccounts();
+
+
+
             var allButton = "//span[text()='wszystkie']//ancestor::li";
             var noTransactionXPath = "//span[text()='Brak operacji dla wybranych kryteriów wyszukiwania']";
             await _browser.Click(allButton);

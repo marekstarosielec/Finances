@@ -32,7 +32,7 @@ namespace FinancesApi.Controllers
         public IList<TutoringList> GetTutoringList()
         {
             _tutoringListDataFile.Load();
-            return _tutoringListDataFile.Value.OrderByDescending(a => a.Title).ToList();
+            return _tutoringListDataFile.Value.OrderBy(a => a.Title).ToList();
         }
 
         public void SaveTutoringList(TutoringList tutoringList)

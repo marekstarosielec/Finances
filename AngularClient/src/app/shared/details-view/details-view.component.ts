@@ -107,10 +107,15 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
             if (!this.form.valid) {
                 return;
             }   
+            if (!this.data) {
+                this._data = {};
+                this.dataIsInitialized = true; 
+            }
             let data = this.getDataFromForm();
             this.toolbarElementClick.emit({ toolbarElement: toolbarElement, data: data} as ToolbarElementWithData);
         } else {
-            this.toolbarElementClick.emit({ toolbarElement: toolbarElement} as ToolbarElementWithData);
+            let data = this.getDataFromForm();
+            this.toolbarElementClick.emit({ toolbarElement: toolbarElement, data: data} as ToolbarElementWithData);
         }
     }   
 
@@ -119,7 +124,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
             return;
         }
         let data = { ...this.data} ?? {};
-
+        
         this.viewDefinition.fields.forEach((field : DetailsViewField) => {
             if (field.component === 'date'){
                 let month =  '0' + this.form.controls[field.dataProperty].value.month;
@@ -148,7 +153,8 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                 data[field.dataProperty] = this.form.controls[field.dataProperty].value;
             }
         });
-        return data;
+        
+       return data;
     }
 
     private createForm() {

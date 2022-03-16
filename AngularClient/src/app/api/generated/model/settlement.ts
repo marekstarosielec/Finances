@@ -15,8 +15,11 @@ export interface Settlement {
     id?: string | null;
     year?: number;
     month?: number;
+    quarter?: number;
     title?: string | null;
     incomeGrossPln?: number;
+    incomeGrossEur?: number;
+    exchangeRatio?: number;
     balanceAccountPln?: number;
     zus?: number;
     pit?: number;
@@ -25,5 +28,6 @@ export interface Settlement {
     total?: number;
     revenue?: number;
     comment?: string | null;
+    closed?: boolean;
 }
 

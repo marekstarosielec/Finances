@@ -10,9 +10,14 @@ namespace FinancesApi.Models
 
         public int Month { get; set; }
 
+        public int Quarter { get; set; }
+
         public string Title { get; set; }
 
         public double IncomeGrossPln { get; set; }
+        public double IncomeGrossEur { get; set; }
+
+        public double ExchangeRatio { get; set; }
 
         public double BalanceAccountPln { get; set; }
        
@@ -29,5 +34,7 @@ namespace FinancesApi.Models
         public double Revenue { get; set; }
 
         public string Comment { get; set; }
+
+        public bool Closed { get; set; }
     }
 }
