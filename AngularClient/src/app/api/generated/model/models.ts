@@ -25,3 +25,4 @@ export * from './transactionAutoCategory';
 export * from './transactionCategory';
 export * from './tutoring';
 export * from './tutoringList';
+export * from './water';

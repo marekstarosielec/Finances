@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
-import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult } from "app/api/generated";
+import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult, SettlementService } from "app/api/generated";
 import { DetailsViewComponent, DetailsViewDefinition, DetailsViewField, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
@@ -51,6 +51,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute, 
         private settingService: SettingsService,
         private fileService: FileService,
+        private settlementService: SettlementService,
         private modalService: NgbModal,
         private location: Location) {  
     }
@@ -58,8 +59,8 @@ export class DocumentComponent implements OnInit, OnDestroy {
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe((params: Params) => {
             forkJoin([
-                this.documentsService.documentsGet(), this.caseListService.caseListGet()])
-                .pipe(take(1)).subscribe(([documents, caseList]) => {
+                this.documentsService.documentsGet(), this.caseListService.caseListGet(), this.settlementService.settlementGet()])
+                .pipe(take(1)).subscribe(([documents, caseList, settlementList]) => {
                     this.documents = documents as Document[];
                     this.data = documents.filter(t => t.id == params['id'])[0];
                     let allDocumentNumbers = documents.map(item => item.number).filter(val => !isNaN(val));
@@ -78,7 +79,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                             { title: 'Rzecz', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
                             { title: 'Gwarancja', dataProperty: 'guarantee', component: 'text'} as DetailsViewField,
                             { title: 'Sprawa', dataProperty: 'caseName', component: 'list', required: false, options: { referenceList: caseList, referenceListIdField: 'name'} as DetailsViewFieldListOptions} as DetailsViewField,
-                           
+                            { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title' } as DetailsViewFieldListOptions} as DetailsViewField,
                         ]
                     };
 
@@ -92,6 +93,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                         { name: 'fuel', title: 'Paliwo', align: 'right'},
                         { name: 'mazda', title: 'Mazda', align: 'right'},
                         { name: 'invoice', title: 'Faktura', align: 'right'},
+                        { name: 'dra', title: 'ZUS DRA', align: 'right'},
                         );
                 });
         });
@@ -219,6 +221,25 @@ export class DocumentComponent implements OnInit, OnDestroy {
             component.form.controls['category'].setValue('Faktura otrzymana');
             component.form.controls['invoiceNumber'].setValue('F/XXXXXXXX/' + invoiceNumberDate);
             component.form.controls['description'].setValue('Telefon');
+        } else if (toolbarElementWithData.toolbarElement.name === 'dra') {
+            let defaultDate = new Date();
+            let descriptionAppendix ='XXXX-XX'
+            const last = this.documents.filter(t => t.company?.toUpperCase() == 'ZUS' && t.description?.toUpperCase().startsWith('DRA')).sort((d1,d2) => d1.date < d2.date ? 1 : -1)[0];
+            if (last) {
+                let lastDate = new Date(last.date);
+                lastDate.setMonth(lastDate.getMonth() + 1);
+                defaultDate = lastDate;
+                let month = (lastDate.getMonth() + 1).toString();
+                if (month.length < 2){
+                    month = '0' + month;
+                }
+                let year = (lastDate.getFullYear()).toString();
+                
+                descriptionAppendix=year+'-'+month;
+            }
+            component.form.controls['date'].setValue({ year: defaultDate.getFullYear(), month: defaultDate.getMonth() + 1, day: defaultDate.getDate()});
+            component.form.controls['company'].setValue('ZUS');
+            component.form.controls['description'].setValue('DRA ' + descriptionAppendix);
         }
     }
 

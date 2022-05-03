@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, Params } from "@angular/router";
-import { BalancesService, Settlement, SettlementService, Transaction, TransactionsService } from "app/api/generated";
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { ActivatedRoute, Params, Router } from "@angular/router";
+import { BalancesService, DecompressFileResult, DocumentsService, FileService, Settlement, SettlementService, Transaction, TransactionsService } from "app/api/generated";
 import { DetailsViewDefinition, DetailsViewField } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
@@ -11,6 +11,8 @@ import { GridColumn, RowClickedData } from "app/shared/grid/grid.component";
 import { ListFilterOptions } from "app/shared/list-filter/list-filter.component";
 import { TextFilterOptions } from "app/shared/text-filter/text-filter.component";
 import { AmountFilterOptions } from "app/shared/amount-filter/amount-filter.component";
+import { SettingsService } from "app/api/settingsService";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
     moduleId: module.id,
@@ -24,8 +26,25 @@ import { AmountFilterOptions } from "app/shared/amount-filter/amount-filter.comp
         ></details-view>
         
         <grid [name]="name" [columns]="columns" [data]="subList"
-                    initialSortColumn="date" initialSortOrder="1"
-                    (rowClicked)="rowClickedEvent($event)"></grid>
+            initialSortColumn="date" initialSortOrder="1"
+            (rowClicked)="rowClickedEvent($event)"></grid>
+
+            <ng-template #password let-modal>
+            <div class="modal-header">
+                <h4 class="modal-title" id="modal-basic-title">Podaj hasło</h4>
+            </div>
+            <div class="modal-body">
+                <input 
+                    #password
+                    id="password" 
+                    type="password" 
+                    class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" (click)="modal.close('')">Anuluj</button>
+                <button type="button" class="btn btn-outline-danger" (click)="modal.close(password.value)">Otwórz</button>
+            </div>
+        </ng-template>
     `
 })
 
@@ -34,31 +53,40 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
     data: Settlement;
     toolbarElements: ToolbarElement[] = [];
     private routeSubscription: Subscription;
-    
+    @ViewChild('password', { static: true }) password: ElementRef;   
     public columns: GridColumn[];
     public subList: Transaction[];
 
     constructor(private settlementService: SettlementService, 
         private balancesService: BalancesService,
+        private fileService: FileService,
         private transactionsService: TransactionsService,
+        private documentsService: DocumentsService,
         private route: ActivatedRoute, 
+        private router: Router, 
+        private settingService: SettingsService,
+        private modalService: NgbModal,
         private location: Location) {  
     }
 
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe((params: Params) => {
             forkJoin([
-                this.settlementService.settlementGet(), this.balancesService.balancesGet(), this.transactionsService.transactionsGet()])
-                .pipe(take(1)).subscribe(([settlementList, balancesList, transactionList]) => {
+                this.settlementService.settlementGet(), this.balancesService.balancesGet(), this.transactionsService.transactionsGet(), this.documentsService.documentsGet()])
+                .pipe(take(1)).subscribe(([settlementList, balancesList, transactionList, documentsList]) => {
                     this.data = settlementList.filter(m => m.id == params['id'])[0];
                    
-                    this.subList = transactionList.filter(m => m.settlement === this.data['title']);
+                    let transactions = transactionList.filter(m => m.settlement === this.data['title']).map(t => ({...t, rowClick:'transaction', description: t.bankInfo}));
+                    let documents = documentsList.filter(m => m.settlement === this.data['title']).map(t => ({...t, rowClick:'document', showImage: 1}));
+                    this.subList = [...transactions, ...documents];
                     this.columns = [ 
                         { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
                         { title: 'Konto', dataProperty: 'account', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
                         { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions, customEvent: true},
-                        { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions, customEvent: true},
-                        { title: 'Opis', dataProperty: 'bankInfo', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true}
+                        { title: 'Numer', dataProperty: 'invoiceNumber', component: 'text', customEvent: true},
+                        { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions, customEvent: true},
+                        { title: 'Opis', dataProperty: 'description', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true},
+                        { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
                     ];
 
                     this.viewDefinition = {
@@ -87,6 +115,10 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
                                 this.viewDefinition.fields.splice(i, 1);
                             }
                         }
+                        this.toolbarElements.push(
+                            { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges},
+                            
+                        );
                     } else {
                         const balancesPLN = balancesList.filter(m => m.account === 'KontoFirmowe').sort((a,b) => a['date'] > b['date'] ? -1 : 1);
                         if (balancesPLN.length > 0) {
@@ -133,5 +165,32 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
         data.exchangeRatio = data.incomeGrossEur == 0 ? 0 : data.incomeGrossPln / data.incomeGrossEur;
     }
 
-    rowClickedEvent(rowClickedData: RowClickedData) {}
+    rowClickedEvent(rowClickedData: RowClickedData) {
+        if (rowClickedData.row['rowClick']==='document' && rowClickedData.column.dataProperty!=='showImage') {
+            this.router.navigate(['documents', rowClickedData.row['id']]);
+        } else if (rowClickedData.row['rowClick']==='document' && rowClickedData.column.dataProperty==='showImage') {
+            if (!this.settingService.CurrentPassword)
+            {
+                this.modalService.open(this.password, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+                    this.settingService.CurrentPassword = result;
+                    this.openFile(rowClickedData);
+                 }, (reason) => { });
+            } else {
+                this.openFile(rowClickedData);
+            }
+        } else {
+            this.router.navigate(['transactions', rowClickedData.row['id']]);
+        } 
+    }
+
+    openFile(rowClickedData: RowClickedData) {
+        if (!this.settingService.CurrentPassword){
+            return;
+        }
+        
+        let number = rowClickedData.row['number'];
+        this.fileService.filePost({ number: number, password: this.settingService.CurrentPassword}).pipe(take(1)).subscribe((result: DecompressFileResult) => {
+            window.open("http://127.0.0.1:8080" + result.path, "_blank", "noopener noreferrer");
+        });
+    }
 }

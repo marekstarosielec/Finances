@@ -42,6 +42,8 @@ import { CaseListComponent } from 'app/pages/case/case-list.component';
 import { DatasetComponent } from 'app/pages/dataset/dataset.component';
 import { SettlementListComponent } from 'app/pages/settlement/settlement-list.component';
 import { SettlementDetailsComponent } from 'app/pages/settlement/settlement-details.component';
+import { WaterDetailsComponent } from 'app/pages/water/water-details.component';
+import { WaterListComponent } from 'app/pages/water/water-list.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
@@ -85,5 +87,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'case',   component: CaseListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'settlement',   component: SettlementListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'settlement/:id',   component: SettlementDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'water',   component: WaterListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'water/:id',   component: WaterDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     
 ];

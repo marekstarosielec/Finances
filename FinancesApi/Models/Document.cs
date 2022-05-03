@@ -17,5 +17,6 @@ namespace FinancesApi.Models
         public string RelatedObject { get; set; }
         public string Guarantee { get; set; }
         public string CaseName { get; set; }
+        public string Settlement { get; set; }
     }
 }

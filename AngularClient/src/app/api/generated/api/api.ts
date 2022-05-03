@@ -36,4 +36,6 @@ export * from './tutoring.service';
 import { TutoringService } from './tutoring.service';
 export * from './tutoringList.service';
 import { TutoringListService } from './tutoringList.service';
-export const APIS = [AccountingDatasetService, BalancesService, CaseListService, CurrenciesService, CurrencyExchangeService, DatasetService, DocumentsService, ElectricityService, FileService, GasService, MBankScrapperService, MazdaService, SantanderScrapperService, SettlementService, SkodaService, StatisticsService, TransactionsService, TutoringService, TutoringListService];
+export * from './water.service';
+import { WaterService } from './water.service';
+export const APIS = [AccountingDatasetService, BalancesService, CaseListService, CurrenciesService, CurrencyExchangeService, DatasetService, DocumentsService, ElectricityService, FileService, GasService, MBankScrapperService, MazdaService, SantanderScrapperService, SettlementService, SkodaService, StatisticsService, TransactionsService, TutoringService, TutoringListService, WaterService];

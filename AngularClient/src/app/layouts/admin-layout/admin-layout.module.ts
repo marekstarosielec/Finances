@@ -60,6 +60,8 @@ import { CaseListComponent } from 'app/pages/case/case-list.component';
 import { DatasetComponent } from 'app/pages/dataset/dataset.component';
 import { SettlementListComponent } from 'app/pages/settlement/settlement-list.component';
 import { SettlementDetailsComponent } from 'app/pages/settlement/settlement-details.component';
+import { WaterDetailsComponent } from 'app/pages/water/water-details.component';
+import { WaterListComponent } from 'app/pages/water/water-list.component';
 
 @NgModule({
   imports: [
@@ -125,7 +127,9 @@ import { SettlementDetailsComponent } from 'app/pages/settlement/settlement-deta
     CaseListComponent,
     DatasetComponent,
     SettlementListComponent,
-    SettlementDetailsComponent
+    SettlementDetailsComponent,
+    WaterListComponent,
+    WaterDetailsComponent
   ]
 })
 

@@ -70,7 +70,8 @@ export class CaseListComponent implements OnInit{
                 amount: t.amount,
                 description: t.description,
                 showImage: 0,
-                number: undefined
+                number: undefined,
+                account: t.account
             }));
             const documentsWithCase = documents.filter(d => d.caseName).map(d => ({ 
                 id: d.id,
@@ -86,7 +87,8 @@ export class CaseListComponent implements OnInit{
             this.columns = [ 
                 { title: 'Sprawa', dataProperty: 'caseName', component: 'list', filterOptions: { idProperty: 'caseName'  } as ListFilterOptions, customEvent: true},
                 { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
-                { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amountwithempty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions, customEvent: true},
+                { title: 'Konto', dataProperty: 'account', component: 'text', customEvent: true},
+                 { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amountwithempty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions, customEvent: true},
                 { title: 'Opis', dataProperty: 'description', component: 'text', customEvent: true},
                 { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
             ];
@@ -97,7 +99,7 @@ export class CaseListComponent implements OnInit{
 
     rowClickedEvent(rowClickedData: RowClickedData) {
         if (rowClickedData.row['category']==='transaction') {
-            this.router.navigate(['transactions', rowClickedData.row['id']], { relativeTo: this.route});
+            this.router.navigate(['transactions', rowClickedData.row['id']]);
         } else if (rowClickedData.row['category']==='document' && rowClickedData.column.dataProperty!=='showImage') {
             this.router.navigate(['documents', rowClickedData.row['id']]);
         } else if (rowClickedData.row['category']==='document' && rowClickedData.column.dataProperty==='showImage') {

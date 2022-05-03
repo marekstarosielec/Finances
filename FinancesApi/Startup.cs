@@ -40,6 +40,7 @@ namespace FinancesApi
             services.AddSingleton<ITutoringService, TutoringService>(); 
             services.AddSingleton<ICaseListService, CaseListService>();
             services.AddSingleton<ISettlementService, SettlementService>();
+            services.AddSingleton<IWaterService, WaterService>();
 
             services.AddSingleton(typeof(TransactionsDataFile));
             services.AddSingleton(typeof(TransactionAccountsDataFile));
@@ -57,6 +58,7 @@ namespace FinancesApi
             services.AddSingleton(typeof(TutoringDataFile));
             services.AddSingleton(typeof(CaseListDataFile));
             services.AddSingleton(typeof(SettlementDataFile));
+            services.AddSingleton(typeof(WaterDataFile));
 
             services.AddTransient(typeof(DatasetInfoDataFile));
             services.AddTransient(typeof(AccountingDatasetInfoDataFile));

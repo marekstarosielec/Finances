@@ -105,6 +105,7 @@ namespace FinancesApi.Services
                 edited.RelatedObject = document.RelatedObject;
                 edited.Guarantee = document.Guarantee;
                 edited.CaseName = document.CaseName;
+                edited.Settlement = document.Settlement;
             }
             _documentsDataFile.Save();
         }

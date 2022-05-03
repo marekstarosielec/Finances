@@ -21,6 +21,7 @@ import { StatisticsService } from './api/statistics.service';
 import { TransactionsService } from './api/transactions.service';
 import { TutoringService } from './api/tutoring.service';
 import { TutoringListService } from './api/tutoringList.service';
+import { WaterService } from './api/water.service';
 
 @NgModule({
   imports:      [],

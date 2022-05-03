@@ -14,7 +14,7 @@ import { ToolbarElement } from 'app/shared/models/toolbar';
         name="settlement" 
         [columns]="columns" 
         [data]="data" 
-        initialSortColumn="date" 
+        initialSortColumn="title" 
         initialSortOrder=-1
         (rowClicked)="rowClickedEvent($event)"
         [summaries]="summaries"

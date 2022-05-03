@@ -21,6 +21,7 @@ api/statistics.service.ts
 api/transactions.service.ts
 api/tutoring.service.ts
 api/tutoringList.service.ts
+api/water.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -53,4 +54,5 @@ model/transactionAutoCategory.ts
 model/transactionCategory.ts
 model/tutoring.ts
 model/tutoringList.ts
+model/water.ts
 variables.ts

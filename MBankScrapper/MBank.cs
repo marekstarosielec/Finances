@@ -185,10 +185,11 @@ namespace MBankScrapper
                     accountIndex++;
                     continue;
                 }
+                title = title.Replace("Do aktywacji", string.Empty).Trim();
                 var balance = "0";
                 if (await _browser.IsElementPresent(amountXPath))
                     balance = await _browser.GetInnerText(amountXPath);
-                
+               
                 decimal parsedBalance = 0;
                 var currency = string.Empty;
                 if (balance.LastIndexOf(" ") != -1)
@@ -198,6 +199,21 @@ namespace MBankScrapper
                     char[] whiteSpaces = { (char)160 };
                     balance = balance.Replace(currency, string.Empty).Replace(" ", "").Replace(new string(whiteSpaces), string.Empty).Trim();
                     _ = decimal.TryParse(balance, out parsedBalance);
+                }
+                if (parsedBalance == 0)
+                {
+                    var amountXPath2 = $"{accountXPath(accountIndex)}/descendant::span[4]";
+                    if (await _browser.IsElementPresent(amountXPath2))
+                        balance = await _browser.GetInnerText(amountXPath2);
+
+                    if (balance.LastIndexOf(" ") != -1)
+                    {
+                        currency = balance.Substring(balance.LastIndexOf(" ")).Trim();
+
+                        char[] whiteSpaces = { (char)160 };
+                        balance = balance.Replace(currency, string.Empty).Replace(" ", "").Replace(new string(whiteSpaces), string.Empty).Trim();
+                        _ = decimal.TryParse(balance, out parsedBalance);
+                    }
                 }
 
                 var model = new Models.AccountBalance

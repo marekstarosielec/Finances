@@ -11,20 +11,12 @@
  */
 
 
-export interface Document { 
+export interface Water { 
     id?: string | null;
-    number?: number;
     date?: string;
-    pages?: number | null;
-    description?: string | null;
-    category?: string | null;
-    invoiceNumber?: string | null;
-    company?: string | null;
-    person?: string | null;
-    car?: string | null;
-    relatedObject?: string | null;
-    guarantee?: string | null;
-    caseName?: string | null;
-    settlement?: string | null;
+    meter?: number | null;
+    meter2?: number | null;
+    salt?: number | null;
+    comment?: string | null;
 }
 
