@@ -21,7 +21,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
     private nativeElement: Node;
     private toggleButton;
     private sidebarVisible: boolean;
-    private subviews: SubviewDefinition[];
+    subviews: SubviewDefinition[];
 
     public isCollapsed = true;
     @ViewChild("navbar-cmp", {static: false}) button;

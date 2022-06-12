@@ -25,7 +25,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
         (valueChange)="valueChange($event)"
         ></details-view>
         
-        <grid [name]="name" [columns]="columns" [data]="subList"
+        <grid name="sublist" [columns]="columns" [data]="subList"
             initialSortColumn="date" initialSortOrder="1"
             (rowClicked)="rowClickedEvent($event)"></grid>
 
@@ -75,8 +75,9 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
                 this.settlementService.settlementGet(), this.balancesService.balancesGet(), this.transactionsService.transactionsGet(), this.documentsService.documentsGet()])
                 .pipe(take(1)).subscribe(([settlementList, balancesList, transactionList, documentsList]) => {
                     this.data = settlementList.filter(m => m.id == params['id'])[0];
-                   
+                    
                     let transactions = transactionList.filter(m => m.settlement === this.data['title']).map(t => ({...t, rowClick:'transaction', description: t.bankInfo}));
+                    
                     let documents = documentsList.filter(m => m.settlement === this.data['title']).map(t => ({...t, rowClick:'document', showImage: 1}));
                     this.subList = [...transactions, ...documents];
                     this.columns = [ 
@@ -89,18 +90,31 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
                         { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
                     ];
 
+                    if (!this.data.closed)
+                    {
+                        let eurSold = transactionList.filter(m => m.settlement === this.data['title'] && m.bankInfo=='OBCIĄŻ. NATYCH. TRANSAKCJA WALUT.').map(t => t.amount).reduce((sum, current) => sum + current, 0);
+                        let plnBought = transactionList.filter(m => m.settlement === this.data['title'] && m.bankInfo=='UZNANIE NATYCH. TRANSAKCJA WALUT.').map(t => t.amount).reduce((sum, current) => sum + current, 0);
+                        this.data['eurSold'] = eurSold;
+                        this.data['incomeGrossPln'] = plnBought;
+                        this.valueChange(this.data);
+                        // this.data['remainingEur'] = this.data.incomeGrossEur + eurSold;
+                        // this.data['exchangeRatio'] = plnBought / eurSold * (-1);
+                    }
+                    
+
                     this.viewDefinition = {
                         fields: [
                             { title: 'Okres', dataProperty: 'title', component: 'text', required: true, readonly: true} as DetailsViewField,
                             { title: 'Przychód w EUR', dataProperty: 'incomeGrossEur', component: 'amount', readonly: this.data.closed} as DetailsViewField,
-                            { title: 'Przychód w PLN', dataProperty: 'incomeGrossPln', component: 'amount', readonly: this.data.closed} as DetailsViewField,
+                            { title: 'Przychód w PLN', dataProperty: 'incomeGrossPln', component: 'amount', readonly: true} as DetailsViewField,
                             { title: 'Kurs wymiany', dataProperty: 'exchangeRatio', component: 'number', readonly: true} as DetailsViewField,
-                            { title: 'Stan konta PLN', dataProperty: 'balanceAccountPln', component: 'amount', readonly: true} as DetailsViewField,
+                            { title: 'Pozostało EUR', dataProperty: 'remainingEur', component: 'amount', readonly: true} as DetailsViewField,
+                        //    { title: 'Stan konta PLN', dataProperty: 'balanceAccountPln', component: 'amount', readonly: true} as DetailsViewField,
                             { title: 'Pit', dataProperty: 'pit', component: 'amount', readonly: this.data.closed} as DetailsViewField,
                             { title: 'Vat', dataProperty: 'vat', component: 'amount', readonly: this.data.closed} as DetailsViewField,
                             { title: 'Zus', dataProperty: 'zus', component: 'amount', readonly: this.data.closed} as DetailsViewField,
                             { title: 'Rezerwa', dataProperty: 'reserve', component: 'amount', readonly: this.data.closed} as DetailsViewField,
-                            { title: 'Niedopłata/nadpłata na koncie PLN', dataProperty: 'total', component: 'amount', readonly: true} as DetailsViewField,
+                         //   { title: 'Niedopłata/nadpłata na koncie PLN', dataProperty: 'total', component: 'amount', readonly: true} as DetailsViewField,
                             { title: 'Zysk', dataProperty: 'revenue', component: 'amount', readonly: true} as DetailsViewField,
                             { title: 'Komentarz', dataProperty: 'comment', component: 'text'} as DetailsViewField
                         ]
@@ -160,9 +174,11 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
     }
 
     valueChange(data: Settlement) {
+        data.remainingEur = data.incomeGrossEur + data['eurSold'];
         data.revenue = data.incomeGrossPln - data.pit - data.vat - data.zus + data.balanceAccountPln; 
         data.total = data.balanceAccountPln - data.pit - data.vat - data.zus - data.reserve;
-        data.exchangeRatio = data.incomeGrossEur == 0 ? 0 : data.incomeGrossPln / data.incomeGrossEur;
+        //data.exchangeRatio = data.incomeGrossEur == 0 ? 0 : data.incomeGrossPln / data.incomeGrossEur;
+        data.exchangeRatio = !data['eurSold'] || data['eurSold'] == 0 ? undefined : data.incomeGrossPln / data['eurSold'] * (-1)
     }
 
     rowClickedEvent(rowClickedData: RowClickedData) {

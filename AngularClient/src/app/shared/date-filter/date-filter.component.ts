@@ -112,7 +112,7 @@ export class DateFilterComponent implements OnInit, OnDestroy {
         this.filterApply();
     }
 
-    private setDates(dateFrom?: Date, dateTo?: Date) : void {
+    setDates(dateFrom?: Date, dateTo?: Date) : void {
         this.filterValue.dateFrom = dateFrom;
         this.filterValue.dateTo = dateTo;
         this.filterApply();

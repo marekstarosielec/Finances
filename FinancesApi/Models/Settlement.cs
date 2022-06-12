@@ -16,6 +16,7 @@ namespace FinancesApi.Models
 
         public double IncomeGrossPln { get; set; }
         public double IncomeGrossEur { get; set; }
+        public double RemainingEur { get; set; }
 
         public double ExchangeRatio { get; set; }
 

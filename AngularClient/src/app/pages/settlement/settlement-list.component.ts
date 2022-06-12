@@ -42,6 +42,7 @@ export class SettlementListComponent implements OnInit{
                 { title: 'Data', dataProperty: 'title', component: 'text'},
                 { title: 'Zysk', dataProperty: 'revenue', pipe: 'number', component: 'text', alignment: 'right'},
                 { title: 'Kurs', dataProperty: 'exchangeRatio', pipe: 'number', component: 'text', alignment: 'right'},
+                { title: 'Pozostało EUR', dataProperty: 'remainingEur', pipe: 'number', component: 'text', alignment: 'right'},
                 { title: 'Komentarz', dataProperty: 'comment', component: 'text'}
             ];
          });

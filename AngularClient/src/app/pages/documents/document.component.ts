@@ -94,6 +94,8 @@ export class DocumentComponent implements OnInit, OnDestroy {
                         { name: 'mazda', title: 'Mazda', align: 'right'},
                         { name: 'invoice', title: 'Faktura', align: 'right'},
                         { name: 'dra', title: 'ZUS DRA', align: 'right'},
+                        { name: 'jpk', title: 'JPK', align: 'right'},
+                        { name: 'jpk_upo', title: 'UPO JPK', align: 'right'},
                         );
                 });
         });
@@ -240,6 +242,46 @@ export class DocumentComponent implements OnInit, OnDestroy {
             component.form.controls['date'].setValue({ year: defaultDate.getFullYear(), month: defaultDate.getMonth() + 1, day: defaultDate.getDate()});
             component.form.controls['company'].setValue('ZUS');
             component.form.controls['description'].setValue('DRA ' + descriptionAppendix);
+        }else if (toolbarElementWithData.toolbarElement.name === 'jpk') {
+            let defaultDate = new Date();
+            let descriptionAppendix ='XXXX-XX'
+            const last = this.documents.filter(t => t.company?.toUpperCase() == 'Urząd Skarbowy' && t.description?.toUpperCase().startsWith('JPK')).sort((d1,d2) => d1.date < d2.date ? 1 : -1)[0];
+            if (last) {
+                let lastDate = new Date(last.date);
+                lastDate.setMonth(lastDate.getMonth() + 1);
+                defaultDate = lastDate;
+                let month = (lastDate.getMonth() + 1).toString();
+                if (month.length < 2){
+                    month = '0' + month;
+                }
+                let year = (lastDate.getFullYear()).toString();
+                
+                descriptionAppendix=year+'-'+month;
+            }
+            component.form.controls['date'].setValue({ year: defaultDate.getFullYear(), month: defaultDate.getMonth() + 1, day: defaultDate.getDate()});
+            component.form.controls['company'].setValue('Urząd Skarbowy');
+            component.form.controls['description'].setValue('JPK ' + descriptionAppendix);
+            component.form.controls['settlement'].setValue(descriptionAppendix);
+        }else if (toolbarElementWithData.toolbarElement.name === 'jpk_upo') {
+            let defaultDate = new Date();
+            let descriptionAppendix ='XXXX-XX'
+            const last = this.documents.filter(t => t.company?.toUpperCase() == 'Urząd Skarbowy' && t.description?.toUpperCase().startsWith('UPO JPK')).sort((d1,d2) => d1.date < d2.date ? 1 : -1)[0];
+            if (last) {
+                let lastDate = new Date(last.date);
+                lastDate.setMonth(lastDate.getMonth() + 1);
+                defaultDate = lastDate;
+                let month = (lastDate.getMonth() + 1).toString();
+                if (month.length < 2){
+                    month = '0' + month;
+                }
+                let year = (lastDate.getFullYear()).toString();
+                
+                descriptionAppendix=year+'-'+month;
+            }
+            component.form.controls['date'].setValue({ year: defaultDate.getFullYear(), month: defaultDate.getMonth() + 1, day: defaultDate.getDate()});
+            component.form.controls['company'].setValue('Urząd Skarbowy');
+            component.form.controls['description'].setValue('UPO JPK ' + descriptionAppendix);
+            component.form.controls['settlement'].setValue(descriptionAppendix);
         }
     }
 

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaywrightHook", "Playwrigh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserHook", "BrowserHook\BrowserHook.csproj", "{7E2BC497-6B40-4A01-89B1-B97EF040DFCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SantanderScrapper", "SantanderScrapper\SantanderScrapper.csproj", "{50CB85A2-A65E-440F-AD8C-11A10526A31C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SantanderScrapper", "SantanderScrapper\SantanderScrapper.csproj", "{50CB85A2-A65E-440F-AD8C-11A10526A31C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

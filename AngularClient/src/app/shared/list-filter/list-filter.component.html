@@ -1,23 +1,23 @@
 <div class="form-check">
-    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="noFilterElement" [checked]="filterValue=='<all>'" (click)="setFilter('<all>')">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="noFilterElement" [checked]="filterValue.selectedValue=='<all>'" (click)="setFilter('<all>')">
     <label class="form-check-label" [for]="noFilterElement">
         Wszystkie
     </label>
 </div>
 <div class="form-check">
-    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="missingElement" [checked]="filterValue=='<missing>'" (click)="setFilter('<missing>')">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="missingElement" [checked]="filterValue.selectedValue=='<missing>'" (click)="setFilter('<missing>')">
     <label class="form-check-label" [for]="missingElement">
         Puste
     </label>
 </div>
 <div class="form-check" *ngFor="let element of primaryList">
-    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="name + '_' + element.id" [checked]="filterValue===element.id" (click)="setFilter(element.id)">
+    <input ngbDropdownToggle class="form-check-input" type="radio" [name]="name" [id]="name + '_' + element.id" [checked]="filterValue.selectedValue===element.id" (click)="setFilter(element.id)">
     <label class="form-check-label" [for]="name + '_' + element.id">
         {{element.id}}
     </label>
 </div>
 <div class="form-check" *ngIf="secondaryList?.length > 0">
-    <select class="form-control" (change)="setFilter($event.target.value)" [value]="filterValue">
+    <select class="form-control" (change)="setFilter($event.target.value)" [value]="filterValue.selectedValue">
         <option></option>
         <option *ngFor="let element of secondaryList">{{element.id}}</option>
     </select>

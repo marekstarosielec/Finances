@@ -19,6 +19,7 @@ export interface Settlement {
     title?: string | null;
     incomeGrossPln?: number;
     incomeGrossEur?: number;
+    remainingEur?: number;
     exchangeRatio?: number;
     balanceAccountPln?: number;
     zus?: number;

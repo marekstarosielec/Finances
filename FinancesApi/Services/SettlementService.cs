@@ -35,7 +35,7 @@ namespace FinancesApi.Controllers
             _settlementDataFile.Load();
             var result = _settlementDataFile.Value.OrderByDescending(m => m.Year).ThenByDescending(m => m.Month).ToList();
             var lastDate = new DateTime(result[0].Year, result[0].Month, 1);
-            var currentDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(-1);
+            var currentDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
             if (lastDate >= currentDate)
                 return result;
             
@@ -79,6 +79,7 @@ namespace FinancesApi.Controllers
                 edited.Title = model.Title; 
                 edited.IncomeGrossPln = model.IncomeGrossPln;
                 edited.IncomeGrossEur = model.IncomeGrossEur;
+                edited.RemainingEur = model.RemainingEur;
                 edited.ExchangeRatio = model.ExchangeRatio;
                 edited.BalanceAccountPln = model.BalanceAccountPln;
                 edited.Zus = model.Zus;

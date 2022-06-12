@@ -57,7 +57,7 @@ export class ListFilterComponent implements OnInit, OnDestroy {
 
     }
 
-    private setFilter(value?: string) : void {
+    setFilter(value?: string) : void {
         this.filterValue = { selectedValue: value} as ListFilterValue;
         this.filterChanged.emit(this.filterValue);
     }
