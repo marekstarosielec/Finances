@@ -157,7 +157,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
             component.form.controls['company'].setValue('Santander Consumer Multirent');
             component.form.controls['pages'].setValue(1);
             component.form.controls['category'].setValue('Faktura otrzymana');
-            component.form.controls['invoiceNumber'].setValue('RLXXXXX/' + invoiceNumberDate);
+            component.form.controls['invoiceNumber'].setValue('RL/XXXXX/' + invoiceNumberDate);
             component.form.controls['car'].setValue('GA839ES');
         } else if (toolbarElementWithData.toolbarElement.name === 'fuel') {
             component.form.controls['pages'].setValue(1);

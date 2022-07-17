@@ -7,7 +7,7 @@ import { forkJoin } from 'rxjs';
 import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
 import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Summary } from '../list-page/list-page.component';
+import { Summary, SummaryAmountCategoryOptions } from '../list-page/list-page.component';
 import { SettingsService } from 'app/api/settingsService';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -92,7 +92,7 @@ export class CaseListComponent implements OnInit{
                 { title: 'Opis', dataProperty: 'description', component: 'text', customEvent: true},
                 { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
             ];
-            // this.summaries.push( { name: 'amount-category', options: { amountProperty: 'amount', categoryProperty: 'category', showDirectioned: false } as SummaryAmountCategoryOptions})            
+            this.summaries.push( { name: 'amount-category', options: { amountProperty: 'amount', categoryProperty: 'caseName', showDirectioned: false } as SummaryAmountCategoryOptions})            
 
         });
     }

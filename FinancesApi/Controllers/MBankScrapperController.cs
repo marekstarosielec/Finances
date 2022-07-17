@@ -42,9 +42,9 @@ namespace FinancesApi.Controllers
                         var transactionModel = new Models.Transaction
                         {
                             Id = transaction.Id,
-                            Text = transaction.Text,
-                            Title = transaction.Title,
-                            Description = transaction.Description,
+                            Text = transaction.Text.Replace("Kliknij i sprawdź szczegóły.", string.Empty).Trim(),
+                            Title = transaction.Title.Replace("Kliknij i sprawdź szczegóły.", string.Empty).Trim(),
+                            Description = transaction.Description.Replace("Kliknij i sprawdź szczegóły.", string.Empty).Trim(),
                             Amount = transaction.Amount,
                             Account = transaction.Account,
                             Date = transactionDate.ToUniversalTime(),

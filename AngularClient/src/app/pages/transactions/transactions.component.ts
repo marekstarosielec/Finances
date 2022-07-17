@@ -37,7 +37,7 @@ export class TransactionsComponent implements OnInit{
                 { title: 'Konto', dataProperty: 'account', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions},
                 { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions},
                 { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amount', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions},
-                { title: 'Opis', dataProperty: 'bankInfo', subDataProperty1: 'comment', subDataProperty2:'caseName', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions}
+                { title: 'Opis', dataProperty: 'bankInfo', subDataProperty1: 'comment', subDataProperty2:'caseName', subDataProperty3:'settlement', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment', additionalPropertyToSearch2: 'caseName', additionalPropertyToSearch3: 'settlement' } as TextFilterOptions}
             ];
         });
     }

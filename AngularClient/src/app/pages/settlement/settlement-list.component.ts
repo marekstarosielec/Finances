@@ -43,7 +43,11 @@ export class SettlementListComponent implements OnInit{
                 { title: 'Zysk', dataProperty: 'revenue', pipe: 'number', component: 'text', alignment: 'right'},
                 { title: 'Kurs', dataProperty: 'exchangeRatio', pipe: 'number', component: 'text', alignment: 'right'},
                 { title: 'Pozostało EUR', dataProperty: 'remainingEur', pipe: 'number', component: 'text', alignment: 'right'},
-                { title: 'Komentarz', dataProperty: 'comment', component: 'text'}
+                { title: 'Komentarz', dataProperty: 'comment', component: 'text'},
+                { title: 'Pit', dataProperty: 'pit', pipe: 'number', component: 'text', alignment: 'right'},
+                { title: 'Vat', dataProperty: 'vat', pipe: 'number', component: 'text', alignment: 'right'},
+                { title: 'Zus', dataProperty: 'zus', pipe: 'number', component: 'text', alignment: 'right'},
+                
             ];
          });
     }

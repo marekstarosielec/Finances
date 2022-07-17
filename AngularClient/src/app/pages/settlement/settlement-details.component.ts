@@ -113,7 +113,7 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
                             { title: 'Pit', dataProperty: 'pit', component: 'amount', readonly: this.data.closed} as DetailsViewField,
                             { title: 'Vat', dataProperty: 'vat', component: 'amount', readonly: this.data.closed} as DetailsViewField,
                             { title: 'Zus', dataProperty: 'zus', component: 'amount', readonly: this.data.closed} as DetailsViewField,
-                            { title: 'Rezerwa', dataProperty: 'reserve', component: 'amount', readonly: this.data.closed} as DetailsViewField,
+                         //   { title: 'Rezerwa', dataProperty: 'reserve', component: 'amount', readonly: this.data.closed} as DetailsViewField,
                          //   { title: 'Niedopłata/nadpłata na koncie PLN', dataProperty: 'total', component: 'amount', readonly: true} as DetailsViewField,
                             { title: 'Zysk', dataProperty: 'revenue', component: 'amount', readonly: true} as DetailsViewField,
                             { title: 'Komentarz', dataProperty: 'comment', component: 'text'} as DetailsViewField
@@ -175,8 +175,8 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
 
     valueChange(data: Settlement) {
         data.remainingEur = data.incomeGrossEur + data['eurSold'];
-        data.revenue = data.incomeGrossPln - data.pit - data.vat - data.zus + data.balanceAccountPln; 
-        data.total = data.balanceAccountPln - data.pit - data.vat - data.zus - data.reserve;
+        data.revenue = data.incomeGrossPln - data.pit - data.vat - data.zus; 
+        //data.total = data.balanceAccountPln - data.pit - data.vat - data.zus;
         //data.exchangeRatio = data.incomeGrossEur == 0 ? 0 : data.incomeGrossPln / data.incomeGrossEur;
         data.exchangeRatio = !data['eurSold'] || data['eurSold'] == 0 ? undefined : data.incomeGrossPln / data['eurSold'] * (-1)
     }
