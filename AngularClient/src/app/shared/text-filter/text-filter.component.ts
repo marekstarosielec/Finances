@@ -11,6 +11,7 @@ export interface TextFilterOptions {
     additionalPropertyToSearch2?: string
     additionalPropertyToSearch3?: string
     additionalPropertyToSearch4?: string
+    additionalPropertyToSearch5?: string
 }
 
 @Component({

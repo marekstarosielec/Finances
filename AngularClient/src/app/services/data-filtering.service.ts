@@ -183,6 +183,7 @@ export class DataFilteringService {
       || (options?.additionalPropertyToSearch2 && d[options.additionalPropertyToSearch2]?.toString().toUpperCase().indexOf(search) > -1)
       || (options?.additionalPropertyToSearch3 && d[options.additionalPropertyToSearch3]?.toString().toUpperCase().indexOf(search) > -1)
       || (options?.additionalPropertyToSearch4 && d[options.additionalPropertyToSearch4]?.toString().toUpperCase().indexOf(search) > -1)
+      || (options?.additionalPropertyToSearch5 && d[options.additionalPropertyToSearch5]?.toString().toUpperCase().indexOf(search) > -1)
     );
     return data;
   }

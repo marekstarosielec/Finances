@@ -62,7 +62,7 @@ export class DocumentsComponent implements OnInit{
                 { title: 'Firma', dataProperty: 'company', component: 'text'},
                 { title: 'Opis', dataProperty: 'description', component: 'text'},
                 { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text', noWrap: true},
-                { title: 'Relacje', dataProperty: '', component: 'text', subDataProperty1: 'person', subDataProperty2: 'car', subDataProperty3: 'relatedObject', subDataProperty4: 'caseName', filterOptions: { additionalPropertyToSearch1: 'person', additionalPropertyToSearch2: 'car', additionalPropertyToSearch3: 'relatedObject', additionalPropertyToSearch4: 'caseName' } as TextFilterOptions},
+                { title: 'Relacje', dataProperty: '', component: 'text', subDataProperty1: 'person', subDataProperty2: 'car', subDataProperty3: 'relatedObject', subDataProperty4: 'caseName', subDataProperty5: 'settlement', filterOptions: { additionalPropertyToSearch1: 'person', additionalPropertyToSearch2: 'car', additionalPropertyToSearch3: 'relatedObject', additionalPropertyToSearch4: 'caseName', additionalPropertyToSearch5: 'settlement' } as TextFilterOptions},
                 { title: '', dataProperty: '', component: 'icon', image: 'nc-image', customEvent: true},
             ];
 

@@ -7,7 +7,7 @@ import { forkJoin } from 'rxjs';
 import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
 import { ListFilterOptions } from 'app/shared/list-filter/list-filter.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Summary, SummaryAmountCategoryOptions } from '../list-page/list-page.component';
+import { Summary, SummaryAmountCategoryOptions, SummaryAmountCurrencyOptions } from '../list-page/list-page.component';
 import { SettingsService } from 'app/api/settingsService';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -68,10 +68,12 @@ export class CaseListComponent implements OnInit{
                 caseName: t.caseName,
                 category: 'transaction',
                 amount: t.amount,
-                description: t.description,
+                currency: t.currency,
+                description: t.description != "" ? t.description : t.bankInfo,
                 showImage: 0,
                 number: undefined,
-                account: t.account
+                account: t.account,
+                transactionCategory: t.category
             }));
             const documentsWithCase = documents.filter(d => d.caseName).map(d => ({ 
                 id: d.id,
@@ -88,12 +90,14 @@ export class CaseListComponent implements OnInit{
                 { title: 'Sprawa', dataProperty: 'caseName', component: 'list', filterOptions: { idProperty: 'caseName'  } as ListFilterOptions, customEvent: true},
                 { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
                 { title: 'Konto', dataProperty: 'account', component: 'text', customEvent: true},
-                 { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amountwithempty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions, customEvent: true},
+                { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amountwithempty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions, customEvent: true},
+                { title: 'Kategoria', dataProperty: 'transactionCategory', component: 'text', customEvent: true},
                 { title: 'Opis', dataProperty: 'description', component: 'text', customEvent: true},
                 { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
             ];
             this.summaries.push( { name: 'amount-category', options: { amountProperty: 'amount', categoryProperty: 'caseName', showDirectioned: false } as SummaryAmountCategoryOptions})            
-
+            this.summaries.push( { name: 'amount-currency', options: { amountProperty: 'amount', currencyProperty: 'currency' } as SummaryAmountCurrencyOptions})
+           
         });
     }
 

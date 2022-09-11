@@ -125,6 +125,7 @@ namespace MBankScrapper
                     .Replace("eKonto - ", "")
                     .Replace("mBiznes konto walutowe EUR - ", "")
                     .Replace("eKonto walutowe EUR - ", "")
+                    .Replace("eKonto walutowe GBP - ", "")
                     .Replace("eMax - ", "")
                     .Replace("mBiznes konto - ", "")
                     .Replace(" - Konto VAT", "");
@@ -255,6 +256,7 @@ namespace MBankScrapper
                 title = title
                     .Replace("EUR mBiznes konto walutowe", "")
                     .Replace("EUR eKonto walutowe", "")
+                    .Replace("GBP eKonto walutowe", "")
                     .Replace("eKonto", "")
                     .Replace("eMax", "")
                     .Replace("mBiznes konto", "")

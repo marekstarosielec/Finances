@@ -14,6 +14,7 @@ export interface GridColumn {
     subDataProperty2?: string;
     subDataProperty3?: string;
     subDataProperty4?: string;
+    subDataProperty5?: string;
     component?: string;
     filterOptions?: any;
     pipe?: string;
