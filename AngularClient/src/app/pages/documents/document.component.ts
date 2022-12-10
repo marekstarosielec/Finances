@@ -205,7 +205,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
         } else if (toolbarElementWithData.toolbarElement.name === 'phone') {
             let defaultDate = new Date();
             let invoiceNumberDate='XX/XX'
-            const lastInvoice = this.documents.filter(t => t.company?.toUpperCase() == 'PLAY' && t.category?.toUpperCase()==='FAKTURA OTRZYMANA').sort((d1,d2) => d1.date < d2.date ? 1 : -1)[0];
+            const lastInvoice = this.documents.filter(t => t.company?.toUpperCase() == 'T-mobile' && t.category?.toUpperCase()==='FAKTURA OTRZYMANA').sort((d1,d2) => d1.date < d2.date ? 1 : -1)[0];
             if (lastInvoice) {
                 let lastDate = new Date(lastInvoice.date);
                 lastDate.setMonth(lastDate.getMonth() + 1);
@@ -219,9 +219,8 @@ export class DocumentComponent implements OnInit, OnDestroy {
                 }
             }
             component.form.controls['date'].setValue({ year: defaultDate.getFullYear(), month: defaultDate.getMonth() + 1, day: defaultDate.getDate()});
-            component.form.controls['company'].setValue('Play');
+            component.form.controls['company'].setValue('T-mobile');
             component.form.controls['category'].setValue('Faktura otrzymana');
-            component.form.controls['invoiceNumber'].setValue('F/XXXXXXXX/' + invoiceNumberDate);
             component.form.controls['description'].setValue('Telefon');
         } else if (toolbarElementWithData.toolbarElement.name === 'dra') {
             let defaultDate = new Date();
