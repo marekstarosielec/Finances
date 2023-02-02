@@ -55,7 +55,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
                             { title: 'Szczegóły', dataProperty: 'details', component: 'text'} as DetailsViewField,
                             { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
                             { title: 'Sprawa', dataProperty: 'caseName', component: 'list', required: false, options: { referenceList: caseList, referenceListIdField: 'name'} as DetailsViewFieldListOptions} as DetailsViewField,
-                            { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title'} as DetailsViewFieldListOptions} as DetailsViewField,
+                            { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title', referenceListSortField: 'title', referenceListSortDescending: true} as DetailsViewFieldListOptions} as DetailsViewField,
                         ]
                     };
                     this.data = transactions.filter(t => t.id == params['id'])[0];    

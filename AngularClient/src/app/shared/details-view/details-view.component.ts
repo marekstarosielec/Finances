@@ -22,6 +22,8 @@ export interface DetailsViewField {
 export interface DetailsViewFieldListOptions {
     referenceList: any[];
     referenceListIdField: string;
+    referenceListSortField?: string;
+    referenceListSortDescending?: boolean;
     usageIndexPeriodDays?: number;
     usageIndexPeriodDateProperty?: string;
     usageIndexThreshold?: number;
@@ -256,7 +258,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                     field.options = {};
                 }
                 field.options.referenceList = this.buildReferenceListOnUsageIndex(field);
-                 this.form.controls[field.dataProperty].setValue(this.data ? this.data[field.dataProperty] : '');
+                this.form.controls[field.dataProperty].setValue(this.data ? this.data[field.dataProperty] : '');
             } else if (field.component === 'text') {
                 this.form.controls[field.dataProperty].setValue(this.data ? this.data[field.dataProperty] : '');
             } else if (field.component === 'multiline-text') {
@@ -278,12 +280,22 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
     }
 
     private buildReferenceListOnUsageIndex(field: DetailsViewField) : any[] {
-        const referenceList = field.options?.referenceListIdField 
+        let referenceList;
+        
+        if (!field.options?.referenceListSortField)
+            referenceList = field.options?.referenceListIdField 
             ? fs.sort(field.options?.referenceList).by([
                 { asc: l => l[field.options?.referenceListIdField]}
             ])
             :field.options?.referenceList;
-
+        else if (field.options?.referenceListSortDescending === true)
+            referenceList = fs.sort(field.options?.referenceList).by([
+                { desc: l => l[field.options?.referenceListSortField]}
+            ]);
+        else 
+            referenceList = fs.sort(field.options?.referenceList).by([
+                { asc: l => l[field.options?.referenceListSortField]}
+            ]);
         if (!field?.options?.usageIndexData || !field?.options?.usageIndexPeriodDateProperty || !field?.options?.usageIndexPeriodDays || !field?.options?.usageIndexThreshold) {
             return referenceList;
         }

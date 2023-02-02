@@ -72,14 +72,15 @@ export class DocumentComponent implements OnInit, OnDestroy {
                             { title: 'Firma', dataProperty: 'company', component: 'text'} as DetailsViewField,
                             { title: 'Ilość stron', dataProperty: 'pages', component: 'text'} as DetailsViewField,
                             { title: 'Opis', dataProperty: 'description', component: 'text'} as DetailsViewField,
-                            { title: 'Kategoria', dataProperty: 'category', component: 'text'} as DetailsViewField,
-                            { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text'} as DetailsViewField,
+                            { title: 'Kategoria dokumentu', dataProperty: 'category', component: 'text'} as DetailsViewField,
+                            { title: 'Numer faktury', dataProperty: 'invoiceNumber', component: 'text'} as DetailsViewField,
+                            { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title', referenceListSortField: 'title', referenceListSortDescending: true } as DetailsViewFieldListOptions} as DetailsViewField,
                             { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
                             { title: 'Samochód', dataProperty: 'car', component: 'text'} as DetailsViewField,
                             { title: 'Rzecz', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
                             { title: 'Gwarancja', dataProperty: 'guarantee', component: 'text'} as DetailsViewField,
                             { title: 'Sprawa', dataProperty: 'caseName', component: 'list', required: false, options: { referenceList: caseList, referenceListIdField: 'name'} as DetailsViewFieldListOptions} as DetailsViewField,
-                            { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title' } as DetailsViewFieldListOptions} as DetailsViewField,
+                            
                         ]
                     };
 
