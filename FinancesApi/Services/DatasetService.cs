@@ -57,7 +57,8 @@ namespace FinancesApi.Services
             TutoringDataFile tutoringDataFile,
             CaseListDataFile caseListDataFile,
             SettlementDataFile settlementDataFile,
-            WaterDataFile waterDataFile)
+            WaterDataFile waterDataFile,
+            DocumentCategoryDataFile documentCategoryDataFile)
         {
             _basePath = configuration.GetValue<string>("DatasetPath");
             _datasetArchive.Location = _basePath;
@@ -80,6 +81,7 @@ namespace FinancesApi.Services
             _dataFiles.Add(caseListDataFile.DataFile);
             _dataFiles.Add(settlementDataFile.DataFile);
             _dataFiles.Add(waterDataFile.DataFile);
+            _dataFiles.Add(documentCategoryDataFile.DataFile);
 
             _fileBackupLocations = configuration.GetSection("DatasetFilesBackups").Get<List<string>>();
             _datasetBackupLocations = configuration.GetSection("DatasetBackups").Get<List<string>>();
