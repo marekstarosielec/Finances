@@ -44,6 +44,8 @@ import { SettlementListComponent } from 'app/pages/settlement/settlement-list.co
 import { SettlementDetailsComponent } from 'app/pages/settlement/settlement-details.component';
 import { WaterDetailsComponent } from 'app/pages/water/water-details.component';
 import { WaterListComponent } from 'app/pages/water/water-list.component';
+import { DocumentCategoryListComponent } from 'app/pages/document-category/document-category-list.component';
+import { DocumentCategoryDetailsComponent } from 'app/pages/document-category/document-category-details.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
@@ -89,5 +91,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'settlement/:id',   component: SettlementDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'water',   component: WaterListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'water/:id',   component: WaterDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'document-category',   component: DocumentCategoryListComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'document-category/:id',   component: DocumentCategoryDetailsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     
 ];

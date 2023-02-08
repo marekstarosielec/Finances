@@ -62,6 +62,8 @@ import { SettlementListComponent } from 'app/pages/settlement/settlement-list.co
 import { SettlementDetailsComponent } from 'app/pages/settlement/settlement-details.component';
 import { WaterDetailsComponent } from 'app/pages/water/water-details.component';
 import { WaterListComponent } from 'app/pages/water/water-list.component';
+import { DocumentCategoryDetailsComponent } from 'app/pages/document-category/document-category-details.component';
+import { DocumentCategoryListComponent } from 'app/pages/document-category/document-category-list.component';
 
 @NgModule({
   imports: [
@@ -129,7 +131,9 @@ import { WaterListComponent } from 'app/pages/water/water-list.component';
     SettlementListComponent,
     SettlementDetailsComponent,
     WaterListComponent,
-    WaterDetailsComponent
+    WaterDetailsComponent,
+    DocumentCategoryDetailsComponent,
+    DocumentCategoryListComponent
   ]
 })
 

@@ -8,6 +8,7 @@ api/caseList.service.ts
 api/currencies.service.ts
 api/currencyExchange.service.ts
 api/dataset.service.ts
+api/documentCategory.service.ts
 api/documents.service.ts
 api/electricity.service.ts
 api/file.service.ts
@@ -38,6 +39,7 @@ model/datasetState.ts
 model/decompressFileInstruction.ts
 model/decompressFileResult.ts
 model/document.ts
+model/documentCategory.ts
 model/electricity.ts
 model/gas.ts
 model/mazda.ts

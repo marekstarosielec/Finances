@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
-import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult, SettlementService } from "app/api/generated";
+import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult, SettlementService, DocumentCategoryService } from "app/api/generated";
 import { DetailsViewComponent, DetailsViewDefinition, DetailsViewField, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
@@ -53,14 +53,15 @@ export class DocumentComponent implements OnInit, OnDestroy {
         private fileService: FileService,
         private settlementService: SettlementService,
         private modalService: NgbModal,
-        private location: Location) {  
+        private location: Location,
+        private documentCategoryService: DocumentCategoryService) {  
     }
 
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe((params: Params) => {
             forkJoin([
-                this.documentsService.documentsGet(), this.caseListService.caseListGet(), this.settlementService.settlementGet()])
-                .pipe(take(1)).subscribe(([documents, caseList, settlementList]) => {
+                this.documentsService.documentsGet(), this.caseListService.caseListGet(), this.settlementService.settlementGet(), this.documentCategoryService.documentCategoryGet()])
+                .pipe(take(1)).subscribe(([documents, caseList, settlementList, documentCategoryList]) => {
                     this.documents = documents as Document[];
                     this.data = documents.filter(t => t.id == params['id'])[0];
                     let allDocumentNumbers = documents.map(item => item.number).filter(val => !isNaN(val));
@@ -72,7 +73,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                             { title: 'Firma', dataProperty: 'company', component: 'text'} as DetailsViewField,
                             { title: 'Ilość stron', dataProperty: 'pages', component: 'text'} as DetailsViewField,
                             { title: 'Opis', dataProperty: 'description', component: 'text'} as DetailsViewField,
-                            { title: 'Kategoria dokumentu', dataProperty: 'category', component: 'text'} as DetailsViewField,
+                            { title: 'Kategoria dokumentu', dataProperty: 'category', component: 'list', required: false, options: { referenceList: documentCategoryList, referenceListIdField: 'name', referenceListSortField: 'name', referenceListSortDescending: false } as DetailsViewFieldListOptions} as DetailsViewField,
                             { title: 'Numer faktury', dataProperty: 'invoiceNumber', component: 'text'} as DetailsViewField,
                             { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title', referenceListSortField: 'title', referenceListSortDescending: true } as DetailsViewFieldListOptions} as DetailsViewField,
                             { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,

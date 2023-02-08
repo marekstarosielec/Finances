@@ -8,6 +8,7 @@ import { CaseListService } from './api/caseList.service';
 import { CurrenciesService } from './api/currencies.service';
 import { CurrencyExchangeService } from './api/currencyExchange.service';
 import { DatasetService } from './api/dataset.service';
+import { DocumentCategoryService } from './api/documentCategory.service';
 import { DocumentsService } from './api/documents.service';
 import { ElectricityService } from './api/electricity.service';
 import { FileService } from './api/file.service';

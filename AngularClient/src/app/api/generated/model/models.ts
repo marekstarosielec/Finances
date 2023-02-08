@@ -10,6 +10,7 @@ export * from './datasetState';
 export * from './decompressFileInstruction';
 export * from './decompressFileResult';
 export * from './document';
+export * from './documentCategory';
 export * from './electricity';
 export * from './gas';
 export * from './mazda';

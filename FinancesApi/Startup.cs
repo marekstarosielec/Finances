@@ -35,6 +35,7 @@ namespace FinancesApi
             services.AddSingleton<ISkodaService, SkodaService>();
             services.AddSingleton<IMazdaService, MazdaService>();
             services.AddSingleton<IElectricityService, ElectricityService>();
+            services.AddSingleton<IDocumentCategoryService, DocumentCategoryService>();
             services.AddSingleton<IGasService, GasService>();
             services.AddSingleton<ITutoringListService, TutoringListService>();
             services.AddSingleton<ITutoringService, TutoringService>(); 
@@ -53,6 +54,7 @@ namespace FinancesApi
             services.AddSingleton(typeof(SkodaDataFile));
             services.AddSingleton(typeof(MazdaDataFile));
             services.AddSingleton(typeof(ElectricityDataFile));
+            services.AddSingleton(typeof(DocumentCategoryDataFile));
             services.AddSingleton(typeof(GasDataFile));
             services.AddSingleton(typeof(TutoringListDataFile));
             services.AddSingleton(typeof(TutoringDataFile));

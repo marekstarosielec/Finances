@@ -64,7 +64,6 @@ namespace FinancesApi.Services
                 result.ForEach(r => _documentsDataFile.Value.Add(r));
                 _documentsDataFile.Save();
             }
-
             return string.IsNullOrWhiteSpace(id)
                  ? result
                  : result.Where(d => string.Equals(id, d.Id, StringComparison.InvariantCultureIgnoreCase)).ToList();

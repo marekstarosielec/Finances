@@ -52,7 +52,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
                             { title: 'Kwota', dataProperty: 'amount', component: 'amount', required: true, options: { currencyList: currencies, currencyListIdField: 'code', currencyDataProperty: 'currency'} as DetailsViewFieldAmountOptions} as DetailsViewField,
                             { title: 'Opis w banku', dataProperty: 'bankInfo', component: 'multiline-text', readonly: true} as DetailsViewField,
                             { title: 'Komentarz', dataProperty: 'comment', component: 'text'} as DetailsViewField,
-                            { title: 'Szczegóły', dataProperty: 'details', component: 'text'} as DetailsViewField,
+                          //  { title: 'Szczegóły', dataProperty: 'details', component: 'text'} as DetailsViewField,
                             { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
                             { title: 'Sprawa', dataProperty: 'caseName', component: 'list', required: false, options: { referenceList: caseList, referenceListIdField: 'name'} as DetailsViewFieldListOptions} as DetailsViewField,
                             { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title', referenceListSortField: 'title', referenceListSortDescending: true} as DetailsViewFieldListOptions} as DetailsViewField,
