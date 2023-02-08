@@ -72,6 +72,7 @@ export class GridComponent implements OnInit, OnDestroy{
     totalNumberOfRecords: number = 0;
 
     params: QueryParamsHandler;
+
     dataSubject = new Subject();
 
     constructor(
@@ -81,6 +82,7 @@ export class GridComponent implements OnInit, OnDestroy{
     }
 
     ngOnInit() {
+        window.addEventListener('scroll', this.scrollEvent, true);
         this.route.queryParams.subscribe((qp: Params) => {
             this.params = new QueryParamsHandler(this.name, qp, this.initialSortColumn, this.initialSortOrder);
             this.prepareView();
@@ -89,7 +91,18 @@ export class GridComponent implements OnInit, OnDestroy{
 
     ngOnDestroy()
     {
-  
+        window.removeEventListener('scroll', this.scrollEvent, true);
+    }
+
+    scrollEvent = (event): void => {
+        if (!this.data) {
+            return;
+        }
+        let v = event.target.scrollingElement.scrollTop;
+        //Some strange offset in order to find the same position.
+        if (v > 70)
+            v=v-70;
+        this.params.setTop(v);
     }
 
     sort(column: GridColumn)
@@ -106,6 +119,7 @@ export class GridComponent implements OnInit, OnDestroy{
             return;
         }
 
+        
         let data = this.data;
 
         this.totalNumberOfRecords = data.length;
@@ -114,6 +128,12 @@ export class GridComponent implements OnInit, OnDestroy{
         const filteredData = l.clone(data);
         data = this.applySorting(data);
         data = this.applyMaximumVisibleNumberOfRecords(data);
+
+        if (this.params.top > 0){
+            setTimeout(() => {
+                window.scrollBy({top: this.params.top});
+            });
+        }
 
         const displayedData = l.clone(data);
         this.dataSubject.next(data);
@@ -149,10 +169,13 @@ export class GridComponent implements OnInit, OnDestroy{
     }
 
     selectRecord(row: any, column: GridColumn) { 
-        if (column.customEvent) {
-            this.rowClicked.emit({ row: row, column: column} as RowClickedData)
-        } else {
-            this.router.navigate([row.id], { relativeTo: this.route});
-        }
+        this.navigate();
+        setTimeout(() => {
+            if (column.customEvent) {
+                this.rowClicked.emit({ row: row, column: column} as RowClickedData)
+            } else {
+                this.router.navigate([row.id], { relativeTo: this.route});
+            }
+        });
     }
 }

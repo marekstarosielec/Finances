@@ -14,6 +14,7 @@ export class QueryParamsHandler {
     sortOrder: number = -1;
     filters: FilterDefinition[] = [];
     maximumVisibleNumberOfRecords: number = 100;
+    top: number = 0;
 
     constructor(name: string, params: Params, initialSortColumn: string, initialSortOrder: number) {
         this.name = name;
@@ -21,6 +22,7 @@ export class QueryParamsHandler {
         this.readSort(params, initialSortColumn, initialSortOrder);
         this.readFilter(params);
         this.readMaximumVisibleNumberOfRecords(params);
+        this.readTop(params);
     }
 
     readSort(params: Params, initialSortColumn: string, initialSortOrder: number) {
@@ -52,6 +54,10 @@ export class QueryParamsHandler {
         this.maximumVisibleNumberOfRecords = params[this.name+'_maximumVisibleNumberOfRecords'] ? params[this.name+'_maximumVisibleNumberOfRecords'] : 100;
     }
 
+    readTop(params: Params) {
+        this.top = params[this.name+'_top'] ? params[this.name+'_top'] : 0;
+    }
+
     setSort(column: string) {
         if (column === this.sortColumn){
             this.sortOrder = this.sortOrder * (-1);
@@ -59,6 +65,10 @@ export class QueryParamsHandler {
             this.sortColumn = column;
             this.sortOrder = -1;
         }
+    }
+
+    setTop(top: number) {
+        this.top = top;
     }
 
     setFilter(column: string, filterValue: string, appendix?: string){
@@ -88,6 +98,7 @@ export class QueryParamsHandler {
             });
         }
         queryParams[this.name + '_maximumVisibleNumberOfRecords'] = this.maximumVisibleNumberOfRecords;
+        queryParams[this.name + '_top'] = this.top;
         return queryParams;
     }
 }

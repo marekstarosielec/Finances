@@ -60,7 +60,6 @@ export class ListPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-
         if (!this.toolbarElements) {
             this.toolbarElements = [{ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew}];
         }
