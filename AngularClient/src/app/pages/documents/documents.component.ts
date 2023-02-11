@@ -63,6 +63,7 @@ export class DocumentsComponent implements OnInit{
                 { title: 'Opis', dataProperty: 'description', component: 'text'},
                 { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text', noWrap: true, subDataProperty1: 'category', filterOptions: { additionalPropertyToSearch1: 'category'}},
                 { title: 'Relacje', dataProperty: '', component: 'text', subDataProperty1: 'person', subDataProperty2: 'car', subDataProperty3: 'relatedObject', subDataProperty4: 'caseName', subDataProperty5: 'settlement', filterOptions: { additionalPropertyToSearch1: 'person', additionalPropertyToSearch2: 'car', additionalPropertyToSearch3: 'relatedObject', additionalPropertyToSearch4: 'caseName', additionalPropertyToSearch5: 'settlement' } as TextFilterOptions},
+                { title: 'Tranzakcja', dataProperty: 'transactionCategory', component: 'text', subDataProperty1: 'transactionAmount', subDataProperty2: 'transactionBankInfo', subDataProperty3: 'transactionComment', filterOptions: { additionalPropertyToSearch1: 'transactionAmount', additionalPropertyToSearch2: 'transactionBankInfo', additionalPropertyToSearch3: 'transactionComment' } as TextFilterOptions},
                 { title: '', dataProperty: '', component: 'icon', image: 'nc-image', customEvent: true},
             ];
 

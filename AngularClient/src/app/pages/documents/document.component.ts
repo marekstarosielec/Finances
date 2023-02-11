@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { ActivatedRoute, Params } from "@angular/router";
-import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult, SettlementService, DocumentCategoryService } from "app/api/generated";
+import { ActivatedRoute, Params, Router } from "@angular/router";
+import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult, SettlementService, DocumentCategoryService, TransactionsService, Transaction } from "app/api/generated";
 import { DetailsViewComponent, DetailsViewDefinition, DetailsViewField, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
@@ -54,18 +54,34 @@ export class DocumentComponent implements OnInit, OnDestroy {
         private settlementService: SettlementService,
         private modalService: NgbModal,
         private location: Location,
-        private documentCategoryService: DocumentCategoryService) {  
+        private documentCategoryService: DocumentCategoryService,
+        private transactionsService: TransactionsService,
+        private router: Router) {  
     }
 
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe((params: Params) => {
             forkJoin([
-                this.documentsService.documentsGet(), this.caseListService.caseListGet(), this.settlementService.settlementGet(), this.documentCategoryService.documentCategoryGet()])
-                .pipe(take(1)).subscribe(([documents, caseList, settlementList, documentCategoryList]) => {
+                this.documentsService.documentsGet(), this.caseListService.caseListGet(), this.settlementService.settlementGet(), this.documentCategoryService.documentCategoryGet(), this.transactionsService.transactionsGet()])
+                .pipe(take(1)).subscribe(([documents, caseList, settlementList, documentCategoryList, transactionList]) => {
                     this.documents = documents as Document[];
                     this.data = documents.filter(t => t.id == params['id'])[0];
                     let allDocumentNumbers = documents.map(item => item.number).filter(val => !isNaN(val));
                     const maxNumber = Math.max(...allDocumentNumbers) + 1; 
+                    
+                    const dateFrom = new Date(this.data.date);
+                    dateFrom.setMonth(dateFrom.getMonth()-1);
+                    const dateTo = new Date(this.data.date);
+                    dateTo.setMonth(dateTo.getMonth()+1);
+                    const transactionsInDropdown = transactionList.filter(t => t.category!='Oszczędzanie' && new Date(t.date) >= dateFrom && new Date(t.date) <= dateTo).map(t => ({ 
+                        id: t.id,
+                        date: t.date,
+                        category: t.category,
+                        description: t.description,
+                        amount: t.amount,
+                        text: this.buildTransactionText(t)
+                    }));
+
                     this.viewDefinition = {
                         fields: [
                             { title: 'Numer', dataProperty: 'number', component: 'text', required: true, defaultValue: maxNumber } as DetailsViewField,
@@ -81,7 +97,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                             { title: 'Rzecz', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
                             { title: 'Gwarancja', dataProperty: 'guarantee', component: 'text'} as DetailsViewField,
                             { title: 'Sprawa', dataProperty: 'caseName', component: 'list', required: false, options: { referenceList: caseList, referenceListIdField: 'name'} as DetailsViewFieldListOptions} as DetailsViewField,
-                            
+                            { title: 'Tranzakcja', dataProperty: 'transactionId', component: 'list', required: false, options: { referenceList: transactionsInDropdown, referenceListIdField: 'id', referenceListTextField: 'text', referenceListSortField: 'date', referenceListSortDescending: true} as DetailsViewFieldListOptions} as DetailsViewField,
                         ]
                     };
 
@@ -89,6 +105,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                         { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges},
                         { name: 'delete', title: 'Usuń', defaultAction: ToolbarElementAction.Delete},
                         { name: 'open', image: 'nc-image'},
+                        { name: 'transaction', title: 'Tranzakcja'} as ToolbarElement,
                         { name: 'phone', title: 'Telefon', align: 'right'},
                         { name: 'internet', title: 'Internet', align: 'right'},
                         { name: 'ciklumTools', title: 'Ciklum narzędzia', align: 'right'},
@@ -105,6 +122,26 @@ export class DocumentComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(){
         this.routeSubscription.unsubscribe();
+    }
+
+    buildTransactionText(transaction : Transaction) : string {
+        let result: string = '';
+        const date = new Date(transaction.date);
+        let month = (date.getMonth()+1).toString();
+        if (month.length < 2) {
+            month = '0' + month;
+        }
+        let day = (date.getDate()).toString();
+        if (day.length < 2) {
+            day = '0' + day;
+        }
+        result += date.getFullYear().toString()+'-'+month+'-'+day;
+
+        result += ' ' + transaction.category;
+        result += ' ' + transaction.bankInfo;
+        result += ' ' + transaction.amount;
+        if (transaction.comment) result += ' ' + transaction.comment;
+        return result;
     }
 
     toolbarElementClick(toolbarElementWithData: ToolbarElementWithData) {
@@ -138,6 +175,8 @@ export class DocumentComponent implements OnInit, OnDestroy {
             } else {
                 this.openFile();
             }
+        } else if (toolbarElementWithData.toolbarElement.name === 'transaction') {
+            this.openTransaction(toolbarElementWithData.data?.transactionId);
         } else if (toolbarElementWithData.toolbarElement.name === 'mazda') {
             let defaultDate = new Date();
             let invoiceNumberDate='XX/XX'
@@ -295,5 +334,13 @@ export class DocumentComponent implements OnInit, OnDestroy {
         this.fileService.filePost({ number: number, password: this.settingService.CurrentPassword}).pipe(take(1)).subscribe((result: DecompressFileResult) => {
             window.open("http://127.0.0.1:8080" + result.path, "_blank", "noopener noreferrer");
         });
+    }
+
+    openTransaction(transactionId: string) {
+        if (!transactionId)
+            return;
+        
+        const url = '/#' + this.router.createUrlTree(['/transactions/' + transactionId]).toString();
+        window.open(url, '_blank');
     }
 }

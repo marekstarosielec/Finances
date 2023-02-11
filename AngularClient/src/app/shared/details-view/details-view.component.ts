@@ -22,6 +22,7 @@ export interface DetailsViewField {
 export interface DetailsViewFieldListOptions {
     referenceList: any[];
     referenceListIdField: string;
+    referenceListTextField: string;
     referenceListSortField?: string;
     referenceListSortDescending?: boolean;
     usageIndexPeriodDays?: number;
@@ -209,6 +210,7 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
             fieldsToUpdate = [];
             Object.keys(currentData).forEach(key => {
                 if (currentData[key] != dataBeforeChange[key]) {
+                    debugger;
                     fieldsToUpdate.push(this.viewDefinition.fields.filter(f => f.dataProperty === key)[0])
                 }
             });
@@ -282,6 +284,10 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
     private buildReferenceListOnUsageIndex(field: DetailsViewField) : any[] {
         let referenceList;
         
+        if (!field.options?.referenceListTextField) {
+            field.options.referenceListTextField = field.options?.referenceListIdField
+        }
+
         if (!field.options?.referenceListSortField)
             referenceList = field.options?.referenceListIdField 
             ? fs.sort(field.options?.referenceList).by([

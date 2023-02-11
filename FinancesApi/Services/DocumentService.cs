@@ -12,7 +12,7 @@ namespace FinancesApi.Services
     public interface IDocumentService
     {
         IList<Document> GetDocuments(string id = null);
-        void SaveDocument(Document document);
+        void SaveDocument(Document document, bool resetTransactionLink = true);
         void DeleteDocument(string id);
     }
 
@@ -20,11 +20,14 @@ namespace FinancesApi.Services
     {
         private readonly DocumentsDataFile _documentsDataFile;
         private readonly IConfiguration _configuration;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DocumentService(DocumentsDataFile documentsDataFile, IConfiguration configuration)
+
+        public DocumentService(DocumentsDataFile documentsDataFile, IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _documentsDataFile = documentsDataFile;
             _configuration = configuration;
+            _serviceProvider = serviceProvider;
         }
 
         public IList<Document> GetDocuments(string id = null)
@@ -64,6 +67,7 @@ namespace FinancesApi.Services
                 result.ForEach(r => _documentsDataFile.Value.Add(r));
                 _documentsDataFile.Save();
             }
+       
             return string.IsNullOrWhiteSpace(id)
                  ? result
                  : result.Where(d => string.Equals(id, d.Id, StringComparison.InvariantCultureIgnoreCase)).ToList();
@@ -80,10 +84,12 @@ namespace FinancesApi.Services
             return documents;
         }
 
-        public void SaveDocument(Document document)
+        public void SaveDocument(Document document, bool resetTransactionLink = true)
         {
+            var transactionService = (ITransactionsService) _serviceProvider.GetService(typeof(ITransactionsService));
             _documentsDataFile.Load();
             var edited = _documentsDataFile.Value.FirstOrDefault(d => d.Number == document.Number);
+
             if (edited == null)
             {
                 if (string.IsNullOrWhiteSpace(document.Id))
@@ -105,6 +111,59 @@ namespace FinancesApi.Services
                 edited.Guarantee = document.Guarantee;
                 edited.CaseName = document.CaseName;
                 edited.Settlement = document.Settlement;
+                
+                if (resetTransactionLink && edited.TransactionId != document.TransactionId)
+                {
+                    if (!string.IsNullOrWhiteSpace(edited.TransactionId))
+                    {
+                        //Transaction changed. Detouch previous one.
+                        var previousTransaction = transactionService.GetTransactions(edited.TransactionId).FirstOrDefault();
+                        if (previousTransaction != null)
+                        {
+                            previousTransaction.DocumentId = null;
+                            previousTransaction.DocumentCategory = null;
+                            previousTransaction.DocumentInvoiceNumber = null;
+                            previousTransaction.DocumentNumber = null;
+                            transactionService.SaveTransaction(previousTransaction, resetDocumentLink: false);
+                        }
+                    }
+
+                    //New transaction attached.
+                    if (!string.IsNullOrWhiteSpace(document.TransactionId))
+                    { 
+                        var newTransaction = transactionService.GetTransactions(document.TransactionId).FirstOrDefault();
+                        newTransaction.DocumentId = document.Id;
+                        newTransaction.DocumentCategory = document.Category;
+                        newTransaction.DocumentInvoiceNumber = document.InvoiceNumber;
+                        newTransaction.DocumentNumber = document.Number;
+                        transactionService.SaveTransaction(newTransaction, resetDocumentLink: false);
+                    }  
+
+                    //Save transaction information in document
+                    if (!string.IsNullOrWhiteSpace(document.TransactionId))
+                    {
+                        var relatedTransaction = transactionService.GetTransactions(document.TransactionId).FirstOrDefault();
+                        edited.TransactionCategory = relatedTransaction?.Category;
+                        edited.TransactionAmount = relatedTransaction?.Amount;
+                        edited.TransactionBankInfo = relatedTransaction?.BankInfo;
+                        edited.TransactionComment = relatedTransaction?.Comment;
+                    } else
+                    {
+                        edited.TransactionCategory = null;
+                        edited.TransactionAmount = null;
+                        edited.TransactionBankInfo = null;
+                        edited.TransactionComment = null;
+                    }
+                }
+                if (!resetTransactionLink)
+                {
+                    edited.TransactionCategory = document.TransactionCategory;
+                    edited.TransactionAmount = document.TransactionAmount;
+                    edited.TransactionBankInfo = document.TransactionBankInfo;
+                    edited.TransactionComment = document.TransactionComment;
+                }
+                edited.TransactionId = document.TransactionId;
+
             }
             _documentsDataFile.Save();
         }

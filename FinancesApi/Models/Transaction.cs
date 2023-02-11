@@ -63,5 +63,13 @@ namespace FinancesApi.Models
         public string CaseName { get; set; }
 
         public string Settlement { get; set; }
+
+        public string DocumentId { get; set; }
+
+        public string DocumentCategory { get; set; }
+
+        public string DocumentInvoiceNumber { get; set; }
+
+        public int? DocumentNumber { get; set; }
     }
 }

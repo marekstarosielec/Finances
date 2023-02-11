@@ -26,5 +26,10 @@ export interface Document {
     guarantee?: string | null;
     caseName?: string | null;
     settlement?: string | null;
+    transactionId?: string | null;
+    transactionCategory?: string | null;
+    transactionAmount?: number | null;
+    transactionBankInfo?: string | null;
+    transactionComment?: string | null;
 }
 

@@ -18,5 +18,15 @@ namespace FinancesApi.Models
         public string Guarantee { get; set; }
         public string CaseName { get; set; }
         public string Settlement { get; set; }
+
+        public string TransactionId { get; set; }
+
+        public string TransactionCategory { get; set; }
+
+        public decimal? TransactionAmount { get; set; }
+
+        public string TransactionBankInfo { get; set; }
+
+        public string TransactionComment { get; set; }
     }
 }

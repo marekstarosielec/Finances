@@ -9,7 +9,7 @@ namespace FinancesApi.Services
     public interface ITransactionsService
     {
         IList<Transaction> GetTransactions(string id = null);
-        void SaveTransaction(Transaction transaction, bool overwriteEditableData = true);
+        void SaveTransaction(Transaction transaction, bool overwriteEditableData = true, bool resetDocumentLink = true);
         void DeleteTransaction(string id);
 
         IList<TransactionAccount> GetAccounts();
@@ -34,17 +34,20 @@ namespace FinancesApi.Services
         private readonly TransactionAccountsDataFile _transactionAccountsDataFile;
         private readonly TransactionCategoriesDataFile _transactionCategoriesDataFile;
         private readonly TransactionAutoCategoriesDataFile _transactionAutoCategoriesDataFile;
+        private readonly IDocumentService _documentService;
 
         public TransactionsService( 
             TransactionsDataFile transactionsFile,
             TransactionAccountsDataFile transactionAccountsDataFile,
             TransactionCategoriesDataFile transactionCategoriesDataFile,
-            TransactionAutoCategoriesDataFile transactionAutoCategoriesDataFile)
+            TransactionAutoCategoriesDataFile transactionAutoCategoriesDataFile,
+            IDocumentService documentService)
         {
             _transactionsFile = transactionsFile;
             _transactionAccountsDataFile = transactionAccountsDataFile;
             _transactionCategoriesDataFile = transactionCategoriesDataFile;
             _transactionAutoCategoriesDataFile = transactionAutoCategoriesDataFile;
+            _documentService = documentService;
         }
 
         public IList<TransactionAccount> GetAccounts()
@@ -91,14 +94,15 @@ namespace FinancesApi.Services
                 : _transactionsFile.Value.Where(t => string.Equals(id, t.Id, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
-        public void SaveTransaction(Transaction transaction, bool overwriteEditableData=true)
+        public void SaveTransaction(Transaction transaction, bool overwriteEditableData=true, bool resetDocumentLink = true)
         {
             _transactionsFile.Load();
             var editedTransaction = _transactionsFile.Value.FirstOrDefault(t => string.Equals(transaction.Id, t.Id, StringComparison.InvariantCultureIgnoreCase));
+            
             if (editedTransaction == null)
             {
                 if (string.IsNullOrWhiteSpace(transaction.Id))
-                    transaction.Id = Guid.NewGuid().ToString();
+                    transaction.Id = Guid.NewGuid().ToString();  
                 _transactionsFile.Value.Add(transaction);
             }
             else
@@ -121,6 +125,58 @@ namespace FinancesApi.Services
                     editedTransaction.Details = transaction.Details;
                     editedTransaction.CaseName = transaction.CaseName;
                     editedTransaction.Settlement = transaction.Settlement;
+                    
+                    if (resetDocumentLink && editedTransaction.DocumentId != transaction.DocumentId)
+                    {
+                        if (!string.IsNullOrWhiteSpace(editedTransaction.DocumentId))
+                        {
+                            //Document changed. Detouch previous one.
+                            var previousDocument = _documentService.GetDocuments(editedTransaction.DocumentId).FirstOrDefault();
+                            if (previousDocument != null)
+                            {
+                                previousDocument.TransactionId = null;
+                                previousDocument.TransactionCategory = null;
+                                previousDocument.TransactionAmount = null;
+                                previousDocument.TransactionBankInfo = null;
+                                previousDocument.TransactionComment = null;
+                                _documentService.SaveDocument(previousDocument, false);
+                            }
+                        }
+
+                        //New document attached.
+                        if (!string.IsNullOrWhiteSpace(transaction.DocumentId))
+                        {
+                            var newDocument = _documentService.GetDocuments(transaction.DocumentId).FirstOrDefault();
+                            newDocument.TransactionId = transaction.Id;
+                            newDocument.TransactionCategory = transaction.Category;
+                            newDocument.TransactionAmount = transaction.Amount;
+                            newDocument.TransactionBankInfo = transaction.BankInfo;
+                            newDocument.TransactionComment = transaction.Comment;
+                            _documentService.SaveDocument(newDocument, false);
+                        }
+
+                        //Save document information in transaction
+                        if (!string.IsNullOrWhiteSpace(transaction.DocumentId))
+                        {
+                            var relatedDocument = _documentService.GetDocuments(transaction.DocumentId).FirstOrDefault();
+                            editedTransaction.DocumentCategory = relatedDocument?.Category;
+                            editedTransaction.DocumentInvoiceNumber = relatedDocument?.InvoiceNumber;
+                            editedTransaction.DocumentNumber = relatedDocument?.Number;
+                        }else
+                        {
+                            editedTransaction.DocumentCategory = null;
+                            editedTransaction.DocumentInvoiceNumber = null;
+                            editedTransaction.DocumentNumber = null;
+                        }
+                    }
+                    if (!resetDocumentLink)
+                    {
+                        editedTransaction.DocumentCategory = transaction.DocumentCategory;
+                        editedTransaction.DocumentInvoiceNumber = transaction.DocumentInvoiceNumber;
+                        editedTransaction.DocumentNumber = transaction.DocumentNumber;
+                    }
+                    editedTransaction.DocumentId = transaction.DocumentId;
+
                 }
             }
             _transactionsFile.Save();

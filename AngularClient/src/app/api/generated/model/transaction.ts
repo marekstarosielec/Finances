@@ -30,5 +30,9 @@ export interface Transaction {
     person?: string | null;
     caseName?: string | null;
     settlement?: string | null;
+    documentId?: string | null;
+    documentCategory?: string | null;
+    documentInvoiceNumber?: string | null;
+    documentNumber?: number | null;
 }
 
