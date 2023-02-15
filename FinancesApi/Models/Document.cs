@@ -25,6 +25,8 @@ namespace FinancesApi.Models
 
         public decimal? TransactionAmount { get; set; }
 
+        public string TransactionCurrency { get; set; }
+
         public string TransactionBankInfo { get; set; }
 
         public string TransactionComment { get; set; }

@@ -21,6 +21,7 @@ export interface GridColumn {
     alignment?: string;
     image?: string;
     conditionalFormatting?: string;
+    skipConditionalFormattingProperty?: string;
     noWrap?: boolean;
     customEvent?: boolean;
 }

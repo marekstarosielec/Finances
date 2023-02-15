@@ -145,12 +145,14 @@ namespace FinancesApi.Services
                         var relatedTransaction = transactionService.GetTransactions(document.TransactionId).FirstOrDefault();
                         edited.TransactionCategory = relatedTransaction?.Category;
                         edited.TransactionAmount = relatedTransaction?.Amount;
+                        edited.TransactionCurrency = relatedTransaction?.Currency;
                         edited.TransactionBankInfo = relatedTransaction?.BankInfo;
                         edited.TransactionComment = relatedTransaction?.Comment;
                     } else
                     {
                         edited.TransactionCategory = null;
                         edited.TransactionAmount = null;
+                        edited.TransactionCurrency = null;
                         edited.TransactionBankInfo = null;
                         edited.TransactionComment = null;
                     }
@@ -159,6 +161,7 @@ namespace FinancesApi.Services
                 {
                     edited.TransactionCategory = document.TransactionCategory;
                     edited.TransactionAmount = document.TransactionAmount;
+                    edited.TransactionCurrency = document.TransactionCurrency;
                     edited.TransactionBankInfo = document.TransactionBankInfo;
                     edited.TransactionComment = document.TransactionComment;
                 }

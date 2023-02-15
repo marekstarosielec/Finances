@@ -29,6 +29,7 @@ export interface Document {
     transactionId?: string | null;
     transactionCategory?: string | null;
     transactionAmount?: number | null;
+    transactionCurrency?: string | null;
     transactionBankInfo?: string | null;
     transactionComment?: string | null;
 }

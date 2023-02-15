@@ -78,7 +78,7 @@ export class TransactionsComponent implements OnInit{
         this.toolbarElements.push({ name: 'savings', title: 'Oszczędzanie' });  
         this.toolbarElements.push({ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew});
         this.columns = [ 
-           // { title: 'id', dataProperty: 'id', component: 'text'},
+           //    { title: 'id', dataProperty: 'id', component: 'text'},
             { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true},
             { title: 'Konto', dataProperty: 'account', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions},
             { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions},

@@ -40,8 +40,8 @@
             <td *ngFor="let column of columns" 
               [class.deleted]="row.deleted" 
               [class.alignRight]="column.alignment=='right'"
-              [class.negative]="column.conditionalFormatting=='amount' && row[column.dataProperty]<0"
-              [class.positive]="column.conditionalFormatting=='amount' && row[column.dataProperty]>0"
+              [class.negative]="column.conditionalFormatting=='amount' && row[column.dataProperty]<0 && (!column.skipConditionalFormattingProperty || !row[column.skipConditionalFormattingProperty])"
+              [class.positive]="column.conditionalFormatting=='amount' && row[column.dataProperty]>0 && (!column.skipConditionalFormattingProperty || !row[column.skipConditionalFormattingProperty])"
               [class.noWrap]="column.noWrap"
               (click)="selectRecord(row, column);">
               <p *ngIf="column.dataProperty && column.component!='icon'">{{row[column.dataProperty] | dynamic:column.pipe}}

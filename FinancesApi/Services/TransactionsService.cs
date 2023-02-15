@@ -137,6 +137,7 @@ namespace FinancesApi.Services
                                 previousDocument.TransactionId = null;
                                 previousDocument.TransactionCategory = null;
                                 previousDocument.TransactionAmount = null;
+                                previousDocument.TransactionCurrency = null;
                                 previousDocument.TransactionBankInfo = null;
                                 previousDocument.TransactionComment = null;
                                 _documentService.SaveDocument(previousDocument, false);
@@ -150,6 +151,7 @@ namespace FinancesApi.Services
                             newDocument.TransactionId = transaction.Id;
                             newDocument.TransactionCategory = transaction.Category;
                             newDocument.TransactionAmount = transaction.Amount;
+                            newDocument.TransactionCurrency = transaction.Currency;
                             newDocument.TransactionBankInfo = transaction.BankInfo;
                             newDocument.TransactionComment = transaction.Comment;
                             _documentService.SaveDocument(newDocument, false);

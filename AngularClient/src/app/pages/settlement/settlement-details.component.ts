@@ -6,7 +6,6 @@ import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "ap
 import { forkJoin, Subscription } from "rxjs";
 import { take } from "rxjs/operators";
 import { Location } from '@angular/common';
-import { FormGroup, FormsModule } from "@angular/forms";
 import { GridColumn, RowClickedData } from "app/shared/grid/grid.component";
 import { ListFilterOptions } from "app/shared/list-filter/list-filter.component";
 import { TextFilterOptions } from "app/shared/text-filter/text-filter.component";
@@ -25,11 +24,19 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
         (valueChange)="valueChange($event)"
         ></details-view>
         
-        <grid name="sublist" [columns]="columns" [data]="subList"
+        <grid name="invoices" [columns]="invoiceColumns" [data]="invoiceData"
+            initialSortColumn="sortOrder" initialSortOrder="1"
+            (rowClicked)="invoicesClickedEvent($event)">
+        </grid>
+        <grid name="money" [columns]="moneyColumns" [data]="moneyData"
             initialSortColumn="date" initialSortOrder="1"
-            (rowClicked)="rowClickedEvent($event)"></grid>
-
-            <ng-template #password let-modal>
+            (rowClicked)="moneyClickedEvent($event)">
+        </grid>
+       
+        <grid name="sublist" [columns]="columns" [data]="subList"
+        initialSortColumn="date" initialSortOrder="1"
+        (rowClicked)="rowClickedEvent($event)"></grid>
+        <ng-template #password let-modal>
             <div class="modal-header">
                 <h4 class="modal-title" id="modal-basic-title">Podaj hasło</h4>
             </div>
@@ -56,6 +63,10 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
     @ViewChild('password', { static: true }) password: ElementRef;   
     public columns: GridColumn[];
     public subList: Transaction[];
+    public invoiceColumns: GridColumn[];
+    public invoiceData: Transaction[];
+    public moneyColumns: GridColumn[];
+    public moneyData: any[];
 
     constructor(private settlementService: SettlementService, 
         private balancesService: BalancesService,
@@ -89,6 +100,73 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
                         { title: 'Opis', dataProperty: 'description', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true},
                         { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
                     ];
+
+                    this.invoiceColumns = [ 
+                        { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
+                        { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions, customEvent: true},
+                        { title: 'Numer', dataProperty: 'invoiceNumber', component: 'text', customEvent: true},
+                        { title: 'Opis', dataProperty: 'description', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true},
+                        { title: 'Kwota', dataProperty: 'transactionAmount', additionalDataProperty1: 'transactionCurrency',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'transactionCurrency'} as AmountFilterOptions, customEvent: true},
+                        { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
+                    ];
+                    this.invoiceData = documents.filter(d => d.category == "Faktura otrzymana" || d.category == "Faktura wystawiona");
+
+                    this.moneyColumns = [ 
+                        { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
+                        { title: 'Konto z', dataProperty: 'accountFrom', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
+                        { title: 'Konto do', dataProperty: 'accountTo', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
+                        { title: 'EUR', dataProperty: 'amountEUR', additionalDataProperty1: 'currencyEUR',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', skipConditionalFormattingProperty: 'skipFormatting', component: 'amount', filterOptions: { currencyDataProperty: 'currencyEUR'} as AmountFilterOptions, customEvent: true},
+                        { title: 'PLN', dataProperty: 'amountPLN', additionalDataProperty1: 'currencyPLN',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currencyPLN'} as AmountFilterOptions, customEvent: true},
+                        { title: 'Kurs', dataProperty: 'exchangeRate', alignment: 'right', noWrap:true, component: 'text', customEvent: true},
+                    ];
+
+                    const salaryInvoice = documents.filter(d => d.category === "Faktura wystawiona")[0];
+                    const salary = transactions.filter(t => t.id === salaryInvoice.transactionId).map(t => (
+                        {
+                            ...t,
+                            accountFrom: t.account,
+                            currencyEUR: 'EUR',
+                            amountEUR: t.amount,
+                            sortOrder: 10
+                        }));
+                    const transfers = transactions
+                        .filter(t => t.category === "Transfer" 
+                            && !t.description.endsWith(' NATYCH. TRANSAKCJA WALUT.')
+                            && t.amount < 0)
+                        .map(t => (
+                            {
+                                ...t,
+                                accountFrom: t.account,
+                                accountTo: transactions.filter(t2 => t2.date === t.date && t2.amount === t.amount * -1)[0]?.account,
+                                currencyEUR: 'EUR',
+                                amountEUR: t.amount * -1,
+                                sortOrder: t.date,
+                                skipFormatting: true
+                            }));
+                        const convertions = transactions
+                            .filter(t => t.category === "Transfer" 
+                                && t.description == 'OBCIĄŻ. NATYCH. TRANSAKCJA WALUT.')
+                            .map(t => ({
+                                ...t,
+                                matching: transactions.filter(t2 => 
+                                    t2.date === t.date 
+                                    && t2.description === 'UZNANIE NATYCH. TRANSAKCJA WALUT.'
+                                    && t2.comment === t.comment)[0]
+                            }))
+                            .map(t => (
+                                {
+                                    ...t,
+                                    accountFrom: t.account,
+                                    accountTo: t.matching?.account,
+                                    currencyEUR: 'EUR',
+                                    amountEUR: t.amount,
+                                    currencyPLN: 'PLN',
+                                    amountPLN: t.matching?.amount,
+                                    sortOrder: t.date,
+                                    exchangeRate: Number((t.matching?.amount / t.amount).toFixed(4)) * -1
+                                }));       
+                    this.moneyData = [...salary, ...transfers, ...convertions];
+
 
                     if (!this.data.closed)
                     {
@@ -181,6 +259,27 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
         data.exchangeRatio = !data['eurSold'] || data['eurSold'] == 0 ? undefined : data.incomeGrossPln / data['eurSold'] * (-1)
     }
 
+    invoicesClickedEvent(rowClickedData: RowClickedData) {
+        if (rowClickedData.column.dataProperty==='showImage') {
+            if (!this.settingService.CurrentPassword)
+            {
+                this.modalService.open(this.password, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+                    this.settingService.CurrentPassword = result;
+                    this.openFile(rowClickedData);
+                 }, (reason) => { });
+            } else {
+                this.openFile(rowClickedData);
+            }
+        } else if (rowClickedData.column.dataProperty==='transactionAmount') {
+            if (rowClickedData.row['transactionId']) {
+                this.router.navigate(['transactions', rowClickedData.row['transactionId']]);
+            }
+        } else
+            this.router.navigate(['documents', rowClickedData.row['id']]);
+    }
+
+    moneyClickedEvent(rowClickedData: RowClickedData) {
+    }
     rowClickedEvent(rowClickedData: RowClickedData) {
         if (rowClickedData.row['rowClick']==='document' && rowClickedData.column.dataProperty!=='showImage') {
             this.router.navigate(['documents', rowClickedData.row['id']]);
