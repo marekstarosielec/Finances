@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult, SettlementService, DocumentCategoryService, TransactionsService, Transaction } from "app/api/generated";
-import { DetailsViewComponent, DetailsViewDefinition, DetailsViewField, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
+import { DocumentsService, Document, CaseListService, FileService, DecompressFileResult, SettlementService, DocumentCategoryService, TransactionsService, Transaction, CurrenciesService } from "app/api/generated";
+import { DetailsViewComponent, DetailsViewDefinition, DetailsViewField, DetailsViewFieldAmountOptions, DetailsViewFieldListOptions } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
 import { take } from "rxjs/operators";
@@ -56,14 +56,15 @@ export class DocumentComponent implements OnInit, OnDestroy {
         private location: Location,
         private documentCategoryService: DocumentCategoryService,
         private transactionsService: TransactionsService,
+        private currenciesService: CurrenciesService,
         private router: Router) {  
     }
 
     ngOnInit(){
         this.routeSubscription = this.route.params.subscribe((params: Params) => {
             forkJoin([
-                this.documentsService.documentsGet(), this.caseListService.caseListGet(), this.settlementService.settlementGet(), this.documentCategoryService.documentCategoryGet(), this.transactionsService.transactionsGet()])
-                .pipe(take(1)).subscribe(([documents, caseList, settlementList, documentCategoryList, transactionList]) => {
+                this.documentsService.documentsGet(), this.caseListService.caseListGet(), this.settlementService.settlementGet(), this.documentCategoryService.documentCategoryGet(), this.transactionsService.transactionsGet(), this.currenciesService.currenciesGet()])
+                .pipe(take(1)).subscribe(([documents, caseList, settlementList, documentCategoryList, transactionList, currencies]) => {
                     this.documents = documents as Document[];
                     this.data = documents.filter(t => t.id == params['id'])[0];
                     let allDocumentNumbers = documents.map(item => item.number).filter(val => !isNaN(val));
@@ -81,7 +82,6 @@ export class DocumentComponent implements OnInit, OnDestroy {
                         amount: t.amount,
                         text: this.buildTransactionText(t)
                     }));
-
                     this.viewDefinition = {
                         fields: [
                             { title: 'Numer', dataProperty: 'number', component: 'text', required: true, defaultValue: maxNumber } as DetailsViewField,
@@ -92,6 +92,9 @@ export class DocumentComponent implements OnInit, OnDestroy {
                             { title: 'Kategoria dokumentu', dataProperty: 'category', component: 'list', required: false, options: { referenceList: documentCategoryList, referenceListIdField: 'name', referenceListSortField: 'name', referenceListSortDescending: false } as DetailsViewFieldListOptions} as DetailsViewField,
                             { title: 'Numer faktury', dataProperty: 'invoiceNumber', component: 'text'} as DetailsViewField,
                             { title: 'Rozliczenie', dataProperty: 'settlement', component: 'list', required: false, options: { referenceList: settlementList, referenceListIdField: 'title', referenceListSortField: 'title', referenceListSortDescending: true } as DetailsViewFieldListOptions} as DetailsViewField,
+                            { title: 'Netto', dataProperty: 'net', component: 'amount', required: false, options: { allowEmpty:true, currencyList: currencies, currencyListIdField: 'code', currencyDataProperty: 'currency'} as DetailsViewFieldAmountOptions} as DetailsViewField,
+                            { title: 'Vat', dataProperty: 'vat', component: 'amount', required: false, options: { allowEmpty:true, currencyList: currencies, currencyListIdField: 'code', currencyDataProperty: 'currency'} as DetailsViewFieldAmountOptions} as DetailsViewField,
+                            { title: 'Brutto', dataProperty: 'gross', component: 'amount', required: false, options: { allowEmpty:true, currencyList: currencies, currencyListIdField: 'code', currencyDataProperty: 'currency'} as DetailsViewFieldAmountOptions} as DetailsViewField,
                             { title: 'Osoba', dataProperty: 'person', component: 'text'} as DetailsViewField,
                             { title: 'Samochód', dataProperty: 'car', component: 'text'} as DetailsViewField,
                             { title: 'Rzecz', dataProperty: 'relatedObject', component: 'text'} as DetailsViewField,
@@ -147,6 +150,9 @@ export class DocumentComponent implements OnInit, OnDestroy {
     toolbarElementClick(toolbarElementWithData: ToolbarElementWithData) {
         const component = this.component as unknown as DetailsViewComponent;
         if (toolbarElementWithData.toolbarElement.defaultAction === ToolbarElementAction.SaveChanges) {
+            if  ((toolbarElementWithData.data.net || toolbarElementWithData.data.vat || toolbarElementWithData.data.gross) && !toolbarElementWithData.data.currency){
+                toolbarElementWithData.data.currency = "PLN";
+            }
             if (this.data) {
                 this.documentsService.documentsDocumentPut(toolbarElementWithData.data).pipe(take(1)).subscribe(() =>
                 {

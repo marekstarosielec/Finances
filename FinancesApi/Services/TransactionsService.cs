@@ -154,6 +154,10 @@ namespace FinancesApi.Services
                             newDocument.TransactionCurrency = transaction.Currency;
                             newDocument.TransactionBankInfo = transaction.BankInfo;
                             newDocument.TransactionComment = transaction.Comment;
+                            if (!string.IsNullOrWhiteSpace(transaction.Settlement))
+                                newDocument.Settlement = transaction.Settlement;
+                            else
+                                transaction.Settlement = newDocument.Settlement;
                             _documentService.SaveDocument(newDocument, false);
                         }
 

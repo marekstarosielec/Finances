@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TextFilterOptions } from 'app/shared/text-filter/text-filter.component';
 import { SettingsService } from 'app/api/settingsService';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AmountFilterOptions } from 'app/shared/amount-filter/amount-filter.component';
 
 @Component({
     selector: 'transaction-auto-categories',
@@ -55,7 +56,10 @@ export class DocumentsComponent implements OnInit{
 
     ngOnInit(){
         this.documentsService.documentsGet().pipe(take(1)).subscribe((documents: Document[]) => {
-            this.data = documents;
+            this.data = documents.map(d => ({
+                ...d,
+                formattedAmounts: this.formatAmounts(d)
+            }));
             this.columns = [ 
                 { title: 'Numer', dataProperty: 'number', component: 'text'},
                 { title: 'Data', dataProperty: 'date', component: 'date', noWrap: true, pipe: 'date'},
@@ -63,6 +67,7 @@ export class DocumentsComponent implements OnInit{
                 { title: 'Opis', dataProperty: 'description', component: 'text'},
                 { title: 'Faktura', dataProperty: 'invoiceNumber', component: 'text', noWrap: true, subDataProperty1: 'category', filterOptions: { additionalPropertyToSearch1: 'category'}},
                 { title: 'Relacje', dataProperty: '', component: 'text', subDataProperty1: 'person', subDataProperty2: 'car', subDataProperty3: 'relatedObject', subDataProperty4: 'caseName', subDataProperty5: 'settlement', filterOptions: { additionalPropertyToSearch1: 'person', additionalPropertyToSearch2: 'car', additionalPropertyToSearch3: 'relatedObject', additionalPropertyToSearch4: 'caseName', additionalPropertyToSearch5: 'settlement' } as TextFilterOptions},
+                { title: 'Kwota', dataProperty: 'formattedAmounts', alignment: 'right', noWrap:true, component: 'text'},
                 { title: 'Tranzakcja', dataProperty: 'transactionCategory', component: 'text', subDataProperty1: 'transactionAmount', subDataProperty2: 'transactionBankInfo', subDataProperty3: 'transactionComment', filterOptions: { additionalPropertyToSearch1: 'transactionAmount', additionalPropertyToSearch2: 'transactionBankInfo', additionalPropertyToSearch3: 'transactionComment' } as TextFilterOptions},
                 { title: '', dataProperty: '', component: 'icon', image: 'nc-image', customEvent: true},
             ];
@@ -71,6 +76,16 @@ export class DocumentsComponent implements OnInit{
                 { name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew},
                 );
         });
+    }
+
+    formatAmounts(document: Document) : string {
+        if (!document.net && !document.vat && !document.gross)
+            return "";
+        return this.formatAmount(document.net) + ' -> ' + this.formatAmount(document.vat) + ' -> '  + this.formatAmount(document.gross) + ' ' + document.currency;
+    }
+
+    formatAmount(amount: Number) : string {
+        return amount.toFixed(2);
     }
     
     rowClickedEvent(rowClickedData: RowClickedData) {

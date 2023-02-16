@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { BalancesService, DecompressFileResult, DocumentsService, FileService, Settlement, SettlementService, Transaction, TransactionsService } from "app/api/generated";
+import { BalancesService, DecompressFileResult, Document, DocumentsService, FileService, Settlement, SettlementService, Transaction, TransactionsService } from "app/api/generated";
 import { DetailsViewDefinition, DetailsViewField } from "app/shared/details-view/details-view.component";
 import { ToolbarElement, ToolbarElementAction, ToolbarElementWithData } from "app/shared/models/toolbar";
 import { forkJoin, Subscription } from "rxjs";
@@ -29,13 +29,13 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
             (rowClicked)="invoicesClickedEvent($event)">
         </grid>
         <grid name="money" [columns]="moneyColumns" [data]="moneyData"
-            initialSortColumn="date" initialSortOrder="1"
+            initialSortColumn="sortOrder" initialSortOrder="1"
             (rowClicked)="moneyClickedEvent($event)">
         </grid>
-       
-        <grid name="sublist" [columns]="columns" [data]="subList"
-        initialSortColumn="date" initialSortOrder="1"
-        (rowClicked)="rowClickedEvent($event)"></grid>
+        <grid name="other" [columns]="otherColumns" [data]="otherData"
+            initialSortColumn="date" initialSortOrder="1"
+            (rowClicked)="otherClickedEvent($event)">
+        </grid>
         <ng-template #password let-modal>
             <div class="modal-header">
                 <h4 class="modal-title" id="modal-basic-title">Podaj hasło</h4>
@@ -61,12 +61,15 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
     toolbarElements: ToolbarElement[] = [];
     private routeSubscription: Subscription;
     @ViewChild('password', { static: true }) password: ElementRef;   
-    public columns: GridColumn[];
-    public subList: Transaction[];
+   
     public invoiceColumns: GridColumn[];
-    public invoiceData: Transaction[];
+    public invoiceData: any[];
+    
     public moneyColumns: GridColumn[];
     public moneyData: any[];
+
+    public otherColumns: GridColumn[];
+    public otherData: any[];
 
     constructor(private settlementService: SettlementService, 
         private balancesService: BalancesService,
@@ -88,85 +91,11 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
                     this.data = settlementList.filter(m => m.id == params['id'])[0];
                     
                     let transactions = transactionList.filter(m => m.settlement === this.data['title']).map(t => ({...t, rowClick:'transaction', description: t.bankInfo}));
-                    
                     let documents = documentsList.filter(m => m.settlement === this.data['title']).map(t => ({...t, rowClick:'document', showImage: 1}));
-                    this.subList = [...transactions, ...documents];
-                    this.columns = [ 
-                        { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
-                        { title: 'Konto', dataProperty: 'account', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
-                        { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions, customEvent: true},
-                        { title: 'Numer', dataProperty: 'invoiceNumber', component: 'text', customEvent: true},
-                        { title: 'Kwota', dataProperty: 'amount', additionalDataProperty1: 'currency',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currency'} as AmountFilterOptions, customEvent: true},
-                        { title: 'Opis', dataProperty: 'description', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true},
-                        { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
-                    ];
 
-                    this.invoiceColumns = [ 
-                        { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
-                        { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions, customEvent: true},
-                        { title: 'Numer', dataProperty: 'invoiceNumber', component: 'text', customEvent: true},
-                        { title: 'Opis', dataProperty: 'description', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true},
-                        { title: 'Kwota', dataProperty: 'transactionAmount', additionalDataProperty1: 'transactionCurrency',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'transactionCurrency'} as AmountFilterOptions, customEvent: true},
-                        { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
-                    ];
-                    this.invoiceData = documents.filter(d => d.category == "Faktura otrzymana" || d.category == "Faktura wystawiona");
-
-                    this.moneyColumns = [ 
-                        { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
-                        { title: 'Konto z', dataProperty: 'accountFrom', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
-                        { title: 'Konto do', dataProperty: 'accountTo', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
-                        { title: 'EUR', dataProperty: 'amountEUR', additionalDataProperty1: 'currencyEUR',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', skipConditionalFormattingProperty: 'skipFormatting', component: 'amount', filterOptions: { currencyDataProperty: 'currencyEUR'} as AmountFilterOptions, customEvent: true},
-                        { title: 'PLN', dataProperty: 'amountPLN', additionalDataProperty1: 'currencyPLN',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currencyPLN'} as AmountFilterOptions, customEvent: true},
-                        { title: 'Kurs', dataProperty: 'exchangeRate', alignment: 'right', noWrap:true, component: 'text', customEvent: true},
-                    ];
-
-                    const salaryInvoice = documents.filter(d => d.category === "Faktura wystawiona")[0];
-                    const salary = transactions.filter(t => t.id === salaryInvoice.transactionId).map(t => (
-                        {
-                            ...t,
-                            accountFrom: t.account,
-                            currencyEUR: 'EUR',
-                            amountEUR: t.amount,
-                            sortOrder: 10
-                        }));
-                    const transfers = transactions
-                        .filter(t => t.category === "Transfer" 
-                            && !t.description.endsWith(' NATYCH. TRANSAKCJA WALUT.')
-                            && t.amount < 0)
-                        .map(t => (
-                            {
-                                ...t,
-                                accountFrom: t.account,
-                                accountTo: transactions.filter(t2 => t2.date === t.date && t2.amount === t.amount * -1)[0]?.account,
-                                currencyEUR: 'EUR',
-                                amountEUR: t.amount * -1,
-                                sortOrder: t.date,
-                                skipFormatting: true
-                            }));
-                        const convertions = transactions
-                            .filter(t => t.category === "Transfer" 
-                                && t.description == 'OBCIĄŻ. NATYCH. TRANSAKCJA WALUT.')
-                            .map(t => ({
-                                ...t,
-                                matching: transactions.filter(t2 => 
-                                    t2.date === t.date 
-                                    && t2.description === 'UZNANIE NATYCH. TRANSAKCJA WALUT.'
-                                    && t2.comment === t.comment)[0]
-                            }))
-                            .map(t => (
-                                {
-                                    ...t,
-                                    accountFrom: t.account,
-                                    accountTo: t.matching?.account,
-                                    currencyEUR: 'EUR',
-                                    amountEUR: t.amount,
-                                    currencyPLN: 'PLN',
-                                    amountPLN: t.matching?.amount,
-                                    sortOrder: t.date,
-                                    exchangeRate: Number((t.matching?.amount / t.amount).toFixed(4)) * -1
-                                }));       
-                    this.moneyData = [...salary, ...transfers, ...convertions];
-
+                    this.prepareInvoices(transactions, documents);
+                    this.prepareMoney(transactions, documents);
+                    this.prepareOther(transactions, documents);
 
                     if (!this.data.closed)
                     {
@@ -259,17 +188,44 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
         data.exchangeRatio = !data['eurSold'] || data['eurSold'] == 0 ? undefined : data.incomeGrossPln / data['eurSold'] * (-1)
     }
 
+    prepareInvoices(transactions: Transaction[], documents: Document[]) {
+        this.invoiceColumns = [ 
+            { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
+            { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions, customEvent: true},
+            { title: 'Numer', dataProperty: 'invoiceNumber', component: 'text', customEvent: true},
+            { title: 'Opis', dataProperty: 'description', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true},
+            { title: 'Kwota dokumentu', dataProperty: 'formattedAmounts', alignment: 'right', noWrap:true, component: 'text'},
+            { title: 'Kwota zapłacona', dataProperty: 'transactionAmount', additionalDataProperty1: 'transactionCurrency',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'transactionCurrency'} as AmountFilterOptions, customEvent: true},
+            { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
+        ];
+        this.invoiceData = documents
+            .filter(d => d.category === "Faktura otrzymana" || d.category === "Faktura wystawiona")
+            .map(d => ({
+                ...d,
+                transaction: transactions.filter(t => t.id === d.transactionId)[0]
+            }))
+            .map(d => ({
+                ...d,
+                transactionAmount: d.transaction?.amount,
+                transactionCurrency: d.transaction?.currency,
+                sortOrder: d.category + d.date,
+                formattedAmounts: this.formatAmounts(d)
+            }));
+    }
+
+    formatAmounts(document: Document) : string {
+        if (!document.net && !document.vat && !document.gross)
+            return "";
+        return this.formatAmount(document.net) + ' -> ' + this.formatAmount(document.vat) + ' -> '  + this.formatAmount(document.gross) + ' ' + document.currency;
+    }
+
+    formatAmount(amount: Number) : string {
+        return amount.toFixed(2);
+    }
+
     invoicesClickedEvent(rowClickedData: RowClickedData) {
         if (rowClickedData.column.dataProperty==='showImage') {
-            if (!this.settingService.CurrentPassword)
-            {
-                this.modalService.open(this.password, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
-                    this.settingService.CurrentPassword = result;
-                    this.openFile(rowClickedData);
-                 }, (reason) => { });
-            } else {
-                this.openFile(rowClickedData);
-            }
+            this.openFileWithPassword(rowClickedData);
         } else if (rowClickedData.column.dataProperty==='transactionAmount') {
             if (rowClickedData.row['transactionId']) {
                 this.router.navigate(['transactions', rowClickedData.row['transactionId']]);
@@ -278,24 +234,114 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
             this.router.navigate(['documents', rowClickedData.row['id']]);
     }
 
-    moneyClickedEvent(rowClickedData: RowClickedData) {
+    prepareMoney(transactions: Transaction[], documents: Document[]) {
+        this.moneyColumns = [ 
+            { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
+            { title: 'Konto z', dataProperty: 'accountFrom', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
+            { title: 'Konto do', dataProperty: 'accountTo', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
+            { title: 'EUR', dataProperty: 'amountEUR', additionalDataProperty1: 'currencyEUR',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', skipConditionalFormattingProperty: 'skipFormatting', component: 'amount', filterOptions: { currencyDataProperty: 'currencyEUR'} as AmountFilterOptions, customEvent: true},
+            { title: 'PLN', dataProperty: 'amountPLN', additionalDataProperty1: 'currencyPLN',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currencyPLN'} as AmountFilterOptions, customEvent: true},
+            { title: 'Kurs', dataProperty: 'exchangeRate', alignment: 'right', noWrap:true, component: 'text', customEvent: true},
+        ];
+
+        const salaryInvoice = documents.filter(d => d.category === "Faktura wystawiona")[0];
+        const salary = transactions.filter(t => t.id === salaryInvoice.transactionId).map(t => (
+            {
+                ...t,
+                accountFrom: t.account,
+                currencyEUR: 'EUR',
+                amountEUR: t.amount,
+                sortOrder: 10
+            }));
+        const transfers = transactions
+            .filter(t => t.category === "Transfer" 
+                && !t.description.endsWith(' NATYCH. TRANSAKCJA WALUT.')
+                && t.amount < 0)
+            .map(t => (
+                {
+                    ...t,
+                    accountFrom: t.account,
+                    accountTo: transactions.filter(t2 => t2.date === t.date && t2.amount === t.amount * -1)[0]?.account,
+                    currencyEUR: 'EUR',
+                    amountEUR: t.amount * -1,
+                    sortOrder: t.date,
+                    skipFormatting: true
+                }));
+            const convertions = transactions
+                .filter(t => t.category === "Transfer" 
+                    && t.description == 'OBCIĄŻ. NATYCH. TRANSAKCJA WALUT.')
+                .map(t => ({
+                    ...t,
+                    matching: transactions.filter(t2 => 
+                        t2.date === t.date 
+                        && t2.description === 'UZNANIE NATYCH. TRANSAKCJA WALUT.'
+                        && t2.comment === t.comment)[0]
+                }))
+                .map(t => (
+                    {
+                        ...t,
+                        accountFrom: t.account,
+                        accountTo: t.matching?.account,
+                        currencyEUR: 'EUR',
+                        amountEUR: t.amount,
+                        currencyPLN: 'PLN',
+                        amountPLN: t.matching?.amount,
+                        sortOrder: t.date,
+                        exchangeRate: Number((t.matching?.amount / t.amount).toFixed(4)) * -1
+                    }));       
+        this.moneyData = [...salary, ...transfers, ...convertions];
+
     }
+
+    moneyClickedEvent(rowClickedData: RowClickedData) {
+        if (rowClickedData.column.dataProperty==='accountTo' 
+        || rowClickedData.column.dataProperty==='amountPLN' 
+        || rowClickedData.column.dataProperty==='exchangeRate') {
+            this.router.navigate(['transactions', rowClickedData.row['matching']['id']]);
+        } else {
+            this.router.navigate(['transactions', rowClickedData.row['id']]);
+        }
+    }
+
+    prepareOther(transactions: Transaction[], documents: Document[]) {
+        this.otherColumns = [ 
+            { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
+            { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions, customEvent: true},
+            { title: 'Numer', dataProperty: 'invoiceNumber', component: 'text', customEvent: true},
+            { title: 'Opis', dataProperty: 'description', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true},
+            { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
+        ];
+        this.otherData = documents.filter(d => d.category !== "Faktura otrzymana" && d.category !== "Faktura wystawiona");
+    }
+   
+    otherClickedEvent(rowClickedData: RowClickedData) {
+        if (rowClickedData.column.dataProperty==='showImage') {
+            this.openFileWithPassword(rowClickedData);
+        } else {
+            this.router.navigate(['documents', rowClickedData.row['id']]);
+        }
+    }
+
     rowClickedEvent(rowClickedData: RowClickedData) {
         if (rowClickedData.row['rowClick']==='document' && rowClickedData.column.dataProperty!=='showImage') {
             this.router.navigate(['documents', rowClickedData.row['id']]);
         } else if (rowClickedData.row['rowClick']==='document' && rowClickedData.column.dataProperty==='showImage') {
-            if (!this.settingService.CurrentPassword)
-            {
-                this.modalService.open(this.password, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
-                    this.settingService.CurrentPassword = result;
-                    this.openFile(rowClickedData);
-                 }, (reason) => { });
-            } else {
-                this.openFile(rowClickedData);
-            }
+            this.openFileWithPassword(rowClickedData);
         } else {
             this.router.navigate(['transactions', rowClickedData.row['id']]);
         } 
+    }
+
+    openFileWithPassword(rowClickedData: RowClickedData){
+        if (!this.settingService.CurrentPassword)
+        {
+            this.modalService.open(this.password, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+                this.settingService.CurrentPassword = result;
+                this.openFile(rowClickedData);
+             }, (reason) => { });
+        } else {
+            this.openFile(rowClickedData);
+        }
     }
 
     openFile(rowClickedData: RowClickedData) {

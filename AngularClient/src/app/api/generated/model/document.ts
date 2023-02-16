@@ -32,5 +32,9 @@ export interface Document {
     transactionCurrency?: string | null;
     transactionBankInfo?: string | null;
     transactionComment?: string | null;
+    net?: number | null;
+    vat?: number | null;
+    gross?: number | null;
+    currency?: string | null;
 }
 

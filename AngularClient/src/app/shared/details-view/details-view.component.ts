@@ -182,6 +182,9 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
                 controls[field.dataProperty] = new FormControl(undefined, validators);  
             } else if (field.component === 'list') {
                 controls[field.dataProperty] = new FormControl(undefined, validators);
+                if (!field.options?.referenceListTextField) {
+                    field.options.referenceListTextField = field.options?.referenceListIdField
+                }
             } else if (field.component === 'text') {
                 controls[field.dataProperty] = new FormControl(undefined, validators);
             } else if (field.component === 'multiline-text') {
@@ -210,7 +213,6 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
             fieldsToUpdate = [];
             Object.keys(currentData).forEach(key => {
                 if (currentData[key] != dataBeforeChange[key]) {
-                    debugger;
                     fieldsToUpdate.push(this.viewDefinition.fields.filter(f => f.dataProperty === key)[0])
                 }
             });
@@ -283,10 +285,6 @@ export class DetailsViewComponent implements OnInit, OnDestroy{
 
     private buildReferenceListOnUsageIndex(field: DetailsViewField) : any[] {
         let referenceList;
-        
-        if (!field.options?.referenceListTextField) {
-            field.options.referenceListTextField = field.options?.referenceListIdField
-        }
 
         if (!field.options?.referenceListSortField)
             referenceList = field.options?.referenceListIdField 

@@ -111,7 +111,11 @@ namespace FinancesApi.Services
                 edited.Guarantee = document.Guarantee;
                 edited.CaseName = document.CaseName;
                 edited.Settlement = document.Settlement;
-                
+                edited.Net = document.Net;
+                edited.Vat = document.Vat;
+                edited.Gross = document.Gross;
+                edited.Currency = document.Currency;
+
                 if (resetTransactionLink && edited.TransactionId != document.TransactionId)
                 {
                     if (!string.IsNullOrWhiteSpace(edited.TransactionId))
@@ -136,6 +140,10 @@ namespace FinancesApi.Services
                         newTransaction.DocumentCategory = document.Category;
                         newTransaction.DocumentInvoiceNumber = document.InvoiceNumber;
                         newTransaction.DocumentNumber = document.Number;
+                        if (!string.IsNullOrWhiteSpace(document.Settlement))
+                            newTransaction.Settlement = document.Settlement;
+                        else
+                            document.Settlement = newTransaction.Settlement;
                         transactionService.SaveTransaction(newTransaction, resetDocumentLink: false);
                     }  
 
