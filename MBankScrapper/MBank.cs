@@ -304,7 +304,7 @@ namespace MBankScrapper
 
             async Task ShowAllAccounts()
             {
-                var moreButton = "//button[@data-test-id='history:showMoreProductsFilter']/span[text()='więcej']";
+                var moreButton = "//button[@data-test-id='history:showMoreProductsFilter']/descendant::span[text()='więcej']";
                 if (await _browser.IsElementPresent(moreButton))
                     await _browser.Click(moreButton);
             }
@@ -492,7 +492,7 @@ namespace MBankScrapper
                 await _browser.SetText("//input[@data-test-id='Comment:Input']", comment);
             }
 
-            async Task SetScrappedTag() => await _browser.Click("//button[text()='scrapped' and contains(@data-test-id,'SelectionSwitch:Tag')]");
+            async Task SetScrappedTag() => await _browser.Click("//p[text()='scrapped']/ancestor::button[1]");
 
             async Task SaveTransaction() =>
                 await _browser.Click("//button[@data-test-id='EditDetails:SaveButton']");

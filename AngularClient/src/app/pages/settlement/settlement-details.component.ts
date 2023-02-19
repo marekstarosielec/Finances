@@ -245,7 +245,7 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
         ];
 
         const salaryInvoice = documents.filter(d => d.category === "Faktura wystawiona")[0];
-        const salary = transactions.filter(t => t.id === salaryInvoice.transactionId).map(t => (
+        const salary = transactions.filter(t => t.id === salaryInvoice?.transactionId).map(t => (
             {
                 ...t,
                 accountFrom: t.account,
