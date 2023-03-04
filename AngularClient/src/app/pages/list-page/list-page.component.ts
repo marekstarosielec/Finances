@@ -36,6 +36,10 @@ interface ViewAnalyticsData {
     totalNumber: any;
 }
 
+export interface RowCheckedData {
+    rows: any[];
+}
+
 @Component({
     selector: 'list-page',
     styleUrls: ['./list-page.component.scss'],
@@ -50,8 +54,11 @@ export class ListPageComponent implements OnInit, OnDestroy {
     @Input() public initialSortOrder: number;
     @Input() public toolbarElements: ToolbarElement[];
     @Input() public summaries: Summary[];
+    @Input() public showCheckboxes: boolean;
+   
     @Output() public toolbarElementClick = new EventEmitter<ToolbarElement>();
     @Output() public rowClicked = new EventEmitter<RowClickedData>();
+    @Output() public rowChecked = new EventEmitter<RowCheckedData>();
     
     maximumNumberOfRecordsToShow: Number = 100;
     public currentView$: Subject<ViewAnalyticsData> = new Subject<ViewAnalyticsData>();
@@ -137,5 +144,9 @@ export class ListPageComponent implements OnInit, OnDestroy {
 
     rowClickedEvent(rowClickedData: RowClickedData) {
         this.rowClicked.emit(rowClickedData);
+    }
+
+    rowCheckedEvent(rowCheckedData: RowCheckedData) {
+        this.rowChecked.emit(rowCheckedData);
     }
 }

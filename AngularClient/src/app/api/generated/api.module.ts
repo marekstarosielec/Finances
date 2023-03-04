@@ -13,6 +13,7 @@ import { DocumentsService } from './api/documents.service';
 import { ElectricityService } from './api/electricity.service';
 import { FileService } from './api/file.service';
 import { GasService } from './api/gas.service';
+import { IncomingService } from './api/incoming.service';
 import { MBankScrapperService } from './api/mBankScrapper.service';
 import { MazdaService } from './api/mazda.service';
 import { SantanderScrapperService } from './api/santanderScrapper.service';

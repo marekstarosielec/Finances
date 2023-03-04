@@ -15,6 +15,7 @@ export interface RouteInfo {
 
 export const ROUTES: RouteInfo[] = [
     { path: '/dashboard',     title: 'Pulpit',         icon:'nc-bank',       class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError]  },
+    { path: '/incoming',   title: 'Nowe',      icon:'nc-minimal-down',  class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/transactions',  title: 'Tranzakcje',        icon:'nc-tile-56',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/balancesummary',  title: 'Salda',        icon:'nc-money-coins',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/documents',  title: 'Dokumenty',        icon:'nc-single-copy-04',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
@@ -24,7 +25,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/gas',  title: 'Gaz',        icon:'nc-atom',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/water',  title: 'Woda',        icon:'nc-cloud-download-93',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/accounting',  title: 'Księgowość',        icon:'nc-paper',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
-   // { path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '', availableInStates: [DatasetState.Opened] },
+    //{ path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '', availableInStates: [DatasetState.Opened] },
     /*{ path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '', availableInStates: [DatasetState.Opened] },
     { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '', availableInStates: [DatasetState.Opened] },
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '', availableInStates: [DatasetState.Opened] },*/

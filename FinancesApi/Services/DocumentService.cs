@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace FinancesApi.Services
 {
@@ -14,6 +16,7 @@ namespace FinancesApi.Services
         IList<Document> GetDocuments(string id = null);
         void SaveDocument(Document document, bool resetTransactionLink = true);
         void DeleteDocument(string id);
+        string ConvertFileToDocument(string fileName);
     }
 
     public class DocumentService: IDocumentService
@@ -32,10 +35,19 @@ namespace FinancesApi.Services
 
         public IList<Document> GetDocuments(string id = null)
         {
+            UpdateNewFolders();
+            _documentsDataFile.Load();
+            return string.IsNullOrWhiteSpace(id)
+                 ? _documentsDataFile.Value
+                 : _documentsDataFile.Value.Where(d => string.Equals(id, d.Id, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
+
+        private void UpdateNewFolders()
+        {
             var merger = new Dictionary<string, Document>();
             var basePath = _configuration.GetValue<string>("DatasetPath");
             var documentsPath = Path.Combine(basePath, "Dokumenty");
-            
+
             Dictionary<string, string> documentFiles = GetDocumentFiles(documentsPath);
 
             string number;
@@ -67,10 +79,6 @@ namespace FinancesApi.Services
                 result.ForEach(r => _documentsDataFile.Value.Add(r));
                 _documentsDataFile.Save();
             }
-       
-            return string.IsNullOrWhiteSpace(id)
-                 ? result
-                 : result.Where(d => string.Equals(id, d.Id, StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
         private Dictionary<string, string> GetDocumentFiles(string documentsPath)
@@ -82,6 +90,33 @@ namespace FinancesApi.Services
                     documents[Path.GetFileNameWithoutExtension(f)] = f;
             });
             return documents;
+        }
+
+        public string ConvertFileToDocument(string fileName)
+        {
+            _documentsDataFile.Load();
+            var destinationFileName = ConvertNumberToFileName(_documentsDataFile.Value.OrderByDescending(d => d.Number).First().Number + 1);
+            var basePath = _configuration.GetValue<string>("DatasetPath");
+            var destinationFolder = Path.Combine(basePath, "Dokumenty", destinationFileName);
+            var fullDestinationName = Path.Combine(destinationFolder, Path.GetFileName(fileName));
+            Directory.CreateDirectory(destinationFolder);
+            File.Move(fileName, fullDestinationName);
+            SetSecurity(fullDestinationName);
+            UpdateNewFolders();
+            _documentsDataFile.Load();
+            var id = _documentsDataFile.Value.Last().Id;
+            return id;
+        }
+
+        public static void SetSecurity(string fileName)
+        {
+            var path = Path.GetFullPath(fileName);
+            var di = new DirectoryInfo(path);
+            DirectorySecurity sec = di.GetAccessControl();
+            // Using this instead of the "Everyone" string means we work on non-English systems.
+            SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            sec.AddAccessRule(new FileSystemAccessRule(everyone, FileSystemRights.Modify | FileSystemRights.Synchronize, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
+            di.SetAccessControl(sec);
         }
 
         public void SaveDocument(Document document, bool resetTransactionLink = true)

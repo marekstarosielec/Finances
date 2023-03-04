@@ -13,6 +13,7 @@ api/documents.service.ts
 api/electricity.service.ts
 api/file.service.ts
 api/gas.service.ts
+api/incoming.service.ts
 api/mBankScrapper.service.ts
 api/mazda.service.ts
 api/santanderScrapper.service.ts
@@ -42,6 +43,7 @@ model/document.ts
 model/documentCategory.ts
 model/electricity.ts
 model/gas.ts
+model/incoming.ts
 model/mazda.ts
 model/models.ts
 model/settlement.ts

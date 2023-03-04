@@ -46,9 +46,11 @@ import { WaterDetailsComponent } from 'app/pages/water/water-details.component';
 import { WaterListComponent } from 'app/pages/water/water-list.component';
 import { DocumentCategoryListComponent } from 'app/pages/document-category/document-category-list.component';
 import { DocumentCategoryDetailsComponent } from 'app/pages/document-category/document-category-details.component';
+import { IncomingComponent } from 'app/pages/Incoming/incoming.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
+    { path: 'incoming',      component: IncomingComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     // { path: 'user',           component: UserComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened]} },
     { path: 'transactions',   component: TransactionsComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },
     { path: 'transactions/:id',   component: TransactionComponent, canActivate: [DatasetStateGuard], data: {states: [DatasetState.Opened, DatasetState.ClosingError]} },

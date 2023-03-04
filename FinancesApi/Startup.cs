@@ -42,6 +42,7 @@ namespace FinancesApi
             services.AddSingleton<ICaseListService, CaseListService>();
             services.AddSingleton<ISettlementService, SettlementService>();
             services.AddSingleton<IWaterService, WaterService>();
+            services.AddSingleton<IIncomingService, IncomingService>();
 
             services.AddSingleton(typeof(TransactionsDataFile));
             services.AddSingleton(typeof(TransactionAccountsDataFile));

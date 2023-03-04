@@ -64,6 +64,7 @@ import { WaterDetailsComponent } from 'app/pages/water/water-details.component';
 import { WaterListComponent } from 'app/pages/water/water-list.component';
 import { DocumentCategoryDetailsComponent } from 'app/pages/document-category/document-category-details.component';
 import { DocumentCategoryListComponent } from 'app/pages/document-category/document-category-list.component';
+import { IncomingComponent } from 'app/pages/Incoming/incoming.component';
 
 @NgModule({
   imports: [
@@ -133,7 +134,8 @@ import { DocumentCategoryListComponent } from 'app/pages/document-category/docum
     WaterListComponent,
     WaterDetailsComponent,
     DocumentCategoryDetailsComponent,
-    DocumentCategoryListComponent
+    DocumentCategoryListComponent,
+    IncomingComponent
   ]
 })
 

@@ -38,6 +38,10 @@ export interface RowClickedData {
     column: GridColumn;
 }
 
+export interface RowCheckedData {
+    rows: any[];
+}
+
 @Component({
     selector: 'grid',
     templateUrl: 'grid.component.html',
@@ -49,6 +53,8 @@ export class GridComponent implements OnInit, OnDestroy{
     @Input() public columns: GridColumn[];
     @Input() public initialSortColumn: string;
     @Input() public initialSortOrder: number;
+    @Input() public showCheckboxes: boolean;
+    public checkedRows: any[] = [];
 
     private _data: any[];
     get data(): any[] {
@@ -70,6 +76,7 @@ export class GridComponent implements OnInit, OnDestroy{
 
     @Output() public viewChanged = new EventEmitter<ViewChangedData>();
     @Output() public rowClicked = new EventEmitter<RowClickedData>();
+    @Output() public rowChecked = new EventEmitter<RowCheckedData>();
     totalNumberOfRecords: number = 0;
 
     params: QueryParamsHandler;
@@ -178,5 +185,14 @@ export class GridComponent implements OnInit, OnDestroy{
                 this.router.navigate([row.id], { relativeTo: this.route});
             }
         });
+    }
+
+    selectCheckbox(row: any) { 
+        const i = this.checkedRows.findIndex(r => r.fullFileName === row.fullFileName);
+        if (i > -1)
+            this.checkedRows.splice(i, 1);
+        else
+            this.checkedRows.push(row);
+        this.rowChecked.emit({ rows: this.checkedRows });
     }
 }

@@ -64,7 +64,10 @@
                     [initialSortColumn]="initialSortColumn" [initialSortOrder]="initialSortOrder"
                     [maximumNumberOfRecordsToShow] = "maximumNumberOfRecordsToShow"
                     (viewChanged)="viewChanged($event)"
-                    (rowClicked)="rowClickedEvent($event)"></grid>
+                    (rowClicked)="rowClickedEvent($event)"
+                    [showCheckboxes]="showCheckboxes"
+                    (rowChecked)="rowCheckedEvent($event)"
+                    ></grid>
             </div>
         </div>
     </div>

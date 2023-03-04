@@ -13,6 +13,7 @@ export * from './document';
 export * from './documentCategory';
 export * from './electricity';
 export * from './gas';
+export * from './incoming';
 export * from './mazda';
 export * from './settlement';
 export * from './skoda';
