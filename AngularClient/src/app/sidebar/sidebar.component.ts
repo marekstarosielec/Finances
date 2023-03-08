@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DatasetServiceFacade } from 'app/api/DatasetServiceFacade';
 import { DatasetInfo, DatasetState } from 'app/api/generated';
-import { DatasetService } from 'app/api/generated/api/dataset.service';
 import { Subscription } from 'rxjs';
 
 
@@ -25,7 +24,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/gas',  title: 'Gaz',        icon:'nc-atom',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/water',  title: 'Woda',        icon:'nc-cloud-download-93',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
     { path: '/accounting',  title: 'Księgowość',        icon:'nc-paper',    class: '', availableInStates: [DatasetState.Opened, DatasetState.ClosingError] },
-    //{ path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '', availableInStates: [DatasetState.Opened] },
+    { path: '/icons',         title: 'Icons',             icon:'nc-diamond',    class: '', availableInStates: [DatasetState.Opened] },
     /*{ path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '', availableInStates: [DatasetState.Opened] },
     { path: '/user',          title: 'User Profile',      icon:'nc-single-02',  class: '', availableInStates: [DatasetState.Opened] },
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '', availableInStates: [DatasetState.Opened] },*/

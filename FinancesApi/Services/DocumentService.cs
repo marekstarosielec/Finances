@@ -1,5 +1,7 @@
 ﻿using FinancesApi.DataFiles;
 using FinancesApi.Models;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using Document = FinancesApi.Models.Document;
 
 namespace FinancesApi.Services
 {
@@ -17,6 +20,7 @@ namespace FinancesApi.Services
         void SaveDocument(Document document, bool resetTransactionLink = true);
         void DeleteDocument(string id);
         string ConvertFileToDocument(string fileName);
+        string ConvertFilesToPdf(List<string> fileNames);
     }
 
     public class DocumentService: IDocumentService
@@ -102,6 +106,41 @@ namespace FinancesApi.Services
             Directory.CreateDirectory(destinationFolder);
             File.Move(fileName, fullDestinationName);
             SetSecurity(fullDestinationName);
+            UpdateNewFolders();
+            _documentsDataFile.Load();
+            var id = _documentsDataFile.Value.Last().Id;
+            return id;
+        }
+
+        public string ConvertFilesToPdf(List<string> fileNames)
+        {
+            _documentsDataFile.Load();
+            var destinationFileName = ConvertNumberToFileName(_documentsDataFile.Value.OrderByDescending(d => d.Number).First().Number + 1);
+            var basePath = _configuration.GetValue<string>("DatasetPath");
+            var destinationFolder = Path.Combine(basePath, "Dokumenty", destinationFileName);
+            var fullDestinationName = Path.Combine(destinationFolder, "Skan.pdf");
+            Directory.CreateDirectory(destinationFolder);
+
+            byte[] pdfBytes;
+            using (MemoryStream ms = new MemoryStream())
+                using (var doc = new iTextSharp.text.Document(PageSize.LETTER, 1.0f, 1.0f, 1.0f, 1.0f))
+                    using (PdfWriter writer = PdfWriter.GetInstance(doc, ms))
+                    {
+                        doc.Open();
+                        foreach(var fileName in fileNames)
+                        {
+                            doc.NewPage();
+                            var img = Image.GetInstance(fileName);
+                            PdfPTable table = new PdfPTable(1);
+                            table.AddCell(new PdfPCell(img));
+                            doc.Add(table);
+                        }
+                        doc.Close();
+                        pdfBytes = ms.ToArray();
+                        File.WriteAllBytes(fullDestinationName, pdfBytes);
+                    }
+
+
             UpdateNewFolders();
             _documentsDataFile.Load();
             var id = _documentsDataFile.Value.Last().Id;

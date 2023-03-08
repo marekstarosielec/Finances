@@ -2,6 +2,7 @@
 using FinancesApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancesApi.Controllers
 {
@@ -25,6 +26,12 @@ namespace FinancesApi.Controllers
         public string Add([FromBody] Incoming incoming)
         {
             return _documentService.ConvertFileToDocument(incoming.FullFileName);
+        }
+
+        [HttpPost("ConvertToPdf")]
+        public string ConvertToPdf([FromBody] List<Incoming> incoming)
+        {
+            return _documentService.ConvertFilesToPdf(incoming.Select(i => i.FullFileName).ToList());
         }
     }
 }

@@ -3,7 +3,8 @@ import { FormGroup } from "@angular/forms";
 export enum ToolbarElementAction {
     AddNew,
     SaveChanges,
-    Delete
+    Delete,
+    Refresh
 }
 
 export interface ToolbarElement {

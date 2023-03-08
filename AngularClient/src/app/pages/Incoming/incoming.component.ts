@@ -40,8 +40,8 @@ export class IncomingComponent implements OnInit{
     rowCheckedEvent(rowCheckedData: RowCheckedData) {
         if (rowCheckedData.rows.length === 1 )
             this.toolbarElements = [{ name: 'saveDoc', title: 'Do dokumentów'}];
-        // else if (rowCheckedData.rows.length >1 && this.onlyJpegs(rowCheckedData.rows))
-        //     this.toolbarElements = [{ name: 'savePdf', title: 'Zapisz jako PDF'}];
+        else if (rowCheckedData.rows.length >1 && this.onlyJpegs(rowCheckedData.rows))
+            this.toolbarElements = [{ name: 'savePdf', title: 'Zapisz jako PDF'}];
         else
             this.toolbarElements = [];
         this.checkedRows = rowCheckedData.rows;
@@ -55,6 +55,11 @@ export class IncomingComponent implements OnInit{
     toolbarElementClick(toolbarElement: ToolbarElement) {
         if (toolbarElement.name==="saveDoc"){
             this.incomingService.incomingPost(this.checkedRows[0]).pipe(take(1)).subscribe((result:string) =>
+            {
+                this.router.navigate(['documents', result]);
+            });
+        } else if (toolbarElement.name==="savePdf"){
+            this.incomingService.incomingConvertToPdfPost(this.checkedRows).pipe(take(1)).subscribe((result:string) =>
             {
                 this.router.navigate(['documents', result]);
             });

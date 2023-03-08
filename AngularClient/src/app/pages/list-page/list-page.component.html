@@ -58,9 +58,11 @@
             </div>
             <div class="card-body">
                 <ng-container *ngFor="let toolbarElement of toolbarElements">
-                    <button class="btn btn-primary" (click)="toolbarElementClicked(toolbarElement)">{{toolbarElement.title}}</button>
+                    <button class="btn btn-primary" (click)="toolbarElementClicked(toolbarElement)"
+                    [class]="toolbarElement.image ? 'nc-icon ' + toolbarElement.image : ''" 
+                    >{{toolbarElement.title}}</button>
                 </ng-container>
-                <grid [name]="name" [columns]="columns" [data]="data"
+                <grid #grid [name]="name" [columns]="columns" [data]="data" 
                     [initialSortColumn]="initialSortColumn" [initialSortOrder]="initialSortOrder"
                     [maximumNumberOfRecordsToShow] = "maximumNumberOfRecordsToShow"
                     (viewChanged)="viewChanged($event)"

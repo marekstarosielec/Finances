@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GridColumn, RowClickedData, ViewChangedData } from 'app/shared/grid/grid.component';
+import { GridColumn, RowClickedData, ViewChangedData, GridComponent } from 'app/shared/grid/grid.component';
 import { Subject } from 'rxjs';
 import * as l from 'lodash';
 import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar';
@@ -62,7 +62,8 @@ export class ListPageComponent implements OnInit, OnDestroy {
     
     maximumNumberOfRecordsToShow: Number = 100;
     public currentView$: Subject<ViewAnalyticsData> = new Subject<ViewAnalyticsData>();
-
+    @ViewChild('grid', { static: true }) grid: ElementRef;
+   
     constructor(private router: Router, private route: ActivatedRoute, private subviewService: SubViewService) {
     }
 
@@ -70,6 +71,7 @@ export class ListPageComponent implements OnInit, OnDestroy {
         if (!this.toolbarElements) {
             this.toolbarElements = [{ name: 'addNew', title: 'Dodaj', defaultAction: ToolbarElementAction.AddNew}];
         }
+        //this.toolbarElements.unshift({ name: 'refresh', image: 'nc-refresh-69', defaultAction: ToolbarElementAction.Refresh})
     }
 
     ngOnDestroy()
@@ -80,6 +82,7 @@ export class ListPageComponent implements OnInit, OnDestroy {
     toolbarElementClicked(toolbarElement: ToolbarElement) {
         if (toolbarElement.defaultAction === ToolbarElementAction.AddNew) {
             this.router.navigate(["new"], { relativeTo: this.route});
+        //} if (toolbarElement.defaultAction === ToolbarElementAction.Refresh) {
         } else {
             this.toolbarElementClick.emit(toolbarElement);
         }
