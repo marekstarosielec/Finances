@@ -37,5 +37,19 @@ namespace FinancesApi.Models
         public string Comment { get; set; }
 
         public bool Closed { get; set; }
+
+        public double EurConvertedToPln { get; set; }
+        public double PlnReceivedFromConvertion { get; set; }
+        public double ConvertionExchangeRatio { get; set; }
+        public double PitAndVatPln { get; set; }
+        public double PitAndVatEur { get; set; }
+        public double PitMonth { get; set; }
+        public double VatMonth { get; set; }
+        public double PitAndVatMonthPln { get; set; }
+        public double PitAndVatMonthEur { get; set; }
+
+        public int ZusPaid { get; set; }
+        public int PitPaid { get; set; }
+        public int VatPaid { get; set; }
     }
 }

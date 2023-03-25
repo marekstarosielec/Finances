@@ -46,7 +46,7 @@
               [class.positive]="column.conditionalFormatting=='amount' && row[column.dataProperty]>0 && (!column.skipConditionalFormattingProperty || !row[column.skipConditionalFormattingProperty])"
               [class.noWrap]="column.noWrap"
               (click)="selectRecord(row, column);">
-              <p *ngIf="column.dataProperty && column.component!='icon'">{{row[column.dataProperty] | dynamic:column.pipe}}
+              <p *ngIf="column.dataProperty && column.component!='icon' && column.component!='iconSet'">{{row[column.dataProperty] | dynamic:column.pipe}}
                 <ng-container *ngIf="column.additionalDataProperty1 "> {{row[column.additionalDataProperty1]}}</ng-container>
               </p>
               <p *ngIf="column.subDataProperty1 && row[column.subDataProperty1]" class="subDataProperty1"> {{ row[column.subDataProperty1]}}</p>
@@ -55,6 +55,7 @@
               <p *ngIf="column.subDataProperty4 && row[column.subDataProperty4]" class="subDataProperty1"> {{ row[column.subDataProperty4]}}</p>
               <p *ngIf="column.subDataProperty5 && row[column.subDataProperty5]" class="subDataProperty1"> {{ row[column.subDataProperty5]}}</p>
               <i *ngIf="column.component==='icon'" [class]="'nc-icon ' + column.image" [class.hidden]="column.conditionalFormatting=='bool' && !row[column.dataProperty]"></i>
+              <i *ngIf="column.component==='iconSet'" [class]="getImageSet(column, row)"></i>
             </td>
         </tr>
     </tbody>

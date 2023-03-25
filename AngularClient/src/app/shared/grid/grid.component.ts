@@ -20,6 +20,7 @@ export interface GridColumn {
     pipe?: string;
     alignment?: string;
     image?: string;
+    imageSet?: string[];
     conditionalFormatting?: string;
     skipConditionalFormattingProperty?: string;
     noWrap?: boolean;
@@ -194,5 +195,13 @@ export class GridComponent implements OnInit, OnDestroy{
         else
             this.checkedRows.push(row);
         this.rowChecked.emit({ rows: this.checkedRows });
+    }
+
+    getImageSet(column: GridColumn, row: any) {
+        const dataPropertyValue = row[column.dataProperty];
+        if (!dataPropertyValue)
+            return;
+        const image = column.imageSet[dataPropertyValue];
+        return 'nc-icon ' + image;
     }
 }

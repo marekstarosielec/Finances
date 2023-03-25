@@ -30,5 +30,17 @@ export interface Settlement {
     revenue?: number;
     comment?: string | null;
     closed?: boolean;
+    eurConvertedToPln?: number;
+    plnReceivedFromConvertion?: number;
+    convertionExchangeRatio?: number;
+    pitAndVatPln?: number;
+    pitAndVatEur?: number;
+    pitMonth?: number;
+    vatMonth?: number;
+    pitAndVatMonthPln?: number;
+    pitAndVatMonthEur?: number;
+    zusPaid?: number;
+    pitPaid?: number;
+    vatPaid?: number;
 }
 

@@ -3,7 +3,7 @@ import { CurrencyExchange, CurrencyExchangeService} from 'app/api/generated';
 import { GridColumn } from 'app/shared/grid/grid.component';
 import { take } from 'rxjs/operators';
 import { ToolbarElement, ToolbarElementAction } from 'app/shared/models/toolbar';
-import { NbpService } from 'app/services/nbp.service';
+import { CurrencyExchangeCommonService } from 'app/api/currencyExchangeCommonService';
 
 @Component({
     moduleId: module.id,
@@ -23,7 +23,7 @@ export class CurrencyExchangeListComponent implements OnInit{
     columns: GridColumn[];
     toolbarElements: ToolbarElement[] = [];
    
-    constructor (private currencyExchangeService: CurrencyExchangeService, private nbpService: NbpService) {}
+    constructor (private currencyExchangeService: CurrencyExchangeService, private currenccyExchangeCommonService: CurrencyExchangeCommonService) {}
 
     ngOnInit(){
         this.currencyExchangeService.currencyExchangeGet().pipe(take(1)).subscribe((currencyExchange: CurrencyExchange[]) =>{
@@ -39,37 +39,8 @@ export class CurrencyExchangeListComponent implements OnInit{
     }
 
     toolbarElementClick(toolbarElement: ToolbarElement) {
-        const sorted = this.data.sort((d1,d2) => d1.date > d2.date ? -1 : 1);
-        const lastDate = new Date(sorted[0].date);
-        let currentDate = new Date();
-        currentDate.setUTCFullYear(lastDate.getFullYear());
-        currentDate.setUTCMonth(lastDate.getMonth());
-        currentDate.setUTCDate(lastDate.getDate());
-        currentDate.setUTCHours(0,0,0,0);
-        const today = new Date();
-        while (currentDate <= today) {
-            const currentDataIndex = this.data.findIndex(c => c.date === currentDate.toISOString().replace(/.\d+Z$/g, "Z"));
-            const currentDay = currentDate.getDay();
-            if (currentDataIndex === -1 && currentDay > 0 && currentDay < 6){
-                this.nbpService.ratesGet(currentDate).pipe(take(1)).subscribe((rates) => {
-                    let date = new Date(rates.rates[0].effectiveDate);
-                    date.setUTCHours(0,0,0,0);
-        
-                    const data = {  
-                        date: date.toISOString(),
-                        code: 'EUR',
-                        rate: rates.rates[0].mid
-                    } as CurrencyExchange;
-                    this.currencyExchangeService.currencyExchangeCurrencyExchangePost(data).pipe(take(1)).subscribe(() =>
-                    {
-                    });
-                })
-            }
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
+        this.currenccyExchangeCommonService.Refresh();
     }
 }
-function NbpRates(rate: any, NbpRates: any) {
-    throw new Error('Function not implemented.');
-}
+
 

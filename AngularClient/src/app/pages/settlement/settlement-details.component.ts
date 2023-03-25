@@ -32,6 +32,10 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
             initialSortColumn="sortOrder" initialSortOrder="1"
             (rowClicked)="moneyClickedEvent($event)">
         </grid>
+        <grid name="taxes" [columns]="taxesColumns" [data]="taxesData"
+        initialSortColumn="sortOrder" initialSortOrder="1"
+        (rowClicked)="taxesClickedEvent($event)">
+        </grid>
         <grid name="other" [columns]="otherColumns" [data]="otherData"
             initialSortColumn="date" initialSortOrder="1"
             (rowClicked)="otherClickedEvent($event)">
@@ -68,6 +72,9 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
     public moneyColumns: GridColumn[];
     public moneyData: any[];
 
+    public taxesColumns: GridColumn[];
+    public taxesData: any[];
+
     public otherColumns: GridColumn[];
     public otherData: any[];
 
@@ -95,63 +102,66 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
 
                     this.prepareInvoices(transactions, documents);
                     this.prepareMoney(transactions, documents);
+                    this.prepareTaxes(transactions, documents);
                     this.prepareOther(transactions, documents);
-
-                    if (!this.data.closed)
-                    {
-                        let eurSold = transactionList.filter(m => m.settlement === this.data['title'] && m.bankInfo=='OBCIĄŻ. NATYCH. TRANSAKCJA WALUT.').map(t => t.amount).reduce((sum, current) => sum + current, 0);
-                        let plnBought = transactionList.filter(m => m.settlement === this.data['title'] && m.bankInfo=='UZNANIE NATYCH. TRANSAKCJA WALUT.').map(t => t.amount).reduce((sum, current) => sum + current, 0);
-                        this.data['eurSold'] = eurSold;
-                        this.data['incomeGrossPln'] = plnBought;
-                        this.valueChange(this.data);
-                        // this.data['remainingEur'] = this.data.incomeGrossEur + eurSold;
-                        // this.data['exchangeRatio'] = plnBought / eurSold * (-1);
-                    }
+                    
+                    // if (!this.data.closed)
+                    // {
+                    //     let eurSold = transactionList.filter(m => m.settlement === this.data['title'] && m.bankInfo=='OBCIĄŻ. NATYCH. TRANSAKCJA WALUT.').map(t => t.amount).reduce((sum, current) => sum + current, 0);
+                    //     let plnBought = transactionList.filter(m => m.settlement === this.data['title'] && m.bankInfo=='UZNANIE NATYCH. TRANSAKCJA WALUT.').map(t => t.amount).reduce((sum, current) => sum + current, 0);
+                    //     this.data['eurSold'] = eurSold;
+                    //     this.data['incomeGrossPln'] = plnBought;
+                    //     this.valueChange(this.data);
+                    //     // this.data['remainingEur'] = this.data.incomeGrossEur + eurSold;
+                    //     // this.data['exchangeRatio'] = plnBought / eurSold * (-1);
+                    // }
                     
 
                     this.viewDefinition = {
                         fields: [
                             { title: 'Okres', dataProperty: 'title', component: 'text', required: true, readonly: true} as DetailsViewField,
-                            { title: 'Przychód w EUR', dataProperty: 'incomeGrossEur', component: 'amount', readonly: this.data.closed} as DetailsViewField,
-                            { title: 'Przychód w PLN', dataProperty: 'incomeGrossPln', component: 'amount', readonly: true} as DetailsViewField,
-                            { title: 'Kurs wymiany', dataProperty: 'exchangeRatio', component: 'number', readonly: true} as DetailsViewField,
-                            { title: 'Pozostało EUR', dataProperty: 'remainingEur', component: 'amount', readonly: true} as DetailsViewField,
+                            { title: 'Przychód w EUR', dataProperty: 'incomeGrossEur', component: 'amount'} as DetailsViewField,
+                        //    { title: 'Przychód w PLN', dataProperty: 'incomeGrossPln', component: 'amount', readonly: true} as DetailsViewField,
+                        //    { title: 'Kurs wymiany', dataProperty: 'exchangeRatio', component: 'number', readonly: true} as DetailsViewField,
+                         //   { title: 'Pozostało EUR', dataProperty: 'remainingEur', component: 'amount', readonly: true} as DetailsViewField,
                         //    { title: 'Stan konta PLN', dataProperty: 'balanceAccountPln', component: 'amount', readonly: true} as DetailsViewField,
-                            { title: 'Pit', dataProperty: 'pit', component: 'amount', readonly: this.data.closed} as DetailsViewField,
-                            { title: 'Vat', dataProperty: 'vat', component: 'amount', readonly: this.data.closed} as DetailsViewField,
-                            { title: 'Zus', dataProperty: 'zus', component: 'amount', readonly: this.data.closed} as DetailsViewField,
+                            { title: 'Pit za kwartał', dataProperty: 'pit', component: 'amount'} as DetailsViewField,
+                            { title: 'Vat za kwartał', dataProperty: 'vat', component: 'amount'} as DetailsViewField,
+                            { title: 'Łącznie za kwartał', dataProperty: 'pitAndVatPln', component: 'amount', readonly: true} as DetailsViewField,
+                            { title: 'Łącznie za miesiąc', dataProperty: 'pitAndVatMonthPln', component: 'amount', readonly: true} as DetailsViewField,
+                            { title: 'Zus za miesiąc', dataProperty: 'zus', component: 'amount'} as DetailsViewField,
                          //   { title: 'Rezerwa', dataProperty: 'reserve', component: 'amount', readonly: this.data.closed} as DetailsViewField,
                          //   { title: 'Niedopłata/nadpłata na koncie PLN', dataProperty: 'total', component: 'amount', readonly: true} as DetailsViewField,
-                            { title: 'Zysk', dataProperty: 'revenue', component: 'amount', readonly: true} as DetailsViewField,
+                          //  { title: 'Zysk', dataProperty: 'revenue', component: 'amount', readonly: true} as DetailsViewField,
                             { title: 'Komentarz', dataProperty: 'comment', component: 'text'} as DetailsViewField
                         ]
                     };
 
-                    if (this.data.closed) {
-                        var i = this.viewDefinition.fields.length;
-                        while (i--) {
-                            if (this.viewDefinition.fields[i].dataProperty === 'balanceAccountPln'
-                                || this.viewDefinition.fields[i].dataProperty === 'balanceAccountEur'
-                                || this.viewDefinition.fields[i].dataProperty === 'total') {
-                                this.viewDefinition.fields.splice(i, 1);
-                            }
-                        }
-                        this.toolbarElements.push(
-                            { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges},
+                    // if (this.data.closed) {
+                    //     var i = this.viewDefinition.fields.length;
+                    //     while (i--) {
+                    //         if (this.viewDefinition.fields[i].dataProperty === 'balanceAccountPln'
+                    //             || this.viewDefinition.fields[i].dataProperty === 'balanceAccountEur'
+                    //             || this.viewDefinition.fields[i].dataProperty === 'total') {
+                    //             this.viewDefinition.fields.splice(i, 1);
+                    //         }
+                    //     }
+                    //     this.toolbarElements.push(
+                    //         { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges},
                             
-                        );
-                    } else {
-                        const balancesPLN = balancesList.filter(m => m.account === 'KontoFirmowe').sort((a,b) => a['date'] > b['date'] ? -1 : 1);
-                        if (balancesPLN.length > 0) {
-                            this.data['balanceAccountPln'] = balancesPLN[0].amount;
-                        }
+                    //     );
+                    // } else {
+                        // const balancesPLN = balancesList.filter(m => m.account === 'KontoFirmowe').sort((a,b) => a['date'] > b['date'] ? -1 : 1);
+                        // if (balancesPLN.length > 0) {
+                        //     this.data['balanceAccountPln'] = balancesPLN[0].amount;
+                        // }
                         
                         this.toolbarElements.push(
                             { name: 'save', title: 'Zapisz', defaultAction: ToolbarElementAction.SaveChanges},
                             { name: 'delete', title: 'Usuń', defaultAction: ToolbarElementAction.Delete},
-                            { name: 'close', title: 'Zamknij', align: 'right'}
+                         //   { name: 'close', title: 'Zamknij', align: 'right'}
                         );
-                    }
+                    // }
                 });
         });
     }
@@ -181,11 +191,11 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
     }
 
     valueChange(data: Settlement) {
-        data.remainingEur = data.incomeGrossEur + data['eurSold'];
-        data.revenue = data.incomeGrossPln - data.pit - data.vat - data.zus; 
+       // data.remainingEur = data.incomeGrossEur + data['eurSold'];
+        //data.revenue = data.incomeGrossPln - data.pit - data.vat - data.zus; 
         //data.total = data.balanceAccountPln - data.pit - data.vat - data.zus;
         //data.exchangeRatio = data.incomeGrossEur == 0 ? 0 : data.incomeGrossPln / data.incomeGrossEur;
-        data.exchangeRatio = !data['eurSold'] || data['eurSold'] == 0 ? undefined : data.incomeGrossPln / data['eurSold'] * (-1)
+       // data.exchangeRatio = !data['eurSold'] || data['eurSold'] == 0 ? undefined : data.incomeGrossPln / data['eurSold'] * (-1)
     }
 
     prepareInvoices(transactions: Transaction[], documents: Document[]) {
@@ -240,7 +250,7 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
             { title: 'Konto z', dataProperty: 'accountFrom', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
             { title: 'Konto do', dataProperty: 'accountTo', component: 'list', filterOptions: { idProperty: 'account' } as ListFilterOptions, customEvent: true},
             { title: 'EUR', dataProperty: 'amountEUR', additionalDataProperty1: 'currencyEUR',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', skipConditionalFormattingProperty: 'skipFormatting', component: 'amount', filterOptions: { currencyDataProperty: 'currencyEUR'} as AmountFilterOptions, customEvent: true},
-            { title: 'PLN', dataProperty: 'amountPLN', additionalDataProperty1: 'currencyPLN',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', component: 'amount', filterOptions: { currencyDataProperty: 'currencyPLN'} as AmountFilterOptions, customEvent: true},
+            { title: 'PLN', dataProperty: 'amountPLN', additionalDataProperty1: 'currencyPLN',  pipe: 'amountWithEmpty', alignment: 'right', noWrap:true, conditionalFormatting: 'amount', skipConditionalFormattingProperty: 'skipFormatting', component: 'amount', filterOptions: { currencyDataProperty: 'currencyPLN'} as AmountFilterOptions, customEvent: true},
             { title: 'Kurs', dataProperty: 'exchangeRate', alignment: 'right', noWrap:true, component: 'text', customEvent: true},
         ];
 
@@ -257,13 +267,21 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
             .filter(t => t.category === "Transfer" 
                 && !t.description.endsWith(' NATYCH. TRANSAKCJA WALUT.')
                 && t.amount < 0)
+            .map(t => ({
+                ...t,
+                matching: transactions.filter(t2 => 
+                    t2.date === t.date 
+                    && t2.amount === t.amount * -1)[0]
+            }))
             .map(t => (
                 {
                     ...t,
                     accountFrom: t.account,
                     accountTo: transactions.filter(t2 => t2.date === t.date && t2.amount === t.amount * -1)[0]?.account,
-                    currencyEUR: 'EUR',
-                    amountEUR: t.amount * -1,
+                    currencyEUR: t.currency === 'EUR' ? 'EUR' : undefined,
+                    amountEUR: t.currency === 'EUR' ? t.amount * -1 : undefined,
+                    currencyPLN: t.currency === 'PLN' ? 'PLN' : undefined,
+                    amountPLN: t.currency === 'PLN' ? t.amount * -1 : undefined,
                     sortOrder: t.date,
                     skipFormatting: true
                 }));
@@ -311,7 +329,11 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
             { title: 'Opis', dataProperty: 'description', subDataProperty1: 'comment', component: 'text', filterOptions: { additionalPropertyToSearch1: 'comment' } as TextFilterOptions, customEvent: true},
             { title: '', dataProperty: 'showImage', component: 'icon', customEvent: true, image: 'nc-image', conditionalFormatting: 'bool'}
         ];
-        this.otherData = documents.filter(d => d.category !== "Faktura otrzymana" && d.category !== "Faktura wystawiona");
+        var documents = documents.filter(d => 
+                d.category !== "Faktura otrzymana" 
+                && d.category !== "Faktura wystawiona");
+
+        this.otherData = [...documents]
     }
    
     otherClickedEvent(rowClickedData: RowClickedData) {
@@ -320,6 +342,26 @@ export class SettlementDetailsComponent implements OnInit, OnDestroy {
         } else {
             this.router.navigate(['documents', rowClickedData.row['id']]);
         }
+    }
+
+    prepareTaxes(transactions: Transaction[], documents: Document[]) {
+        this.taxesColumns = [ 
+            { title: 'Data', dataProperty: 'date', pipe: 'date', component: 'date', noWrap: true, customEvent: true},
+            { title: 'Kategoria', dataProperty: 'category', component: 'list', filterOptions: { idProperty: 'category', usageIndexPeriodDays: 40, usageIndexThreshold: 5, usageIndexPeriodDateProperty: 'date' } as ListFilterOptions, customEvent: true},
+            { title: 'Kwota', dataProperty: 'amount', component: 'amount', customEvent: true},
+            { title: 'Opis', dataProperty: 'bankInfo', component: 'text', customEvent: true},
+        ];
+        var taxes = transactions.filter(t => 
+                (t.category === "Marek ZUS"
+                || t.category === "Marek VAT"
+                || t.category === "Marek podatek dochodowy")
+                && t.settlement === this.data.title);
+
+        this.taxesData = [...taxes]
+    }
+   
+    taxesClickedEvent(rowClickedData: RowClickedData) {
+        this.router.navigate(['transactions', rowClickedData.row['id']]);
     }
 
     rowClickedEvent(rowClickedData: RowClickedData) {
