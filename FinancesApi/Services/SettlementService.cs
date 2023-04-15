@@ -53,49 +53,51 @@ namespace FinancesApi.Controllers
                 if (previousSettlement == null)
                     previousSettlement = new Settlement();
 
-                var e = exchanges.Where(e => e.Date.Year == s.Year && e.Date.Month == s.Month).OrderByDescending(e => e.Date).First();
-                s.PitAndVatPln = s.Pit + s.Vat;
-                s.PitAndVatEur = Math.Round(s.PitAndVatPln / e.Rate,2);
-
-                s.PitMonth = s.Pit - previousSettlement.Pit;
-                s.VatMonth = s.Vat - previousSettlement.Vat;
-                s.PitAndVatMonthPln = s.PitMonth + s.VatMonth;
-                s.PitAndVatMonthEur = Math.Round(s.PitAndVatMonthPln / e.Rate, 2);
-
-                s.RemainingEur = s.IncomeGrossEur - s.EurConvertedToPln;
-
-                var zusTransaction = transactions.FirstOrDefault(t => t.Category == "Marek ZUS" && t.Settlement == s.Title);
-                if (zusTransaction == null)
-                    s.ZusPaid = 0;
-                else if (Math.Abs((double)zusTransaction.Amount) == s.Zus)
-                    s.ZusPaid = 1;
-                else
-                    s.ZusPaid = 2;
-
-                if (s.Month == 3 || s.Month == 6 || s.Month == 9 || s.Month == 12)
+                var e = exchanges.Where(e => e.Date.Year == s.Year && e.Date.Month == s.Month).OrderByDescending(e => e.Date).FirstOrDefault();
+                if (e != null)
                 {
-                    var pitTransaction = transactions.FirstOrDefault(t => t.Category == "Marek podatek dochodowy" && t.Settlement == s.Title);
-                    if (pitTransaction == null)
-                        s.PitPaid = 0;
-                    else if (Math.Abs((double)pitTransaction.Amount) == s.Pit)
-                        s.PitPaid = 1;
-                    else
-                        s.PitPaid = 2;
+                    s.PitAndVatPln = s.Pit + s.Vat;
+                    s.PitAndVatEur = Math.Round(s.PitAndVatPln / e.Rate, 2);
 
-                    var vatTransaction = transactions.FirstOrDefault(t => t.Category == "Marek VAT" && t.Settlement == s.Title);
-                    if (vatTransaction == null)
-                        s.VatPaid = 0;
-                    else if (Math.Abs((double)vatTransaction.Amount) == s.Vat)
-                        s.VatPaid = 1;
-                    else
-                        s.VatPaid = 2;
-                }
-                else
-                {
-                    s.PitPaid = 3;
-                    s.VatPaid = 3;
-                }
+                    s.PitMonth = s.Pit - previousSettlement.Pit;
+                    s.VatMonth = s.Vat - previousSettlement.Vat;
+                    s.PitAndVatMonthPln = s.PitMonth + s.VatMonth;
+                    s.PitAndVatMonthEur = Math.Round(s.PitAndVatMonthPln / e.Rate, 2);
 
+                    s.RemainingEur = s.IncomeGrossEur - s.EurConvertedToPln;
+
+                    var zusTransaction = transactions.FirstOrDefault(t => t.Category == "Marek ZUS" && t.Settlement == s.Title);
+                    if (zusTransaction == null)
+                        s.ZusPaid = 0;
+                    else if (Math.Abs((double)zusTransaction.Amount) == s.Zus)
+                        s.ZusPaid = 1;
+                    else
+                        s.ZusPaid = 2;
+
+                    if (s.Month == 3 || s.Month == 6 || s.Month == 9 || s.Month == 12)
+                    {
+                        var pitTransaction = transactions.FirstOrDefault(t => t.Category == "Marek podatek dochodowy" && t.Settlement == s.Title);
+                        if (pitTransaction == null)
+                            s.PitPaid = 0;
+                        else if (Math.Abs((double)pitTransaction.Amount) == s.Pit)
+                            s.PitPaid = 1;
+                        else
+                            s.PitPaid = 2;
+
+                        var vatTransaction = transactions.FirstOrDefault(t => t.Category == "Marek VAT" && t.Settlement == s.Title);
+                        if (vatTransaction == null)
+                            s.VatPaid = 0;
+                        else if (Math.Abs((double)vatTransaction.Amount) == s.Vat)
+                            s.VatPaid = 1;
+                        else
+                            s.VatPaid = 2;
+                    }
+                    else
+                    {
+                        s.PitPaid = 3;
+                        s.VatPaid = 3;
+                    }
+                }
             });
 
 

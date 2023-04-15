@@ -109,17 +109,23 @@ namespace MBankScrapper
             var accountIndex = 1;
             while (await _browser.IsElementPresent(accountXPath(accountIndex)))
             {
-                var titleXPath = $"{accountXPath(accountIndex)}/div[2]/div[1]/div[1]";
-                if (!await _browser.IsElementPresent(titleXPath))
+                var titleXPath = $"{accountXPath(accountIndex)}/div[1]/div[1]";
+                string title = string.Empty;
+                if (await _browser.IsElementPresent(titleXPath)) { 
+                    title = await _browser.GetInnerText(titleXPath); 
+                }
+                if (string.IsNullOrWhiteSpace(title))
+                { 
+                    titleXPath = $"{accountXPath(accountIndex)}/div[2]/div[2]/div[1]";
+                    if (await _browser.IsElementPresent(titleXPath))
+                    {
+                        title = await _browser.GetInnerText(titleXPath);
+                    }
+                }
+                if (string.IsNullOrWhiteSpace(title))
                 {
                     accountIndex++;
                     continue;
-                }
-                var title = await _browser.GetInnerText(titleXPath);
-                if (string.IsNullOrWhiteSpace(title)) //Savings have additional icon in first div
-                {
-                    titleXPath = $"{accountXPath(accountIndex)}/div[2]/div[2]/div[1]";
-                    title = await _browser.GetInnerText(titleXPath);
                 }
                 title = title
                     .Replace("eKonto - ", "")
@@ -131,15 +137,16 @@ namespace MBankScrapper
                     .Replace(" - Konto VAT", "");
 
                 var iban = "";
-                if (await _browser.IsElementPresent($"{accountXPath(accountIndex)}/div[2]/div[2]/div/div/button/span[2]"))
+                var ibanPath = $"{accountXPath(accountIndex)}/div[1]/div[2]/button/span/span/span";
+                if (await _browser.IsElementPresent(ibanPath))
                 {
-                    iban = await _browser.GetInnerText($"{accountXPath(accountIndex)}/div[2]/div[2]/div/div/button/span[2]");
+                    iban = await _browser.GetInnerText(ibanPath);
                     iban = iban.Replace(" ", "");
                 }
 
                 var balance = "0";
-                if (await _browser.IsElementPresent($"{accountXPath(accountIndex)}/div[2]/div[3]/span"))
-                    balance = await _browser.GetInnerText($"{accountXPath(accountIndex)}/div[2]/div[3]/span");
+                if (await _browser.IsElementPresent($"{accountXPath(accountIndex)}/div/div[3]/span"))
+                    balance = await _browser.GetInnerText($"{accountXPath(accountIndex)}/div/div[3]/span");
                 else if(await _browser.IsElementPresent($"{accountXPath(accountIndex)}/div[2]/div[4]"))
                     balance = await _browser.GetInnerText($"{accountXPath(accountIndex)}/div[2]/div[4]");
                 
@@ -383,8 +390,15 @@ namespace MBankScrapper
                         description = await _browser.GetInnerText(descriptionXPath);
 
                     await EditTransaction(currentTransaction, comment);
+                    if (await _browser.IsElementPresent($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:tags-trigger']"))
+                        tags = await _browser.GetInnerText($"{GetTransactionRow(currentTransaction)}/descendant::span[@data-test-id='Tooltip:tags-trigger']");
+                    if (tags == "scrapped") //Blad w MBanku - ikonka komentarzy nie jest widoczna przed rozwinieciem wiersza.
+                        continue;
+
                     if (pos == -1)
                         await SetComment($"scrapid:{id}");
+
+
                     if (!string.Equals(type, "nierozliczone", StringComparison.InvariantCultureIgnoreCase))
                         await SetScrappedTag();
                     await SaveTransaction();
