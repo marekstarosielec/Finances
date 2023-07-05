@@ -17,6 +17,7 @@ export interface DetailsViewField {
     options?: any;
     required?: boolean;
     defaultValue?: any;
+    autoComplete?: boolean;
 }
 
 export interface DetailsViewFieldListOptions {

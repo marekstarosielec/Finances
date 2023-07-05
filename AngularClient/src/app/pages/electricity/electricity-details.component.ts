@@ -33,7 +33,7 @@ export class ElectricityDetailsComponent implements OnInit, OnDestroy {
                     this.viewDefinition = {
                         fields: [
                             { title: 'Data', dataProperty: 'date', component: 'date', required: true} as DetailsViewField,
-                            { title: 'Licznik', dataProperty: 'meter', component: 'text'} as DetailsViewField,
+                            { title: 'Licznik', dataProperty: 'meter', component: 'number'} as DetailsViewField,
                             { title: 'Komentarz', dataProperty: 'comment', component: 'text'} as DetailsViewField
                         ]
                     };

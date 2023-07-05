@@ -86,7 +86,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                         fields: [
                             { title: 'Numer', dataProperty: 'number', component: 'text', required: true, defaultValue: maxNumber } as DetailsViewField,
                             { title: 'Data', dataProperty: 'date', component: 'date', required: true} as DetailsViewField,
-                            { title: 'Firma', dataProperty: 'company', component: 'text'} as DetailsViewField,
+                            { title: 'Firma', dataProperty: 'company', component: 'text', autoComplete: true} as DetailsViewField,
                             { title: 'Ilość stron', dataProperty: 'pages', component: 'text'} as DetailsViewField,
                             { title: 'Opis', dataProperty: 'description', component: 'text'} as DetailsViewField,
                             { title: 'Kategoria dokumentu', dataProperty: 'category', component: 'list', required: false, options: { referenceList: documentCategoryList, referenceListIdField: 'name', referenceListSortField: 'name', referenceListSortDescending: false } as DetailsViewFieldListOptions} as DetailsViewField,
@@ -113,7 +113,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
                         { name: 'internet', title: 'Internet', align: 'right'},
                         { name: 'ciklumTools', title: 'Ciklum narzędzia', align: 'right'},
                         { name: 'fuel', title: 'Paliwo', align: 'right'},
-                        { name: 'mazda', title: 'Mazda', align: 'right'},
+                       // { name: 'mazda', title: 'Mazda', align: 'right'},
                         { name: 'invoice', title: 'Faktura', align: 'right'},
                         { name: 'dra', title: 'ZUS DRA', align: 'right'},
                         { name: 'jpk', title: 'JPK', align: 'right'},
@@ -269,6 +269,9 @@ export class DocumentComponent implements OnInit, OnDestroy {
             component.form.controls['company'].setValue('T-mobile');
             component.form.controls['category'].setValue('Faktura otrzymana');
             component.form.controls['description'].setValue('Telefon');
+            component.form.controls['net'].setValue('135,00');
+            component.form.controls['vat'].setValue('31,05');
+            component.form.controls['gross'].setValue('366,05');
         } else if (toolbarElementWithData.toolbarElement.name === 'dra') {
             let defaultDate = new Date();
             let descriptionAppendix ='XXXX-XX'

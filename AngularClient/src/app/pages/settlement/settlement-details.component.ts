@@ -23,19 +23,22 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
         (toolbarElementClick)="toolbarElementClick($event)"
         (valueChange)="valueChange($event)"
         ></details-view>
-        
+        <label>Faktury</label>
         <grid name="invoices" [columns]="invoiceColumns" [data]="invoiceData"
             initialSortColumn="sortOrder" initialSortOrder="1"
             (rowClicked)="invoicesClickedEvent($event)">
         </grid>
+        <label>Przelewy</label>
         <grid name="money" [columns]="moneyColumns" [data]="moneyData"
             initialSortColumn="sortOrder" initialSortOrder="1"
             (rowClicked)="moneyClickedEvent($event)">
         </grid>
+        <label>Podatki</label>
         <grid name="taxes" [columns]="taxesColumns" [data]="taxesData"
         initialSortColumn="sortOrder" initialSortOrder="1"
         (rowClicked)="taxesClickedEvent($event)">
         </grid>
+        <label>Inne</label>
         <grid name="other" [columns]="otherColumns" [data]="otherData"
             initialSortColumn="date" initialSortOrder="1"
             (rowClicked)="otherClickedEvent($event)">
