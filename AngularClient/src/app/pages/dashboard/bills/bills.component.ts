@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
-import { StatisticsBill, StatisticsBills, TransactionCategory, TransactionsService } from "app/api/generated";
-import { take } from "rxjs/operators";
+import { StatisticsBill, StatisticsBills } from "app/api/generated";
 
 interface date {
     numericDate: string;
@@ -24,15 +22,15 @@ export class BillsComponent implements OnInit {
     dates: date[] = [];    
     categories: categoryValues[] = [];
     sums: StatisticsBill[] = [];
-    allCategories: TransactionCategory[];
-    constructor(private router: Router, private modalService: NgbModal, private transactionsService: TransactionsService) 
+    @Input() title: string = "";
+    @Input() categoryTitles: string[] = [];
+    @Input() skipSums: boolean = false;
+    constructor(private router: Router) 
     {
     }
 
     ngOnInit(): void {
-        this.transactionsService.transactionsCategoriesGet().pipe(take(1)).subscribe((categories:TransactionCategory[]) => {
-            this.allCategories = categories;
-        });
+
     }
 
     @Input()
@@ -41,7 +39,7 @@ export class BillsComponent implements OnInit {
     }
 
     recalculate(value: StatisticsBills): void {
-        if (!!!value)
+        if (!value)
             return;
         value.periods.forEach(element => {
             let numericMonth = '0' + (element.month).toString();
@@ -70,23 +68,17 @@ export class BillsComponent implements OnInit {
             });
         });
 
-        value.categories.forEach(element => {
+        this.categoryTitles.forEach(element => {
             const amounts = value.amounts.filter(a => a.category === element);
             this.categories.push({ name: element, amounts: amounts})
         });
-        this.sums = value.amounts.filter(a => !!!a.category);
+        value.periods.forEach(period => {
+            var amount = value.amounts.filter(a => a.period.year === period.year && a.period.month === period.month && this.categoryTitles.indexOf(a.category) > -1).reduce((sum, current) => sum + current.amount, 0);
+            this.sums.push({ period: period, amount: amount });
+        });
     }
 
     showTransactions(category: string){
-        this.router.navigate(["transactions"], { queryParams: {  category: encodeURIComponent(category) }});
-    }
-
-    open(content) {
-        this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
-            if (result === 'save')   
-            {
-                
-            }
-        }, (reason) => { });
+        this.router.navigate(["transactions"], { queryParams: {  transactions_filter_category_noAppendix: category }});
     }
 }

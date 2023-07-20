@@ -14,10 +14,12 @@ namespace FinancesApi.Services
     public class StatisticsService: IStatisticsService
     {
         private readonly TransactionsDataFile _transactionsDataFile;
+        private readonly ITransactionsService _transactionsService;
 
-        public StatisticsService(TransactionsDataFile transactionsDataFile)
+        public StatisticsService(TransactionsDataFile transactionsDataFile, ITransactionsService transactionsService)
         {
             _transactionsDataFile = transactionsDataFile;
+            _transactionsService = transactionsService;
         }
 
         public StatisticsBills GetBills()
@@ -28,18 +30,19 @@ namespace FinancesApi.Services
                 var date = DateTime.Now.AddMonths(x * -1);
                 result.Periods.Add(new StatisticsYearMonth { Year = date.Year, Month = date.Month });
             }
-            result.Categories.Add("Gaz");
-            result.Categories.Add("Prąd");
-            result.Categories.Add("Internet");
-            result.Categories.Add("Marek ubezpieczenie na życie");
-            result.Categories.Add("Mazda leasing");
-            result.Categories.Add("Skoda rata");
-            result.Categories.Add("Telefon");
-            result.Categories.Add("Woda");
-            result.Categories.Add("Śmieci");
+            result.Categories.AddRange(_transactionsService.GetCategories().Select(c => c.Title));
+            //result.Categories.Add("Gaz");
+            //result.Categories.Add("Prąd");
+            //result.Categories.Add("Internet");
+            //result.Categories.Add("Marek ubezpieczenie na życie");
+            //result.Categories.Add("Mazda leasing");
+            //result.Categories.Add("Skoda rata");
+            //result.Categories.Add("Telefon");
+            //result.Categories.Add("Woda");
+            //result.Categories.Add("Śmieci");
 
             _transactionsDataFile.Load();
-            var amounts = _transactionsDataFile.Value.Where(t => result.Categories.Contains(t.Category)).GroupBy(t => new
+            var amounts = _transactionsDataFile.Value.GroupBy(t => new
             {
                 t.Category,
                 t.Date.Year,
@@ -58,12 +61,13 @@ namespace FinancesApi.Services
                 foreach (var category in result.Categories)
                     result.Amounts.Add(new StatisticsBill(period, category, amounts.FirstOrDefault(a => a.Period.Year == period.Year && a.Period.Month == period.Month && a.Category == category).Amount));
 
-            foreach (var period in result.Periods)
-            {
-                var sums = amounts.Where(a => a.Period.Year == period.Year && a.Period.Month == period.Month).Where(a => a.Amount != null).ToList();
-                var calculatedSum = sums.Count > 0 ? sums.Sum(a => a.Amount) : null;
-                result.Amounts.Add(new StatisticsBill(period, null, calculatedSum));
-            }
+            //Calculate sums on client side since every grid can display different categories. 
+            //foreach (var period in result.Periods)
+            //{
+            //    var sums = amounts.Where(a => a.Period.Year == period.Year && a.Period.Month == period.Month).Where(a => a.Amount != null).ToList();
+            //    var calculatedSum = sums.Count > 0 ? sums.Sum(a => a.Amount) : null;
+            //    result.Amounts.Add(new StatisticsBill(period, null, calculatedSum));
+            //}
             return result;
         }
 
