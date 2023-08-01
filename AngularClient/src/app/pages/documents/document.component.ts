@@ -249,10 +249,13 @@ export class DocumentComponent implements OnInit, OnDestroy {
             component.form.controls['category'].setValue('Faktura otrzymana');
             component.form.controls['invoiceNumber'].setValue('1/' + invoiceNumberDate + '/F/6813');
             component.form.controls['description'].setValue('Internet');
+            component.form.controls['net'].setValue('80,49');
+            component.form.controls['vat'].setValue('18,51');
+            component.form.controls['gross'].setValue('99');
         } else if (toolbarElementWithData.toolbarElement.name === 'phone') {
             let defaultDate = new Date();
             let invoiceNumberDate='XX/XX'
-            const lastInvoice = this.documents.filter(t => t.company?.toUpperCase() == 'T-mobile' && t.category?.toUpperCase()==='FAKTURA OTRZYMANA').sort((d1,d2) => d1.date < d2.date ? 1 : -1)[0];
+            const lastInvoice = this.documents.filter(t => t.company?.toUpperCase() == 'T-MOBILE' && t.category?.toUpperCase()==='FAKTURA OTRZYMANA').sort((d1,d2) => d1.date < d2.date ? 1 : -1)[0];
             if (lastInvoice) {
                 let lastDate = new Date(lastInvoice.date);
                 lastDate.setMonth(lastDate.getMonth() + 1);
@@ -271,7 +274,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
             component.form.controls['description'].setValue('Telefon');
             component.form.controls['net'].setValue('135,00');
             component.form.controls['vat'].setValue('31,05');
-            component.form.controls['gross'].setValue('366,05');
+            component.form.controls['gross'].setValue('166,05');
         } else if (toolbarElementWithData.toolbarElement.name === 'dra') {
             let defaultDate = new Date();
             let descriptionAppendix ='XXXX-XX'
