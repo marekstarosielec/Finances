@@ -25,14 +25,15 @@ export class DashboardComponent implements OnInit{
   public title: string = "";
   public categoryTitles: string[] = [];
   public dashboardElements: DashboardElement[] = [
-    { title: "Rachunki", categories: ["Gaz", "Prąd", "Internet", "Telefon", "Woda", "Śmieci"]},
+    { title: "Rachunki", categories: ["Gaz", "Prąd", "Internet", "Telefon", "Woda", "Śmieci", "Kredyt hipoteczny", "Luxmed dzieci", "Marek ubezpieczenie na życie", "Podatek od nieruchomości"]},
     { title: "Jedzenie", categories: ["Jedzenie i chemia", "Rozrywka i restauracje"]},
     { title: "Subskrybcje", categories: ["Amazon Prime", "Apple iCloud", "Disney Plus", "Empik Premium", "F1", "Hbo", "Netflix", "Spotify"]},
     { title: "Przychody", categories: ["Marek pensja", "Mirela pensja", "Mirela premia", "500+", "300+"], skipSums: true},
-    { title: "Kieszonkowe", categories: ["Mikołaj kieszonkowe", "Marta kieszonkowe"]},
+    { title: "Dzieci", categories: ["Mikołaj kieszonkowe", "Mikołaj Indeks", "Mikołaj inne", "Marta kieszonkowe", "Mikołaj japoński", "Marta inne", "Marta szkoła", "Marta wydatki inne", "Konie"]},
     { title: "Firma", categories: ["Marek ZUS", "Marek podatek dochodowy", "Marek VAT"]},
-    { title: "Samochody", categories: ["Mazda paliwo", "Mazda serwis", "Mazda ubezpieczenie", "Skoda paliwo", "Skoda serwis"]},
-    
+    { title: "Samochody", categories: ["Mazda paliwo", "Mazda serwis", "Mazda ubezpieczenie", "Mazda eksploatacja", "Skoda paliwo", "Skoda serwis", "Skoda inne"]},
+    { title: "Inne", categories: ["Domowe rzeczy", "Elektronika", "Gotówka", "Koty", "Książki, komiksy, gry", "Parking", "Inne"]},
+   
     
   ];
   constructor(private balancesService: BalancesService,

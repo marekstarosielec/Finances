@@ -62,6 +62,7 @@ export class SettlementListComponent implements OnInit{
                 { title: 'Pozostało', dataProperty: 'remainingEur', additionalDataProperty1: 'eur', pipe: 'number', component: 'text', alignment: 'right'},
                 { title: 'Zus', dataProperty: 'zus', pipe: 'number', component: 'text', alignment: 'right'},
                 { title: 'Komentarz', dataProperty: 'comment', component: 'text'},
+                { title: 'JPK', dataProperty: 'jpkSent', component: 'iconSet', alignment: 'Left', imageSet: ['nc-simple-remove','nc-check-2']},
                 { title: 'Zus', dataProperty: 'zusPaid', component: 'iconSet', alignment: 'Left', imageSet: ['nc-simple-remove','nc-check-2', 'nc-zoom-split', '']},
                 { title: 'Pit', dataProperty: 'pitPaid', component: 'iconSet', alignment: 'Left', imageSet: ['nc-simple-remove','nc-check-2', 'nc-zoom-split', '']},
                 { title: 'Vat', dataProperty: 'vatPaid', component: 'iconSet', alignment: 'Left', imageSet: ['nc-simple-remove','nc-check-2', 'nc-zoom-split', '']},

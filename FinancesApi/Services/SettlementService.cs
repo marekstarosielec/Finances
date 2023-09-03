@@ -19,12 +19,14 @@ namespace FinancesApi.Controllers
         private readonly SettlementDataFile _settlementDataFile;
         private readonly ITransactionsService _transactionsService;
         private readonly ICurrencyExchangeService _currencyExchangeService;
+        private readonly IDocumentService _documentService;
 
-        public SettlementService(SettlementDataFile settlementDataFile, ITransactionsService transactionsService, ICurrencyExchangeService currencyExchangeService)
+        public SettlementService(SettlementDataFile settlementDataFile, ITransactionsService transactionsService, ICurrencyExchangeService currencyExchangeService, IDocumentService documentService)
         {
             _settlementDataFile = settlementDataFile;
             _transactionsService = transactionsService;
             _currencyExchangeService = currencyExchangeService;
+            _documentService = documentService;
         }
 
         
@@ -43,6 +45,7 @@ namespace FinancesApi.Controllers
             var currentDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
 
             var transactions = _transactionsService.GetTransactions();
+            var documents = _documentService.GetDocuments();
             var exchanges = _currencyExchangeService.Get();
             result.ForEach(s => { 
                 s.EurConvertedToPln = (double) Math.Abs(transactions.Where(t => t.Settlement == s.Title && t.BankInfo == "OBCIĄŻ. NATYCH. TRANSAKCJA WALUT.").Sum(t => t.Amount));
@@ -74,6 +77,9 @@ namespace FinancesApi.Controllers
                     else
                         s.ZusPaid = 2;
 
+                    var upoJpkDocument = documents.FirstOrDefault(d => d.Description?.StartsWith("UPO JPK ")==true && d.Settlement == s.Title);
+                    s.JpkSent = upoJpkDocument == null ? 0 : 1;
+                    
                     if (s.Month == 3 || s.Month == 6 || s.Month == 9 || s.Month == 12)
                     {
                         var pitTransaction = transactions.FirstOrDefault(t => t.Category == "Marek podatek dochodowy" && t.Settlement == s.Title);

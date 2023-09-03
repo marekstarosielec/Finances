@@ -51,5 +51,6 @@ namespace FinancesApi.Models
         public int ZusPaid { get; set; }
         public int PitPaid { get; set; }
         public int VatPaid { get; set; }
+        public int JpkSent { get; set; }
     }
 }
