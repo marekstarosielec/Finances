@@ -1,0 +1,43 @@
+﻿@page "/electricity"
+
+<PageTitle>Weather forecast</PageTitle>
+
+@using Finances.Entities.Electricity;
+@inject ElectricityService service
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Meter</td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Finances.Entities.Electricity.Electricity[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await service.Get();
+    }
+}
