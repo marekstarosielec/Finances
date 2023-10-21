@@ -1,26 +1,21 @@
 ﻿using FinancesBlazor.DataAccess;
+using FinancesBlazor.Extensions;
 
 namespace Finances.DataAccess
 {
-    public class BaseListService<T, TKey>
+    public class BaseListService<T>
         where T: IDataIdentifier
     {
         private readonly IJsonListFile<T> _dataFile;
-        private readonly Func<T, TKey> _defaultSorting;
-        private readonly bool _ascending;
 
-        public BaseListService(IJsonListFile<T> dataFile, Func<T, TKey> defaultSorting, bool ascending = true) { 
+        public BaseListService(IJsonListFile<T> dataFile) { 
             _dataFile = dataFile;
-            _defaultSorting = defaultSorting; 
-            _ascending = ascending;
         }
 
-        public virtual async Task<T[]> Get()
+        public virtual async Task<T[]> Get(string? sortColumn, bool descending)
         {
             await _dataFile.Load();
-            return _ascending 
-                ? _dataFile.Data.OrderBy(_defaultSorting).ToArray() 
-                : _dataFile.Data.OrderByDescending(_defaultSorting).ToArray();
+            return sortColumn == null ? _dataFile.Data.ToArray() : _dataFile.Data.OrderByDynamic(sortColumn, descending).ToArray();
         }
 
         public virtual async Task Delete(string id)

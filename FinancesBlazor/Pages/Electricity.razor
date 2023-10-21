@@ -1,49 +1,35 @@
 ﻿@page "/electricity"
 
-<PageTitle>Weather forecast</PageTitle>
+<PageTitle>Prąd</PageTitle>
 
 @using Finances.Entities.Electricity;
-@inject ElectricityService service
+@using FinancesBlazor.Components.Grid;
+@inject ElectricityService _service
 
 <h1>Weather forecast</h1>
 
-<p>This component demonstrates fetching data from a service.</p>
-
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <FinancesBlazor.Components.Grid ReloadDataRequested="ReloadDataRequested" />
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Meter</td>
-                    
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<FinancesBlazor.Components.Grid.Grid ReloadDataRequested="ReloadDataRequested" Settings="_settings" Data="_data" />
 
 @code {
-    private Finances.Entities.Electricity.Electricity[]? forecasts;
+    private GridSettings _settings;
+    private object[]? _data;
 
-    protected override async Task OnInitializedAsync()
+    public Electricity()
     {
-        forecasts = await service.Get();
+        _settings = new GridSettings
+            {
+                SortingColumnDataName = "Date",
+                SortingDescending = true,
+                Columns = new List<GridColumn> {
+                    new GridColumn("Data", "Date", DataAccess.DataTypes.Date),
+                    new GridColumn("Licznik", "Meter", DataAccess.DataTypes.Precision, format: "0.0"),
+                    new GridColumn("Komentarz", "Comment", DataAccess.DataTypes.Text) }
+                    .ToArray()
+            };
     }
 
-    protected void ReloadDataRequested()
+    protected async Task ReloadDataRequested()
     {
-        
+        _data = await _service.Get(_settings.SortingColumnDataName, _settings.SortingDescending);
     }
 }

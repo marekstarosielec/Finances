@@ -1,0 +1,66 @@
+﻿<button class="btn btn-primary" @onclick="ReloadData"><span class="fa fa-refresh"></span></button>
+
+@if (Settings?.Columns == null || Data == null)
+{
+    
+}
+else
+{
+<table class="table">
+    
+    <thead>
+        <tr>
+            @foreach (var column in Settings.Columns)
+            {
+                    <th @onclick="@(()=>ColumnClick(@column))">@column.Title</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Data)
+        {
+            <tr>
+                    @foreach (var column in Settings.Columns)
+                    {
+                        <td>@GridValueFormatter.GetFormattedString(@row.GetType()?.GetProperty(column.Data)?.GetValue(row), column)</td>
+                    }
+            </tr>
+        }
+    </tbody>
+</table>
+}
+@code {
+    [Parameter]
+    public GridSettings? Settings { get; set; }
+
+    [Parameter]
+    public object[]? Data { get; set; }
+
+
+    [Parameter]
+    public EventCallback ReloadDataRequested { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadData();
+    }
+
+    private async Task ColumnClick(GridColumn column)
+    {
+        if (Settings == null)
+            return;
+        if (Settings.SortingColumnDataName == column.Data)
+            Settings.SortingDescending = !Settings.SortingDescending;
+        else
+        {
+            Settings.SortingColumnDataName = column.Data;
+            Settings.SortingDescending = false;
+        }
+        await ReloadData();
+    }
+
+    private async Task ReloadData()
+    {
+        await ReloadDataRequested.InvokeAsync();
+    }
+}
