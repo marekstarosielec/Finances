@@ -23,37 +23,37 @@ namespace FinancesApi.Controllers
         {
             try
             {
-                await using var hook = new PlaywrightHook.PlaywrightHook();
-                var santander = new SantanderScrapper.Santander();
-                await santander.StartScrapping(hook, new SantanderScrapper.ActionSet {
-                    AccountBalance = accountBalance =>
-                    {
-                       _balanceService.SaveBalance(new Models.Balance { 
-                           Id = Guid.NewGuid().ToString(), 
-                           Date=DateTime.Now.Date, 
-                           Account = accountBalance.Title, 
-                           Amount = accountBalance.Balance, 
-                           Currency = accountBalance.Currency });
-                    },
-                    Transaction = transaction =>
-                    {
-                        var transactionModel = new Models.Transaction
-                        {
-                            Id = transaction.Id,
-                            Title = transaction.Title,
-                            Amount = transaction.Amount,
-                            Account = transaction.Account,
-                            Date = transaction.Date,
-                            Source = "santander scrapper",
-                            Currency = transaction.Currency,
-                            ScrappingDate = DateTime.Now
-                        };
-                        transactionModel.Category = _transactionService.GetAutoCategory(transactionModel);
+                //await using var hook = new PlaywrightHook.PlaywrightHook();
+                //var santander = new SantanderScrapper.Santander();
+                //await santander.StartScrapping(hook, new SantanderScrapper.ActionSet {
+                //    AccountBalance = accountBalance =>
+                //    {
+                //       _balanceService.SaveBalance(new Models.Balance { 
+                //           Id = Guid.NewGuid().ToString(), 
+                //           Date=DateTime.Now.Date, 
+                //           Account = accountBalance.Title, 
+                //           Amount = accountBalance.Balance, 
+                //           Currency = accountBalance.Currency });
+                //    },
+                //    Transaction = transaction =>
+                //    {
+                //        var transactionModel = new Models.Transaction
+                //        {
+                //            Id = transaction.Id,
+                //            Title = transaction.Title,
+                //            Amount = transaction.Amount,
+                //            Account = transaction.Account,
+                //            Date = transaction.Date,
+                //            Source = "santander scrapper",
+                //            Currency = transaction.Currency,
+                //            ScrappingDate = DateTime.Now
+                //        };
+                //        transactionModel.Category = _transactionService.GetAutoCategory(transactionModel);
 
-                        _transactionService.SaveTransaction(
-                            transactionModel, false);
-                    }
-                });
+                //        _transactionService.SaveTransaction(
+                //            transactionModel, false);
+                //    }
+                //});
                 //_transactionService.ApplyAutoCategories();
             }
             catch (Exception e)
