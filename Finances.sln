@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserHook", "BrowserHook\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SantanderScrapper", "SantanderScrapper\SantanderScrapper.csproj", "{50CB85A2-A65E-440F-AD8C-11A10526A31C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinancesBlazor", "FinancesBlazor\FinancesBlazor.csproj", "{9A615F74-C3D2-4A2F-8D8F-91B162331FF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinancesBlazor", "FinancesBlazor\FinancesBlazor.csproj", "{9A615F74-C3D2-4A2F-8D8F-91B162331FF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

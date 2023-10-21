@@ -10,14 +10,6 @@ public class ElectricityService : BaseListService<Electricity, DateTime>, IInjec
       
     }
 
-    //public async Task DeleteElectricity(string id)
-    //{
-    //    await _electricityDataFile.Load();
-    //    _electricityDataFile.Data.RemoveAll(a => string.Equals(id, a.Id, StringComparison.InvariantCultureIgnoreCase));
-    //    await _electricityDataFile.Save();
-    //}
-
-
     //public void SaveElectricity(Electricity electricity)
     //{
     //    _electricityDataFile.Load();

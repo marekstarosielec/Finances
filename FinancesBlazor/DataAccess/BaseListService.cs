@@ -23,10 +23,18 @@ namespace Finances.DataAccess
                 : _dataFile.Data.OrderByDescending(_defaultSorting).ToArray();
         }
 
-        public async Task Delete(string id)
+        public virtual async Task Delete(string id)
         {
             await _dataFile.Load();
             _dataFile.Data.RemoveAll(a => string.Equals(id, a.Id, StringComparison.InvariantCultureIgnoreCase));
+            await _dataFile.Save();
+        }
+
+        public virtual async Task Save(T data)
+        {
+            await _dataFile.Load();
+            _dataFile.Data.RemoveAll(a => string.Equals(data.Id, a.Id, StringComparison.InvariantCultureIgnoreCase));
+            _dataFile.Data.Add(data);
             await _dataFile.Save();
         }
     }
