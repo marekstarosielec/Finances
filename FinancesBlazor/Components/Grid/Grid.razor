@@ -12,7 +12,7 @@ else
         <tr>
             @foreach (var column in Settings.Columns)
             {
-                    <th @onclick="@(()=>ColumnClick(@column))">@column.Title</th>
+                    <th @onclick="@(()=>ColumnHeaderClick(@column))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></th>
             }
         </tr>
     </thead>
@@ -45,7 +45,7 @@ else
         await ReloadData();
     }
 
-    private async Task ColumnClick(GridColumn column)
+    private async Task ColumnHeaderClick(GridColumn column)
     {
         if (Settings == null)
             return;
@@ -58,6 +58,8 @@ else
         }
         await ReloadData();
     }
+
+    private bool ColumnHeaderArrowHidden(GridColumn column, bool descending) => Settings?.SortingColumnDataName != column.Data || Settings.SortingDescending != descending;
 
     private async Task ReloadData()
     {
