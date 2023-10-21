@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit{
     { title: "Dzieci", categories: ["Mikołaj kieszonkowe", "Mikołaj Indeks", "Mikołaj inne", "Marta kieszonkowe", "Mikołaj japoński", "Marta inne", "Marta szkoła", "Marta wydatki inne", "Konie"]},
     { title: "Firma", categories: ["Marek ZUS", "Marek podatek dochodowy", "Marek VAT"]},
     { title: "Samochody", categories: ["Mazda paliwo", "Mazda serwis", "Mazda ubezpieczenie", "Mazda eksploatacja", "Skoda paliwo", "Skoda serwis", "Skoda inne"]},
-    { title: "Inne", categories: ["Domowe rzeczy", "Elektronika", "Gotówka", "Koty", "Książki, komiksy, gry", "Parking", "Inne"]},
+    { title: "Inne", categories: ["Charytatywne", "Domowe rzeczy", "Elektronika", "Gotówka", "Koty", "Książki, komiksy, gry", "Parking", "Wakacje", "Inne"]},
    
     
   ];
