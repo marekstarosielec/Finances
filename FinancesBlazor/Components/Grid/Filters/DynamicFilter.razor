@@ -1,0 +1,22 @@
+﻿@using FinancesBlazor.DataAccess;
+
+@if (Column != null)
+{
+    @switch (Column.DataType)
+    {
+       case DataTypes.Text: 
+            <TextFilter Column="@Column" /> 
+            break;
+        case DataTypes.Date:
+            <DateFilter Column="@Column" />
+            break;
+        case DataTypes.Precision:
+            <PrecisionFilter Column="@Column" />
+            break;
+    }
+    
+}
+@code {
+    [Parameter]
+    public GridColumn? Column { get; set; }
+}

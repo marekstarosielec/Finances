@@ -1,4 +1,6 @@
-﻿<button class="btn btn-primary" @onclick="ReloadData"><span class="fa fa-refresh"></span></button>
+﻿@using FinancesBlazor.Components.Grid.Filters;
+
+<button class="btn btn-primary" @onclick="ReloadData"><span class="fa fa-refresh"></span></button>
 
 @if (Settings?.Columns == null || Data == null)
 {
@@ -12,7 +14,20 @@ else
         <tr>
             @foreach (var column in Settings.Columns)
             {
-                    <th @onclick="@(()=>ColumnHeaderClick(@column))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></th>
+                @*     <th @onclick="@(()=>ColumnHeaderClick(@column))">
+                            @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
+                        <span hidden="@(ColumnFilterVisible != column.Data)" class="filter"><DynamicFilter Column="@column" /></span>
+                    </th> *@
+                    <th>
+                        <div class="dropdown">
+                            <button class="btn columnHeader" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
+                            </button>
+                            <div class="dropdown-menu columnFilter" aria-labelledby="dropdownMenuButton">
+                                <DynamicFilter Column="@column" />
+                            </div>
+                        </div>
+                    </th>
             }
         </tr>
     </thead>
@@ -36,6 +51,8 @@ else
     [Parameter]
     public object[]? Data { get; set; }
 
+    [Parameter]
+    public string? ColumnFilterVisible { get; set; }
 
     [Parameter]
     public EventCallback ReloadDataRequested { get; set; }
@@ -45,24 +62,33 @@ else
         await ReloadData();
     }
 
+    private void CloseFilter()
+    {
+        ColumnFilterVisible = string.Empty;
+    }
     private async Task ColumnHeaderClick(GridColumn column)
     {
-        if (Settings == null)
-            return;
-        if (Settings.SortingColumnDataName == column.Data)
-            Settings.SortingDescending = !Settings.SortingDescending;
+        if (ColumnFilterVisible == column.Data)
+            CloseFilter();
         else
-        {
-            Settings.SortingColumnDataName = column.Data;
-            Settings.SortingDescending = false;
-        }
-        await ReloadData();
+            ColumnFilterVisible = column.Data;
+        // if (Settings == null)
+        //     return;
+        // if (Settings.SortingColumnDataName == column.Data)
+        //     Settings.SortingDescending = !Settings.SortingDescending;
+        // else
+        // {
+        //     Settings.SortingColumnDataName = column.Data;
+        //     Settings.SortingDescending = false;
+        // }
+        // await ReloadData();
     }
 
     private bool ColumnHeaderArrowHidden(GridColumn column, bool descending) => Settings?.SortingColumnDataName != column.Data || Settings.SortingDescending != descending;
 
     private async Task ReloadData()
     {
+        CloseFilter();
         await ReloadDataRequested.InvokeAsync();
     }
 }

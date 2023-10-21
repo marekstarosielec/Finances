@@ -1,0 +1,18 @@
+﻿tbody tr:hover
+{
+    background-color: aliceblue;
+    cursor: pointer;
+}
+
+/*.filter{
+    cursor: pointer;
+}
+*/
+.columnHeader {
+    border: 0px;
+    padding: 0px;
+}
+
+.columnFilter {
+    margin-top: 5px;
+}
