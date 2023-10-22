@@ -23,10 +23,10 @@ public partial class ViewsList
             {
                 SortingColumnDataName = "Date",
                 SortingDescending = true,
-                Columns = new ReadOnlyCollection<GridColumn>(new List<GridColumn> {
-                        new GridColumn("Data", "Date", DataTypes.Date),
-                        new GridColumn("Licznik", "Meter", DataTypes.Precision, format: "# ##0.0"),
-                        new GridColumn("Komentarz", "Comment", DataTypes.Text) })
+                Columns = new ReadOnlyCollection<Column>(new List<Column> {
+                        new Column("Data", "Date", DataTypes.Date),
+                        new Column("Licznik", "Meter", DataTypes.Precision, format: "# ##0.0", align: Align.Right),
+                        new Column("Komentarz", "Comment", DataTypes.Text) })
             };
 
             _electricity = new View("electricity", "Prąd", new BaseListService(new JsonListFile(_configuration, "electricity.json"), viewListParameters))

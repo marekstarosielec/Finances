@@ -1,14 +1,12 @@
 ﻿using System.Collections.ObjectModel;
-using FinancesBlazor.Components.Grid;
 
-namespace FinancesBlazor.ViewManager
+namespace FinancesBlazor.ViewManager;
+
+public class ViewListParameters
 {
-    public class ViewListParameters
-    {
-        public string? SortingColumnDataName { get; set; }
+    public string? SortingColumnDataName { get; set; }
 
-        public bool SortingDescending { get; set; }
+    public bool SortingDescending { get; set; }
 
-        public ReadOnlyCollection<GridColumn>? Columns { get; init; }
-    }
+    public ReadOnlyCollection<Column>? Columns { get; init; }
 }

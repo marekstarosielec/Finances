@@ -13,7 +13,7 @@
                 @foreach (var column in Parameters.Columns)
             {
                 <th>
-                    <div class="dropdown">
+                        <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
                         <button class="btn columnHeader" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
                         </button>
@@ -31,7 +31,7 @@
             <tr>
                     @foreach (var column in Parameters.Columns)
                     {
-                        <td>@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
+                        <td class="@(column.Align == Align.Right ? "text-end" : "")">@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
                     }
             </tr>
         }
@@ -60,25 +60,16 @@
     {
         ColumnFilterVisible = string.Empty;
     }
-    private async Task ColumnHeaderClick(GridColumn column)
+
+    private void ColumnHeaderClick(Column column)
     {
         if (ColumnFilterVisible == column.Data)
             CloseFilter();
         else
             ColumnFilterVisible = column.Data;
-        // if (Settings == null)
-        //     return;
-        // if (Settings.SortingColumnDataName == column.Data)
-        //     Settings.SortingDescending = !Settings.SortingDescending;
-        // else
-        // {
-        //     Settings.SortingColumnDataName = column.Data;
-        //     Settings.SortingDescending = false;
-        // }
-        // await ReloadData();
     }
 
-    private bool ColumnHeaderArrowHidden(GridColumn column, bool descending) => Parameters?.SortingColumnDataName != column.Data || Parameters.SortingDescending != descending;
+    private bool ColumnHeaderArrowHidden(Column column, bool descending) => Parameters?.SortingColumnDataName != column.Data || Parameters.SortingDescending != descending;
 
     private async Task ReloadDataRequest()
     {

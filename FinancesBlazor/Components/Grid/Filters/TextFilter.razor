@@ -1,11 +1,12 @@
-﻿@if (Column != null)
+﻿@using FinancesBlazor.ViewManager;
+@if (Column != null)
 {
     <input type="text" class="form-control" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" />
 }
 
 @code {
     [Parameter]
-    public GridColumn? Column { get; set; }
+    public Column? Column { get; set; }
 
     private void TextChanged(ChangeEventArgs e)
     {
