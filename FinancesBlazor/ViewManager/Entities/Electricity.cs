@@ -1,6 +1,7 @@
 ﻿using Finances.DataAccess;
 using FinancesBlazor.Components.Grid;
 using FinancesBlazor.DataAccess;
+using System.Collections.ObjectModel;
 
 namespace FinancesBlazor.ViewManager;
 
@@ -18,19 +19,21 @@ public partial class ViewsList
             if (_electricity != null)
                 return _electricity;
 
-            _electricity = new View("electricity", "Prąd", new BaseListService(new JsonListFile(_configuration, "electricity.json")))
+            var viewListParameters = new ViewListParameters
             {
-                MainGridSettings = new GridSettings("e")
-                {
-                    SortingColumnDataName = "Date",
-                    SortingDescending = true,
-                    Columns = new List<GridColumn> {
-                new GridColumn("Data", "Date", DataTypes.Date),
-                new GridColumn("Licznik", "Meter", DataTypes.Precision, format: "0.0"),
-                new GridColumn("Komentarz", "Comment", DataTypes.Text) }
-                .ToArray()
-                }
+                SortingColumnDataName = "Date",
+                SortingDescending = true,
+                Columns = new ReadOnlyCollection<GridColumn>(new List<GridColumn> {
+                        new GridColumn("Data", "Date", DataTypes.Date),
+                        new GridColumn("Licznik", "Meter", DataTypes.Precision, format: "# ##0.0"),
+                        new GridColumn("Komentarz", "Comment", DataTypes.Text) })
             };
+
+            _electricity = new View("electricity", "Prąd", new BaseListService(new JsonListFile(_configuration, "electricity.json"), viewListParameters))
+            {
+                Parameters = viewListParameters
+            };
+
             return _electricity;
         }
     }

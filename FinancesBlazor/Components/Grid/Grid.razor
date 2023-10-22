@@ -1,33 +1,27 @@
-﻿@using FinancesBlazor.Components.Grid.Filters;
+﻿@using FinancesBlazor.ViewManager;
+@using FinancesBlazor.Components.Grid.Filters;
 @using System.Text.Json.Nodes;
 
-@inject NavigationManager navManager;
-@implements IDisposable;
+<button class="btn btn-primary" @onclick="ReloadDataRequest"><span class="fa fa-refresh"></span></button>
 
-<button class="btn btn-primary" @onclick="ReloadData"><span class="fa fa-refresh"></span></button>
-
-@if (Settings?.Columns != null && Data != null)
+@if (Parameters?.Columns != null && Data != null)
 {
 <table class="table">
     
     <thead>
         <tr>
-            @foreach (var column in Settings.Columns)
+                @foreach (var column in Parameters.Columns)
             {
-                @*     <th @onclick="@(()=>ColumnHeaderClick(@column))">
-                            @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
-                        <span hidden="@(ColumnFilterVisible != column.Data)" class="filter"><DynamicFilter Column="@column" /></span>
-                    </th> *@
-                    <th>
-                        <div class="dropdown">
-                            <button class="btn columnHeader" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
-                            </button>
-                            <div class="dropdown-menu columnFilter" aria-labelledby="dropdownMenuButton">
-                                <DynamicFilter Settings="@Settings" Column="@column" />
-                            </div>
+                <th>
+                    <div class="dropdown">
+                        <button class="btn columnHeader" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
+                        </button>
+                        <div class="dropdown-menu columnFilter" aria-labelledby="dropdownMenuButton">
+                                <DynamicFilter Column="@column" ParametersChanged="ReloadDataRequest" />
                         </div>
-                    </th>
+                    </div>
+                </th>
             }
         </tr>
     </thead>
@@ -35,9 +29,8 @@
         @foreach (var row in Data)
         {
             <tr>
-                    @foreach (var column in Settings.Columns)
+                    @foreach (var column in Parameters.Columns)
                     {
-                        @* <td>@GridValueFormatter.GetFormattedString(@row.GetType()?.GetProperty(column.Data)?.GetValue(row), column)</td> *@
                         <td>@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
                     }
             </tr>
@@ -47,10 +40,10 @@
 }
 @code {
     [Parameter]
-    public GridSettings? Settings { get; set; }
+    public ViewListParameters? Parameters { get; set; }
 
     [Parameter]
-    public JsonArray? Data { get; set; }
+    public List<JsonNode>? Data { get; set; }
 
     [Parameter]
     public string? ColumnFilterVisible { get; set; }
@@ -60,25 +53,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await ReloadData();
-    }
-
-    protected override void OnInitialized()
-    {
-        navManager.LocationChanged += HandleLocationChanged;
-    }
-
-    private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        await ReloadData();
-        StateHasChanged();
-    }
-
-
-
-    public void Dispose()
-    {
-        navManager.LocationChanged -= HandleLocationChanged;
+        await ReloadDataRequest();
     }
 
     private void CloseFilter()
@@ -103,9 +78,9 @@
         // await ReloadData();
     }
 
-    private bool ColumnHeaderArrowHidden(GridColumn column, bool descending) => Settings?.SortingColumnDataName != column.Data || Settings.SortingDescending != descending;
+    private bool ColumnHeaderArrowHidden(GridColumn column, bool descending) => Parameters?.SortingColumnDataName != column.Data || Parameters.SortingDescending != descending;
 
-    private async Task ReloadData()
+    private async Task ReloadDataRequest()
     {
         CloseFilter();
         await ReloadDataRequested.InvokeAsync();

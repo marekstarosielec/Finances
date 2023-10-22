@@ -1,5 +1,4 @@
 ﻿using Finances.DataAccess;
-using FinancesBlazor.Components.Grid;
 
 namespace FinancesBlazor.ViewManager;
 
@@ -9,7 +8,7 @@ public class View
 
     public string Title { get; set; }
 
-    public GridSettings? MainGridSettings { get; set; }
+    public ViewListParameters? Parameters { get; set; }
 
     public BaseListService Service { get; }
 

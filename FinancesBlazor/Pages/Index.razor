@@ -1,15 +1,16 @@
 ﻿@page "/"
 @using FinancesBlazor.Components.Grid;
 @using System.Text.Json.Nodes;
-@inject ViewManager.ViewManager _viewManager;
+@using FinancesBlazor.ViewManager;
+@inject ViewManager _viewManager;
 
 <PageTitle>@_viewManager.ActiveView.Title</PageTitle>
-<FinancesBlazor.Components.Grid.Grid ReloadDataRequested="ReloadDataRequested" Settings="@_viewManager.ActiveView.MainGridSettings" Data="_data" />
+<FinancesBlazor.Components.Grid.Grid ReloadDataRequested="ReloadDataRequested" Parameters="@_viewManager.ActiveView.Parameters" Data="_data" />
 
 
 @code{
-    private GridSettings? _settings;
-    private JsonArray? _data;
+    private ViewListParameters? _settings;
+    private List<JsonNode>? _data;
     
     protected override Task OnInitializedAsync()
     {

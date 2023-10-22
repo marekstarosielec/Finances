@@ -1,8 +1,9 @@
-﻿@using FinancesBlazor.DataAccess;
-@using FinancesBlazor.Extensions;
-@inject NavigationManager navManager;
+﻿@using FinancesBlazor.ViewManager;
+@using FinancesBlazor.DataAccess;
 
-@if (Settings != null && Column != null)
+@inject ViewManager _viewManager;
+
+@if (Column != null)
 {
     <button type="button" class="btn btn-primary btn-sm" @onclick="() => SortClick(false)"><span class="fa fa-arrow-up"></span></button>
     <button type="button" class="btn btn-secondary btn-sm" @onclick="() => SortClick(true)"><span class="fa fa-arrow-down"></span></button>
@@ -22,16 +23,18 @@
 }
 @code {
     [Parameter]
-    public GridSettings? Settings { get; set; }
-
-    [Parameter]
     public GridColumn? Column { get; set; }
 
-    public void SortClick(bool descending)
+    [Parameter]
+    public EventCallback ParametersChanged { get; set; }
+
+    public async Task SortClick(bool descending)
     {
-        if (Settings == null)
+        if (Column == null || _viewManager?.ActiveView?.Parameters == null)
             return;
-       // navManager.NavigateWithQueryStringValue(Settings.Name, "1234fre");
-        //navManager.NavigateTo($"{navManager.Uri}?test=abc");
+
+        _viewManager.ActiveView.Parameters.SortingColumnDataName = Column.Data;
+        _viewManager.ActiveView.Parameters.SortingDescending = descending;
+        await ParametersChanged.InvokeAsync();
     }
 }
