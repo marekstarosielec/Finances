@@ -1,4 +1,8 @@
 ﻿@using FinancesBlazor.ViewManager;
+@using System.Timers;
+@inject ViewManager _viewManager;
+@implements IDisposable;
+
 @if (Column != null)
 {
     <input type="text" class="form-control" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" />
@@ -8,8 +12,43 @@
     [Parameter]
     public Column? Column { get; set; }
 
+    public string currentText = string.Empty;
+
+    private Timer debounce = new Timer(500);
+
+    [Parameter]
+    public EventCallback<bool> ParametersChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        debounce.Elapsed += TimerCallback;
+        base.OnInitialized();
+    }
+
     private void TextChanged(ChangeEventArgs e)
     {
+        currentText = e.Value?.ToString() ?? string.Empty;
+        debounce.Stop();
+        debounce.Start();
+    }
+
+    private async void TimerCallback(Object? source, ElapsedEventArgs e)
+    {
+        debounce.Stop();
+        if (_viewManager?.ActiveView?.Parameters?.Filters == null || Column == null)
+            return;
+        _viewManager.ActiveView.Parameters.Filters[Column] = new FilterValue { StringValue = currentText };
         
+        await InvokeAsync(async () =>
+        {
+            await ParametersChanged.InvokeAsync(true);
+            StateHasChanged();
+        });
+    }
+
+    void IDisposable.Dispose()
+    {
+        debounce.Elapsed -= TimerCallback;
+        debounce.Dispose();
     }
 }

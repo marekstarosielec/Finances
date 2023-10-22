@@ -2,7 +2,7 @@
 @using FinancesBlazor.Components.Grid.Filters;
 @using System.Text.Json.Nodes;
 
-<button class="btn btn-primary" @onclick="ReloadDataRequest"><span class="fa fa-refresh"></span></button>
+<button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
 
 @if (Parameters?.Columns != null && Data != null)
 {
@@ -10,15 +10,15 @@
     
     <thead>
         <tr>
-                @foreach (var column in Parameters.Columns)
+            @foreach (var column in Parameters.Columns)
             {
                 <th>
-                        <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
+                    <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
                         <button class="btn columnHeader" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
                         </button>
                         <div class="dropdown-menu columnFilter" aria-labelledby="dropdownMenuButton">
-                                <DynamicFilter Column="@column" ParametersChanged="ReloadDataRequest" />
+                            <DynamicFilter Column="@column" ParametersChanged="ReloadDataRequest" />
                         </div>
                     </div>
                 </th>
@@ -29,10 +29,10 @@
         @foreach (var row in Data)
         {
             <tr>
-                    @foreach (var column in Parameters.Columns)
-                    {
-                        <td class="@(column.Align == Align.Right ? "text-end" : "")">@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
-                    }
+                @foreach (var column in Parameters.Columns)
+                {
+                    <td class="@(column.Align == Align.Right ? "text-end" : "")">@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
+                }
             </tr>
         }
     </tbody>
@@ -71,7 +71,7 @@
 
     private bool ColumnHeaderArrowHidden(Column column, bool descending) => Parameters?.SortingColumnDataName != column.Data || Parameters.SortingDescending != descending;
 
-    private async Task ReloadDataRequest()
+    private async Task ReloadDataRequest(bool closeFilters = true)
     {
         CloseFilter();
         await ReloadDataRequested.InvokeAsync();

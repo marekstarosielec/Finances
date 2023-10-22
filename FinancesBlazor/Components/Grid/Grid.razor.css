@@ -4,15 +4,17 @@
     cursor: pointer;
 }
 
-/*.filter{
-    cursor: pointer;
-}
-*/
 .columnHeader {
     border: 0px;
     padding: 0px;
 }
 
+.btn-check:focus + .btn, .btn:focus {
+    background-color: transparent;
+    box-shadow: none;
+}
+
 .columnFilter {
+    padding: 0;
     margin-top: 5px;
 }

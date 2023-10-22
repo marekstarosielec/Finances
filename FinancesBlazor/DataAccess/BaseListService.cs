@@ -1,4 +1,5 @@
 ﻿using FinancesBlazor.DataAccess;
+using FinancesBlazor.Extensions;
 using FinancesBlazor.ViewManager;
 using System.Text.Json.Nodes;
 
@@ -19,20 +20,8 @@ public class BaseListService
 
     public virtual async Task<List<JsonNode?>> Get()
     {
-        if (_parameters?.SortingColumnDataName == null)
-            throw new InvalidOperationException();
-
-        var dataType = _parameters?.Columns?.FirstOrDefault(c => c.Data == _parameters.SortingColumnDataName)?.DataType;
-        if (dataType == null)
-            throw new InvalidOperationException();
-
         await _dataFile.Load();
-        return dataType switch
-        {
-            DataTypes.Date or DataTypes.Text => _parameters!.SortingDescending ? _dataFile.Data.OrderByDescending(d => d[_parameters.SortingColumnDataName]?.GetValue<string>()).ToList() : _dataFile.Data.OrderBy(d => d[_parameters.SortingColumnDataName]?.GetValue<string>()).ToList(),
-            DataTypes.Precision => _parameters!.SortingDescending ? _dataFile.Data.OrderByDescending(d => d[_parameters.SortingColumnDataName]?.GetValue<decimal>()).ToList() : _dataFile.Data.OrderBy(d => d[_parameters.SortingColumnDataName]?.GetValue<decimal>()).ToList(),
-            _ => throw new InvalidOperationException(),
-        };
+        return _dataFile.Data.FilterByParameters(_parameters);
     }
 
     //public virtual async Task Delete(string id)

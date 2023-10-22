@@ -5,28 +5,31 @@
 
 @if (Column != null)
 {
-    <button type="button" class="btn btn-primary btn-sm" @onclick="() => SortClick(false)"><span class="fa fa-arrow-up"></span></button>
-    <button type="button" class="btn btn-secondary btn-sm" @onclick="() => SortClick(true)"><span class="fa fa-arrow-down"></span></button>
-    @switch (Column.DataType)
-    {
-       case DataTypes.Text: 
-            <TextFilter Column="@Column" /> 
-            break;
-        case DataTypes.Date:
-            <DateFilter Column="@Column" />
-            break;
-        case DataTypes.Precision:
-            <PrecisionFilter Column="@Column" />
-            break;
-    }
-    
+    <div class="outer">
+        <div class="text-end">
+            <button type="button" class="btn btn-primary btn-sm" @onclick="() => SortClick(false)"><span class="fa fa-arrow-up"></span></button>
+            <button type="button" class="btn btn-secondary btn-sm" @onclick="() => SortClick(true)"><span class="fa fa-arrow-down"></span></button>
+        </div>
+        @switch (Column.DataType)
+        {
+           case DataTypes.Text:
+                <TextFilter Column="@Column" ParametersChanged="TextFilterChanged" />
+                break;
+            case DataTypes.Date:
+                <DateFilter Column="@Column" />
+                break;
+            case DataTypes.Precision:
+                <PrecisionFilter Column="@Column" />
+                break;
+        }
+    </div>
 }
 @code {
     [Parameter]
     public Column? Column { get; set; }
 
     [Parameter]
-    public EventCallback ParametersChanged { get; set; }
+    public EventCallback<bool> ParametersChanged { get; set; }
 
     public async Task SortClick(bool descending)
     {
@@ -36,5 +39,10 @@
         _viewManager.ActiveView.Parameters.SortingColumnDataName = Column.Data;
         _viewManager.ActiveView.Parameters.SortingDescending = descending;
         await ParametersChanged.InvokeAsync();
+    }
+
+    public async Task TextFilterChanged(bool closeFilters)
+    {
+        await ParametersChanged.InvokeAsync(closeFilters);
     }
 }

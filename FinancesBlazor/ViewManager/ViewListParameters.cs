@@ -8,5 +8,7 @@ public class ViewListParameters
 
     public bool SortingDescending { get; set; }
 
-    public ReadOnlyCollection<Column>? Columns { get; init; }
+    public ReadOnlyCollection<Column> Columns { get; init; } = new ReadOnlyCollection<Column>(new List<Column>());
+
+    public Dictionary<Column, FilterValue> Filters { get; } = new Dictionary<Column, FilterValue>();
 }
