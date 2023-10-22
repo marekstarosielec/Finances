@@ -1,9 +1,7 @@
 ﻿@page "/"
-@using Finances.Entities.Electricity;
 @using FinancesBlazor.Components.Grid;
-@using FinancesBlazor.Entities;
 @using System.Text.Json.Nodes;
-@inject ViewManager _viewManager;
+@inject ViewManager.ViewManager _viewManager;
 
 <PageTitle>@_viewManager.ActiveView.Title</PageTitle>
 <FinancesBlazor.Components.Grid.Grid ReloadDataRequested="ReloadDataRequested" Settings="@_viewManager.ActiveView.MainGridSettings" Data="_data" />
