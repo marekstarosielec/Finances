@@ -1,12 +1,12 @@
 ﻿@using FinancesBlazor.Components.Grid.Filters;
+@using System.Text.Json.Nodes;
+
+@inject NavigationManager navManager;
+@implements IDisposable;
 
 <button class="btn btn-primary" @onclick="ReloadData"><span class="fa fa-refresh"></span></button>
 
-@if (Settings?.Columns == null || Data == null)
-{
-    
-}
-else
+@if (Settings?.Columns != null && Data != null)
 {
 <table class="table">
     
@@ -24,7 +24,7 @@ else
                                     @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
                             </button>
                             <div class="dropdown-menu columnFilter" aria-labelledby="dropdownMenuButton">
-                                <DynamicFilter Column="@column" />
+                                <DynamicFilter Settings="@Settings" Column="@column" />
                             </div>
                         </div>
                     </th>
@@ -37,7 +37,8 @@ else
             <tr>
                     @foreach (var column in Settings.Columns)
                     {
-                        <td>@GridValueFormatter.GetFormattedString(@row.GetType()?.GetProperty(column.Data)?.GetValue(row), column)</td>
+                        @* <td>@GridValueFormatter.GetFormattedString(@row.GetType()?.GetProperty(column.Data)?.GetValue(row), column)</td> *@
+                        <td>@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
                     }
             </tr>
         }
@@ -49,7 +50,7 @@ else
     public GridSettings? Settings { get; set; }
 
     [Parameter]
-    public object[]? Data { get; set; }
+    public JsonArray? Data { get; set; }
 
     [Parameter]
     public string? ColumnFilterVisible { get; set; }
@@ -60,6 +61,24 @@ else
     protected override async Task OnInitializedAsync()
     {
         await ReloadData();
+    }
+
+    protected override void OnInitialized()
+    {
+        navManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        await ReloadData();
+        StateHasChanged();
+    }
+
+
+
+    public void Dispose()
+    {
+        navManager.LocationChanged -= HandleLocationChanged;
     }
 
     private void CloseFilter()

@@ -1,8 +1,10 @@
-﻿namespace FinancesBlazor.Components.Grid;
+﻿using System.Text.Json.Nodes;
+
+namespace FinancesBlazor.Components.Grid;
 
 public static class GridValueFormatter
 {
-    public static string GetFormattedString(object? value, GridColumn gridColumn) => gridColumn.DataType switch
+    public static string GetFormattedString(JsonNode? value, GridColumn gridColumn) => gridColumn.DataType switch
     {
         DataAccess.DataTypes.Text => GetFormattedText(value, gridColumn),
         DataAccess.DataTypes.Date => GetFormattedDate(value, gridColumn),
@@ -10,17 +12,20 @@ public static class GridValueFormatter
         _ => string.Empty,
     };
 
-    private static string GetFormattedText(object? value, GridColumn gridColumn) => value?.ToString() ?? gridColumn.NullValue;
+    private static string GetFormattedText(JsonNode? value, GridColumn gridColumn) => value?.GetValue<string>() ?? gridColumn.NullValue;
 
-    private static string GetFormattedDate(object? value, GridColumn gridColumn)
+    private static string GetFormattedDate(JsonNode? value, GridColumn gridColumn)
     {
-        var castedValue = (DateTime?)value;
-        return castedValue.HasValue ? castedValue.Value.ToString("yyyy-MM-dd") : gridColumn.NullValue;
+        if (value == null)
+            return gridColumn.NullValue;
+        _ = DateTime.TryParse(value.GetValue<string>(), out var castedValue);
+        return castedValue.ToString("yyyy-MM-dd");
     }
 
-    private static string GetFormattedPrecision(object? value, GridColumn gridColumn)
+    private static string GetFormattedPrecision(JsonNode? value, GridColumn gridColumn)
     {
-        var castedValue = (double?)value;
-        return castedValue.HasValue ? castedValue.Value.ToString(gridColumn.Format) : gridColumn.NullValue;
+        if (value == null)
+            return gridColumn.NullValue;
+        return value.GetValue<decimal>().ToString(gridColumn.Format);
     }
 }

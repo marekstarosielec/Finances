@@ -1,7 +1,11 @@
 ﻿@using FinancesBlazor.DataAccess;
+@using FinancesBlazor.Extensions;
+@inject NavigationManager navManager;
 
-@if (Column != null)
+@if (Settings != null && Column != null)
 {
+    <button type="button" class="btn btn-primary btn-sm" @onclick="() => SortClick(false)"><span class="fa fa-arrow-up"></span></button>
+    <button type="button" class="btn btn-secondary btn-sm" @onclick="() => SortClick(true)"><span class="fa fa-arrow-down"></span></button>
     @switch (Column.DataType)
     {
        case DataTypes.Text: 
@@ -18,5 +22,16 @@
 }
 @code {
     [Parameter]
+    public GridSettings? Settings { get; set; }
+
+    [Parameter]
     public GridColumn? Column { get; set; }
+
+    public void SortClick(bool descending)
+    {
+        if (Settings == null)
+            return;
+       // navManager.NavigateWithQueryStringValue(Settings.Name, "1234fre");
+        //navManager.NavigateTo($"{navManager.Uri}?test=abc");
+    }
 }

@@ -1,4 +1,4 @@
-﻿@page "/electricity"
+﻿@* @page "/electricity"
 
 <PageTitle>Prąd</PageTitle>
 
@@ -16,7 +16,7 @@
 
     public Electricity()
     {
-        _settings = new GridSettings
+        _settings = new GridSettings("e")
             {
                 SortingColumnDataName = "Date",
                 SortingDescending = true,
@@ -33,3 +33,4 @@
         _data = await _service.Get(_settings.SortingColumnDataName, _settings.SortingDescending);
     }
 }
+ *@

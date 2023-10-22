@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace FinancesBlazor.Extensions;
 
-public static class Linq
+public static class LinqExtensions
 {
     public static IQueryable<T> OrderByDynamic<T>(this List<T> query, string attribute, bool descending)
     {

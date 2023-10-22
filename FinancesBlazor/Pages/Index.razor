@@ -1,9 +1,25 @@
 ﻿@page "/"
+@using Finances.Entities.Electricity;
+@using FinancesBlazor.Components.Grid;
+@using FinancesBlazor.Entities;
+@using System.Text.Json.Nodes;
+@inject ViewManager _viewManager;
 
-<PageTitle>Index</PageTitle>
+<PageTitle>@_viewManager.ActiveView.Title</PageTitle>
+<FinancesBlazor.Components.Grid.Grid ReloadDataRequested="ReloadDataRequested" Settings="@_viewManager.ActiveView.MainGridSettings" Data="_data" />
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+@code{
+    private GridSettings? _settings;
+    private JsonArray? _data;
+    
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    protected async Task ReloadDataRequested()
+    {
+        _data = await _viewManager.ActiveView.Service.Get();
+    }
+}

@@ -2,10 +2,17 @@
 {
     public class GridSettings
     {
+        public string Name {  get; set; }
+
         public string? SortingColumnDataName { get; set; }
 
         public bool SortingDescending { get; set; }
 
-        public GridColumn[] Columns { get; set; } = new GridColumn[0];
+        public GridColumn[] Columns { get; set; } = Array.Empty<GridColumn>();
+
+        public GridSettings(string name)
+        {
+            Name = name;
+        }
     }
 }
