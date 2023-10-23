@@ -7,20 +7,6 @@
 
 @if (Parameters?.Columns != null && Data != null)
 {
-   @*  <button type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Bottom popover">
-        Popover on bottom
-    </button> *@
-    @* <div id="a2" class="hidden">
-    <DateRangePicker Inline="true" AutoApply="true" />
-    </div>
- *@
-    <a class="btn btn-login" @onclick="RedirectPage">Log in</a>
-
-    <Popup @ref=popup Lazy=true Open="@OnOpen"
-           Style="display:none;position:absolute;height:300px;width:600px;padding:5px;border:var(--rz-panel-border);background-color:var(--rz-panel-background-color);">
-       @*  <DynamicFilter Column="@column" ParametersChanged="ReloadDataRequest" /> *@
-        <DateRangePicker Inline="true" AutoApply="true" />
-    </Popup>
 <table class="table">
     <thead>
         <tr>
@@ -28,23 +14,10 @@
             {
                 <th>
                     <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
-                       @*  <button class="btn columnHeader" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span>
-                        </button> *@
-                        @* <div class="dropdown-menu columnFilter" aria-labelledby="dropdownMenuButton">
-                            <span class="test">
-                                <DynamicFilter Column="@column" ParametersChanged="ReloadDataRequest" />
-                            </span>
-                        </div> *@
-                        @* <button class="btn btn-primary" tabindex="0" data-toggle="popover" data-trigger="focus" data-popover-content="#a2">Popover Example</button> *@
-                            <button class="btn columnHeader" type="button" @ref=column.HeaderReference @onclick="@(args => column.Popup.ToggleAsync(column.HeaderReference))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></button>
-
-
-                            <Popup @ref=column.Popup Lazy=false Open="@OnOpen"
-                                   Style="display:none;position:absolute;height:300px;width:600px;padding:5px;border:var(--rz-panel-border);background-color:var(--rz-panel-background-color);">
-                                @*  <DynamicFilter Column="@column" ParametersChanged="ReloadDataRequest" /> *@
-                                <DateRangePicker Inline="true" AutoApply="true" />
-                            </Popup>
+                        <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></button>
+                        <Popup @ref=columnFilters[column] Lazy=false Open="@OnOpen" Style="display:none;position:absolute;height:300px;width:600px;padding:5px;border:var(--rz-panel-border);background-color:var(--rz-panel-background-color);">
+                            <DateRangePicker Inline="true" AutoApply="true" />
+                        </Popup>
                     </div>
                 </th>
             }
@@ -66,25 +39,6 @@
 @code {
     Dictionary<Column, ElementReference> columnHeaders = new();
     Dictionary<Column, Popup> columnFilters = new();
-
-    ElementReference button;
-    Popup popup;
-
-    private void RedirectPage()
-    {
-        // Shows the popup at the center of the screen
-        // popupRef.Show("Popup body text");
-    }
-
-    private ElementReference GetReference(Column column)
-    {
-        return columnHeaders[column];
-    }
-
-    private Popup GetPopup(Column column)
-    {
-        return columnFilters[column];
-    }
 
     [Parameter]
     public ViewListParameters? Parameters { get; set; }
@@ -108,14 +62,6 @@
         ColumnFilterVisible = string.Empty;
     }
 
-    private void ColumnHeaderClick(Column column)
-    {
-        if (ColumnFilterVisible == column.Data)
-            CloseFilter();
-        else
-            ColumnFilterVisible = column.Data;
-    }
-
     private bool ColumnHeaderArrowHidden(Column column, bool descending) => Parameters?.SortingColumnDataName != column.Data || Parameters.SortingDescending != descending;
 
     private async Task ReloadDataRequest(bool closeFilters = true)
@@ -125,7 +71,8 @@
     }
 
     async Task OnOpen()
-    {//@inject IJSRuntime JSRuntime
+    {
+        //@inject IJSRuntime JSRuntime
        // await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
 }
