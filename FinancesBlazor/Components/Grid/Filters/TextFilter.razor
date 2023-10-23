@@ -1,11 +1,12 @@
 ﻿@using FinancesBlazor.ViewManager;
 @using System.Timers;
 @inject ViewManager _viewManager;
+@inject IJSRuntime JSRuntime
 @implements IDisposable;
 
 @if (Column != null)
 {
-    <input type="text" class="form-control" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" />
+    <input type="text" id="search" class="form-control" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" @onkeydown="(e) => KeyDown(e)" />
 }
 
 @code {
@@ -25,6 +26,12 @@
         base.OnInitialized();
     }
 
+    private async void KeyDown(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "Escape")
+            await ParametersChanged.InvokeAsync(true);
+    }
+
     private void TextChanged(ChangeEventArgs e)
     {
         currentText = e.Value?.ToString() ?? string.Empty;
@@ -41,7 +48,7 @@
         
         await InvokeAsync(async () =>
         {
-            await ParametersChanged.InvokeAsync(true);
+            await ParametersChanged.InvokeAsync();
             StateHasChanged();
         });
     }
@@ -50,5 +57,10 @@
     {
         debounce.Elapsed -= TimerCallback;
         debounce.Dispose();
+    }
+
+    public async Task OnOpen()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
 }

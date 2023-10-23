@@ -13,23 +13,43 @@
         @switch (Column.DataType)
         {
            case DataTypes.Text:
-                <TextFilter Column="@Column" ParametersChanged="TextFilterChanged" />
+                <TextFilter Column="@Column" ParametersChanged="TextFilterChanged" @ref=textFilter />
                 break;
             case DataTypes.Date:
-                <DateFilter Column="@Column" />
+                <DateFilter Column="@Column" @ref=dateFilter />
                 break;
             case DataTypes.Precision:
-                <PrecisionFilter Column="@Column" />
+                <PrecisionFilter Column="@Column" @ref=precisionFilter />
                 break;
         }
     </div>
 }
 @code {
+    TextFilter? textFilter;
+    DateFilter? dateFilter;
+    PrecisionFilter? precisionFilter;
+
     [Parameter]
     public Column? Column { get; set; }
 
     [Parameter]
     public EventCallback<bool> ParametersChanged { get; set; }
+
+    public async Task OnOpen()
+    {
+        switch (Column?.DataType)
+        {
+            case DataTypes.Text:
+                if (textFilter!=null) await textFilter.OnOpen();
+                break;
+            case DataTypes.Date:
+               // if (dateFilter != null) await dateFilter.OnOpen();
+                break;
+            case DataTypes.Precision:
+               // if (precisionFilter != null) await precisionFilter.OnOpen();
+                break;
+        }
+    }
 
     public async Task SortClick(bool descending)
     {

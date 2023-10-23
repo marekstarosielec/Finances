@@ -15,8 +15,8 @@
                 <th>
                     <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
                         <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></button>
-                            <Popup @ref=columnFilters[column] Lazy=false Open="@OnOpen" class="popup" Style="display:none;position:absolute;padding:5px;background-color:var(--bs-gray);border:1px">
-                                <DynamicFilter Column=column ParametersChanged="ReloadDataRequest" />
+                            <Popup @ref=columnFilters[column] Lazy=false Open="@(() => OnOpen(column))" class="popup" Style="display:none;position:absolute;padding:5px;background-color:var(--bs-gray);border:1px">
+                                <DynamicFilter Column=column ParametersChanged="ReloadDataRequest" @ref=dynamicFilters[column] />
                         </Popup>
                     </div>
                 </th>
@@ -39,6 +39,7 @@
 @code {
     Dictionary<Column, ElementReference> columnHeaders = new();
     Dictionary<Column, Popup> columnFilters = new();
+    Dictionary<Column, DynamicFilter> dynamicFilters = new();
 
     [Parameter]
     public ViewListParameters? Parameters { get; set; }
@@ -68,8 +69,9 @@
         await ReloadDataRequested.InvokeAsync();
     }
 
-    async Task OnOpen()
+    async Task OnOpen(Column column)
     {
+        await dynamicFilters[column].OnOpen();
         //@inject IJSRuntime JSRuntime
        // await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
