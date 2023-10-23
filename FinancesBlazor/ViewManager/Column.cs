@@ -1,4 +1,6 @@
 ﻿using FinancesBlazor.DataAccess;
+using Microsoft.AspNetCore.Components;
+using Radzen.Blazor.Rendering;
 
 namespace FinancesBlazor.ViewManager;
 
@@ -16,6 +18,9 @@ public class Column
 
     public Align? Align { get; }
 
+    public ElementReference HeaderReference { get; set; }
+
+    public Popup Popup { get; set; }
 
     public Column(string title, string data, DataTypes dataType, string nullValue = "", string? format = null, Align? align = null)
     {

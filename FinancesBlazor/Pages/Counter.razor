@@ -1,4 +1,6 @@
 ﻿@page "/counter"
+@using Radzen.Blazor.Rendering;
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Counter</PageTitle>
 
@@ -8,11 +10,43 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
-@code {
+<RadzenButton @ref=button Text="@(orderId != null ? "Selected order: " + orderId.ToString() : "Select order")" Click="@(args => popup.ToggleAsync(button.Element))" />
+<button type="button" @onclick="@(args => popup.ToggleAsync(button.Element))">Test</button>
+<Popup @ref=popup Lazy=true Open="@OnOpen"
+       Style="display:none;position:absolute;height:300px;width:600px;padding:5px;border:var(--rz-panel-border);background-color:var(--rz-panel-background-color);">
+    <DateRangePicker Inline="true" AutoApply="true" />
+</Popup>
+
+    @code {
     private int currentCount = 0;
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+
+    RadzenButton button;
+    Popup popup;
+    RadzenDataList<string> dataList;
+    IEnumerable<string> orders;
+    int? orderId;
+    string searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        orders = new List<string> { "1", "test" };
+    }
+
+    // async Task SelectOrder(Order order)
+    // {
+    //     orderId = order.OrderID;
+    //     await popup.CloseAsync();
+    // }
+
+    async Task OnOpen()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
 }

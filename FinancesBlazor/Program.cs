@@ -1,5 +1,6 @@
 using Finances.DependencyInjection;
 using FinancesBlazor.Data;
+using Radzen;
 
 namespace FinancesBlazor
 {
@@ -14,7 +15,7 @@ namespace FinancesBlazor
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.InjectEntities();
-
+            builder.Services.AddRadzenComponents();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
