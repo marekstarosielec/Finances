@@ -15,8 +15,8 @@
                 <th>
                     <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
                         <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></button>
-                        <Popup @ref=columnFilters[column] Lazy=false Open="@OnOpen" Style="display:none;position:absolute;height:300px;width:600px;padding:5px;border:var(--rz-panel-border);background-color:var(--rz-panel-background-color);">
-                            <DateRangePicker Inline="true" AutoApply="true" />
+                            <Popup @ref=columnFilters[column] Lazy=false Open="@OnOpen" class="popup" Style="display:none;position:absolute;padding:5px;background-color:var(--bs-gray);border:1px">
+                                <DynamicFilter Column=column ParametersChanged="ReloadDataRequest" />
                         </Popup>
                     </div>
                 </th>
@@ -47,9 +47,6 @@
     public List<JsonNode>? Data { get; set; }
 
     [Parameter]
-    public string? ColumnFilterVisible { get; set; }
-
-    [Parameter]
     public EventCallback ReloadDataRequested { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -57,16 +54,17 @@
         await ReloadDataRequest();
     }
 
-    private void CloseFilter()
+    private async Task CloseFilter()
     {
-        ColumnFilterVisible = string.Empty;
+        foreach (var kvp in columnFilters)
+            await kvp.Value.CloseAsync();
     }
 
     private bool ColumnHeaderArrowHidden(Column column, bool descending) => Parameters?.SortingColumnDataName != column.Data || Parameters.SortingDescending != descending;
 
     private async Task ReloadDataRequest(bool closeFilters = true)
     {
-        CloseFilter();
+        if( closeFilters) await CloseFilter();
         await ReloadDataRequested.InvokeAsync();
     }
 
