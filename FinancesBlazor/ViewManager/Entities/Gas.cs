@@ -7,17 +7,17 @@ namespace FinancesBlazor.ViewManager;
 
 public partial class ViewsList
 {
-    private View? _electricity;
+    private View? _gas;
 
-    public View Electricity
+    public View Gas
     {
         get
         {
             if (_configuration == null)
                 throw new InvalidOperationException();
 
-            if (_electricity != null)
-                return _electricity;
+            if (_gas != null)
+                return _gas;
 
             var viewListParameters = new ViewListParameters
             {
@@ -26,15 +26,15 @@ public partial class ViewsList
                 Columns = new ReadOnlyCollection<Column>(new List<Column> {
                         new Column("d", "Data", "Date", DataTypes.Date),
                         new Column("m", "Licznik", "Meter", DataTypes.Precision, format: "# ##0.0", align: Align.Right),
-                        new Column("c", "Komentarz", "Comment", DataTypes.Text) })
+                        new Column("g", "Komentarz", "Comment", DataTypes.Text) })
             };
 
-            _electricity = new View("e", "Prąd", new BaseListService(new JsonListFile(_configuration, "electricity.json"), viewListParameters))
+            _gas = new View("g", "Gaz", new BaseListService(new JsonListFile(_configuration, "gas.json"), viewListParameters))
             {
                 Parameters = viewListParameters
             };
 
-            return _electricity;
+            return _gas;
         }
     }
 }

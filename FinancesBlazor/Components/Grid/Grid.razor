@@ -48,11 +48,16 @@
     public List<JsonNode>? Data { get; set; }
 
     [Parameter]
-    public EventCallback ReloadDataRequested { get; set; }
+    public EventCallback<bool> ReloadDataRequested { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await ReloadDataRequest();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
     }
 
     private async Task CloseFilter()
@@ -65,14 +70,17 @@
 
     private async Task ReloadDataRequest(bool closeFilters = true)
     {
-        if( closeFilters) await CloseFilter();
-        await ReloadDataRequested.InvokeAsync();
+        if (closeFilters) await CloseFilter();
+        await ReloadDataRequested.InvokeAsync(closeFilters);
     }
 
     async Task OnOpen(Column column)
     {
         await dynamicFilters[column].OnOpen();
-        //@inject IJSRuntime JSRuntime
-       // await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
     }
 }

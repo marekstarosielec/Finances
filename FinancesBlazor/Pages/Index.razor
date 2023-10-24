@@ -3,22 +3,43 @@
 @using System.Text.Json.Nodes;
 @using FinancesBlazor.ViewManager;
 @inject ViewManager _viewManager;
+@inject NavigationManager _navigationManager;
+@inject IJSRuntime jsRuntime;
+@implements IDisposable
 
 <PageTitle>@_viewManager.ActiveView.Title</PageTitle>
-<FinancesBlazor.Components.Grid.Grid ReloadDataRequested="ReloadDataRequested" Parameters="@_viewManager.ActiveView.Parameters" Data="_data" />
+<FinancesBlazor.Components.Grid.Grid ReloadDataRequested="ReloadDataRequested" Parameters="@_viewManager.ActiveView.Parameters" Data="_data" @ref=_grid />
 
 
 @code{
+    private Grid _grid;
     private ViewListParameters? _settings;
-    private List<JsonNode>? _data;
-    
+    private List<JsonNode?>? _data;
+
     protected override Task OnInitializedAsync()
     {
+        _navigationManager.LocationChanged += LocationChanged;
         return base.OnInitializedAsync();
     }
 
-    protected async Task ReloadDataRequested()
+    async void LocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        _viewManager.LoadView(_navigationManager);
         _data = await _viewManager.ActiveView.Service.Get();
+        _grid.Parameters = _viewManager.ActiveView.Parameters;
+        _grid.Data = _data;
+        _grid.Refresh();
+    }
+
+    protected async Task ReloadDataRequested(bool saveView)
+    {
+        if (saveView) 
+            await _viewManager.SaveView(_navigationManager, jsRuntime);
+        _data = await _viewManager.ActiveView.Service.Get();
+    }
+
+    void IDisposable.Dispose()
+    {
+        _navigationManager.LocationChanged -= LocationChanged;
     }
 }
