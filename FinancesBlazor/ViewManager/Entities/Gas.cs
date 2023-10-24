@@ -24,9 +24,9 @@ public partial class ViewsList
                 SortingColumnDataName = "Date",
                 SortingDescending = true,
                 Columns = new ReadOnlyCollection<Column>(new List<Column> {
-                        new Column("d", "Data", "Date", DataTypes.Date),
-                        new Column("m", "Licznik", "Meter", DataTypes.Precision, format: "# ##0.0", align: Align.Right),
-                        new Column("g", "Komentarz", "Comment", DataTypes.Text) })
+                        new Column("gd", "Data Gaz", "Date", DataTypes.Date),
+                        new Column("gm", "Licznik", "Meter", DataTypes.Precision, format: "# ##0.0", align: Align.Right),
+                        new Column("gc", "Komentarz", "Comment", DataTypes.Text) })
             };
 
             _gas = new View("g", "Gaz", new BaseListService(new JsonListFile(_configuration, "gas.json"), viewListParameters))

@@ -14,7 +14,7 @@ public static class JsonArrayExtensions
             return result;
 
         parameters ??= new ViewListParameters();
-        parameters.SortingColumnDataName ??= "id";
+        parameters.SortingColumnDataName ??= parameters.Columns.First().Data;
 
         var dataType = parameters.Columns.FirstOrDefault(c => c.Data == parameters.SortingColumnDataName)?.DataType;
         if (dataType == null)

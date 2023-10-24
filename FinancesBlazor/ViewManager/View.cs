@@ -8,7 +8,7 @@ public class View
 
     public string Title { get; set; }
 
-    public ViewListParameters? Parameters { get; set; }
+    public ViewListParameters Parameters { get; set; } = new ViewListParameters();
 
     public BaseListService Service { get; }
 

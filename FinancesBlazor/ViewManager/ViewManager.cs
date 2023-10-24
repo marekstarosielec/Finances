@@ -1,6 +1,7 @@
 ﻿using Finances.DependencyInjection;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System.ComponentModel.DataAnnotations;
 
 namespace FinancesBlazor.ViewManager;
 
@@ -24,7 +25,7 @@ public partial class ViewManager : IInjectAsSingleton
         var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
         try
         {
-            await js.InvokeVoidAsync("ChangeUrl", $"{uri}?{vd}");
+            await js.InvokeVoidAsync("ChangeUrl", $"{uri.GetLeftPart(UriPartial.Path)}?{vd}");
         }
         catch (Exception ex) { }
     }
@@ -38,13 +39,18 @@ public partial class ViewManager : IInjectAsSingleton
             return;
         var vd = _serializer.Deserialize(query);
         var activeView = FindView(vd.ActiveViewName);
-        //activeView.Parameters.SortingColumnDataName = "id";
-        if (activeView != null)
-            ActiveView = activeView;
+        if (activeView == null)
+            return;
+        ActiveView = activeView;
+        ActiveView.Parameters.SortingColumnDataName = vd.SortingColumnDataName;
+        ActiveView.Parameters.SortingDescending = vd.SortingDescending;
     }
 
-    private View? FindView(string viewName)
+    private View? FindView(string? viewName)
     {
+        if (string.IsNullOrWhiteSpace(viewName))
+            return null;
+
         var properties = _viewsList.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
         foreach (var property in properties) {
             if (property.PropertyType != typeof(View))
