@@ -6,7 +6,7 @@
 
 @if (Column != null)
 {
-    <input type="text" id="search" class="form-control" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" @onkeydown="(e) => KeyDown(e)" />
+    <input type="text" id="search" class="form-control" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" @onkeydown="(e) => KeyDown(e)" value="@currentText" />
 }
 
 @code {
@@ -22,6 +22,8 @@
 
     protected override void OnInitialized()
     {
+        if (Column != null && _viewManager?.ActiveView?.Parameters?.Filters.ContainsKey(Column) == true)
+            currentText = _viewManager?.ActiveView?.Parameters?.Filters?[Column]?.StringValue;
         debounce.Elapsed += TimerCallback;
         base.OnInitialized();
     }
