@@ -2,6 +2,8 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #1E1E1E;
+    background-image: none;
 }
 
 h1:focus {
@@ -62,3 +64,31 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.btn {
+    background-color: #1E1E1E;
+    border-style: solid;
+    border-width: 1px;
+    border-color: transparent;
+    border-radius: 0
+}
+
+    .btn:hover {
+        background-color: #3D3D3D;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #707070;
+    }
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 0px;
+    background-color: #7160E8;
+}

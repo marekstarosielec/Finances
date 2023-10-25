@@ -3,38 +3,40 @@
 @using System.Text.Json.Nodes;
 @using Radzen.Blazor.Rendering;
 
-<button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
+<div class="toolbar">
+    <button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
+</div>
 
 @if (Parameters?.Columns != null && Data != null)
 {
-<table class="table">
-    <thead>
-        <tr>
-            @foreach (var column in Parameters.Columns)
-            {
-                <th>
-                    <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
-                        <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></button>
-                            <Popup @ref=columnFilters[column] Lazy=false Open="@(() => OnOpen(column))" class="popup" Style="display:none;position:absolute;padding:5px;background-color:var(--bs-gray);border:1px">
-                                <DynamicFilter Column=column ParametersChanged="ReloadDataRequest" @ref=dynamicFilters[column] />
-                        </Popup>
-                    </div>
-                </th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var row in Data)
-        {
+    <table class="table table-borderless">
+        <thead>
             <tr>
                 @foreach (var column in Parameters.Columns)
                 {
-                    <td class="@(column.Align == Align.Right ? "text-end" : "")">@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
+                    <th>
+                        <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
+                            <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></button>
+                                <Popup @ref=columnFilters[column] Lazy=false Open="@(() => OnOpen(column))" class="popup" Style="display:none;position:absolute;padding:5px;background-color:var(--bs-gray);border:1px">
+                                    <DynamicFilter Column=column ParametersChanged="ReloadDataRequest" @ref=dynamicFilters[column] />
+                            </Popup>
+                        </div>
+                    </th>
                 }
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var row in Data)
+            {
+                <tr>
+                    @foreach (var column in Parameters.Columns)
+                    {
+                        <td class="@GetCellStyle(column)">@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 @code {
     Dictionary<Column, ElementReference> columnHeaders = new();
@@ -49,6 +51,16 @@
 
     [Parameter]
     public EventCallback<bool> ReloadDataRequested { get; set; }
+
+    private string GetCellStyle(Column column)
+    {
+        var result = "";
+        if (column.Align == Align.Right)
+            result += "text-end ";
+        if (column.DataType == DataAccess.DataTypes.Date || column.DataType == DataAccess.DataTypes.Precision)
+            result += "text-nowrap ";
+        return result;
+    }
 
     protected override async Task OnInitializedAsync()
     {

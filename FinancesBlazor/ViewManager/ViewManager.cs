@@ -1,7 +1,6 @@
 ﻿using Finances.DependencyInjection;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System.ComponentModel.DataAnnotations;
 
 namespace FinancesBlazor.ViewManager;
 

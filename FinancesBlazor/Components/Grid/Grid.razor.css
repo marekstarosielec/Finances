@@ -7,9 +7,36 @@
 .columnHeader {
     border: 0px;
     padding: 0px;
+    color: #FAFAFA;
+    font-weight: 700;
 }
 
 .btn-check:focus + .btn, .btn:focus {
     background-color: transparent;
     box-shadow: none;
+}
+
+.toolbar {
+    background-color: #1E1E1E;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0px;
+}
+
+th {
+    background-color: #1E1E1E;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 37px;
+    z-index: 2;
+}
+
+.table {
+    color: #B2B2B2;
+}
+
+table.table > tbody > tr:hover td,
+table.table > tbody > tr:hover th {
+    background-color: #383838;
+    color: #FAFAFA;
 }
