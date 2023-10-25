@@ -41,8 +41,11 @@ public partial class ViewManager : IInjectAsSingleton
         if (activeView == null)
             return;
         ActiveView = activeView;
-        ActiveView.Parameters.SortingColumnDataName = vd.SortingColumnDataName;
-        ActiveView.Parameters.SortingDescending = vd.SortingDescending;
+        if (vd.SortingColumnDataName != null)
+        {
+            ActiveView.Parameters.SortingColumnDataName = vd.SortingColumnDataName;
+            ActiveView.Parameters.SortingDescending = vd.SortingDescending;
+        }
     }
 
     private View? FindView(string? viewName)

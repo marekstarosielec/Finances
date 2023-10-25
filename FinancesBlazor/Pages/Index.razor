@@ -22,6 +22,11 @@
         _navigationManager.LocationChanged += LocationChanged;
     }
 
+    /// <summary>
+    /// This should run only when user navigates back/forward button or clicks a href link.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     async void LocationChanged(object? sender, LocationChangedEventArgs e)
     {
         _viewManager.LoadView(_navigationManager);
@@ -42,9 +47,6 @@
             gridId = Guid.NewGuid();
             StateHasChanged();
         }
-        //_grid.Data = data;
-        //_grid.Parameters = _viewManager.ActiveView.Parameters;
-        //_grid.Refresh();
     }
 
 

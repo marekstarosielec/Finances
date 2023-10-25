@@ -17,7 +17,7 @@
                     <th>
                         <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
                             <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></button>
-                                <Popup @ref=columnFilters[column] Lazy=false Open="@(() => OnOpen(column))" class="popup" Style="display:none;position:absolute;padding:5px;background-color:var(--bs-gray);border:1px">
+                                <Popup @ref=columnFilters[column] Lazy=false Open="@(() => OnOpen(column))" class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
                                     <DynamicFilter Column=column ParametersChanged="ReloadDataRequest" @ref=dynamicFilters[column] />
                             </Popup>
                         </div>
@@ -89,13 +89,5 @@
     async Task OnOpen(Column column)
     {
         await dynamicFilters[column].OnOpen();
-    }
-
-    public void Refresh()
-    {
-        columnHeaders = new();
-        columnFilters = new();
-        dynamicFilters = new();
-        StateHasChanged();
     }
 }
