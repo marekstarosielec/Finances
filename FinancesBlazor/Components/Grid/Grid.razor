@@ -2,9 +2,11 @@
 @using FinancesBlazor.Components.Grid.Filters;
 @using System.Text.Json.Nodes;
 @using Radzen.Blazor.Rendering;
+@inject ViewManager _viewManager;
 
 <div class="toolbar">
     <button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
+    <button class="btn btn-primary" @onclick="() => RequestFilterClear()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
 </div>
 
 @if (Parameters?.Columns != null && Data != null)
@@ -16,7 +18,7 @@
                 {
                     <th>
                         <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
-                            <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up"></span></span></button>
+                            <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down blue"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up yellow"></span></span></button>
                                 <Popup @ref=columnFilters[column] Lazy=false Open="@(() => OnOpen(column))" class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
                                     <DynamicFilter Column=column ParametersChanged="ReloadDataRequest" @ref=dynamicFilters[column] />
                             </Popup>
@@ -79,6 +81,15 @@
     }
 
     private bool ColumnHeaderArrowHidden(Column column, bool descending) => Parameters?.SortingColumnDataName != column.Data || Parameters.SortingDescending != descending;
+
+    private async void RequestFilterClear()
+    {
+        if (_viewManager?.ActiveView?.Parameters?.Filters == null)
+            return;
+
+        _viewManager.ActiveView.Parameters.Filters.Clear();
+        await ReloadDataRequest(true);
+    }
 
     private async Task ReloadDataRequest(bool closeFilters = true)
     {

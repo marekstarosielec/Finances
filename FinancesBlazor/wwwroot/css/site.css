@@ -65,7 +65,7 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
-.btn {
+.btn.btn-primary {
     background-color: transparent;
     border-style: solid;
     border-width: 1px;
@@ -91,4 +91,16 @@ a, .btn-link {
 ::-webkit-scrollbar-thumb {
     border-radius: 0px;
     background-color: #7160E8;
+}
+
+.yellow {
+    color: #FFE39E;
+}
+
+.blue {
+    color: #55AAFF;
+}
+
+.red {
+    color: #C04048;
 }
