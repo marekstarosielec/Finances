@@ -6,7 +6,7 @@
 
 @if (Column != null)
 {
-    <input type="text" id="search" class="form-control" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" @onkeydown="(e) => KeyDown(e)" value="@currentText" />
+    <input type="text" id="search" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" @onkeydown="(e) => KeyDown(e)" value="@currentText" />
 }
 
 @code {
