@@ -252,10 +252,14 @@
 .daterangepicker select.monthselect {
     margin-right: 2%;
     width: 50%;
+    background-color: #3B3B3B;
+    color: #FAFAFA;
 }
 
 .daterangepicker select.yearselect {
     width: 40%;
+    background-color: #3B3B3B;
+    color: #FAFAFA;
 }
 
 .daterangepicker select.hourselect, .daterangepicker select.minuteselect, .daterangepicker select.secondselect, .daterangepicker select.ampmselect {

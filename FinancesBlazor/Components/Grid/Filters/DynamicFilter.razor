@@ -13,10 +13,10 @@
         @switch (Column.DataType)
         {
            case DataTypes.Text:
-                <TextFilter Column="@Column" ParametersChanged="TextFilterChanged" @ref=textFilter />
+                <TextFilter Column="@Column" ParametersChanged="FilterChanged" @ref=textFilter />
                 break;
             case DataTypes.Date:
-                <DateFilter Column="@Column" @ref=dateFilter />
+                <DateFilter Column="@Column" ParametersChanged="FilterChanged" @ref=dateFilter />
                 break;
             case DataTypes.Precision:
                 <PrecisionFilter Column="@Column" @ref=precisionFilter />
@@ -61,7 +61,7 @@
         await ParametersChanged.InvokeAsync(true);
     }
 
-    public async Task TextFilterChanged(bool closeFilters)
+    public async Task FilterChanged(bool closeFilters)
     {
         await ParametersChanged.InvokeAsync(closeFilters);
     }

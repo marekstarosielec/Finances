@@ -31,6 +31,12 @@ public static class JsonArrayExtensions
                         || (n?[kvp.Key.Data]?.GetValue<string?>()?.ToLowerInvariant().Contains(kvp.Value.StringValue!.ToLowerInvariant()) == true)
                         ).ToList();
                     break;
+                case DataTypes.Date:
+                    result = result
+                        .Select(n => new { Data = n, FilterData = n?[kvp.Key.Data]?.GetValue<DateTime?>() })
+                        .Where(c => c.FilterData != null && c.FilterData >= kvp.Value.DateFrom && c.FilterData <= kvp.Value.DateTo)
+                        .Select(c => c.Data).ToList();
+                    break;
             }
         }
 

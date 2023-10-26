@@ -1,7 +1,80 @@
-﻿@using FinancesBlazor.ViewManager;
-<DateRangePicker Inline="true" AutoApply="true" LinkedCalendars="true"/>
+﻿@using FinancesBlazor.Extensions;
+@using FinancesBlazor.ViewManager;
+@using System.Globalization;
+@inject ViewManager _viewManager;
 
+<DateRangePicker Inline="true" AutoApply="true" LinkedCalendars="true" CustomDayNames="CustomDayNames" OnRangeSelect="OnRangeSelect" StartDate="DateFrom" EndDate="DateTo" />
+<button class="btn btn-primary" @onclick="() => SetPreviousMonth()">@PreviousMonthName</button>
+<button class="btn btn-primary" @onclick="() => SetCurrentMonth()">@CurrentMonthName</button>
+<button class="btn btn-primary float-end" @onclick="() => SetPreviousYear()">@PreviousYearName</button>
+<button class="btn btn-primary float-end" @onclick="() => SetCurrentYear()">@CurrentYearName</button>
 @code {
     [Parameter]
     public Column? Column { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ParametersChanged { get; set; }
+
+    private DateTimeOffset? DateFrom;
+    private DateTimeOffset? DateTo;
+
+    private List<string> CustomDayNames = new List<string> { "P", "W", "Ś", "Cz", "Pt", "S", "N" };
+    private static CultureInfo _pl = new CultureInfo("pl");
+    private string PreviousMonthName = DateTime.Today.AddMonths(-1).ToString("MMMM yyyy", _pl).MakeFirstLetterUppercase();
+    private string CurrentMonthName = DateTime.Today.ToString("MMMM yyyy", _pl).MakeFirstLetterUppercase();
+    private string PreviousYearName = DateTime.Today.AddYears(-1).ToString("yyyy", _pl);
+    private string CurrentYearName = DateTime.Today.ToString("yyyy", _pl);
+
+    protected override void OnInitialized()
+    {
+        //Set previously selected filter vaule in date picker (after renavigating to grid).
+        if (Column != null && _viewManager?.ActiveView?.Parameters?.Filters.ContainsKey(Column) == true)
+        {
+            DateFrom = _viewManager?.ActiveView?.Parameters?.Filters?[Column]?.DateFrom;
+            DateTo = _viewManager?.ActiveView?.Parameters?.Filters?[Column]?.DateTo;
+        }
+    }
+    public async void OnRangeSelect(DateRange range)
+    {
+        await SetDates(range.Start.DateTime, range.End.DateTime);
+    }
+
+    async void SetPreviousMonth()
+    {
+        var today = DateTime.Today;
+        await SetDates(today.PreviousMonthFirstDay(), today.PreviousMonthLastDay());
+    }
+
+    async void SetCurrentMonth()
+    {
+        var today = DateTime.Today;
+        await SetDates(today.CurrentMonthFirstDay(), today.CurrentMonthLastDay());
+    }
+
+    async void SetPreviousYear()
+    {
+        var today = DateTime.Today;
+        await SetDates(today.PreviousYearFirstDay(), today.PreviousYearLastDay());
+    }
+
+    async void SetCurrentYear()
+    {
+        var today = DateTime.Today;
+        await SetDates(today.CurrentYearFirstDay(), today.CurrentYearLastDay());
+    }
+
+    private async Task SetDates(DateTime from, DateTime to)
+    {
+        if (_viewManager?.ActiveView?.Parameters?.Filters == null || Column == null)
+            return;
+
+        var today = DateTime.Today;
+        _viewManager.ActiveView.Parameters.Filters[Column] = new FilterValue { DateFrom = from, DateTo = to };
+
+        await InvokeAsync(async () =>
+        {
+            await ParametersChanged.InvokeAsync(true);
+            StateHasChanged();
+        });
+    }
 }

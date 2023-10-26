@@ -20,6 +20,10 @@ public class ViewListParametersSerializer : IInjectAsSingleton
         {
             if (!string.IsNullOrWhiteSpace(filter.Value.StringValue))
                 data[$"f_{filter.Key.Name}_sv"] = filter.Value.StringValue;
+            if (filter.Value.DateFrom != null)
+                data[$"f_{filter.Key.Name}_fr"] = filter.Value.DateFrom.Value.ToString("yyyyMMdd");
+            if (filter.Value.DateTo != null)
+                data[$"f_{filter.Key.Name}_to"] = filter.Value.DateTo.Value.ToString("yyyyMMdd");
         }
         return await new FormUrlEncodedContent(data).ReadAsStringAsync();
     }
@@ -41,6 +45,18 @@ public class ViewListParametersSerializer : IInjectAsSingleton
             {
                 var name = item.key[2..^3];
                 result.Filters[name] = new FilterValue {  StringValue = item.value };
+            }
+            else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_fr") == true)
+            {
+                var name = item.key[2..^3];
+                result.Filters[name] ??= new FilterValue();
+                result.Filters[name].DateFrom = DateTime.ParseExact(item.value, "yyyyMMdd", null);
+            }
+            else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_to") == true)
+            {
+                var name = item.key[2..^3];
+                result.Filters[name] ??= new FilterValue();
+                result.Filters[name].DateTo = DateTime.ParseExact(item.value, "yyyyMMdd", null);
             }
         }
 
