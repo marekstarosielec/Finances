@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace FinancesBlazor.ViewManager;
 
-public class Electricity : IEntity
+public class Transaction : IEntity
 {
     private View? _view;
 
@@ -13,7 +13,7 @@ public class Electricity : IEntity
     {
         if (_view != null)
             return _view;
-        
+
         if (configuration == null)
             throw new InvalidOperationException();
 
@@ -22,14 +22,14 @@ public class Electricity : IEntity
             SortingColumnDataName = "Date",
             SortingDescending = true,
             Columns = new ReadOnlyCollection<Column>(new List<Column> {
-                new Column("d", "Data", "Date", DataTypesList.Date),
-                new Column("m", "Licznik", "Meter", DataTypesList.Precision, format: "# ##0.0", align: Align.Right),
-                new Column("c", "Komentarz", "Comment", DataTypesList.Text) })
+                new Column("gd", "Data Gaz", "Date", DataTypesList.Date),
+                new Column("gm", "Licznik", "Meter", DataTypesList.Precision, format: "# ##0.0", align: Align.Right),
+                new Column("gc", "Komentarz", "Comment", DataTypesList.Text) })
         };
 
-        var presentation = new ViewPresentation(100, "fa-solid fa-bolt", "Prąd");
+        var presentation = new ViewPresentation(110, "fa-solid fa-fire-flame-simple", "Gaz");
 
-        _view = new View("e", "Prąd", new BaseListService(new JsonListFile(configuration, "electricity.json"), viewListParameters), presentation)
+        _view = new View("g", "Gaz", new BaseListService(new JsonListFile(configuration, "gas.json"), viewListParameters), presentation)
         {
             Parameters = viewListParameters
         };

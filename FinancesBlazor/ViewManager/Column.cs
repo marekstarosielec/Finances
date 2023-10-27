@@ -1,4 +1,4 @@
-﻿using FinancesBlazor.DataAccess;
+﻿using FinancesBlazor.DataTypes;
 
 namespace FinancesBlazor.ViewManager;
 
@@ -10,7 +10,7 @@ public class Column
 
     public string Data { get; }
 
-    public DataTypes DataType { get; }
+    public DataTypesList DataType { get; }
 
     public string NullValue { get; }
 
@@ -18,7 +18,7 @@ public class Column
 
     public Align? Align { get; }
 
-    public Column(string name, string title, string data, DataTypes dataType, string nullValue = "", string? format = null, Align? align = null)
+    public Column(string name, string title, string data, DataTypesList dataType, string nullValue = "", string? format = null, Align? align = null)
     {
         Name = name;
         Title = title;

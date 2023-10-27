@@ -1,4 +1,4 @@
-﻿using FinancesBlazor.DataAccess;
+﻿using FinancesBlazor.DataTypes;
 using FinancesBlazor.ViewManager;
 using System.Text.Json.Nodes;
 
@@ -20,33 +20,34 @@ public static class JsonArrayExtensions
         if (dataType == null)
             return result;
 
-        result = array.ToList();
+        var sortedNodes = dataType switch
+        {
+            DataTypesList.Date or DataTypesList.Text => array.SortBy(n => n?[parameters.SortingColumnDataName]?.GetValue<string>(), parameters.SortingDescending),
+            DataTypesList.Precision => array.SortBy(n => n?[parameters.SortingColumnDataName]?.GetValue<decimal>(), parameters.SortingDescending),
+            _ => throw new InvalidOperationException(),
+        };
+
+        IEnumerable<JsonNode?>? filteredNodes = sortedNodes;
         foreach (var kvp in parameters.Filters)
         {
             switch (kvp.Key.DataType)
             {
-                case DataTypes.Text:
-                    result = result.Where(n =>
+                case DataTypesList.Text:
+                    filteredNodes = filteredNodes.Where(n =>
                         (string.IsNullOrWhiteSpace(n?[kvp.Key.Data]?.GetValue<string?>()) && string.IsNullOrWhiteSpace(kvp.Value.StringValue))
                         || (n?[kvp.Key.Data]?.GetValue<string?>()?.ToLowerInvariant().Contains(kvp.Value.StringValue!.ToLowerInvariant()) == true)
-                        ).ToList();
+                        );
                     break;
-                case DataTypes.Date:
-                    result = result
+                case DataTypesList.Date:
+                    filteredNodes = filteredNodes
                         .Select(n => new { Data = n, FilterData = n?[kvp.Key.Data]?.GetValue<DateTime?>() })
                         .Where(c => c.FilterData != null && c.FilterData >= kvp.Value.DateFrom && c.FilterData <= kvp.Value.DateTo)
-                        .Select(c => c.Data).ToList();
+                        .Select(c => c.Data);
                     break;
             }
         }
-
-        return dataType switch
-        {
-            DataTypes.Date or DataTypes.Text => result.SortBy(n => n?[parameters.SortingColumnDataName]?.GetValue<string>(), parameters.SortingDescending).ToList(),
-            DataTypes.Precision => result.SortBy(n => n?[parameters.SortingColumnDataName]?.GetValue<decimal>(), parameters.SortingDescending).ToList(),
-            _ => throw new InvalidOperationException(),
-        };
+        return filteredNodes?.Take(parameters.MaximumNumberOfRecords).ToList() ?? throw new InvalidOperationException("No records returned");
     }
 
-    public static List<JsonNode?> SortBy<TKey>(this List<JsonNode?> array, Func<JsonNode?, TKey> predicate, bool descending) => descending ? array.OrderByDescending(predicate).ToList() : array.OrderBy(predicate).ToList();
+    public static IOrderedEnumerable<JsonNode?> SortBy<TKey>(this JsonArray array, Func<JsonNode?, TKey> predicate, bool descending) => descending ? array.OrderByDescending(predicate) : array.OrderBy(predicate);
 }

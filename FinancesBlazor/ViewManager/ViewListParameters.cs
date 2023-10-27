@@ -11,4 +11,6 @@ public class ViewListParameters
     public ReadOnlyCollection<Column> Columns { get; init; } = new ReadOnlyCollection<Column>(new List<Column>());
 
     public Dictionary<Column, FilterValue> Filters { get; } = new Dictionary<Column, FilterValue>();
+
+    public int MaximumNumberOfRecords { get; set; } = 100;
 }

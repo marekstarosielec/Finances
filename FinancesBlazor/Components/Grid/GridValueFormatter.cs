@@ -1,4 +1,5 @@
-﻿using FinancesBlazor.ViewManager;
+﻿using FinancesBlazor.DataTypes;
+using FinancesBlazor.ViewManager;
 using System.Text.Json.Nodes;
 
 namespace FinancesBlazor.Components.Grid;
@@ -7,9 +8,9 @@ public static class GridValueFormatter
 {
     public static string GetFormattedString(JsonNode? value, Column column) => column.DataType switch
     {
-        DataAccess.DataTypes.Text => GetFormattedText(value, column),
-        DataAccess.DataTypes.Date => GetFormattedDate(value, column),
-        DataAccess.DataTypes.Precision => GetFormattedPrecision(value, column),
+        DataTypesList.Text => GetFormattedText(value, column),
+        DataTypesList.Date => GetFormattedDate(value, column),
+        DataTypesList.Precision => GetFormattedPrecision(value, column),
         _ => string.Empty,
     };
 

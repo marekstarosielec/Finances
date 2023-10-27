@@ -2,6 +2,7 @@
 @using FinancesBlazor.Components.Grid.Filters;
 @using System.Text.Json.Nodes;
 @using Radzen.Blazor.Rendering;
+@using FinancesBlazor.DataTypes;
 @inject ViewManager _viewManager;
 
 <div class="toolbar">
@@ -62,7 +63,7 @@
         var result = "";
         if (column.Align == Align.Right)
             result += "text-end ";
-        if (column.DataType == DataAccess.DataTypes.Date || column.DataType == DataAccess.DataTypes.Precision)
+        if (column.DataType == DataTypesList.Date || column.DataType == DataTypesList.Precision)
             result += "text-nowrap ";
         return result;
     }

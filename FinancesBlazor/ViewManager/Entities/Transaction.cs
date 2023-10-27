@@ -1,5 +1,6 @@
 ﻿using Finances.DataAccess;
 using FinancesBlazor.DataAccess;
+using FinancesBlazor.DataTypes;
 using System.Collections.ObjectModel;
 
 namespace FinancesBlazor.ViewManager;
@@ -21,14 +22,16 @@ public class Gas : IEntity
             SortingColumnDataName = "Date",
             SortingDescending = true,
             Columns = new ReadOnlyCollection<Column>(new List<Column> {
-                        new Column("gd", "Data Gaz", "Date", DataTypes.Date),
-                        new Column("gm", "Licznik", "Meter", DataTypes.Precision, format: "# ##0.0", align: Align.Right),
-                        new Column("gc", "Komentarz", "Comment", DataTypes.Text) })
+                new Column("d", "Data", "Date", DataTypesList.Date),
+                new Column("a", "Konto", "Account", DataTypesList.Text),
+                new Column("ct", "Kategoria", "Category", DataTypesList.Text),
+                new Column("am", "Kwota", "Amount", DataTypesList.Precision),
+                new Column("d", "Opis", "Description", DataTypesList.Text)})
         };
 
-        var presentation = new ViewPresentation(110, "fa-solid fa-fire-flame-simple", "Gaz");
+        var presentation = new ViewPresentation(50, "fa-solid fa-money-bill-transfer", "Tranzakcje");
 
-        _view = new View("g", "Gaz", new BaseListService(new JsonListFile(configuration, "gas.json"), viewListParameters), presentation)
+        _view = new View("t", "Tranzakcje", new BaseListService(new JsonListFile(configuration, "transactions.json"), viewListParameters), presentation)
         {
             Parameters = viewListParameters
         };

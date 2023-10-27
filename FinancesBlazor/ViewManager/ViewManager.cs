@@ -13,9 +13,9 @@ public partial class ViewManager : IInjectAsSingleton
 
     public ViewManager(List<View> views, ViewListParametersSerializer serializer)
     {
-        Views = views;
+        Views = views.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         _serializer = serializer;
-        _activeView = views.OrderBy(v => v.Presentation?.NavMenuIndex).FirstOrDefault() ?? throw new InvalidOperationException("No view found");
+        _activeView = Views.FirstOrDefault() ?? throw new InvalidOperationException("No view found");
     }
 
     public async Task SaveView(NavigationManager navigationManager, IJSRuntime js)
