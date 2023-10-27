@@ -1,40 +1,38 @@
 ﻿using Finances.DataAccess;
-using FinancesBlazor.Components.Grid;
 using FinancesBlazor.DataAccess;
 using System.Collections.ObjectModel;
 
 namespace FinancesBlazor.ViewManager;
 
-public partial class ViewsList
+public class Gas : IEntity
 {
-    private View? _gas;
+    private View? _view;
 
-    public View Gas
+    public View GetView(IConfiguration configuration)
     {
-        get
+        if (_view != null)
+            return _view;
+
+        if (configuration == null)
+            throw new InvalidOperationException();
+
+        var viewListParameters = new ViewListParameters
         {
-            if (_configuration == null)
-                throw new InvalidOperationException();
-
-            if (_gas != null)
-                return _gas;
-
-            var viewListParameters = new ViewListParameters
-            {
-                SortingColumnDataName = "Date",
-                SortingDescending = true,
-                Columns = new ReadOnlyCollection<Column>(new List<Column> {
+            SortingColumnDataName = "Date",
+            SortingDescending = true,
+            Columns = new ReadOnlyCollection<Column>(new List<Column> {
                         new Column("gd", "Data Gaz", "Date", DataTypes.Date),
                         new Column("gm", "Licznik", "Meter", DataTypes.Precision, format: "# ##0.0", align: Align.Right),
                         new Column("gc", "Komentarz", "Comment", DataTypes.Text) })
-            };
+        };
 
-            _gas = new View("g", "Gaz", new BaseListService(new JsonListFile(_configuration, "gas.json"), viewListParameters))
-            {
-                Parameters = viewListParameters
-            };
+        var presentation = new ViewPresentation(110, "fa-solid fa-fire-flame-simple", "Gaz");
 
-            return _gas;
-        }
+        _view = new View("g", "Gaz", new BaseListService(new JsonListFile(configuration, "gas.json"), viewListParameters), presentation)
+        {
+            Parameters = viewListParameters
+        };
+
+        return _view;
     }
 }

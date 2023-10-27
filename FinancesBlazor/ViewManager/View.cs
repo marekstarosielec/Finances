@@ -12,10 +12,13 @@ public class View
 
     public BaseListService Service { get; }
 
-    public View(string name, string title, BaseListService service)
+    public ViewPresentation? Presentation { get; }
+
+    public View(string name, string title, BaseListService service, ViewPresentation? presentation = null)
     {
         Name = name;
         Title = title;
         Service = service;
+        Presentation = presentation;
     }
 }

@@ -14,7 +14,8 @@ namespace FinancesBlazor
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
-            builder.Services.InjectEntities();
+            builder.Services.InjectServices();
+            builder.Services.InjectEntities(builder.Configuration);
             builder.Services.AddRadzenComponents();
             var app = builder.Build();
 

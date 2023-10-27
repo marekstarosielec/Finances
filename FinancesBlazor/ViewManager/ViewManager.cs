@@ -6,16 +6,16 @@ namespace FinancesBlazor.ViewManager;
 
 public partial class ViewManager : IInjectAsSingleton
 {
-    private readonly ViewsList _viewsList;
+    public readonly List<View> Views;
     private readonly ViewListParametersSerializer _serializer;
     private View _activeView;
     public View ActiveView { get => _activeView; set => _activeView = value; }
 
-    public ViewManager(ViewsList viewsList, ViewListParametersSerializer serializer)
+    public ViewManager(List<View> views, ViewListParametersSerializer serializer)
     {
-        _viewsList = viewsList;
+        Views = views;
         _serializer = serializer;
-        _activeView = _viewsList.Electricity;
+        _activeView = views.OrderBy(v => v.Presentation?.NavMenuIndex).FirstOrDefault() ?? throw new InvalidOperationException("No view found");
     }
 
     public async Task SaveView(NavigationManager navigationManager, IJSRuntime js)
@@ -53,16 +53,7 @@ public partial class ViewManager : IInjectAsSingleton
         if (string.IsNullOrWhiteSpace(viewName))
             return null;
 
-        var properties = _viewsList.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-        foreach (var property in properties) {
-            if (property.PropertyType != typeof(View))
-                continue;
-
-            var view = (View?) property.GetValue(_viewsList);
-            if (view?.Name == viewName) return view;
-        }
-
-        return null;
+        return Views.FirstOrDefault(v => v.Name == viewName);
     }
 }
 

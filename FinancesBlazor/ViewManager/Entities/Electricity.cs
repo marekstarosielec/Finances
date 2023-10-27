@@ -1,40 +1,38 @@
 ﻿using Finances.DataAccess;
-using FinancesBlazor.Components.Grid;
 using FinancesBlazor.DataAccess;
 using System.Collections.ObjectModel;
 
 namespace FinancesBlazor.ViewManager;
 
-public partial class ViewsList
+public class Electricity : IEntity
 {
-    private View? _electricity;
+    private View? _view;
 
-    public View Electricity
+    public View GetView(IConfiguration configuration)
     {
-        get
+        if (_view != null)
+            return _view;
+        
+        if (configuration == null)
+            throw new InvalidOperationException();
+
+        var viewListParameters = new ViewListParameters
         {
-            if (_configuration == null)
-                throw new InvalidOperationException();
-
-            if (_electricity != null)
-                return _electricity;
-
-            var viewListParameters = new ViewListParameters
-            {
-                SortingColumnDataName = "Date",
-                SortingDescending = true,
-                Columns = new ReadOnlyCollection<Column>(new List<Column> {
+            SortingColumnDataName = "Date",
+            SortingDescending = true,
+            Columns = new ReadOnlyCollection<Column>(new List<Column> {
                         new Column("d", "Data", "Date", DataTypes.Date),
                         new Column("m", "Licznik", "Meter", DataTypes.Precision, format: "# ##0.0", align: Align.Right),
                         new Column("c", "Komentarz", "Comment", DataTypes.Text) })
-            };
+        };
 
-            _electricity = new View("e", "Prąd", new BaseListService(new JsonListFile(_configuration, "electricity.json"), viewListParameters))
-            {
-                Parameters = viewListParameters
-            };
+        var presentation = new ViewPresentation(100, "fa-solid fa-bolt", "Prąd");
 
-            return _electricity;
-        }
+        _view = new View("e", "Prąd", new BaseListService(new JsonListFile(configuration, "electricity.json"), viewListParameters), presentation)
+        {
+            Parameters = viewListParameters
+        };
+
+        return _view;
     }
 }
