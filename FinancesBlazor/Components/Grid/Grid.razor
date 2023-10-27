@@ -9,7 +9,7 @@
     <button class="btn btn-primary" @onclick="() => RequestFilterClear()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
 </div>
 
-@if (Parameters?.Columns != null && Data != null)
+@if (Parameters?.Columns != null)
 {
     <table class="table table-borderless">
         <thead>
@@ -28,14 +28,17 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var row in Data)
+            @if (Data != null)
             {
-                <tr>
-                    @foreach (var column in Parameters.Columns)
-                    {
-                        <td class="@GetCellStyle(column)">@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
-                    }
-                </tr>
+                @foreach (var row in Data)
+                {
+                    <tr>
+                        @foreach (var column in Parameters.Columns)
+                        {
+                            <td class="@GetCellStyle(column)">@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
+                        }
+                    </tr>
+                }
             }
         </tbody>
     </table>
@@ -67,11 +70,6 @@
     protected override async Task OnInitializedAsync()
     {
         await ReloadDataRequest();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
     }
 
     private async Task CloseFilter()
