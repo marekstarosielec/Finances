@@ -3,53 +3,31 @@
 @using System.Text.Json.Nodes;
 @using FinancesBlazor.ViewManager;
 @inject ViewManager _viewManager;
-@inject NavigationManager _navigationManager;
-@inject IJSRuntime jsRuntime;
 @implements IDisposable
 
 <PageTitle>@_viewManager.ActiveView.Title</PageTitle>
-<FinancesBlazor.Components.Grid.Grid ReloadDataRequested="ReloadDataRequested" @key="@(gridId)" Parameters="@_viewManager.ActiveView.Parameters" Data="@_data" />
+<FinancesBlazor.Components.Grid.Grid View="@_viewManager.ActiveView" @key=gridId />
 
 @code{
     private Guid gridId = Guid.NewGuid();
-    private ViewListParameters? _settings;
     private List<JsonNode?>? _data;
 
 
     protected override void OnInitialized()
     {
-        _navigationManager.LocationChanged += LocationChanged;
+        _viewManager.ViewChanged += ViewChanged;
     }
 
-    /// <summary>
-    /// This should run only when user navigates back/forward button or clicks a href link.
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    async void LocationChanged(object? sender, LocationChangedEventArgs e)
+    void ViewChanged(object? sender, View e)
     {
-        _viewManager.LoadView(_navigationManager);
-        await RefreshChildren(true);
-    }
-
-    protected async Task ReloadDataRequested(bool saveView)
-    {
-        if (saveView) 
-            await _viewManager.SaveView(_navigationManager, jsRuntime);
-        await RefreshChildren(false);
-    }
-
-    private async Task RefreshChildren(bool recreate)
-    {
-        _data = await _viewManager.ActiveView.Service.Get();
-        if (recreate) {
-            gridId = Guid.NewGuid();
-            StateHasChanged();
-        }
+        if (e != _viewManager.ActiveView)
+            return;
+        gridId = Guid.NewGuid();
+        StateHasChanged();
     }
 
     void IDisposable.Dispose()
     {
-        _navigationManager.LocationChanged -= LocationChanged;
+        _viewManager.ViewChanged -= ViewChanged;
     }
 }

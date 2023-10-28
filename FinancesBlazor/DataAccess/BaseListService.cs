@@ -9,19 +9,21 @@ namespace Finances.DataAccess;
 public class BaseListService
 {
     private readonly IJsonListFile _dataFile;
-    private readonly ViewListParameters _parameters;
+    public View View { get; set; }
+
     private static SemaphoreSlim semaphore = new(initialCount: 1);
 
-    public BaseListService(IJsonListFile dataFile, ViewListParameters parameters)
+    public List<JsonNode?> Data { get; private set; }
+
+    public BaseListService(IJsonListFile dataFile)
     {
         _dataFile = dataFile;
-        _parameters = parameters;
     }
 
-    public virtual async Task<List<JsonNode?>> Get()
+    public virtual async Task Reload()
     {
         await _dataFile.Load();
-        return _dataFile.Data.FilterByParameters(_parameters);
+        Data = _dataFile.Data.GetDataForView(View);
     }
 
     //public virtual async Task Delete(string id)

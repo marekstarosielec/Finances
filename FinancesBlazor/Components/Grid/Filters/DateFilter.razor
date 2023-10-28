@@ -1,4 +1,4 @@
-﻿@using FinancesBlazor.Extensions;
+﻿@* @using FinancesBlazor.Extensions;
 @using FinancesBlazor.ViewManager;
 @using System.Globalization;
 @inject ViewManager _viewManager;
@@ -10,7 +10,7 @@
 <button class="btn btn-primary float-end" @onclick="() => SetCurrentYear()">@CurrentYearName</button>
 @code {
     [Parameter]
-    public Column? Column { get; set; }
+    public DataTypeDefinitionBase? Column { get; set; }
 
     [Parameter]
     public EventCallback<bool> ParametersChanged { get; set; }
@@ -78,3 +78,4 @@
         });
     }
 }
+ *@

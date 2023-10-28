@@ -3,27 +3,27 @@ using System.Web;
 
 namespace FinancesBlazor.ViewManager;
 
-public class ViewListParametersSerializer : IInjectAsSingleton
+public class ViewSerializer : IInjectAsSingleton
 {
-    public async Task<string> Serialize(string activeViewName, ViewListParameters? parameters)
+    public async Task<string> Serialize(string activeViewName, View? view)
     {
-        if (parameters == null)
+        if (view == null)
             return string.Empty;
 
         var data = new Dictionary<string, string>();
         data["av"] = activeViewName;
-        if (!string.IsNullOrWhiteSpace(parameters.SortingColumnDataName))
-            data["s"] = parameters.SortingColumnDataName;
-        if (parameters.SortingDescending)
+        if (!string.IsNullOrWhiteSpace(view.SortingColumnPropertyName))
+            data["s"] = view.SortingColumnPropertyName;
+        if (view.SortingDescending)
             data["d"] = "1";
-        foreach (var filter in parameters.Filters)
+        foreach (var filter in view.Filters)
         {
             if (!string.IsNullOrWhiteSpace(filter.Value.StringValue))
-                data[$"f_{filter.Key.Name}_sv"] = filter.Value.StringValue;
+                data[$"f_{filter.Key.ShortName}_sv"] = filter.Value.StringValue;
             if (filter.Value.DateFrom != null)
-                data[$"f_{filter.Key.Name}_fr"] = filter.Value.DateFrom.Value.ToString("yyyyMMdd");
+                data[$"f_{filter.Key.ShortName}_fr"] = filter.Value.DateFrom.Value.ToString("yyyyMMdd");
             if (filter.Value.DateTo != null)
-                data[$"f_{filter.Key.Name}_to"] = filter.Value.DateTo.Value.ToString("yyyyMMdd");
+                data[$"f_{filter.Key.ShortName}_to"] = filter.Value.DateTo.Value.ToString("yyyyMMdd");
         }
         return await new FormUrlEncodedContent(data).ReadAsStringAsync();
     }
@@ -44,18 +44,18 @@ public class ViewListParametersSerializer : IInjectAsSingleton
             else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_sv") == true)
             {
                 var name = item.key[2..^3];
-                result.Filters[name] = new FilterValue {  StringValue = item.value };
+                result.Filters[name] = new FilterInfoBase {  StringValue = item.value };
             }
             else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_fr") == true)
             {
                 var name = item.key[2..^3];
-                result.Filters[name] ??= new FilterValue();
+                result.Filters[name] ??= new FilterInfoBase();
                 result.Filters[name].DateFrom = DateTime.ParseExact(item.value, "yyyyMMdd", null);
             }
             else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_to") == true)
             {
                 var name = item.key[2..^3];
-                result.Filters[name] ??= new FilterValue();
+                result.Filters[name] ??= new FilterInfoBase();
                 result.Filters[name].DateTo = DateTime.ParseExact(item.value, "yyyyMMdd", null);
             }
         }
@@ -73,5 +73,5 @@ public class DeserializationResult
 
     public bool SortingDescending { get; set; }
 
-    public Dictionary<string, FilterValue> Filters { get; set; } = new Dictionary<string, FilterValue>();
+    public Dictionary<string, FilterInfoBase> Filters { get; set; } = new Dictionary<string, FilterInfoBase>();
 }

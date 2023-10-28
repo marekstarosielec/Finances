@@ -1,4 +1,4 @@
-﻿using FinancesBlazor.DataTypes;
+﻿using FinancesBlazor.PropertyInfo;
 using FinancesBlazor.ViewManager;
 using System.Text.Json.Nodes;
 
@@ -6,47 +6,48 @@ namespace FinancesBlazor.Extensions;
 
 public static class JsonArrayExtensions
 {
-    public static List<JsonNode?> FilterByParameters(this JsonArray array, ViewListParameters parameters)
+    public static List<JsonNode?> GetDataForView(this JsonArray array, View? view)
     {
         var result = new List<JsonNode?>();
 
-        if (array == null)
+        if (array == null || view == null)
             return result;
 
-        parameters ??= new ViewListParameters();
-        parameters.SortingColumnDataName ??= parameters.Columns.First().Data;
+        view.SortingColumnPropertyName ??= view.Properties.First().PropertyName;
 
-        var dataType = parameters.Columns.FirstOrDefault(c => c.Data == parameters.SortingColumnDataName)?.DataType;
+        var dataType = view.Properties.FirstOrDefault(c => c.PropertyName == view.SortingColumnPropertyName)?.DataType;
         if (dataType == null)
             return result;
 
         var sortedNodes = dataType switch
         {
-            DataTypesList.Date or DataTypesList.Text => array.SortBy(n => n?[parameters.SortingColumnDataName]?.GetValue<string>(), parameters.SortingDescending),
-            DataTypesList.Precision => array.SortBy(n => n?[parameters.SortingColumnDataName]?.GetValue<decimal>(), parameters.SortingDescending),
+            //TODO: Extract to PropertyInfo
+            DataType.Date or DataType.Text => array.SortBy(n => n?[view.SortingColumnPropertyName]?.GetValue<string>(), view.SortingDescending),
+            DataType.Precision => array.SortBy(n => n?[view.SortingColumnPropertyName]?.GetValue<decimal>(), view.SortingDescending),
             _ => throw new InvalidOperationException(),
         };
 
         IEnumerable<JsonNode?>? filteredNodes = sortedNodes;
-        foreach (var kvp in parameters.Filters)
+        foreach (var kvp in view.Filters)
         {
+            //TODO: Extract to PropertyInfo
             switch (kvp.Key.DataType)
             {
-                case DataTypesList.Text:
+                case DataType.Text:
                     filteredNodes = filteredNodes.Where(n =>
-                        (string.IsNullOrWhiteSpace(n?[kvp.Key.Data]?.GetValue<string?>()) && string.IsNullOrWhiteSpace(kvp.Value.StringValue))
-                        || (n?[kvp.Key.Data]?.GetValue<string?>()?.ToLowerInvariant().Contains(kvp.Value.StringValue!.ToLowerInvariant()) == true)
+                        (string.IsNullOrWhiteSpace(n?[kvp.Key.PropertyName]?.GetValue<string?>()) && string.IsNullOrWhiteSpace(kvp.Value.StringValue))
+                        || (n?[kvp.Key.PropertyName]?.GetValue<string?>()?.ToLowerInvariant().Contains(kvp.Value.StringValue!.ToLowerInvariant()) == true)
                         );
                     break;
-                case DataTypesList.Date:
+                case DataType.Date:
                     filteredNodes = filteredNodes
-                        .Select(n => new { Data = n, FilterData = n?[kvp.Key.Data]?.GetValue<DateTime?>() })
+                        .Select(n => new { Data = n, FilterData = n?[kvp.Key.PropertyName]?.GetValue<DateTime?>() })
                         .Where(c => c.FilterData != null && c.FilterData >= kvp.Value.DateFrom && c.FilterData <= kvp.Value.DateTo)
                         .Select(c => c.Data);
                     break;
             }
         }
-        return filteredNodes?.Take(parameters.MaximumNumberOfRecords).ToList() ?? throw new InvalidOperationException("No records returned");
+        return filteredNodes?.Take(view.MaximumNumberOfRecords).ToList() ?? throw new InvalidOperationException("No records returned");
     }
 
     public static IOrderedEnumerable<JsonNode?> SortBy<TKey>(this JsonArray array, Func<JsonNode?, TKey> predicate, bool descending) => descending ? array.OrderByDescending(predicate) : array.OrderBy(predicate);

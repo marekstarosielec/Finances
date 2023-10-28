@@ -1,27 +1,28 @@
-﻿@using FinancesBlazor.ViewManager;
+﻿@using FinancesBlazor.PropertyInfo;
+@using FinancesBlazor.ViewManager;
 @using FinancesBlazor.Components.Grid.Filters;
 @using System.Text.Json.Nodes;
 @using Radzen.Blazor.Rendering;
-@using FinancesBlazor.DataTypes;
 @inject ViewManager _viewManager;
+@implements IDisposable;
 
 <div class="toolbar">
     <button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
     <button class="btn btn-primary" @onclick="() => RequestFilterClear()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
 </div>
 
-@if (Parameters?.Columns != null)
+@if (View?.Properties != null)
 {
     <table class="table table-borderless">
         <thead>
             <tr>
-                @foreach (var column in Parameters.Columns)
+                @foreach (var property in View.Properties)
                 {
                     <th>
-                        <div class="@(column.Align == Align.Right ? "text-end dropdown" : "dropdown")">
-                            <button class="btn columnHeader" type="button" @ref=columnHeaders[column] @onclick="@(args => columnFilters[column].ToggleAsync(columnHeaders[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down blue"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up yellow"></span></span></button>
-                                <Popup @ref=columnFilters[column] Lazy=false Open="@(() => OnOpen(column))" class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
-                                    <DynamicFilter Column=column ParametersChanged="ReloadDataRequest" @ref=dynamicFilters[column] />
+                        <div class="@(property.HorizontalAlign == ContentAlign.Right ? "text-end dropdown" : "dropdown")">
+                            <button class="btn columnHeader" type="button" @ref=_popupInvokers[property] @onclick="@(args => _popups[property].ToggleAsync(_popupInvokers[property]))">@property.Title <span hidden="@ColumnHeaderArrowHidden(property, true)"><span class="fa fa-arrow-down blue"></span></span><span hidden="@ColumnHeaderArrowHidden(property, false)"><span class="fa fa-arrow-up yellow"></span></span></button>
+                            <Popup @ref=_popups[property] Lazy=false Open="@(() => OnOpen(property))" class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
+                                <DynamicFilter View=@View Property=property @ref=_dynamicFilters[property] />
                             </Popup>
                         </div>
                     </th>
@@ -29,14 +30,14 @@
             </tr>
         </thead>
         <tbody>
-            @if (Data != null)
+            @if (_data != null)
             {
-                @foreach (var row in Data)
+                @foreach (var row in _data)
                 {
                     <tr>
-                        @foreach (var column in Parameters.Columns)
+                        @foreach (var property in View.Properties)
                         {
-                            <td class="@GetCellStyle(column)">@GridValueFormatter.GetFormattedString(@row?[column.Data], column)</td>
+                            <td class="@GetCellStyle(property)">@GridValueFormatter.GetFormattedString(row?[property.PropertyName], property)</td>
                         }
                     </tr>
                 }
@@ -45,48 +46,51 @@
     </table>
 }
 @code {
-    Dictionary<Column, ElementReference> columnHeaders = new();
-    Dictionary<Column, Popup> columnFilters = new();
-    Dictionary<Column, DynamicFilter> dynamicFilters = new();
+    private Dictionary<PropertyInfoBase, ElementReference> _popupInvokers = new();
+    private Dictionary<PropertyInfoBase, Popup> _popups = new();
+    private Dictionary<PropertyInfoBase, DynamicFilter> _dynamicFilters = new();
 
     [Parameter]
-    public ViewListParameters? Parameters { get; set; }
+    public View? View { get; set; }
 
-    [Parameter]
-    public List<JsonNode>? Data { get; set; }
+    private List<JsonNode?>? _data;
 
     [Parameter]
     public EventCallback<bool> ReloadDataRequested { get; set; }
 
-    private string GetCellStyle(Column column)
+    private string GetCellStyle(PropertyInfoBase propertyInfo)
     {
         var result = "";
-        if (column.Align == Align.Right)
+        if (propertyInfo.HorizontalAlign == ContentAlign.Right)
             result += "text-end ";
-        if (column.DataType == DataTypesList.Date || column.DataType == DataTypesList.Precision)
+        if (propertyInfo.DataType == DataType.Date || propertyInfo.DataType == DataType.Precision)
             result += "text-nowrap ";
         return result;
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await ReloadDataRequest();
+        _viewManager.ViewChanged += ViewChanged;
+        if (View == null)
+            return;
+        ViewChanged(this, View);
     }
+
 
     private async Task CloseFilter()
     {
-        foreach (var kvp in columnFilters)
-            await kvp.Value.CloseAsync();
+        // foreach (var kvp in columnFilters)
+        //     await kvp.Value.CloseAsync();
     }
 
-    private bool ColumnHeaderArrowHidden(Column column, bool descending) => Parameters?.SortingColumnDataName != column.Data || Parameters.SortingDescending != descending;
+    private bool ColumnHeaderArrowHidden(PropertyInfoBase property, bool descending) => View?.SortingColumnPropertyName != property.PropertyName || View?.SortingDescending != descending;
 
     private async void RequestFilterClear()
     {
-        if (_viewManager?.ActiveView?.Parameters?.Filters == null)
+        if (_viewManager?.ActiveView?.Filters == null)
             return;
 
-        _viewManager.ActiveView.Parameters.Filters.Clear();
+        _viewManager.ActiveView.Filters.Clear();
         await ReloadDataRequest(true);
     }
 
@@ -96,8 +100,19 @@
         await ReloadDataRequested.InvokeAsync(closeFilters);
     }
 
-    async Task OnOpen(Column column)
+    async Task OnOpen(PropertyInfoBase column)
     {
-        await dynamicFilters[column].OnOpen();
+        //await dynamicFilters[column].OnOpen();
+    }
+
+    void ViewChanged(object? sender, View e)
+    {
+        _data = e.Service.Data;
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        _viewManager.ViewChanged -= ViewChanged;
     }
 }

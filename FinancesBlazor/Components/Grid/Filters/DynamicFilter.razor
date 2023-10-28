@@ -1,29 +1,31 @@
-﻿@using FinancesBlazor.ViewManager;
+﻿@using FinancesBlazor.PropertyInfo;
+@using FinancesBlazor.ViewManager;
 @using FinancesBlazor.DataAccess;
-@using FinancesBlazor.DataTypes;
 
 @inject ViewManager _viewManager;
+@inject NavigationManager _navigationManager;
+@inject IJSRuntime jsRuntime;
 
-@if (Column != null)
+@if (View != null && Property != null)
 {
     <div class="outer">
         <div class="text-end">
             <button type="button" class="btn btn-primary btn-sm m-0 yellow" @onclick="() => SortClick(false)"><span class="fa fa-arrow-up"></span></button>
             <button type="button" class="btn btn-primary btn-sm m-0 blue" @onclick="() => SortClick(true)"><span class="fa fa-arrow-down"></span></button>
         </div>
-        @* <DynamicComponent Type="@typeof({COMPONENT})" @ref="dc" /> *@
-        @switch (Column.DataType)
+         @* <DynamicComponent Type="@typeof({COMPONENT})" @ref="dc" /> 
+         @switch (Column.DataType)
         {
-            case DataTypesList.Text:
+            case DataType.Text:
                 <TextFilter Column="@Column" ParametersChanged="FilterChanged" @ref=textFilter />
                 break;
-            case DataTypesList.Date:
+            case DataType.Date:
                 <DateFilter Column="@Column" ParametersChanged="FilterChanged" @ref=dateFilter />
                 break;
-            case DataTypesList.Precision:
+            case DataType.Precision:
                 <PrecisionFilter Column="@Column" @ref=precisionFilter />
-                break;
-        }
+               break;
+        }  *@
     </div>
 }
 @code {
@@ -33,35 +35,51 @@
     PrecisionFilter? precisionFilter;
 
     [Parameter]
-    public Column? Column { get; set; }
+    public View? View { get; set; }
+
+    [Parameter]
+    public PropertyInfoBase? Property { get; set; }
 
     [Parameter]
     public EventCallback<bool> ParametersChanged { get; set; }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
     public async Task OnOpen()
     {
-        switch (Column?.DataType)
+        switch (Property?.DataType)
         {
-            case DataTypesList.Text:
-                if (textFilter!=null) await textFilter.OnOpen();
+            case DataType.Text:
+                // if (textFilter!=null) await textFilter.OnOpen();
                 break;
-            case DataTypesList.Date:
-               // if (dateFilter != null) await dateFilter.OnOpen();
+            case DataType.Date:
+                // if (dateFilter != null) await dateFilter.OnOpen();
                 break;
-            case DataTypesList.Precision:
-               // if (precisionFilter != null) await precisionFilter.OnOpen();
+            case DataType.Precision:
+                // if (precisionFilter != null) await precisionFilter.OnOpen();
                 break;
         }
     }
 
     public async Task SortClick(bool descending)
     {
-        if (Column == null || _viewManager?.ActiveView?.Parameters == null)
+        if (View == null || Property == null)
             return;
 
-        _viewManager.ActiveView.Parameters.SortingColumnDataName = Column.Data;
-        _viewManager.ActiveView.Parameters.SortingDescending = descending;
-        await ParametersChanged.InvokeAsync(true);
+        View.SortingColumnPropertyName = Property.PropertyName;
+        View.SortingDescending = descending;
+
+        //await _viewManager.SaveView(_navigationManager, jsRuntime);
+        await _viewManager.Save(View);
+        // await ParametersChanged.InvokeAsync(true);
     }
 
     public async Task FilterChanged(bool closeFilters)

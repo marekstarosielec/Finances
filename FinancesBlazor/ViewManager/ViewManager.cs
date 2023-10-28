@@ -1,37 +1,56 @@
 ﻿using Finances.DependencyInjection;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
 
 namespace FinancesBlazor.ViewManager;
 
-public partial class ViewManager : IInjectAsSingleton
+public class ViewManager : IDisposable
 {
     public readonly List<View> Views;
-    private readonly ViewListParametersSerializer _serializer;
+    private readonly NavigationManager _navigationManager;
+    private readonly IJSRuntime _jsRuntime;
+    private readonly ViewSerializer _serializer;
     private View _activeView;
     public View ActiveView { get => _activeView; set => _activeView = value; }
 
-    public ViewManager(List<View> views, ViewListParametersSerializer serializer)
+    public event EventHandler<View>? ViewChanged;
+
+    public ViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<View> views, ViewSerializer serializer)
     {
+        _navigationManager = navigationManager;
+        _navigationManager.LocationChanged += _navigationManager_LocationChanged;
+        _jsRuntime = jsRuntime;
         Views = views.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         _serializer = serializer;
         _activeView = Views.FirstOrDefault() ?? throw new InvalidOperationException("No view found");
+
     }
 
-    public async Task SaveView(NavigationManager navigationManager, IJSRuntime js)
+    private async void _navigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        var vd = await _serializer.Serialize(ActiveView.Name, _activeView.Parameters);
-        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
-        try
+        await LoadFromQueryString();
+    }
+
+    public async Task Save(View view)
+    {
+        if (view == ActiveView)
         {
-            await js.InvokeVoidAsync("ChangeUrl", $"{uri.GetLeftPart(UriPartial.Path)}?{vd}");
+            var vd = await _serializer.Serialize(ActiveView.Name, _activeView);
+            var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+            try
+            {
+                await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{uri.GetLeftPart(UriPartial.Path)}?{vd}");
+            }
+            catch (Exception ex) { }
         }
-        catch (Exception ex) { }
+        await view.Service.Reload();
+        ViewChanged?.Invoke(this, view);
     }
 
-    public void LoadView(NavigationManager navigationManager)
+    private async Task LoadFromQueryString()
     {
-        var query = navigationManager.ToAbsoluteUri(navigationManager.Uri).Query;
+        var query = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
         if (query.StartsWith("?"))
             query = query.Substring(1);
         if (string.IsNullOrWhiteSpace(query))
@@ -43,9 +62,11 @@ public partial class ViewManager : IInjectAsSingleton
         ActiveView = activeView;
         if (vd.SortingColumnDataName != null)
         {
-            ActiveView.Parameters.SortingColumnDataName = vd.SortingColumnDataName;
-            ActiveView.Parameters.SortingDescending = vd.SortingDescending;
+            ActiveView.SortingColumnPropertyName = vd.SortingColumnDataName;
+            ActiveView.SortingDescending = vd.SortingDescending;
         }
+        await ActiveView.Service.Reload();
+        ViewChanged?.Invoke(this, ActiveView);
     }
 
     private View? FindView(string? viewName)
@@ -54,6 +75,11 @@ public partial class ViewManager : IInjectAsSingleton
             return null;
 
         return Views.FirstOrDefault(v => v.Name == viewName);
+    }
+
+    public void Dispose()
+    {
+        _navigationManager.LocationChanged -= _navigationManager_LocationChanged;
     }
 }
 
