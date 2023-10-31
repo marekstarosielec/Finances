@@ -1,4 +1,5 @@
 ﻿using Finances.DependencyInjection;
+using FinancesBlazor.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
@@ -23,8 +24,12 @@ public class ViewManager : IDisposable
         _jsRuntime = jsRuntime;
         Views = views.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         _serializer = serializer;
+        
+        //Force redirect on first load, so query string appears in url and view is loaded.
         _activeView = Views.FirstOrDefault() ?? throw new InvalidOperationException("No view found");
-
+        var vd = _serializer.Serialize(_activeView.Name, _activeView);
+        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).GetLeftPart(UriPartial.Path);
+        _navigationManager.NavigateTo($"{uri}?{vd}");
     }
 
     private async void _navigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
@@ -36,7 +41,7 @@ public class ViewManager : IDisposable
     {
         if (view == ActiveView)
         {
-            var vd = await _serializer.Serialize(ActiveView.Name, _activeView);
+            var vd = _serializer.Serialize(_activeView.Name, _activeView);
             var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
             try
             {

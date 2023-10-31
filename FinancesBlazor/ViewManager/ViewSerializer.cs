@@ -5,7 +5,7 @@ namespace FinancesBlazor.ViewManager;
 
 public class ViewSerializer : IInjectAsSingleton
 {
-    public async Task<string> Serialize(string activeViewName, View? view)
+    public string Serialize(string activeViewName, View? view)
     {
         if (view == null)
             return string.Empty;
@@ -25,7 +25,7 @@ public class ViewSerializer : IInjectAsSingleton
             if (filter.Value.DateTo != null)
                 data[$"f_{filter.Key.ShortName}_to"] = filter.Value.DateTo.Value.ToString("yyyyMMdd");
         }
-        return await new FormUrlEncodedContent(data).ReadAsStringAsync();
+        return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
     }
 
     public DeserializationResult Deserialize(string serializedValue)

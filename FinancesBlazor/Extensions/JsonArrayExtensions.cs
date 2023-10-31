@@ -19,34 +19,12 @@ public static class JsonArrayExtensions
         if (dataType == null)
             return result;
 
-        var sortedNodes = dataType switch
-        {
-            //TODO: Extract to PropertyInfo
-            DataType.Date or DataType.Text => array.SortBy(n => n?[view.SortingColumnPropertyName]?.GetValue<string>(), view.SortingDescending),
-            DataType.Precision => array.SortBy(n => n?[view.SortingColumnPropertyName]?.GetValue<decimal>(), view.SortingDescending),
-            _ => throw new InvalidOperationException(),
-        };
+        var sortedNodes = JsonArrayDataTypeHandler.SortArray(array, view.Properties.First(c => c.PropertyName == view.SortingColumnPropertyName), view.SortingDescending);
 
         IEnumerable<JsonNode?>? filteredNodes = sortedNodes;
         foreach (var kvp in view.Filters)
-        {
-            //TODO: Extract to PropertyInfo
-            switch (kvp.Key.DataType)
-            {
-                case DataType.Text:
-                    filteredNodes = filteredNodes.Where(n =>
-                        (string.IsNullOrWhiteSpace(n?[kvp.Key.PropertyName]?.GetValue<string?>()) && string.IsNullOrWhiteSpace(kvp.Value.StringValue))
-                        || (n?[kvp.Key.PropertyName]?.GetValue<string?>()?.ToLowerInvariant().Contains(kvp.Value.StringValue!.ToLowerInvariant()) == true)
-                        );
-                    break;
-                case DataType.Date:
-                    filteredNodes = filteredNodes
-                        .Select(n => new { Data = n, FilterData = n?[kvp.Key.PropertyName]?.GetValue<DateTime?>() })
-                        .Where(c => c.FilterData != null && c.FilterData >= kvp.Value.DateFrom && c.FilterData <= kvp.Value.DateTo)
-                        .Select(c => c.Data);
-                    break;
-            }
-        }
+            filteredNodes = JsonArrayDataTypeHandler.FitlerArray(filteredNodes, kvp.Key, kvp.Value);
+
         return filteredNodes?.Take(view.MaximumNumberOfRecords).ToList() ?? throw new InvalidOperationException("No records returned");
     }
 

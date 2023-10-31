@@ -9,11 +9,11 @@ namespace Finances.DataAccess;
 public class BaseListService
 {
     private readonly IJsonListFile _dataFile;
-    public View View { get; set; }
+    public View? View { get; set; }
 
     private static SemaphoreSlim semaphore = new(initialCount: 1);
 
-    public List<JsonNode?> Data { get; private set; }
+    public List<JsonNode?>? Data { get; private set; }
 
     public BaseListService(IJsonListFile dataFile)
     {
