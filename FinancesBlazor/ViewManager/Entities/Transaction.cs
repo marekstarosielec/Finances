@@ -25,11 +25,11 @@ public class Gas : IEntity
             SortingDescending = true,
             Properties = new ReadOnlyCollection<PropertyInfoBase>(new List<PropertyInfoBase>
             {
-                new PropertyInfoDate("Date", "Data", "d"),
+                new PropertyInfoDate("Date", "Data", "d", DateFilterComponents.Default),
                 new PropertyInfoText("Account", "Konto", "a"),
                 new PropertyInfoText("Category", "Kategoria", "ct"),
                 new PropertyInfoPrecision("Amount", "Kwota", "am"),
-                new PropertyInfoText("Description", "Opis", "d")
+                new PropertyInfoText("Description", "Opis", "d", TextFilterComponents.Default)
             })
         };
 

@@ -21,8 +21,8 @@
                     <th>
                         <div class="@(property.HorizontalAlign == ContentAlign.Right ? "text-end dropdown" : "dropdown")">
                             <button class="btn columnHeader" type="button" @ref=_popupInvokers[property] @onclick="@(args => _popups[property].ToggleAsync(_popupInvokers[property]))">@property.Title <span hidden="@ColumnHeaderArrowHidden(property, true)"><span class="fa fa-arrow-down blue"></span></span><span hidden="@ColumnHeaderArrowHidden(property, false)"><span class="fa fa-arrow-up yellow"></span></span></button>
-                            <Popup @ref=_popups[property] Lazy=false Open="@(() => OnOpen(property))" class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
-                                <DynamicFilter View=@View Property=property @ref=_dynamicFilters[property] />
+                            <Popup @ref=_popups[property] Lazy=false class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
+                                <DynamicFilter View=@View Property=property @ref=_dynamicFilters[property] Popup="@_popups[property]" ElementReference="@_popupInvokers[property]" />
                             </Popup>
                         </div>
                     </th>
@@ -55,9 +55,6 @@
 
     private List<JsonNode?>? _data;
 
-    [Parameter]
-    public EventCallback<bool> ReloadDataRequested { get; set; }
-
     private string GetCellStyle(PropertyInfoBase propertyInfo)
     {
         var result = "";
@@ -79,30 +76,28 @@
 
     private async Task CloseFilter()
     {
-        // foreach (var kvp in columnFilters)
-        //     await kvp.Value.CloseAsync();
+        foreach (var kvp in _popups)
+            await kvp.Value.CloseAsync();
     }
 
     private bool ColumnHeaderArrowHidden(PropertyInfoBase property, bool descending) => View?.SortingColumnPropertyName != property.PropertyName || View?.SortingDescending != descending;
 
+    private async void ReloadDataRequest()
+    {
+        if (View == null)
+            return;
+        await View.Service.Reload();
+        _data = View.Service.Data;
+        StateHasChanged();
+    }
+
     private async void RequestFilterClear()
     {
-        if (_viewManager?.ActiveView?.Filters == null)
+        if (View == null || View?.Filters == null)
             return;
 
-        _viewManager.ActiveView.Filters.Clear();
-        await ReloadDataRequest(true);
-    }
-
-    private async Task ReloadDataRequest(bool closeFilters = true)
-    {
-        if (closeFilters) await CloseFilter();
-        await ReloadDataRequested.InvokeAsync(closeFilters);
-    }
-
-    async Task OnOpen(PropertyInfoBase column)
-    {
-        //await dynamicFilters[column].OnOpen();
+        View.Filters.Clear();
+        await _viewManager.Save(View);
     }
 
     void ViewChanged(object? sender, View e)

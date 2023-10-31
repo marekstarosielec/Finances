@@ -1,38 +1,46 @@
-﻿@* @using FinancesBlazor.DataTypes.DataTypeDefinition;
+﻿@using FinancesBlazor.PropertyInfo;
 @using FinancesBlazor.ViewManager;
 @using System.Timers;
+@using Radzen.Blazor.Rendering;
 @inject ViewManager _viewManager;
 @inject IJSRuntime JSRuntime
 @implements IDisposable;
 
-@if (Column != null)
+@if (Property != null)
 {
-    <input type="text" id="search" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="(e) => TextChanged(e)" @onkeydown="(e) => KeyDown(e)" value="@currentText" />
+    <input type="text" id="search" aria-label="@Property.Title" aria-describedby="@Property.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" />
 }
 
 @code {
     [Parameter]
-    public DataTypeDefinitionBase? Column { get; set; }
+    public View? View { get; set; }
 
-    public string currentText = string.Empty;
+    [Parameter]
+    public PropertyInfoBase? Property { get; set; }
+
+    [Parameter]
+    public Popup? Popup { get; set; }
+
+    [Parameter]
+    public ElementReference? ElementReference { get; set; }
+
+
+    public string? currentText = string.Empty;
 
     private Timer debounce = new Timer(500);
 
-    [Parameter]
-    public EventCallback<bool> ParametersChanged { get; set; }
-
     protected override void OnInitialized()
     {
-        if (Column != null && _viewManager?.ActiveView?.Parameters?.Filters.ContainsKey(Column) == true)
-            currentText = _viewManager?.ActiveView?.Parameters?.Filters?[Column]?.StringValue;
+        if (Property != null && View?.Filters?.ContainsKey(Property) == true)
+            currentText = View?.Filters?[Property]?.StringValue;
         debounce.Elapsed += TimerCallback;
         base.OnInitialized();
     }
 
     private async void KeyDown(KeyboardEventArgs e)
     {
-        if (e.Code == "Enter" || e.Code == "Escape")
-            await ParametersChanged.InvokeAsync(true);
+        // if (e.Code == "Enter" || e.Code == "Escape")
+        //     await ParametersChanged.InvokeAsync(true);
     }
 
     private void TextChanged(ChangeEventArgs e)
@@ -45,14 +53,13 @@
     private async void TimerCallback(Object? source, ElapsedEventArgs e)
     {
         debounce.Stop();
-        if (_viewManager?.ActiveView?.Parameters?.Filters == null || Column == null)
+        if (View?.Filters == null || Property == null)
             return;
-        _viewManager.ActiveView.Parameters.Filters[Column] = new FilterValue { StringValue = currentText };
+        View.Filters[Property] = new FilterInfoBase { StringValue = currentText };
         
         await InvokeAsync(async () =>
         {
-            await ParametersChanged.InvokeAsync();
-            StateHasChanged();
+            await _viewManager.Save(View);
         });
     }
 
@@ -67,4 +74,3 @@
         await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
 }
- *@

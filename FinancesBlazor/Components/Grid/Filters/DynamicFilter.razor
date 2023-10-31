@@ -1,10 +1,9 @@
 ﻿@using FinancesBlazor.PropertyInfo;
 @using FinancesBlazor.ViewManager;
 @using FinancesBlazor.DataAccess;
+@using Radzen.Blazor.Rendering;
 
 @inject ViewManager _viewManager;
-@inject NavigationManager _navigationManager;
-@inject IJSRuntime jsRuntime;
 
 @if (View != null && Property != null)
 {
@@ -13,19 +12,10 @@
             <button type="button" class="btn btn-primary btn-sm m-0 yellow" @onclick="() => SortClick(false)"><span class="fa fa-arrow-up"></span></button>
             <button type="button" class="btn btn-primary btn-sm m-0 blue" @onclick="() => SortClick(true)"><span class="fa fa-arrow-down"></span></button>
         </div>
-         @* <DynamicComponent Type="@typeof({COMPONENT})" @ref="dc" /> 
-         @switch (Column.DataType)
+        @if (Property.FilterComponentType != null)
         {
-            case DataType.Text:
-                <TextFilter Column="@Column" ParametersChanged="FilterChanged" @ref=textFilter />
-                break;
-            case DataType.Date:
-                <DateFilter Column="@Column" ParametersChanged="FilterChanged" @ref=dateFilter />
-                break;
-            case DataType.Precision:
-                <PrecisionFilter Column="@Column" @ref=precisionFilter />
-               break;
-        }  *@
+            <DynamicComponent Type="@(Property.FilterComponentType)" Parameters="@(new Dictionary<string, object?>() { { "View", @View }, { "Property", @Property}, { "Popup", @Popup}, { "ElementReference", @ElementReference} })" />
+        }
     </div>
 }
 @code {
@@ -41,49 +31,22 @@
     public PropertyInfoBase? Property { get; set; }
 
     [Parameter]
-    public EventCallback<bool> ParametersChanged { get; set; }
+    public Popup? Popup { get; set; }
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
-    }
-
-    public async Task OnOpen()
-    {
-        switch (Property?.DataType)
-        {
-            case DataType.Text:
-                // if (textFilter!=null) await textFilter.OnOpen();
-                break;
-            case DataType.Date:
-                // if (dateFilter != null) await dateFilter.OnOpen();
-                break;
-            case DataType.Precision:
-                // if (precisionFilter != null) await precisionFilter.OnOpen();
-                break;
-        }
-    }
+    [Parameter]
+    public ElementReference? ElementReference { get; set; }
 
     public async Task SortClick(bool descending)
     {
         if (View == null || Property == null)
             return;
 
+        if (Popup != null && ElementReference != null)
+            await Popup.CloseAsync(ElementReference.Value);
+
         View.SortingColumnPropertyName = Property.PropertyName;
         View.SortingDescending = descending;
 
-        //await _viewManager.SaveView(_navigationManager, jsRuntime);
         await _viewManager.Save(View);
-        // await ParametersChanged.InvokeAsync(true);
-    }
-
-    public async Task FilterChanged(bool closeFilters)
-    {
-        await ParametersChanged.InvokeAsync(closeFilters);
     }
 }

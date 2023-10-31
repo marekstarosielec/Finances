@@ -16,11 +16,14 @@ public abstract class PropertyInfoBase
 
     public ContentAlign? HorizontalAlign { get; set; }
 
-    public PropertyInfoBase(string propertyName, DataType dataType, string title, string shortName)
+    public Type? FilterComponentType { get; set; }
+
+    public PropertyInfoBase(string propertyName, DataType dataType, string title, string shortName, Type? filterComponentType)
     {
         PropertyName = propertyName;
         DataType = dataType;
         Title = title;
         ShortName = shortName;
+        FilterComponentType = filterComponentType;
     }
 }

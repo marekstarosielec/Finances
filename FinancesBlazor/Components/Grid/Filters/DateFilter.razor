@@ -1,6 +1,8 @@
-﻿@* @using FinancesBlazor.Extensions;
+﻿@using FinancesBlazor.Extensions;
+@using FinancesBlazor.PropertyInfo;
 @using FinancesBlazor.ViewManager;
 @using System.Globalization;
+@using Radzen.Blazor.Rendering;
 @inject ViewManager _viewManager;
 
 <DateRangePicker Inline="true" AutoApply="true" LinkedCalendars="true" CustomDayNames="CustomDayNames" OnRangeSelect="OnRangeSelect" StartDate="DateFrom" EndDate="DateTo" />
@@ -10,10 +12,16 @@
 <button class="btn btn-primary float-end" @onclick="() => SetCurrentYear()">@CurrentYearName</button>
 @code {
     [Parameter]
-    public DataTypeDefinitionBase? Column { get; set; }
+    public View? View { get; set; }
 
     [Parameter]
-    public EventCallback<bool> ParametersChanged { get; set; }
+    public PropertyInfoBase? Property { get; set; }
+
+    [Parameter]
+    public Popup? Popup { get; set; }
+
+    [Parameter]
+    public ElementReference? ElementReference { get; set; }
 
     private DateTimeOffset? DateFrom;
     private DateTimeOffset? DateTo;
@@ -28,10 +36,10 @@
     protected override void OnInitialized()
     {
         //Set previously selected filter vaule in date picker (after renavigating to grid).
-        if (Column != null && _viewManager?.ActiveView?.Parameters?.Filters.ContainsKey(Column) == true)
+        if (Property != null && View?.Filters.ContainsKey(Property) == true)
         {
-            DateFrom = _viewManager?.ActiveView?.Parameters?.Filters?[Column]?.DateFrom;
-            DateTo = _viewManager?.ActiveView?.Parameters?.Filters?[Column]?.DateTo;
+            DateFrom = View?.Filters?[Property]?.DateFrom;
+            DateTo = View?.Filters?[Property]?.DateTo;
         }
     }
     public async void OnRangeSelect(DateRange range)
@@ -65,17 +73,14 @@
 
     private async Task SetDates(DateTime from, DateTime to)
     {
-        if (_viewManager?.ActiveView?.Parameters?.Filters == null || Column == null)
+        if (View?.Filters == null || Property == null)
             return;
 
-        var today = DateTime.Today;
-        _viewManager.ActiveView.Parameters.Filters[Column] = new FilterValue { DateFrom = from, DateTo = to };
+        if (Popup != null && ElementReference != null)
+            await Popup.CloseAsync(ElementReference.Value);
 
-        await InvokeAsync(async () =>
-        {
-            await ParametersChanged.InvokeAsync(true);
-            StateHasChanged();
-        });
+        var today = DateTime.Today;
+        View.Filters[Property] = new FilterInfoBase { DateFrom = from, DateTo = to };
+        await _viewManager.Save(View);
     }
 }
- *@
