@@ -8,9 +8,12 @@
 @if (View != null && Property != null)
 {
     <div class="outer">
-        <div class="text-end">
-            <button type="button" class="btn btn-primary btn-sm m-0 yellow" @onclick="() => SortClick(false)"><span class="fa fa-arrow-up"></span></button>
-            <button type="button" class="btn btn-primary btn-sm m-0 blue" @onclick="() => SortClick(true)"><span class="fa fa-arrow-down"></span></button>
+        <div class="d-flex justify-content-between">
+            <div>
+                <button type="button" class="btn btn-primary btn-sm m-0 yellow" @onclick="() => SortClick(false)"><span class="fa fa-arrow-up"></span></button>
+                <button type="button" class="btn btn-primary btn-sm m-0 blue" @onclick="() => SortClick(true)"><span class="fa fa-arrow-down"></span></button>
+            </div>
+            <button type="button" class="text-end btn btn-primary btn-sm m-0" @onclick="RemoveFilter"><span class="fa-solid fa-xmark"></span></button>
         </div>
         @if (Property.FilterComponentType != null)
         {
@@ -35,6 +38,19 @@
 
     [Parameter]
     public ElementReference? ElementReference { get; set; }
+
+    public async Task RemoveFilter()
+    {
+        if (View == null || Property == null)
+            return;
+
+        if (Popup != null && ElementReference != null)
+            await Popup.CloseAsync(ElementReference.Value);
+
+        View.Filters.Remove(Property);
+
+        await _viewManager.Save(View);
+    }
 
     public async Task SortClick(bool descending)
     {

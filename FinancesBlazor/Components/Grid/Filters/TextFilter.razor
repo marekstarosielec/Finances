@@ -9,7 +9,7 @@
 
 @if (Property != null)
 {
-    <input type="text" id="search" aria-label="@Property.Title" aria-describedby="@Property.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" /> 
+    <input type="text" id="search" aria-label="@Property.Title" aria-describedby="@Property.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" autocomplete="off" /> 
 }
 
 @code {
@@ -83,6 +83,9 @@
 
     private async Task OnOpen()
     {
+        if (View?.Filters == null || Property == null)
+            return;
+        currentText = View.Filters.ContainsKey(Property) ? View.Filters[Property].StringValue : string.Empty;
         await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
 }
