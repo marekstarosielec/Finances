@@ -4,6 +4,8 @@ public abstract class PropertyInfoBase
 {
     public string PropertyName { get; }
 
+    public string? SecondPropertyName { get; set; }
+
     public DataType DataType { get; }
 
     public string Title { get; }

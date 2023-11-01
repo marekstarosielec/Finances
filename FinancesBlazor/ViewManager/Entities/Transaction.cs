@@ -28,7 +28,7 @@ public class Gas : IEntity
                 new PropertyInfoDate("Date", "Data", "d", DateFilterComponents.Default),
                 new PropertyInfoText("Account", "Konto", "a"),
                 new PropertyInfoText("Category", "Kategoria", "ct"),
-                new PropertyInfoPrecision("Amount", "Kwota", "am"),
+                new PropertyInfoMoney("Amount", "Currency", "Kwota", "am"),
                 new PropertyInfoText("Description", "Opis", "d", TextFilterComponents.Default)
             })
         };

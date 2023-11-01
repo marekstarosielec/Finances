@@ -22,8 +22,16 @@ public class BaseListService
 
     public virtual async Task Reload()
     {
-        await _dataFile.Load();
-        Data = _dataFile.Data.GetDataForView(View);
+        try
+        {
+            semaphore.Wait();
+            await _dataFile.Load();
+            Data = _dataFile.Data.GetDataForView(View);
+        }
+        finally
+        {
+            semaphore.Release();
+        }
     }
 
     //public virtual async Task Delete(string id)

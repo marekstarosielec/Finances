@@ -9,7 +9,7 @@ public static class JsonArrayDataTypeHandler
     public static IOrderedEnumerable<JsonNode?> SortArray(JsonArray array, PropertyInfoBase sortingProperty, bool sortingDescending) => sortingProperty.DataType switch
     {
         DataType.Date or DataType.Text => array.SortBy(n => n?[sortingProperty.PropertyName]?.GetValue<string>(), sortingDescending),
-        DataType.Precision => array.SortBy(n => n?[sortingProperty.PropertyName]?.GetValue<decimal>(), sortingDescending),
+        DataType.Precision or DataType.Money => array.SortBy(n => n?[sortingProperty.PropertyName]?.GetValue<decimal>(), sortingDescending),
         _ => throw new InvalidOperationException(),
     };
 
@@ -25,7 +25,7 @@ public static class JsonArrayDataTypeHandler
                 .Select(n => new { Data = n, FilterData = n?[filterProperty.PropertyName]?.GetValue<DateTime?>() })
                 .Where(c => c.FilterData != null && c.FilterData >= filterInfo.DateFrom && c.FilterData <= filterInfo.DateTo)
                 .Select(c => c.Data),
-        DataType.Precision => throw new InvalidOperationException(),
+        DataType.Precision or DataType.Money => throw new InvalidOperationException(),
         _ => throw new InvalidOperationException()
     };
 }

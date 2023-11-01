@@ -98,6 +98,10 @@ a, .btn-link {
     color: #C04048;
 }
 
+.green {
+    color: #8AE28A;
+}
+
 input, input:focus {
     background-color: #383838;
     color: #FAFAFA;

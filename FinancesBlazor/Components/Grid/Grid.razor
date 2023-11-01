@@ -37,7 +37,7 @@
                     <tr>
                         @foreach (var property in View.Properties)
                         {
-                            <td class="@GetCellStyle(property)">@GridValueFormatter.GetFormattedString(row?[property.PropertyName], property)</td>
+                            <td class="@GetCellStyle(row, property)">@TextValueFormatter.GetFormattedString(row, property)</td>
                         }
                     </tr>
                 }
@@ -55,13 +55,20 @@
 
     private List<JsonNode?>? _data;
 
-    private string GetCellStyle(PropertyInfoBase propertyInfo)
+    private string GetCellStyle(JsonNode row, PropertyInfoBase propertyInfo)
     {
-        var result = "";
+        var result = string.Empty;
+        if (propertyInfo == null)
+            return result;
+
         if (propertyInfo.HorizontalAlign == ContentAlign.Right)
             result += "text-end ";
         if (propertyInfo.DataType == DataType.Date || propertyInfo.DataType == DataType.Precision)
             result += "text-nowrap ";
+        if (propertyInfo.DataType == DataType.Money && row[propertyInfo.PropertyName]?.GetValue<decimal?>() > 0)
+            result += "green ";
+        if (propertyInfo.DataType == DataType.Money && row[propertyInfo.PropertyName]?.GetValue<decimal?>() < 0)
+            result += "red ";
         return result;
     }
 
