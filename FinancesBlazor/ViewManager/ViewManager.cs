@@ -16,6 +16,7 @@ public class ViewManager : IDisposable
     public View ActiveView { get => _activeView; set => _activeView = value; }
 
     public event EventHandler<View>? ViewChanged;
+    public event EventHandler<View>? ActiveViewChanged;
 
     public ViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<View> views, ViewSerializer serializer)
     {
@@ -64,13 +65,21 @@ public class ViewManager : IDisposable
         var activeView = FindView(vd.ActiveViewName);
         if (activeView == null)
             return;
+        var activeViewChanged = ActiveView.Name != vd.ActiveViewName;
         ActiveView = activeView;
         if (vd.SortingColumnDataName != null)
         {
             ActiveView.SortingColumnPropertyName = vd.SortingColumnDataName;
             ActiveView.SortingDescending = vd.SortingDescending;
         }
+
+        ActiveView.Filters.Clear();
+        foreach (var filter in vd.Filters)
+            ActiveView.Filters.Add(ActiveView.Properties.Single(p => p.ShortName == filter.Key), filter.Value);
+
         await ActiveView.Service.Reload();
+        if (activeViewChanged)
+            ActiveViewChanged?.Invoke(this, ActiveView);
         ViewChanged?.Invoke(this, ActiveView);
     }
 

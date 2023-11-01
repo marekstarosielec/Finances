@@ -73,8 +73,7 @@
         ViewChanged(this, View);
     }
 
-
-    private async Task CloseFilter()
+    private async Task CloseFilters()
     {
         foreach (var kvp in _popups)
             await kvp.Value.CloseAsync();
@@ -86,6 +85,7 @@
     {
         if (View == null)
             return;
+        await CloseFilters();
         await View.Service.Reload();
         _data = View.Service.Data;
         StateHasChanged();

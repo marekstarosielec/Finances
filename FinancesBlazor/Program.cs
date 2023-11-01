@@ -1,5 +1,4 @@
 using Finances.DependencyInjection;
-using FinancesBlazor.Data;
 using Radzen;
 
 namespace FinancesBlazor
@@ -13,7 +12,6 @@ namespace FinancesBlazor
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.InjectServices();
             builder.Services.AddScoped<ViewManager.ViewManager>();
             builder.Services.InjectEntities(builder.Configuration);

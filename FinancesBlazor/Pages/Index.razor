@@ -14,10 +14,10 @@
 
     protected override void OnInitialized()
     {
-        _viewManager.ViewChanged += ViewChanged;
+        _viewManager.ActiveViewChanged += ActiveViewChanged;
     }
 
-    void ViewChanged(object? sender, View e)
+    void ActiveViewChanged(object? sender, View e)
     {
         if (e != _viewManager.ActiveView)
             return;
@@ -27,6 +27,6 @@
 
     void IDisposable.Dispose()
     {
-        _viewManager.ViewChanged -= ViewChanged;
+        _viewManager.ActiveViewChanged -= ActiveViewChanged;
     }
 }

@@ -1,4 +1,5 @@
-﻿@using FinancesBlazor.PropertyInfo;
+﻿@using FinancesBlazor.Extensions;
+@using FinancesBlazor.PropertyInfo;
 @using FinancesBlazor.ViewManager;
 @using System.Timers;
 @using Radzen.Blazor.Rendering;
@@ -8,7 +9,7 @@
 
 @if (Property != null)
 {
-    <input type="text" id="search" aria-label="@Property.Title" aria-describedby="@Property.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" />
+    <input type="text" id="search" aria-label="@Property.Title" aria-describedby="@Property.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" /> 
 }
 
 @code {
@@ -24,7 +25,6 @@
     [Parameter]
     public ElementReference? ElementReference { get; set; }
 
-
     public string? currentText = string.Empty;
 
     private Timer debounce = new Timer(500);
@@ -33,14 +33,21 @@
     {
         if (Property != null && View?.Filters?.ContainsKey(Property) == true)
             currentText = View?.Filters?[Property]?.StringValue;
+
         debounce.Elapsed += TimerCallback;
+
+        Popup.Open = new EventCallback(this, OnOpen);
         base.OnInitialized();
     }
 
     private async void KeyDown(KeyboardEventArgs e)
     {
-        // if (e.Code == "Enter" || e.Code == "Escape")
-        //     await ParametersChanged.InvokeAsync(true);
+        if (e.Code != "Enter" && e.Code != "Escape")
+            return;
+        if (Popup != null && ElementReference != null)
+            await Popup.CloseAsync(ElementReference.Value);
+        debounce.Stop();
+        await ApplyFilter();
     }
 
     private void TextChanged(ChangeEventArgs e)
@@ -50,26 +57,31 @@
         debounce.Start();
     }
 
-    private async void TimerCallback(Object? source, ElapsedEventArgs e)
+    private async void TimerCallback(object? sender, ElapsedEventArgs e)
     {
         debounce.Stop();
+        await ApplyFilter();
+    }
+
+    void IDisposable.Dispose()
+    {
+        debounce.Stop();
+        debounce.Elapsed -= TimerCallback;
+        debounce.Dispose();
+    }
+
+    public async Task ApplyFilter()
+    {
         if (View?.Filters == null || Property == null)
             return;
         View.Filters[Property] = new FilterInfoBase { StringValue = currentText };
-        
         await InvokeAsync(async () =>
         {
             await _viewManager.Save(View);
         });
     }
 
-    void IDisposable.Dispose()
-    {
-        debounce.Elapsed -= TimerCallback;
-        debounce.Dispose();
-    }
-
-    public async Task OnOpen()
+    private async Task OnOpen()
     {
         await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
