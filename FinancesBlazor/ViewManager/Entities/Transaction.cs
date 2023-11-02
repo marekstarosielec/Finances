@@ -18,8 +18,9 @@ public class Gas : IEntity
             throw new InvalidOperationException();
 
         var presentation = new ViewPresentation(50, "fa-solid fa-money-bill-transfer", "Tranzakcje");
+        var jsonListFile = new JsonListFile(configuration, "transactions.json", new JoinDefinition("documents.json", "DocumentId", "Document"));
 
-        _view = new View("t", "Tranzakcje", new BaseListService(new JsonListFile(configuration, "transactions.json")), presentation)
+        _view = new View("t", "Tranzakcje", new BaseListService(jsonListFile), presentation)
         {
             SortingColumnPropertyName = "Date",
             SortingDescending = true,
@@ -29,7 +30,8 @@ public class Gas : IEntity
                 new PropertyInfoText("Account", "Konto", "a"),
                 new PropertyInfoText("Category", "Kategoria", "ct"),
                 new PropertyInfoMoney("Amount", "Currency", "Kwota", "am"),
-                new PropertyInfoText("Description", "Opis", "d", TextFilterComponents.Default)
+                new PropertyInfoText("Description", "Opis", "d", TextFilterComponents.Default),
+                new PropertyInfoText("Document.Company", "Firma dokumentu", "n")
             })
         };
 

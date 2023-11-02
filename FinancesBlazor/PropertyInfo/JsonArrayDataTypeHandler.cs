@@ -8,8 +8,8 @@ public static class JsonArrayDataTypeHandler
 {
     public static IOrderedEnumerable<JsonNode?> SortArray(JsonArray array, PropertyInfoBase sortingProperty, bool sortingDescending) => sortingProperty.DataType switch
     {
-        DataType.Date or DataType.Text => array.SortBy(n => n?[sortingProperty.PropertyName]?.GetValue<string>(), sortingDescending),
-        DataType.Precision or DataType.Money => array.SortBy(n => n?[sortingProperty.PropertyName]?.GetValue<decimal>(), sortingDescending),
+        DataType.Date or DataType.Text => array.SortBy(n => n.GetDeepNode(sortingProperty)?[sortingProperty.DeepPropertyName]?.GetValue<string>(), sortingDescending),
+        DataType.Precision or DataType.Money => array.SortBy(n => n.GetDeepNode(sortingProperty)?[sortingProperty.DeepPropertyName]?.GetValue<decimal>(), sortingDescending),
         _ => throw new InvalidOperationException(),
     };
 
@@ -17,12 +17,12 @@ public static class JsonArrayDataTypeHandler
     {
         DataType.Text =>
             array.Where(n =>
-                (string.IsNullOrWhiteSpace(n?[filterProperty.PropertyName]?.GetValue<string?>()) && string.IsNullOrWhiteSpace(filterInfo.StringValue))
-                || (n?[filterProperty.PropertyName]?.GetValue<string?>()?.ToLowerInvariant().Contains(filterInfo.StringValue!.ToLowerInvariant()) == true)
+                (string.IsNullOrWhiteSpace(n.GetDeepNode(filterProperty)?[filterProperty.DeepPropertyName]?.GetValue<string?>()) && string.IsNullOrWhiteSpace(filterInfo.StringValue))
+                || (n.GetDeepNode(filterProperty)?[filterProperty.DeepPropertyName]?.GetValue<string?>()?.ToLowerInvariant().Contains(filterInfo.StringValue!.ToLowerInvariant()) == true)
                 ),
         DataType.Date =>
             array
-                .Select(n => new { Data = n, FilterData = n?[filterProperty.PropertyName]?.GetValue<DateTime?>() })
+                .Select(n => new { Data = n, FilterData = n.GetDeepNode(filterProperty)?[filterProperty.DeepPropertyName]?.GetValue<DateTime?>() })
                 .Where(c => c.FilterData != null && c.FilterData >= filterInfo.DateFrom && c.FilterData <= filterInfo.DateTo)
                 .Select(c => c.Data),
         DataType.Precision or DataType.Money => throw new InvalidOperationException(),

@@ -6,7 +6,7 @@ public interface IJsonListFile : IJsonFile { }
 
 public class JsonListFile : JsonFile, IJsonListFile
 {
-    public JsonListFile(IConfiguration configuration, string fileName) : base(configuration, fileName)
+    public JsonListFile(IConfiguration configuration, string fileName, JoinDefinition? join = null) : base(configuration, fileName, join)
     {
     }
 

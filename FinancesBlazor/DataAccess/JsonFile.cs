@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using FinancesBlazor.DataAccess;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -15,18 +16,25 @@ public interface IJsonFile
 public abstract class JsonFile : IJsonFile
 {
     protected static SemaphoreSlim semaphore = new(initialCount: 1);
+    private readonly JoinDefinition? _join;
 
     public DataFile DataFile { get; }
+    public DataFile? JoinedDataFile { get; }
 
     public JsonArray Data { get; private set; } = default!;
 
-    public JsonFile(IConfiguration configuration, string fileName)
+    public JsonFile(IConfiguration configuration, string fileName, JoinDefinition? join = null)
     {
         if (string.IsNullOrWhiteSpace(fileName))
             throw new ArgumentException($"'{nameof(fileName)}' cannot be null or whitespace.", nameof(fileName));
 
         var basePath = configuration.GetValue<string>("DatasetPath");
         DataFile = new DataFile(fileName, basePath);
+        if (join != null)
+        {
+            JoinedDataFile = new DataFile(join.FileName, basePath);
+            _join = join;
+        }
     }
 
     public async Task Load()
@@ -43,7 +51,29 @@ public abstract class JsonFile : IJsonFile
 
             string jsonString = await File.ReadAllTextAsync(DataFile.FileNameWithLocation, Encoding.Latin1);
             Data = JsonNode.Parse(jsonString)?.AsArray() ?? throw new InvalidOperationException("Failed to deserialize data");
+            
+            if (JoinedDataFile != null)
+            {
+                string joinedJsonString = await File.ReadAllTextAsync(JoinedDataFile.FileNameWithLocation, Encoding.Latin1);
+                var JoinedData = JsonNode.Parse(joinedJsonString)?.AsArray() ?? throw new InvalidOperationException("Failed to deserialize data");
+                if (JoinedData != null)
+                {
+                    for (var x = 0; x < Data.Count; x++)
+                    {
+                        var row = Data[x];
+                        if (row == null)
+                            continue;
+                        var joinId = row[_join!.JoinColumn]?.GetValue<string>();
+                        if (joinId != null)
+                        {
+                            var relatedRecord = JoinedData.FirstOrDefault(j => j?["Id"]?.GetValue<string>() == joinId);
+                            row[_join.JoinParentNodeName] = relatedRecord.Deserialize<JsonNode>();
+                        }
+                    }
+                }
+            }
         }
+
         finally
         {
             semaphore.Release();

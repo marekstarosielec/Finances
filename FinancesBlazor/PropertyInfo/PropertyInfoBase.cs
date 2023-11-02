@@ -4,7 +4,11 @@ public abstract class PropertyInfoBase
 {
     public string PropertyName { get; }
 
+    public string DeepPropertyName => PropertyName.Split('.').Last();
+
     public string? SecondPropertyName { get; set; }
+
+    public string? DeepSecondPropertyName => SecondPropertyName?.Split('.').Last();
 
     public DataType DataType { get; }
 
