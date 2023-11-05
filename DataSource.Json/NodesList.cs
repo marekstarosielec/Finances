@@ -8,9 +8,8 @@ internal class NodesList
 
     internal int Count { get; set; }
 
-    internal NodesList(IEnumerable<JsonNode> nodes, int count)
+    internal NodesList(IEnumerable<JsonNode> nodes)
     {
         Nodes = nodes;
-        Count = count;
     }
 }

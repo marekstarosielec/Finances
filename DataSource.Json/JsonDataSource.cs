@@ -19,23 +19,26 @@ public class JsonDataSource : IDataSource
         Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
     }
 
-    public async Task<DataView> GetDataView(DataQuery dataQuery) => TransformNodes(await GetNodes(dataQuery));
+    public async Task<DataView> GetDataView(DataQuery? dataQuery = null) => TransformNodes(await GetNodes(dataQuery));
 
-    internal async Task<NodesList> GetNodes(DataQuery dataQuery)
+    internal async Task<NodesList> GetNodes(DataQuery? dataQuery)
     {
         var nodes = await GetData();
-        var result = new NodesList(nodes, nodes.Count());
+        var result = new NodesList(nodes);
         
-        if (dataQuery.Sort != null)
+        if (dataQuery?.Sort != null)
             foreach (var sortDefinition in dataQuery.Sort)
                 result.Nodes = result.Nodes.Sort(sortDefinition.Key, sortDefinition.Value);
 
-        if (dataQuery.Filter != null)
+        if (dataQuery?.Filter != null)
             foreach (var filterDefinition in dataQuery.Filter)
                 result.Nodes = result.Nodes.Fitler(filterDefinition.Key, filterDefinition.Value);
 
-        if (dataQuery.PageSize.GetValueOrDefault(-1) > -1)
+        result.Count = result.Nodes.Count();
+
+        if (dataQuery?.PageSize.GetValueOrDefault(-1) > -1)
             result.Nodes = result.Nodes.Take(dataQuery.PageSize!.Value);
+
         return result;
     }
 

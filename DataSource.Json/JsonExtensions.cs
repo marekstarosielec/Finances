@@ -15,6 +15,8 @@ internal static class JsonExtensions
         _ => throw new InvalidOperationException(),
     };
 
+    private static IEnumerable<JsonNode> SortBy<TKey>(this IEnumerable<JsonNode> array, Func<JsonNode?, TKey> predicate, bool descending) => descending ? array.OrderByDescending(predicate) : array.OrderBy(predicate);
+
     internal static IEnumerable<JsonNode> Fitler(this IEnumerable<JsonNode> source, DataColumn column, DataColumnFilter filter) => column.ColumnDataType switch
     {
         DataType.Text =>
@@ -33,6 +35,4 @@ internal static class JsonExtensions
             => throw new InvalidOperationException(),
         _ => throw new InvalidOperationException()
     };
-
-    private static IEnumerable<JsonNode> SortBy<TKey>(this IEnumerable<JsonNode> array, Func<JsonNode?, TKey> predicate, bool descending) => descending ? array.OrderByDescending(predicate) : array.OrderBy(predicate);
 }
