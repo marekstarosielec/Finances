@@ -2,7 +2,14 @@
 
 public class DataView
 {
-    public Dictionary<DataColumn, bool>? Sort;
-    public Dictionary<DataColumn, DataColumnFilter>? Filter;
-    public int? PageSize;
+    public IEnumerable<DataColumn> Columns { get; }
+    public IEnumerable<Dictionary<DataColumn, object?>> Values { get; }
+    public int TotalRows { get; }
+
+    public DataView(IEnumerable<DataColumn> columns, IEnumerable<Dictionary<DataColumn, object?>> values, int totalRows)
+    {
+        Columns = columns;
+        Values = values;
+        TotalRows = totalRows;
+    }
 }

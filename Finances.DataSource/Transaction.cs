@@ -7,7 +7,7 @@ public class Transaction
 {
     public async Task Test()
     {
-        var transactionTable = new DataTable("s:\\Lokalne\\Finanse\\Dane\\transactions.json", 
+        var transactionTable = new JsonDataSource("s:\\Lokalne\\Finanse\\Dane\\transactions.json", 
             new DataColumn("Id", DataType.Text),
             new DataColumn("ScrappingDate", DataType.Date),
             new DataColumn("Status", DataType.Text),
@@ -29,16 +29,17 @@ public class Transaction
             new DataColumn("DocumentId", DataType.Text),
             new DataColumn("DocumentCategory", DataType.Text),
             new DataColumn("DocumentInvoiceNumber", DataType.Text),
-            new DataColumn("DocumentNumber", DataType.Text)
+            new DataColumn("DocumentNumber", DataType.Number)
             );
         var sort = new Dictionary<DataColumn, bool>
         {
             { transactionTable.Columns["Date"], true }
         };
-        var dataView = new DataView
+        var dataQuery = new DataQuery
         {
-            Sort = sort
+            Sort = sort,
+            PageSize = 100
         };
-      //  var t = await transactionTable.GetDataView(dataView);
+        var t = await transactionTable.GetDataView(dataQuery);
     }
 }

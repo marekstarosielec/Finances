@@ -1,8 +1,6 @@
-﻿using System.Text.Json.Nodes;
-
-namespace DataSource;
+﻿namespace DataSource;
 
 public interface IDataSource
 {
-    Task<IEnumerable<JsonNode>> GetDataView(DataView view);
+    Task<DataView> GetDataView(DataQuery dataQuery);
 }
