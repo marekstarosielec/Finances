@@ -73,12 +73,10 @@ public abstract class JsonFile : IJsonFile
                 }
             }
         }
-
         finally
         {
             semaphore.Release();
         }
-
     }
 
     public async Task Save()

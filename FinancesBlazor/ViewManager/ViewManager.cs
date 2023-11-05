@@ -56,6 +56,9 @@ public class ViewManager : IDisposable
 
     private async Task LoadFromQueryString()
     {
+        var t = new Finances.DataSource.Transaction();
+        await t.Test();
+
         var query = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
         if (query.StartsWith("?"))
             query = query.Substring(1);
