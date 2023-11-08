@@ -5,11 +5,11 @@ public class JoinedDataSource : IDataSource
     private readonly IDataSource _leftDataSource;
     private readonly IDataSource _rightDataSource;
     private readonly string _joinColumn;
-    private readonly DataColumnMapping[] _mappings;
+    private readonly DataColumnJoinMapping[] _mappings;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
-    public JoinedDataSource(IDataSource leftDataSource, IDataSource rightDataSource, string joinColumn, params DataColumnMapping[] mappings)
+    public JoinedDataSource(IDataSource leftDataSource, IDataSource rightDataSource, string joinColumn, params DataColumnJoinMapping[] mappings)
     {
         _leftDataSource = leftDataSource;
         _rightDataSource = rightDataSource;

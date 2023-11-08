@@ -59,69 +59,103 @@ public class Transaction
             );
 
 
-        
 
-
-
-
-
-        var sort = new Dictionary<DataColumn, bool>
-        {
-            { transactionTable.Columns["Date"], true }
-        };
-        var dataQuery = new DataQuery
-        {
-            Sort = sort,
-            PageSize = 100
-        };
-        var t = await transactionTable.GetDataView(dataQuery);
-
-        var sortd = new Dictionary<DataColumn, bool>
-        {
-            { documentTable.Columns["Number"], true }
-        };
-        var dataQueryd = new DataQuery
-        {
-            Sort = sort,
-            PageSize = 100
-        };
-        var td = await documentTable.GetDataView(dataQueryd);
-
-        var transactionWithDocument = new JoinedDataSource(transactionTable, documentTable, "DocumentId",
-            new DataColumnMapping("Id", null),
-            new DataColumnMapping("Number", "DocumentNumber"),
-            new DataColumnMapping("Pages", null),
-            new DataColumnMapping("Description", null),
-            new DataColumnMapping("Category", null),
-            new DataColumnMapping("InvoiceNumber", null),
-            new DataColumnMapping("Company", null),
-            new DataColumnMapping("Person", null),
-            new DataColumnMapping("Car", null),
-            new DataColumnMapping("RelatedObject", null),
-            new DataColumnMapping("Guarantee", null),
-            new DataColumnMapping("CaseName", null),
-            new DataColumnMapping("Settlement", null),
-            new DataColumnMapping("TransactionId", null),
-            new DataColumnMapping("Net", null),
-            new DataColumnMapping("Vat", null),
-            new DataColumnMapping("Gross", null),
-            new DataColumnMapping("Currency", null)
+        var gasTable = new JsonDataSource("s:\\Lokalne\\Finanse\\Dane\\gas.json",
+            new DataColumn("Id", DataType.Text),
+            new DataColumn("Date", DataType.Date),
+            new DataColumn("Meter", DataType.Precision),
+            new DataColumn("Comment", DataType.Text)
             );
 
-        var sort2 = new Dictionary<DataColumn, bool>
+        //var sortg = new Dictionary<DataColumn, bool>
+        //{
+        //    { gasTable.Columns["Date"], true }
+        //};
+        //var dataQueryg = new DataQuery
+        //{
+        //    Sort = sortg,
+        //    PageSize = 100
+        //};
+        //var tg = await gasTable.GetDataView(dataQueryg);
+
+        
+
+        //var sort = new Dictionary<DataColumn, bool>
+        //{
+        //    { transactionTable.Columns["Date"], true }
+        //};
+        //var dataQuery = new DataQuery
+        //{
+        //    Sort = sort,
+        //    PageSize = 100
+        //};
+        //var t = await transactionTable.GetDataView(dataQuery);
+
+        //var sortd = new Dictionary<DataColumn, bool>
+        //{
+        //    { documentTable.Columns["Number"], true }
+        //};
+        //var dataQueryd = new DataQuery
+        //{
+        //    Sort = sort,
+        //    PageSize = 100
+        //};
+        //var td = await documentTable.GetDataView(dataQueryd);
+
+        var transactionWithDocument = new JoinedDataSource(transactionTable, documentTable, "DocumentId",
+            new DataColumnJoinMapping("Id", null),
+            new DataColumnJoinMapping("Number", "DocumentNumber"),
+            new DataColumnJoinMapping("Pages", null),
+            new DataColumnJoinMapping("Description", null),
+            new DataColumnJoinMapping("Category", null),
+            new DataColumnJoinMapping("InvoiceNumber", null),
+            new DataColumnJoinMapping("Company", null),
+            new DataColumnJoinMapping("Person", null),
+            new DataColumnJoinMapping("Car", null),
+            new DataColumnJoinMapping("RelatedObject", null),
+            new DataColumnJoinMapping("Guarantee", null),
+            new DataColumnJoinMapping("CaseName", null),
+            new DataColumnJoinMapping("Settlement", null),
+            new DataColumnJoinMapping("TransactionId", null),
+            new DataColumnJoinMapping("Net", null),
+            new DataColumnJoinMapping("Vat", null),
+            new DataColumnJoinMapping("Gross", null),
+            new DataColumnJoinMapping("Currency", null)
+            );
+
+        //var sort2 = new Dictionary<DataColumn, bool>
+        //{
+        //    { transactionWithDocument.Columns["DocumentNumber"], true }
+        //};
+        //var dataQuery2 = new DataQuery
+        //{
+        //    Sort = sort2,
+        //    Filter= new Dictionary<DataColumn, DataColumnFilter>
+        //    {
+        //        { transactionWithDocument.Columns["Date"], new DataColumnFilter{ DateFrom = new DateTime(2023,10,1), DateTo = new DateTime(2023,10,1)} }
+        //    },
+        //    PageSize = 100
+        //};
+        //var t3 = transactionWithDocument.GetDataView(dataQuery2);
+
+
+        var gasAndTransactions = new UnionedDataSource(gasTable, transactionWithDocument,
+            new DataColumnUnionMapping("Id", "Id", "Id"),
+            new DataColumnUnionMapping("Date", "Date", "Date"),
+            new DataColumnUnionMapping("Meter", "Meter", null),
+            new DataColumnUnionMapping("Description", "Comment", "Description"),
+            new DataColumnUnionMapping("DocumentNumber", null, "DocumentNumber")
+            );
+        var sortgt = new Dictionary<DataColumn, bool>
         {
-            { transactionWithDocument.Columns["DocumentNumber"], true }
+            { gasAndTransactions.Columns["Date"], true }
         };
-        var dataQuery2 = new DataQuery
+        var dataQuerygt = new DataQuery
         {
-            Sort = sort2,
-            Filter= new Dictionary<DataColumn, DataColumnFilter>
-            {
-                { transactionWithDocument.Columns["Date"], new DataColumnFilter{ DateFrom = new DateTime(2023,10,1), DateTo = new DateTime(2023,10,1)} }
-            },
+            Sort = sortgt,
             PageSize = 100
         };
-        var t3 = transactionWithDocument.GetDataView(dataQuery2);
+        var tgt = await gasAndTransactions.GetDataView(dataQuerygt);
 
     }
 }

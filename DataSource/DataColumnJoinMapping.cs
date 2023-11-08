@@ -1,12 +1,12 @@
 ﻿namespace DataSource;
 
-public class DataColumnMapping
+public class DataColumnJoinMapping
 {
     public string ColumnName { get; }
 
     public string? NewColumnName { get; }
 
-    public DataColumnMapping(string columnName, string? newColumnName)
+    public DataColumnJoinMapping(string columnName, string? newColumnName)
     {
         ColumnName = columnName;
         NewColumnName = newColumnName;

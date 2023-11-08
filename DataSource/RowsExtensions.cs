@@ -6,8 +6,10 @@ internal static class RowsExtensions
 {
     internal static IEnumerable<Dictionary<DataColumn, object?>> Sort(this IEnumerable<Dictionary<DataColumn, object?>> source, DataColumn column, bool descending) => column.ColumnDataType switch
     {
-        DataType.Date or DataType.Text
+        DataType.Text
             => source.SortBy(n => n?[column] as string, descending),
+        DataType.Date
+            => source.SortBy(n => n?[column] as DateTime?, descending),
         DataType.Precision
             => source.SortBy(n => n?[column] as decimal?, descending),
         DataType.Number
