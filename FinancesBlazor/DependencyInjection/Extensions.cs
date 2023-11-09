@@ -1,4 +1,6 @@
-﻿using FinancesBlazor.ViewManager;
+﻿using DataView;
+using Finances.DataSource;
+using FinancesBlazor.ViewManager;
 using System.Reflection;
 
 namespace Finances.DependencyInjection;
@@ -22,6 +24,22 @@ public static class Extensions
             if (entityInstance == null)
                 throw new InvalidCastException($"Failed to create instance of type {entityType.Name}");
             allEntitiesInstances.Add(entityInstance.GetView(configuration));
+        }
+        services.AddSingleton(allEntitiesInstances);
+    }
+
+    public static void InjectViews(this IServiceCollection services, IConfiguration configuration)
+    {
+        var dataSourceFactory = new DataSourceFactory(configuration);
+        var allEntitiesTypes = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName?.StartsWith("Microsoft") == false && a.FullName?.StartsWith("System") == false)
+                .SelectMany(s => s.GetTypes()).Where(m => m.IsClass && m.GetInterface(nameof(IDataView)) != null).ToList();
+        var allEntitiesInstances = new List<global::DataView.DataView>();
+        foreach (var entityType in allEntitiesTypes)
+        {
+            var entityInstance = Activator.CreateInstance(entityType, dataSourceFactory) as IDataView;
+            if (entityInstance == null)
+                throw new InvalidCastException($"Failed to create instance of type {entityType.Name}");
+            allEntitiesInstances.Add(entityInstance.GetDataView());
         }
         services.AddSingleton(allEntitiesInstances);
     }

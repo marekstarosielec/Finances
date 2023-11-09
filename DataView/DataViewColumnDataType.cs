@@ -1,6 +1,6 @@
-﻿namespace View;
+﻿namespace DataView;
 
-public enum ViewColumnDataType
+public enum DataViewColumnDataType
 {
     Text = 0,
     Date = 1,

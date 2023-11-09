@@ -1,15 +1,15 @@
 ﻿using DataSource;
 
-namespace View;
+namespace DataView;
 
-public abstract class ViewColumn
+public abstract class DataViewColumn
 {
     public string DataColumnName { get; }
     //public DataColumn DataColumn { get; }
     
    // public DataColumn? SecondDataColumn { get; set; }
     
-    public ViewColumnDataType DataType { get; }
+    public DataViewColumnDataType DataType { get; }
 
     public string Title { get; }
     
@@ -19,11 +19,11 @@ public abstract class ViewColumn
 
     public string? Format { get; set; }
 
-    public ViewColumnContentAlign? HorizontalAlign { get; set; }
+    public DataViewColumnContentAlign? HorizontalAlign { get; set; }
 
     public Type? FilterComponentType { get; set; }
 
-    public ViewColumn(string dataColumnName, /*DataColumn dataColumn,*/ ViewColumnDataType dataType, string title, string shortName/*, Type? filterComponentType*/)
+    public DataViewColumn(string dataColumnName, /*DataColumn dataColumn,*/ DataViewColumnDataType dataType, string title, string shortName/*, Type? filterComponentType*/)
     {
         DataColumnName = dataColumnName;
         //DataColumn = dataColumn;

@@ -1,9 +1,9 @@
 ﻿using DataSource;
 using System.Collections.ObjectModel;
 
-namespace View;
+namespace DataView;
 
-public class View
+public class DataView
 {
     public string Name { get; }
 
@@ -13,17 +13,17 @@ public class View
 
     public bool SortingDescending { get; set; }
 
-    public ReadOnlyCollection<ViewColumn> Columns { get; init; } = new(new List<ViewColumn>());
+    public ReadOnlyCollection<DataViewColumn> Columns { get; init; } = new(new List<DataViewColumn>());
 
-    public Dictionary<ViewColumn, ViewColumnFilter> Filters { get; } = new Dictionary<ViewColumn, ViewColumnFilter>();
+    public Dictionary<DataViewColumn, DataViewColumnFilter> Filters { get; } = new Dictionary<DataViewColumn, DataViewColumnFilter>();
 
     public int MaximumNumberOfRecords { get; set; } = 100;
 
     public IDataSource DataSource { get; }
 
-    public ViewPresentation? Presentation { get; }
+    public DataViewPresentation? Presentation { get; }
 
-    public View(string name, string title, IDataSource dataSource, ViewPresentation? presentation = null)
+    public DataView(string name, string title, IDataSource dataSource, DataViewPresentation? presentation = null)
     {
         Name = name;
         Title = title;

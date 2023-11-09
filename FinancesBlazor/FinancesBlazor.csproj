@@ -14,8 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataSource.Json\DataSource.Json.csproj" />
-    <ProjectReference Include="..\Finances.DataSource\Finances.DataSource.csproj" />
+    <ProjectReference Include="..\Finances.DataView\Finances.DataView.csproj" />
   </ItemGroup>
 
 </Project>

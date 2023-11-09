@@ -19,7 +19,7 @@ public class ViewManager : IDisposable
     public event EventHandler<View>? ViewChanged;
     public event EventHandler<View>? ActiveViewChanged;
 
-    public ViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<View> views, ViewSerializer serializer, DataSourceFactory ds)
+    public ViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<View> views, ViewSerializer serializer, List<DataView.DataView> dataViews)
     {
         _navigationManager = navigationManager;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
