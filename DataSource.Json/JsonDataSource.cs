@@ -54,10 +54,10 @@ public class JsonDataSource : IDataSource
                 {
                     row[column.Value] = column.Value.ColumnDataType switch
                     {
-                        DataType.Text => node[column.Key]?.GetValue<string>(),
-                        DataType.Date => node[column.Key]?.GetValue<DateTime>(),
-                        DataType.Precision => node[column.Key]?.GetValue<decimal>(),
-                        DataType.Number => node[column.Key]?.GetValue<int>(),
+                        ColumnDataType.Text => node[column.Key]?.GetValue<string>(),
+                        ColumnDataType.Date => node[column.Key]?.GetValue<DateTime>(),
+                        ColumnDataType.Precision => node[column.Key]?.GetValue<decimal>(),
+                        ColumnDataType.Number => node[column.Key]?.GetValue<int>(),
                         _ => throw new Exception("Unsupported DataType")
                     };
                 }

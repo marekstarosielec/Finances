@@ -1,6 +1,6 @@
 ﻿namespace DataSource;
 
-public enum DataType
+public enum ColumnDataType
 {
     Text = 0,
     Date = 1,

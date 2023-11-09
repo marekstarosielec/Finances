@@ -5,28 +5,36 @@ namespace Finances.DataSource;
 
 public partial class DataSourceFactory
 {
-    public IDataSource Transaction = new JsonDataSource("s:\\Lokalne\\Finanse\\Dane\\transactions.json",
-        new DataColumn("Id", DataType.Text),
-        new DataColumn("ScrappingDate", DataType.Date),
-        new DataColumn("Status", DataType.Text),
-        new DataColumn("Source", DataType.Text),
-        new DataColumn("Date", DataType.Date),
-        new DataColumn("Account", DataType.Text),
-        new DataColumn("Category", DataType.Text),
-        new DataColumn("Amount", DataType.Precision),
-        new DataColumn("Title", DataType.Text),
-        new DataColumn("Description", DataType.Text),
-        new DataColumn("Text", DataType.Text),
-        new DataColumn("BankInfo", DataType.Text),
-        new DataColumn("Comment", DataType.Text),
-        new DataColumn("Currency", DataType.Text),
-        new DataColumn("Details", DataType.Text),
-        new DataColumn("Person", DataType.Text),
-        new DataColumn("CaseName", DataType.Text),
-        new DataColumn("Settlement", DataType.Text),
-        new DataColumn("DocumentId", DataType.Text)
-        //new DataColumn("DocumentCategory", DataType.Text),
-        //new DataColumn("DocumentInvoiceNumber", DataType.Text),
-        //new DataColumn("DocumentNumber", DataType.Number)
-        );
+    private IDataSource? _transaction = null;
+    public IDataSource Transaction
+    {
+        get
+        {
+            _transaction ??= new JsonDataSource(Path.Combine(_dataFilePath!, "transactions.json"),
+                new DataColumn("Id", ColumnDataType.Text),
+                new DataColumn("ScrappingDate", ColumnDataType.Date),
+                new DataColumn("Status", ColumnDataType.Text),
+                new DataColumn("Source", ColumnDataType.Text),
+                new DataColumn("Date", ColumnDataType.Date),
+                new DataColumn("Account", ColumnDataType.Text),
+                new DataColumn("Category", ColumnDataType.Text),
+                new DataColumn("Amount", ColumnDataType.Precision),
+                new DataColumn("Title", ColumnDataType.Text),
+                new DataColumn("Description", ColumnDataType.Text),
+                new DataColumn("Text", ColumnDataType.Text),
+                new DataColumn("BankInfo", ColumnDataType.Text),
+                new DataColumn("Comment", ColumnDataType.Text),
+                new DataColumn("Currency", ColumnDataType.Text),
+                new DataColumn("Details", ColumnDataType.Text),
+                new DataColumn("Person", ColumnDataType.Text),
+                new DataColumn("CaseName", ColumnDataType.Text),
+                new DataColumn("Settlement", ColumnDataType.Text),
+                new DataColumn("DocumentId", ColumnDataType.Text)
+                //new DataColumn("DocumentCategory", ColumnDataType.Text),
+                //new DataColumn("DocumentInvoiceNumber", ColumnDataType.Text),
+                //new DataColumn("DocumentNumber", ColumnDataType.Number)
+                );
+            return _transaction;
+        }
+    }
 }

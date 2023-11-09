@@ -1,4 +1,5 @@
-﻿using Finances.DependencyInjection;
+﻿using Finances.DataSource;
+using Finances.DependencyInjection;
 using FinancesBlazor.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
@@ -18,7 +19,7 @@ public class ViewManager : IDisposable
     public event EventHandler<View>? ViewChanged;
     public event EventHandler<View>? ActiveViewChanged;
 
-    public ViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<View> views, ViewSerializer serializer)
+    public ViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<View> views, ViewSerializer serializer, DataSourceFactory ds)
     {
         _navigationManager = navigationManager;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
@@ -56,8 +57,8 @@ public class ViewManager : IDisposable
 
     private async Task LoadFromQueryString()
     {
-        var t = new Finances.DataSource.Transaction();
-        await t.Test();
+        //var t = new Finances.DataSource.Transaction();
+        //await t.Test();
 
         var query = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
         if (query.StartsWith("?"))

@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace FinancesBlazor.ViewManager;
 
-public class Gas : IEntity
+public class Transaction : IEntity
 {
     private View? _view;
 

@@ -15,11 +15,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SantanderScrapper", "Santan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinancesBlazor", "FinancesBlazor\FinancesBlazor.csproj", "{9A615F74-C3D2-4A2F-8D8F-91B162331FF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSource", "DataSource\DataSource.csproj", "{7BCA98FA-89BF-4CFD-B016-4397101C3C35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSource", "DataSource\DataSource.csproj", "{7BCA98FA-89BF-4CFD-B016-4397101C3C35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSource.Json", "DataSource.Json\DataSource.Json.csproj", "{D2D56ECE-9282-45A9-ABE2-152AEEBA7E9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSource.Json", "DataSource.Json\DataSource.Json.csproj", "{D2D56ECE-9282-45A9-ABE2-152AEEBA7E9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finances.DataSource", "Finances.DataSource\Finances.DataSource.csproj", "{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finances.DataSource", "Finances.DataSource\Finances.DataSource.csproj", "{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finances.View", "Finances.View\Finances.View.csproj", "{9BC34157-1C4B-4A29-930E-5BD0AFD426D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "View", "View\View.csproj", "{47293FB6-4C34-42AF-A475-F3698DB60B24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +67,14 @@ Global
 		{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BC34157-1C4B-4A29-930E-5BD0AFD426D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BC34157-1C4B-4A29-930E-5BD0AFD426D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BC34157-1C4B-4A29-930E-5BD0AFD426D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BC34157-1C4B-4A29-930E-5BD0AFD426D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47293FB6-4C34-42AF-A475-F3698DB60B24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47293FB6-4C34-42AF-A475-F3698DB60B24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47293FB6-4C34-42AF-A475-F3698DB60B24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47293FB6-4C34-42AF-A475-F3698DB60B24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

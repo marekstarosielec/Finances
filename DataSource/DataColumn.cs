@@ -4,9 +4,9 @@ public class DataColumn
 {
     public string ColumnName { get; }
 
-    public DataType ColumnDataType { get; }
+    public ColumnDataType ColumnDataType { get; }
 
-    public DataColumn(string columnName, DataType columnDataType)
+    public DataColumn(string columnName, ColumnDataType columnDataType)
     {
         ColumnName = columnName;
         ColumnDataType = columnDataType;
