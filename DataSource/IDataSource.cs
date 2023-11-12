@@ -3,5 +3,5 @@
 public interface IDataSource
 {
     Dictionary<string, DataColumn> Columns { get; }
-    Task<DataView> GetDataView(DataQuery? dataQuery = null);
+    Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null);
 }

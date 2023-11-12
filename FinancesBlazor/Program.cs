@@ -1,5 +1,3 @@
-using Finances.DataSource;
-using Finances.DataView;
 using Finances.DependencyInjection;
 using Radzen;
 
@@ -16,12 +14,12 @@ namespace FinancesBlazor
             builder.Services.AddServerSideBlazor();
             builder.Services.InjectServices();
             builder.Services.AddScoped<ViewManager.ViewManager>();
+            builder.Services.AddScoped<DataViewManager>();
             builder.Services.InjectEntities(builder.Configuration);
             builder.Services.InjectViews(builder.Configuration);
             builder.Services.AddRadzenComponents();
             var app = builder.Build();
-            new Dummy(); //Needed to keep reference to project.
-
+           
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {

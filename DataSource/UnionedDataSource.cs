@@ -16,16 +16,16 @@ public class UnionedDataSource : IDataSource
         Columns = GetColumnList();
     }
 
-    public async Task<DataView> GetDataView(DataQuery? dataQuery = null)
+    public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
     {
         IEnumerable<Dictionary<DataColumn, object?>> rows = await UnionTables();
 
-        if (dataQuery?.Sort != null)
-            foreach (var sortDefinition in dataQuery.Sort)
+        if (dataQuery?.Sorters != null)
+            foreach (var sortDefinition in dataQuery.Sorters)
                 rows = rows.Sort(sortDefinition.Key, sortDefinition.Value);
         
-        if (dataQuery?.Filter != null)
-            foreach (var filterDefinition in dataQuery.Filter)
+        if (dataQuery?.Filters != null)
+            foreach (var filterDefinition in dataQuery.Filters)
                 rows = rows.Fitler(filterDefinition.Key, filterDefinition.Value);
 
         var totalRowCount = rows.Count();
@@ -33,13 +33,13 @@ public class UnionedDataSource : IDataSource
         if (dataQuery?.PageSize.GetValueOrDefault(-1) > -1)
             rows = rows.Take(dataQuery.PageSize!.Value);
 
-        return new DataView(Columns.Values, rows, totalRowCount);
+        return new DataQueryResult(Columns.Values, rows, totalRowCount);
     }
 
     private async Task<IEnumerable<Dictionary<DataColumn, object?>>> UnionTables()
     {
         var result = new List<Dictionary<DataColumn, object?>>();
-        DataView firstDataView = await _firstDataSource.GetDataView(new DataQuery());
+        DataQueryResult firstDataView = await _firstDataSource.ExecuteQuery(new DataQuery());
         foreach (var firstDataRow in firstDataView.Rows)
         {
             var resultDataRow = new Dictionary<DataColumn, object?>();
@@ -48,7 +48,7 @@ public class UnionedDataSource : IDataSource
             result.Add(resultDataRow);
         }
 
-        DataView secondDataView = await _secondDataSource.GetDataView(new DataQuery());
+        DataQueryResult secondDataView = await _secondDataSource.ExecuteQuery(new DataQuery());
         foreach (var secondDataRow in secondDataView.Rows)
         {
             var resultDataRow = new Dictionary<DataColumn, object?>();

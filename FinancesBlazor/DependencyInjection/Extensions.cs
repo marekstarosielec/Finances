@@ -31,9 +31,8 @@ public static class Extensions
     public static void InjectViews(this IServiceCollection services, IConfiguration configuration)
     {
         var dataSourceFactory = new DataSourceFactory(configuration);
-        var allEntitiesTypes = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName?.StartsWith("Microsoft") == false && a.FullName?.StartsWith("System") == false)
-                .SelectMany(s => s.GetTypes()).Where(m => m.IsClass && m.GetInterface(nameof(IDataView)) != null).ToList();
-        var allEntitiesInstances = new List<global::DataView.DataView>();
+        var allEntitiesTypes = AppDomain.CurrentDomain.Load("Finances.DataView").GetTypes().Where(m => m.IsClass && m.GetInterface(nameof(IDataView)) != null).ToList();
+        var allEntitiesInstances = new List<DataView.DataView>();
         foreach (var entityType in allEntitiesTypes)
         {
             var entityInstance = Activator.CreateInstance(entityType, dataSourceFactory) as IDataView;

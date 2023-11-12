@@ -18,15 +18,15 @@ public class JoinedDataSource : IDataSource
         Columns = GetColumnList();
     }
     
-    public async Task<DataView> GetDataView(DataQuery? dataQuery = null)
+    public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
     {
         IEnumerable<Dictionary<DataColumn, object?>> rows = await LeftJoinTable();
-        if (dataQuery?.Sort != null)
-            foreach (var sortDefinition in dataQuery.Sort)
+        if (dataQuery?.Sorters != null)
+            foreach (var sortDefinition in dataQuery.Sorters)
                 rows = rows.Sort(sortDefinition.Key, sortDefinition.Value);
 
-        if (dataQuery?.Filter != null)
-            foreach (var filterDefinition in dataQuery.Filter)
+        if (dataQuery?.Filters != null)
+            foreach (var filterDefinition in dataQuery.Filters)
                 rows = rows.Fitler(filterDefinition.Key, filterDefinition.Value);
 
         var totalRowCount = rows.Count();
@@ -34,13 +34,13 @@ public class JoinedDataSource : IDataSource
         if (dataQuery?.PageSize.GetValueOrDefault(-1) > -1)
             rows = rows.Take(dataQuery.PageSize!.Value);
 
-        return new DataView(Columns.Values, rows, totalRowCount);
+        return new DataQueryResult(Columns.Values, rows, totalRowCount);
     }
 
     private async Task<IEnumerable<Dictionary<DataColumn, object?>>> LeftJoinTable()
     {
-        DataView leftDataView = await _leftDataSource.GetDataView(new DataQuery());
-        DataView rightDataView = await _rightDataSource.GetDataView(new DataQuery());
+        DataQueryResult leftDataView = await _leftDataSource.ExecuteQuery(new DataQuery());
+        DataQueryResult rightDataView = await _rightDataSource.ExecuteQuery(new DataQuery());
         var leftDataViewJoinColumn = _leftDataSource.Columns.ContainsKey(_joinColumn) ? _leftDataSource.Columns[_joinColumn] : throw new InvalidOperationException($"Joined data source does not contain column {_joinColumn}");
         var rightDataViewJoinColumn = _rightDataSource.Columns["Id"];
 

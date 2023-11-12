@@ -19,19 +19,19 @@ public class JsonDataSource : IDataSource
         Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
     }
 
-    public async Task<DataView> GetDataView(DataQuery? dataQuery = null) => TransformNodes(await GetNodes(dataQuery));
+    public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null) => TransformNodes(await GetNodes(dataQuery));
 
     internal async Task<NodesList> GetNodes(DataQuery? dataQuery)
     {
         var nodes = await GetData();
         var result = new NodesList(nodes);
         
-        if (dataQuery?.Sort != null)
-            foreach (var sortDefinition in dataQuery.Sort)
+        if (dataQuery?.Sorters != null)
+            foreach (var sortDefinition in dataQuery.Sorters)
                 result.Nodes = result.Nodes.Sort(sortDefinition.Key, sortDefinition.Value);
 
-        if (dataQuery?.Filter != null)
-            foreach (var filterDefinition in dataQuery.Filter)
+        if (dataQuery?.Filters != null)
+            foreach (var filterDefinition in dataQuery.Filters)
                 result.Nodes = result.Nodes.Fitler(filterDefinition.Key, filterDefinition.Value);
 
         result.Count = result.Nodes.Count();
@@ -42,10 +42,10 @@ public class JsonDataSource : IDataSource
         return result;
     }
 
-    private DataView TransformNodes(NodesList nodes)
+    private DataQueryResult TransformNodes(NodesList nodes)
     {
         var rows = new List<Dictionary<DataColumn, object?>>();
-        var result = new DataView(Columns.Values, rows, nodes.Count);
+        var result = new DataQueryResult(Columns.Values, rows, nodes.Count);
         foreach (var node in nodes.Nodes)
         {
             var row = new Dictionary<DataColumn, object?>();

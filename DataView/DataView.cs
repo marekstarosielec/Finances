@@ -5,29 +5,34 @@ namespace DataView;
 
 public class DataView
 {
+    private IDataSource _dataSource;
+    private DataQuery _query = new DataQuery();
+
     public string Name { get; }
 
     public string Title { get; set; }
 
-    public string? SortingColumnPropertyName { get; set; }
-
-    public bool SortingDescending { get; set; }
-
     public ReadOnlyCollection<DataViewColumn> Columns { get; init; } = new(new List<DataViewColumn>());
 
-    public Dictionary<DataViewColumn, DataViewColumnFilter> Filters { get; } = new Dictionary<DataViewColumn, DataViewColumnFilter>();
-
-    public int MaximumNumberOfRecords { get; set; } = 100;
-
-    public IDataSource DataSource { get; }
-
     public DataViewPresentation? Presentation { get; }
+
+    public DataViewQuery Query { get; init; }
+
+    public DataQueryResult? Result { get; private set; }
+
+    public async Task Requery()
+    {
+        Query.Apply();
+        Result = await _dataSource.ExecuteQuery(_query);
+    }
 
     public DataView(string name, string title, IDataSource dataSource, DataViewPresentation? presentation = null)
     {
         Name = name;
         Title = title;
-        DataSource = dataSource;
+        _dataSource = dataSource;
         Presentation = presentation;
+        Query = new DataViewQuery(_query, _dataSource, Columns);
+
     }
 }

@@ -4,10 +4,9 @@ namespace DataView;
 
 public abstract class DataViewColumn
 {
-    public string DataColumnName { get; }
-    //public DataColumn DataColumn { get; }
-    
-   // public DataColumn? SecondDataColumn { get; set; }
+    public string PrimaryDataColumnName { get; }
+
+    public string? SecondaryDataColumnName { get; }
     
     public DataViewColumnDataType DataType { get; }
 
@@ -23,10 +22,9 @@ public abstract class DataViewColumn
 
     public Type? FilterComponentType { get; set; }
 
-    public DataViewColumn(string dataColumnName, /*DataColumn dataColumn,*/ DataViewColumnDataType dataType, string title, string shortName/*, Type? filterComponentType*/)
+    public DataViewColumn(string primaryDataColumnName, DataViewColumnDataType dataType, string title, string shortName/*, Type? filterComponentType*/)
     {
-        DataColumnName = dataColumnName;
-        //DataColumn = dataColumn;
+        PrimaryDataColumnName = primaryDataColumnName;
         DataType = dataType;
         Title = title;
         ShortName = shortName;

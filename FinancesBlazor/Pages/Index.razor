@@ -2,11 +2,11 @@
 @using FinancesBlazor.Components.Grid;
 @using System.Text.Json.Nodes;
 @using FinancesBlazor.ViewManager;
-@inject ViewManager _viewManager;
+@inject DataViewManager _dataViewManager;
 @implements IDisposable
 
-<PageTitle>@_viewManager.ActiveView.Title</PageTitle>
-<FinancesBlazor.Components.Grid.Grid View="@_viewManager.ActiveView" @key=gridId />
+<PageTitle>@_dataViewManager.ActiveView.Title</PageTitle>
+<FinancesBlazor.Components.Grid.Grid @key=gridId />
 
 @code{
     private Guid gridId = Guid.NewGuid();
@@ -14,12 +14,12 @@
 
     protected override void OnInitialized()
     {
-        _viewManager.ActiveViewChanged += ActiveViewChanged;
+        _dataViewManager.ActiveViewChanged += ActiveDataViewChanged;
     }
 
-    void ActiveViewChanged(object? sender, View e)
+    void ActiveDataViewChanged(object? sender, DataView.DataView e)
     {
-        if (e != _viewManager.ActiveView)
+        if (e != _dataViewManager.ActiveView)
             return;
         gridId = Guid.NewGuid();
         StateHasChanged();
@@ -27,6 +27,6 @@
 
     void IDisposable.Dispose()
     {
-        _viewManager.ActiveViewChanged -= ActiveViewChanged;
+       _dataViewManager.ActiveViewChanged -= ActiveDataViewChanged;
     }
 }
