@@ -58,31 +58,27 @@ public class DataViewManager : IDisposable
             query = query.Substring(1);
         if (string.IsNullOrWhiteSpace(query))
             return;
-        var activeView = HttpUtility.ParseQueryString(query).GetValues("av")?.FirstOrDefault();
-        //Load all views found in query.
-        //Switch active view if needed.
+        var qs = HttpUtility.ParseQueryString(query);
+        var newActiveView = ActiveView;
+        foreach (var key in qs.AllKeys)
+        {
+            if (key == "av")
+            {
+                newActiveView = FindView(qs[key]) ?? ActiveView;
+                continue;
+            }
+            var view = FindView(key);
+            if (view == null || qs[key] == null)
+                continue;
+            view.Query.Deserialize(qs[key]!);
+            ViewChanged?.Invoke(this, view);
+        } 
         
-        //var activeView = FindView(vd);
-        //if (activeView == null)
-        //    return;
-        //var activeViewChanged = ActiveView.Name != vd;
-        //ActiveView = activeView;
-
-
-        //if (vd.SortingColumnDataName != null)
-        //{
-        //    ActiveView.SortingColumnPropertyName = vd.SortingColumnDataName;
-        //    ActiveView.SortingDescending = vd.SortingDescending;
-        //}
-
-        //ActiveView.Filters.Clear();
-        //foreach (var filter in vd.Filters)
-        //    ActiveView.Filters.Add(ActiveView.Columns.Single(p => p.ShortName == filter.Key), filter.Value);
-
-        //await ActiveView.Requery();
-        //if (activeViewChanged)
-        //    ActiveViewChanged?.Invoke(this, ActiveView);
-        //ViewChanged?.Invoke(this, ActiveView);
+        var activeViewChanged = ActiveView.Name != newActiveView.Name;
+        ActiveView = newActiveView;
+        if (activeViewChanged)
+            ActiveViewChanged?.Invoke(this, ActiveView);
+        
     }
 
     private DataView.DataView? FindView(string? viewName)

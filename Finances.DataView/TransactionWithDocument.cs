@@ -26,13 +26,10 @@ public class TransactionWithDocument : IDataView
             new DataViewColumnText("Category", "Kategoria", "ct"),
             //new PropertyInfoMoney("Amount", "Currency", "Kwota", "am"),
             new DataViewColumnText("Description", "Opis", "de"/*, TextFilterComponents.Default*/),
-            new DataViewColumnText("Document.Company", "Firma dokumentu", "n")
+            new DataViewColumnText("DocumentNumber", "Numer dokumentu", "n")
         };
 
-        _dataView = new ("t", "Tranzakcje", _dataSourceFactory.TransactionWithDocument, presentation)
-        {
-            Columns = new (columns)
-        };
+        _dataView = new("t", "Tranzakcje", _dataSourceFactory.TransactionWithDocument, new(columns), presentation);
 
         _dataView.Query.Sorters.Add(columns.Single(c => c.ShortName == "d"), true);
         return _dataView;

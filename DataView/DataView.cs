@@ -12,7 +12,7 @@ public class DataView
 
     public string Title { get; set; }
 
-    public ReadOnlyCollection<DataViewColumn> Columns { get; init; } = new(new List<DataViewColumn>());
+    public ReadOnlyCollection<DataViewColumn> Columns { get; }
 
     public DataViewPresentation? Presentation { get; }
 
@@ -26,12 +26,13 @@ public class DataView
         Result = await _dataSource.ExecuteQuery(_query);
     }
 
-    public DataView(string name, string title, IDataSource dataSource, DataViewPresentation? presentation = null)
+    public DataView(string name, string title, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns, DataViewPresentation? presentation = null)
     {
         Name = name;
         Title = title;
         _dataSource = dataSource;
         Presentation = presentation;
+        Columns = columns;
         Query = new DataViewQuery(_query, _dataSource, Columns);
 
     }

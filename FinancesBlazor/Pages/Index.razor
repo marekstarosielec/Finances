@@ -6,7 +6,7 @@
 @implements IDisposable
 
 <PageTitle>@_dataViewManager.ActiveView.Title</PageTitle>
-<FinancesBlazor.Components.Grid.Grid @key=gridId />
+<FinancesBlazor.Components.Grid.Grid @key=gridId DataView="_dataViewManager.ActiveView" />
 
 @code{
     private Guid gridId = Guid.NewGuid();

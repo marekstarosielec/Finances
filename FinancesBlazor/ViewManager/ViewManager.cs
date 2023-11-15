@@ -21,17 +21,17 @@ public class ViewManager : IDisposable
 
     public ViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<View> views, ViewSerializer serializer)
     {
-        _navigationManager = navigationManager;
-        _navigationManager.LocationChanged += _navigationManager_LocationChanged;
-        _jsRuntime = jsRuntime;
-        Views = views.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
-        _serializer = serializer;
+        //_navigationManager = navigationManager;
+        //_navigationManager.LocationChanged += _navigationManager_LocationChanged;
+        //_jsRuntime = jsRuntime;
+        //Views = views.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
+        //_serializer = serializer;
         
-        //Force redirect on first load, so query string appears in url and view is loaded.
-        _activeView = Views.FirstOrDefault() ?? throw new InvalidOperationException("No view found");
-        var vd = _serializer.Serialize(_activeView.Name, _activeView);
-        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).GetLeftPart(UriPartial.Path);
-        _navigationManager.NavigateTo($"{uri}?{vd}");
+        ////Force redirect on first load, so query string appears in url and view is loaded.
+        //_activeView = Views.FirstOrDefault() ?? throw new InvalidOperationException("No view found");
+        //var vd = _serializer.Serialize(_activeView.Name, _activeView);
+        //var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).GetLeftPart(UriPartial.Path);
+        //_navigationManager.NavigateTo($"{uri}?{vd}");
     }
 
     private async void _navigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
@@ -97,7 +97,7 @@ public class ViewManager : IDisposable
 
     public void Dispose()
     {
-        _navigationManager.LocationChanged -= _navigationManager_LocationChanged;
+     //   _navigationManager.LocationChanged -= _navigationManager_LocationChanged;
     }
 }
 

@@ -12,14 +12,14 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        @foreach (var view in _viewManager.Views)
+       @*  @foreach (var view in _viewManager.Views)
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="@GetViewUrl(view)" Match="NavLinkMatch.All">
                     <span class="@GetViewIcon(view)" aria-hidden="true"></span> @GetViewTitle(view)
                 </NavLink> 
             </div>
-        }
+        } *@
     </nav>
 </div>
 
