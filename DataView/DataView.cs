@@ -34,6 +34,17 @@ public class DataView
         Presentation = presentation;
         Columns = columns;
         Query = new DataViewQuery(_query, _dataSource, Columns);
+        ValidateColumns();
+    }
 
+    void ValidateColumns()
+    {
+        foreach (DataViewColumn column in Columns)
+        {
+            if (!_dataSource.Columns.ContainsKey(column.PrimaryDataColumnName))
+                throw new InvalidOperationException($"DataViewColumn {column.ShortName} refers to DataColumn {column.PrimaryDataColumnName} which does not exist.");
+            if (column.SecondaryDataColumnName != null && !_dataSource.Columns.ContainsKey(column.SecondaryDataColumnName))
+                throw new InvalidOperationException($"DataViewColumn {column.ShortName} refers to DataColumn {column.SecondaryDataColumnName} which does not exist.");
+        }
     }
 }
