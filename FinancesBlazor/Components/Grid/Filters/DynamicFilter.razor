@@ -1,11 +1,12 @@
-﻿@using FinancesBlazor.PropertyInfo;
+﻿@using DataView;
+@using FinancesBlazor.PropertyInfo;
 @using FinancesBlazor.ViewManager;
 @using FinancesBlazor.DataAccess;
 @using Radzen.Blazor.Rendering;
 
-@inject ViewManager _viewManager;
+@inject DataViewManager _dataViewManager;
 
-@if (View != null && Property != null)
+@if (DataView != null && Column != null)
 {
     <div class="outer">
         <div class="d-flex justify-content-between">
@@ -15,9 +16,9 @@
             </div>
             <button type="button" class="text-end btn btn-primary btn-sm m-0" @onclick="RemoveFilter"><span class="fa-solid fa-xmark"></span></button>
         </div>
-        @if (Property.FilterComponentType != null)
+        @if (Column.PreferredFilterComponentType != null)
         {
-            <DynamicComponent Type="@(Property.FilterComponentType)" Parameters="@(new Dictionary<string, object?>() { { "View", @View }, { "Property", @Property}, { "Popup", @Popup}, { "ElementReference", @ElementReference} })" />
+           @*  <DynamicComponent Type="@(Column.FilterComponentType)" Parameters="@(new Dictionary<string, object?>() { { "View", @View }, { "Property", @Property}, { "Popup", @Popup}, { "ElementReference", @ElementReference} })" /> *@
         }
     </div>
 }
@@ -28,10 +29,10 @@
     PrecisionFilter? precisionFilter;
 
     [Parameter]
-    public View? View { get; set; }
+    public DataView? DataView { get; set; }
 
     [Parameter]
-    public PropertyInfoBase? Property { get; set; }
+    public DataViewColumn? Column { get; set; }
 
     [Parameter]
     public Popup? Popup { get; set; }
@@ -41,28 +42,35 @@
 
     public async Task RemoveFilter()
     {
-        if (View == null || Property == null)
+        if (DataView == null || Column == null)
             return;
 
         if (Popup != null && ElementReference != null)
             await Popup.CloseAsync(ElementReference.Value);
 
-        View.Filters.Remove(Property);
+        //View.Filters.Remove(Property);
 
-        await _viewManager.Save(View);
+        // await _viewManager.Save(View);
     }
 
     public async Task SortClick(bool descending)
     {
-        if (View == null || Property == null)
+        if (DataView == null || Column == null)
             return;
 
         if (Popup != null && ElementReference != null)
             await Popup.CloseAsync(ElementReference.Value);
 
-        View.SortingColumnPropertyName = Property.PropertyName;
-        View.SortingDescending = descending;
-
-        await _viewManager.Save(View);
+        DataView.Query.Sorters.Clear();
+        DataView.Query.Sorters.Add(Column, descending);
+        await _dataViewManager.Save(DataView);
     }
+
+    // private Type GetFilterComponent(string filterComponentName)
+    //     => (Column?.DataType, filterComponentName) switch
+    //     {
+    //         (_, _) => throw new 
+    //     };
+
+    
 }

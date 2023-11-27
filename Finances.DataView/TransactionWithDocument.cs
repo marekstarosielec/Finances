@@ -21,10 +21,10 @@ public class TransactionWithDocument : IDataView
         var presentation = new DataViewPresentation(50, "fa-solid fa-money-bill-transfer", "Tranzakcje");
         var columns = new List<DataViewColumn>
         {
-            new DataViewColumnDate("Date", "Data", "d"),
+            new DataViewColumnDate("Date", "Data", "d", DateViewColumnDateFilterComponents.Default),
             new DataViewColumnText("Account", "Konto", "a"),
             new DataViewColumnText("Category", "Kategoria", "ct"),
-            //new PropertyInfoMoney("Amount", "Currency", "Kwota", "am"),
+            new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
             new DataViewColumnText("Description", "Opis", "de"/*, TextFilterComponents.Default*/),
             new DataViewColumnText("DocumentNumber", "Numer dokumentu", "n")
         };

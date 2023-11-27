@@ -37,18 +37,18 @@ public class DataViewManager : IDisposable
 
     public async Task Save(DataView.DataView dataView)
     {
-        //if (dataView == ActiveView)
-        //{
-        //    var vd = dataView.Serialize();
-        //    var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
-        //    try
-        //    {
-        //        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{uri.GetLeftPart(UriPartial.Path)}?{vd}");
-        //    }
-        //    catch (Exception ex) { }
-        //}
-        //await dataView.Requery();
-        //ViewChanged?.Invoke(this, dataView);
+        if (dataView == ActiveView)
+        {
+            var vd = dataView.Query.Serialize();
+            var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+            try
+            {
+                await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{uri.GetLeftPart(UriPartial.Path)}?{vd}");
+            }
+            catch (Exception ex) { }
+        }
+        await dataView.Requery();
+        ViewChanged?.Invoke(this, dataView);
     }
 
     private async Task LoadFromQueryString()
@@ -71,6 +71,7 @@ public class DataViewManager : IDisposable
             if (view == null || qs[key] == null)
                 continue;
             view.Query.Deserialize(qs[key]!);
+            await view.Requery();
             ViewChanged?.Invoke(this, view);
         } 
         
