@@ -1,23 +1,26 @@
 ﻿@using FinancesBlazor.Extensions;
 @using FinancesBlazor.PropertyInfo;
 @using FinancesBlazor.ViewManager;
+@using DataView;
 @using System.Timers;
 @using Radzen.Blazor.Rendering;
-@inject ViewManager _viewManager;
+
+@inject DataViewManager _dataViewManager;
+
 @inject IJSRuntime JSRuntime
 @implements IDisposable;
 
-@if (Property != null)
+@if (Column != null)
 {
-    <input type="text" id="search" aria-label="@Property.Title" aria-describedby="@Property.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" autocomplete="off" /> 
+    <input type="text" id="search" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" autocomplete="off" />
 }
 
 @code {
     [Parameter]
-    public View? View { get; set; }
+    public DataView? DataView { get; set; }
 
     [Parameter]
-    public PropertyInfoBase? Property { get; set; }
+    public DataViewColumn? Column { get; set; }
 
     [Parameter]
     public Popup? Popup { get; set; }
@@ -31,8 +34,8 @@
 
     protected override void OnInitialized()
     {
-        if (Property != null && View?.Filters?.ContainsKey(Property) == true)
-            currentText = View?.Filters?[Property]?.StringValue;
+        if (Column != null && DataView?.Query.Filters?.ContainsKey(Column) == true)
+            currentText = DataView?.Query.Filters?[Column]?.StringValue;
 
         debounce.Elapsed += TimerCallback;
 
@@ -72,20 +75,20 @@
 
     public async Task ApplyFilter()
     {
-        if (View?.Filters == null || Property == null)
+        if (DataView?.Query.Filters == null || Column == null)
             return;
-        View.Filters[Property] = new FilterInfoBase { StringValue = currentText };
+        DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = currentText };
         await InvokeAsync(async () =>
         {
-            await _viewManager.Save(View);
+            await _dataViewManager.Save(DataView);
         });
     }
 
     private async Task OnOpen()
     {
-        if (View?.Filters == null || Property == null)
+        if (DataView?.Query.Filters == null || Column == null)
             return;
-        currentText = View.Filters.ContainsKey(Property) ? View.Filters[Property].StringValue : string.Empty;
+        currentText = DataView.Query.Filters.ContainsKey(Column) ? DataView.Query.Filters[Column].StringValue : string.Empty;
         await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
 }

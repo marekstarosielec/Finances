@@ -9,7 +9,7 @@
 
 <div class="toolbar">
     <button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
-    <button class="btn btn-primary" @onclick="() => RequestFilterClear()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
+    <button class="btn btn-primary" @onclick="() => RemoveFilters()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
 </div>
 
 @if (DataView?.Columns != null)
@@ -100,13 +100,13 @@
         // StateHasChanged();
     }
 
-    private async void RequestFilterClear()
+    private async void RemoveFilters()
     {
-        // if (View == null || View?.Filters == null)
-        //     return;
+        if (DataView == null || DataView?.Query.Filters == null)
+            return;
 
-        // View.Filters.Clear();
-        // await _viewManager.Save(View);
+        DataView.Query.Filters.Clear();
+        await _dataViewManager.Save(DataView);
     }
 
     async void ViewChanged(object? sender, DataView e)

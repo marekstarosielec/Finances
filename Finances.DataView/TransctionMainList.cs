@@ -3,12 +3,12 @@ using Finances.DataSource;
 
 namespace FinancesDataView;
 
-public class TransactionWithDocument : IDataView
+public class TransctionMainList : IDataView
 {
     private readonly DataSourceFactory _dataSourceFactory;
     private DataView.DataView? _dataView;
 
-    public TransactionWithDocument(DataSourceFactory dataSourceFactory)
+    public TransctionMainList(DataSourceFactory dataSourceFactory)
     {
         _dataSourceFactory = dataSourceFactory;
     }
@@ -21,11 +21,11 @@ public class TransactionWithDocument : IDataView
         var presentation = new DataViewPresentation(50, "fa-solid fa-money-bill-transfer", "Tranzakcje");
         var columns = new List<DataViewColumn>
         {
-            new DataViewColumnDate("Date", "Data", "d", DateViewColumnDateFilterComponents.Default),
+            new DataViewColumnDate("Date", "Data", "d", DataViewColumnDateFilterComponents.Default),
             new DataViewColumnText("Account", "Konto", "a"),
             new DataViewColumnText("Category", "Kategoria", "ct"),
             new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
-            new DataViewColumnText("Description", "Opis", "de"/*, TextFilterComponents.Default*/),
+            new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default),
             new DataViewColumnText("DocumentNumber", "Numer dokumentu", "n")
         };
 

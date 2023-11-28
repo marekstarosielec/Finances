@@ -1,9 +1,11 @@
-﻿@using FinancesBlazor.Extensions;
+﻿@using DataView;
+@using FinancesBlazor.Extensions;
 @using FinancesBlazor.PropertyInfo;
 @using FinancesBlazor.ViewManager;
 @using System.Globalization;
 @using Radzen.Blazor.Rendering;
-@inject ViewManager _viewManager;
+
+@inject DataViewManager _dataViewManager;
 
 <DateRangePicker Inline="true" AutoApply="true" LinkedCalendars="true" CustomDayNames="CustomDayNames" OnRangeSelect="OnRangeSelect" StartDate="DateFrom" EndDate="DateTo" />
 <button class="btn btn-primary" @onclick="() => SetPreviousMonth()">@PreviousMonthName</button>
@@ -12,10 +14,10 @@
 <button class="btn btn-primary float-end" @onclick="() => SetCurrentYear()">@CurrentYearName</button>
 @code {
     [Parameter]
-    public View? View { get; set; }
+    public DataView? DataView { get; set; }
 
     [Parameter]
-    public PropertyInfoBase? Property { get; set; }
+    public DataViewColumn? Column { get; set; }
 
     [Parameter]
     public Popup? Popup { get; set; }
@@ -36,10 +38,10 @@
     protected override void OnInitialized()
     {
         //Set previously selected filter vaule in date picker (after renavigating to grid).
-        if (Property != null && View?.Filters.ContainsKey(Property) == true)
+        if (Column != null && DataView?.Query.Filters.ContainsKey(Column) == true)
         {
-            DateFrom = View?.Filters?[Property]?.DateFrom;
-            DateTo = View?.Filters?[Property]?.DateTo;
+            DateFrom = DataView?.Query.Filters?[Column]?.DateFrom;
+            DateTo = DataView?.Query.Filters?[Column]?.DateTo;
         }
     }
     public async void OnRangeSelect(DateRange range)
@@ -73,14 +75,14 @@
 
     private async Task SetDates(DateTime from, DateTime to)
     {
-        if (View?.Filters == null || Property == null)
+        if (DataView?.Query.Filters == null || Column == null)
             return;
 
         if (Popup != null && ElementReference != null)
             await Popup.CloseAsync(ElementReference.Value);
 
         var today = DateTime.Today;
-        View.Filters[Property] = new FilterInfoBase { DateFrom = from, DateTo = to };
-        await _viewManager.Save(View);
+        DataView.Query.Filters[Column] = new DataViewColumnFilter { DateFrom = from, DateTo = to };
+        await _dataViewManager.Save(DataView);
     }
 }

@@ -18,7 +18,7 @@
         </div>
         @if (Column.PreferredFilterComponentType != null)
         {
-           @*  <DynamicComponent Type="@(Column.FilterComponentType)" Parameters="@(new Dictionary<string, object?>() { { "View", @View }, { "Property", @Property}, { "Popup", @Popup}, { "ElementReference", @ElementReference} })" /> *@
+            <DynamicComponent Type="@(GetFilterComponent(Column.PreferredFilterComponentType))" Parameters="@(new Dictionary<string, object?>() { { "DataView", @DataView }, { "Column", @Column}, { "Popup", @Popup}, { "ElementReference", @ElementReference} })" />
         }
     </div>
 }
@@ -48,9 +48,9 @@
         if (Popup != null && ElementReference != null)
             await Popup.CloseAsync(ElementReference.Value);
 
-        //View.Filters.Remove(Property);
+        DataView.Query.Filters.Remove(Column);
 
-        // await _viewManager.Save(View);
+        await _dataViewManager.Save(DataView);
     }
 
     public async Task SortClick(bool descending)
@@ -66,11 +66,29 @@
         await _dataViewManager.Save(DataView);
     }
 
-    // private Type GetFilterComponent(string filterComponentName)
-    //     => (Column?.DataType, filterComponentName) switch
-    //     {
-    //         (_, _) => throw new 
-    //     };
+    private Type GetFilterComponent(string filterComponentName)
+    {
+        switch (Column?.DataType)
+        {
+            case DataViewColumnDataType.Date:
+                if (!Enum.TryParse<DataViewColumnDateFilterComponents>(filterComponentName, out var dateResult))
+                    throw new InvalidOperationException($"Unknown filter component {filterComponentName} for type {Column?.DataType}");
+                return dateResult switch
+                {
+                    DataViewColumnDateFilterComponents.Default => typeof(DateFilter),
+                    _ => throw new InvalidOperationException($"Unknown filter component {filterComponentName} for type {Column?.DataType}")
+                };
+            case DataViewColumnDataType.Text:
+                if (!Enum.TryParse<DataViewColumnTextFilterComponents>(filterComponentName, out var textResult))
+                    throw new InvalidOperationException($"Unknown filter component {filterComponentName} for type {Column?.DataType}");
+                return textResult switch
+                {
+                    DataViewColumnTextFilterComponents.Default => typeof(TextFilter),
+                    _ => throw new InvalidOperationException($"Unknown filter component {filterComponentName} for type {Column?.DataType}")
+                };
+            default: throw new InvalidOperationException($"Unknown filter component {filterComponentName} for type {Column?.DataType}");
+        };
+    }
 
     
 }
