@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
+using Radzen;
 using System.Web;
 
 namespace FinancesBlazor;
@@ -37,16 +38,15 @@ public class DataViewManager : IDisposable
 
     public async Task Save(DataView.DataView dataView)
     {
-        if (dataView == ActiveView)
-        {
-            var vd = dataView.Query.Serialize();
-            var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
-            try
-            {
-                await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{uri.GetLeftPart(UriPartial.Path)}?{vd}");
-            }
-            catch (Exception ex) { }
-        }
+        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+        var query = uri.Query;
+        if (query.StartsWith("?"))
+            query = query.Substring(1);
+        if (string.IsNullOrWhiteSpace(query))
+            return;
+        var qs = HttpUtility.ParseQueryString(query);
+        qs[dataView.Name] = dataView.Query.Serialize();
+        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{uri.GetLeftPart(UriPartial.Path)}?{qs}");
         await dataView.Requery();
         ViewChanged?.Invoke(this, dataView);
     }
