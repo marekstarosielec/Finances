@@ -13,9 +13,7 @@ namespace FinancesBlazor
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.InjectServices();
-            builder.Services.AddScoped<ViewManager.ViewManager>();
             builder.Services.AddScoped<DataViewManager>();
-            builder.Services.InjectEntities(builder.Configuration);
             builder.Services.InjectViews(builder.Configuration);
             builder.Services.AddRadzenComponents();
             var app = builder.Build();

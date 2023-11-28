@@ -1,6 +1,4 @@
 ﻿@using DataView;
-@using FinancesBlazor.PropertyInfo;
-@using FinancesBlazor.ViewManager;
 @using FinancesBlazor.Components.Grid.Filters;
 @using System.Text.Json.Nodes;
 @using Radzen.Blazor.Rendering;
@@ -57,22 +55,22 @@
 
     private List<JsonNode?>? _data;
 
-    private string GetCellStyle(JsonNode row, PropertyInfoBase propertyInfo)
-    {
-        var result = string.Empty;
-        if (propertyInfo == null)
-            return result;
+    // private string GetCellStyle(JsonNode row, PropertyInfoBase propertyInfo)
+    // {
+    //     var result = string.Empty;
+    //     if (propertyInfo == null)
+    //         return result;
 
-        if (propertyInfo.HorizontalAlign == ContentAlign.Right)
-            result += "text-end ";
-        if (propertyInfo.DataType == DataType.Date || propertyInfo.DataType == DataType.Precision)
-            result += "text-nowrap ";
-        if (propertyInfo.DataType == DataType.Money && row[propertyInfo.PropertyName]?.GetValue<decimal?>() > 0)
-            result += "green ";
-        if (propertyInfo.DataType == DataType.Money && row[propertyInfo.PropertyName]?.GetValue<decimal?>() < 0)
-            result += "red ";
-        return result;
-    }
+    //     if (propertyInfo.HorizontalAlign == ContentAlign.Right)
+    //         result += "text-end ";
+    //     if (propertyInfo.DataType == DataType.Date || propertyInfo.DataType == DataType.Precision)
+    //         result += "text-nowrap ";
+    //     if (propertyInfo.DataType == DataType.Money && row[propertyInfo.PropertyName]?.GetValue<decimal?>() > 0)
+    //         result += "green ";
+    //     if (propertyInfo.DataType == DataType.Money && row[propertyInfo.PropertyName]?.GetValue<decimal?>() < 0)
+    //         result += "red ";
+    //     return result;
+    // }
 
     protected override void OnInitialized()
     {

@@ -1,10 +1,8 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-namespace FinancesBlazor.Extensions;
+﻿namespace FinancesBlazor.Extensions;
 
 public static class StringExtensions
 {
-    public static string MakeFirstLetterUppercase(this string input) =>
+    public static string? MakeFirstLetterUppercase(this string input) =>
         input switch
         {
             null => null,
