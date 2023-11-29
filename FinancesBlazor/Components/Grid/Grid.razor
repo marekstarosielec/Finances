@@ -1,6 +1,7 @@
 ﻿@using DataView;
 @using FinancesBlazor.Components.Grid.Filters;
 @using System.Text.Json.Nodes;
+@using FinancesBlazor.Components.Grid.Rows
 @using Radzen.Blazor.Rendering;
 @inject DataViewManager _dataViewManager;
 @implements IDisposable;
@@ -33,13 +34,7 @@
             {
                 @foreach (var row in DataView.Result.Rows)
                 {
-                    <tr>
-                        @foreach (var column in DataView?.Columns!)
-                        {
-                            <td>@row[DataView.Result.Columns.FirstOrDefault(c => c.ColumnName == column.PrimaryDataColumnName)]?.ToString()</td>
-                            @* <td class="@GetCellStyle(row, column)">@TextValueFormatter.GetFormattedString(row, property)</td> *@
-                        }
-                    </tr>
+                    <DynamicRow DataView=@DataView Row=@row></DynamicRow>
                 }
             }
         </tbody>
@@ -75,9 +70,6 @@
     protected override void OnInitialized()
     {
         _dataViewManager.ViewChanged += ViewChanged;
-        // if (DataView == null)
-        //     return;
-        // ViewChanged(this, DataView);
     }
 
     private async Task CloseFilters()
@@ -107,7 +99,7 @@
         await _dataViewManager.Save(DataView);
     }
 
-    async void ViewChanged(object? sender, DataView e)
+    void ViewChanged(object? sender, DataView e)
     {
         if (DataView != e)
             return;

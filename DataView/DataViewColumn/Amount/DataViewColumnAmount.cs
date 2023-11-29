@@ -2,8 +2,10 @@
 
 public class DataViewColumnAmount : DataViewColumn
 {
-    public DataViewColumnAmount(string dataColumnName, string currencyColumn, string title, string shortName) : base(dataColumnName, DataViewColumnDataType.Precision, title, shortName)
+    public DataViewColumnAmount(string dataColumnName, string currencyColumn, string title, string shortName) : base(dataColumnName, DataViewColumnDataType.Amount, title, shortName)
     {
         SecondaryDataColumnName = currencyColumn;
+        HorizontalAlign = DataViewColumnContentAlign.Right;
+        Format = "0.00";
     }
 }

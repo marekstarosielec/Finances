@@ -3,12 +3,12 @@ using Finances.DataSource;
 
 namespace FinancesDataView;
 
-public class TransctionMainList : IDataView
+public class TransactionMainList : IDataView
 {
     private readonly DataSourceFactory _dataSourceFactory;
     private DataView.DataView? _dataView;
 
-    public TransctionMainList(DataSourceFactory dataSourceFactory)
+    public TransactionMainList(DataSourceFactory dataSourceFactory)
     {
         _dataSourceFactory = dataSourceFactory;
     }

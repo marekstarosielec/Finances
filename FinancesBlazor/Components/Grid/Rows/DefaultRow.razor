@@ -1,0 +1,18 @@
+﻿@using DataSource;
+@using DataView;
+@using FinancesBlazor.Components.Grid.Cells;
+
+<tr>
+    @foreach (var column in DataView?.Columns!)
+    {
+        <DynamicCell DataView=@DataView Row=@Row Column=column></DynamicCell>
+    }
+</tr>
+
+@code {
+    [Parameter]
+    public DataView? DataView { get; set; }
+
+    [Parameter]
+    public Dictionary<DataColumn, object?>? Row { get; set; }
+}

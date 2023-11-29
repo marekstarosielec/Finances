@@ -1,0 +1,75 @@
+﻿@using DataSource;
+@using DataView;
+
+<td class="@GetCellStyle()">@GetCellValue() @GetCurrencyValue()</td>
+
+@code {
+    [Parameter]
+    public DataView? DataView { get; set; }
+
+    [Parameter]
+    public Dictionary<DataColumn, object?>? Row { get; set; }
+
+    [Parameter]
+    public DataViewColumn? Column { get; set; }
+
+    private string GetCellStyle()
+    {
+        var result = string.Empty;
+        if (Column == null)
+            return result;
+
+        if (Column.HorizontalAlign == DataViewColumnContentAlign.Right)
+            result += "text-end ";
+        result += "text-nowrap ";
+
+        var dataColumn = DataView?.Result?.Columns.ToList().FirstOrDefault(dc => dc.ColumnName == Column.PrimaryDataColumnName);
+        if (dataColumn == null)
+            return result;
+        
+        var value = Row?[dataColumn] as decimal?;
+        if (value == null)
+            return result;
+
+        if (value >= 0)
+            result += "green ";
+        else
+            result += "red ";
+
+        return result;
+    }
+
+    public string? GetCellValue()
+    {
+        var result = string.Empty;
+        if (Column == null || Row == null)
+            return result;
+
+        var dataColumn = DataView?.Result?.Columns.ToList().FirstOrDefault(dc => dc.ColumnName == Column.PrimaryDataColumnName);
+        if (dataColumn == null)
+            return "column not found";
+
+        var value = Row[dataColumn];
+        if (value == null)
+            return Column.NullValue;
+
+        return (value as decimal?)?.ToString(Column.Format);
+    }
+
+    public string? GetCurrencyValue()
+    {
+        var result = string.Empty;
+        if (Column == null || Row == null)
+            return result;
+
+        var dataColumn = DataView?.Result?.Columns.ToList().FirstOrDefault(dc => dc.ColumnName == Column.SecondaryDataColumnName);
+        if (dataColumn == null)
+            return "column not found";
+
+        var value = Row[dataColumn];
+        if (value == null)
+            return "   ";
+
+        return value.ToString();
+    }
+}
