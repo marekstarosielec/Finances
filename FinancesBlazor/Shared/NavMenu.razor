@@ -1,5 +1,5 @@
-﻿@* @using FinancesBlazor.ViewManager;
-@inject ViewManager _viewManager; *@
+﻿@using DataView;
+@inject DataViewManager _dataViewManager;
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -12,14 +12,14 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-       @*  @foreach (var view in _viewManager.Views)
+        @foreach (var dataView in _dataViewManager.DataViews)
         {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@GetViewUrl(view)" Match="NavLinkMatch.All">
-                    <span class="@GetViewIcon(view)" aria-hidden="true"></span> @GetViewTitle(view)
+            <div class="nav-item px-3" @onclick="() => Navigate(dataView)">
+                <NavLink class="nav-link" Match="NavLinkMatch.All">
+                    <span class="@GetViewIcon(dataView)" aria-hidden="true"></span> @GetViewTitle(dataView)
                 </NavLink> 
             </div>
-        } *@
+        }
     </nav>
 </div>
 
@@ -28,19 +28,16 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    protected override void OnInitialized()
-    {
-
-    }
-
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
 
-    // private string GetViewUrl(View view) => $"?av={view.Name}";
+    private string? GetViewTitle(DataView dataView) => dataView.Presentation?.NavMenuTitle;
 
-    // private string? GetViewTitle(View view) => view.Presentation?.NavMenuTitle;
+    private string? GetViewIcon(DataView dataView) => $"oi {dataView.Presentation?.NavMenuIcon}";
 
-    // private string? GetViewIcon(View view) => $"oi {view.Presentation?.NavMenuIcon}";
+    private async void Navigate(DataView dataView)
+        => await _dataViewManager.ChangeActiveView(dataView);
+    
 }

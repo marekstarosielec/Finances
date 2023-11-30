@@ -73,6 +73,10 @@ a, .btn-link {
         border-color: #707070;
     }
 
+.nav-item {
+    cursor: pointer;
+}
+
 ::-webkit-scrollbar {
     width: 12px;
 }

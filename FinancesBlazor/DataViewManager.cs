@@ -14,7 +14,7 @@ public class DataViewManager : IDisposable
     private readonly NavigationManager _navigationManager;
     private readonly IJSRuntime _jsRuntime;
     private DataView.DataView _activeView;
-    public DataView.DataView ActiveView { get => _activeView; set => _activeView = value; }
+    public DataView.DataView ActiveView { get => _activeView; }
 
     public event EventHandler<DataView.DataView>? ViewChanged;
     public event EventHandler<DataView.DataView>? ActiveViewChanged;
@@ -28,7 +28,7 @@ public class DataViewManager : IDisposable
         if (DataViews.Count == 0)
             throw new InvalidOperationException("No view found");
 
-        //Force redirect on first load, so query string appears in url and view is loaded.
+        //Determine initial view.
         NameValueCollection qs = GetQueryString();
         if (qs["av"] == null)
         {
@@ -63,6 +63,20 @@ public class DataViewManager : IDisposable
         ViewChanged?.Invoke(this, dataView);
     }
 
+    public async Task ChangeActiveView(DataView.DataView dataView)
+    {
+        if (_activeView.Name == dataView.Name)
+            return;
+        _activeView = dataView;
+
+        var qs = GetQueryString();
+        qs["av"] = dataView.Name;
+        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
+        await dataView.Requery();
+
+        ActiveViewChanged?.Invoke(this, dataView);
+    }
+
     private async Task LoadFromQueryString()
     {
         var qs = GetQueryString();
@@ -83,7 +97,7 @@ public class DataViewManager : IDisposable
         } 
         
         var activeViewChanged = ActiveView.Name != newActiveView.Name;
-        ActiveView = newActiveView;
+        _activeView = newActiveView;
         if (activeViewChanged)
             ActiveViewChanged?.Invoke(this, ActiveView);
         
