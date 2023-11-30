@@ -4,7 +4,7 @@
 @inject DataViewManager _dataViewManager;
 @implements IDisposable
 
-<PageTitle>@_dataViewManager.ActiveView.Title</PageTitle>
+<PageTitle>@_dataViewManager.ActiveView?.Title</PageTitle>
 <FinancesBlazor.Components.Grid.Grid @key=gridId DataView="_dataViewManager.ActiveView" />
 
 @code{

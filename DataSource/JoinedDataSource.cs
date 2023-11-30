@@ -27,7 +27,7 @@ public class JoinedDataSource : IDataSource
 
         if (dataQuery?.Filters != null)
             foreach (var filterDefinition in dataQuery.Filters)
-                rows = rows.Fitler(filterDefinition.Key, filterDefinition.Value);
+                rows = rows.Filter(filterDefinition.Key, filterDefinition.Value);
 
         var totalRowCount = rows.Count();
         

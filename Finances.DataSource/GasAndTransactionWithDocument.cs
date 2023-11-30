@@ -9,25 +9,17 @@ public partial class DataSourceFactory
     {
         get
         {
-            _gasAndtransactionWithDocument ??= new JoinedDataSource(Transaction, Document, "DocumentId",
-                    new DataColumnJoinMapping("Id", null),
-                    new DataColumnJoinMapping("Number", "DocumentNumber"),
-                    new DataColumnJoinMapping("Pages", null),
-                    new DataColumnJoinMapping("Description", null),
-                    new DataColumnJoinMapping("Category", null),
-                    new DataColumnJoinMapping("InvoiceNumber", null),
-                    new DataColumnJoinMapping("Company", null),
-                    new DataColumnJoinMapping("Person", null),
-                    new DataColumnJoinMapping("Car", null),
-                    new DataColumnJoinMapping("RelatedObject", null),
-                    new DataColumnJoinMapping("Guarantee", null),
-                    new DataColumnJoinMapping("CaseName", null),
-                    new DataColumnJoinMapping("Settlement", null),
-                    new DataColumnJoinMapping("TransactionId", null),
-                    new DataColumnJoinMapping("Net", null),
-                    new DataColumnJoinMapping("Vat", null),
-                    new DataColumnJoinMapping("Gross", null),
-                    new DataColumnJoinMapping("Currency", null)
+            _gasAndtransactionWithDocument ??= new UnionedDataSource(Gas, TransactionWithDocument, 
+                    new Dictionary<DataColumn, DataColumnFilter>
+                    {
+                        { TransactionWithDocument.Columns["Category"], new DataColumnFilter { StringValue = "Gaz" } }
+                    },
+                    new DataColumnUnionMapping("Id", "Id", "Id"),
+                    new DataColumnUnionMapping("Date", "Date", "Date"),
+                    new DataColumnUnionMapping("Meter", "Meter", null),
+                    new DataColumnUnionMapping("Comment", "Comment", "Comment"),
+                    new DataColumnUnionMapping("Amount", null, "Amount"),
+                    new DataColumnUnionMapping("Currency", null, "Currency")
                     );
             return _gasAndtransactionWithDocument;
         }

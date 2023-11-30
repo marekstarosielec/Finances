@@ -47,7 +47,7 @@
 
         var dataColumn = DataView?.Result?.Columns.ToList().FirstOrDefault(dc => dc.ColumnName == Column.PrimaryDataColumnName);
         if (dataColumn == null)
-            return "column not found";
+            return "Column not found";
 
         var value = Row[dataColumn];
         if (value == null)
@@ -64,7 +64,7 @@
 
         var dataColumn = DataView?.Result?.Columns.ToList().FirstOrDefault(dc => dc.ColumnName == Column.SecondaryDataColumnName);
         if (dataColumn == null)
-            return "column not found";
+            return "Column not found";
 
         var value = Row[dataColumn];
         if (value == null)

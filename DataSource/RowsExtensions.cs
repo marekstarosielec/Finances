@@ -19,7 +19,7 @@ internal static class RowsExtensions
 
     private static IEnumerable<Dictionary<DataColumn, object?>> SortBy<TKey>(this IEnumerable<Dictionary<DataColumn, object?>> source, Func<Dictionary<DataColumn, object?>, TKey> predicate, bool descending) => descending ? source.OrderByDescending(predicate) : source.OrderBy(predicate);
 
-    internal static IEnumerable<Dictionary<DataColumn, object?>> Fitler(this IEnumerable<Dictionary<DataColumn, object?>> source, DataColumn column, DataColumnFilter filter) => column.ColumnDataType switch
+    internal static IEnumerable<Dictionary<DataColumn, object?>> Filter(this IEnumerable<Dictionary<DataColumn, object?>> source, DataColumn column, DataColumnFilter filter) => column.ColumnDataType switch
     {
         ColumnDataType.Text =>
             source.Where(n =>

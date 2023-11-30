@@ -4,14 +4,16 @@ public class UnionedDataSource : IDataSource
 {
     private readonly IDataSource _firstDataSource;
     private readonly IDataSource _secondDataSource;
+    private readonly Dictionary<DataColumn, DataColumnFilter> _mainFilters;
     private readonly DataColumnUnionMapping[] _mappings;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
-    public UnionedDataSource(IDataSource firstDataSource, IDataSource secondDataSource, params DataColumnUnionMapping[] mappings)
+    public UnionedDataSource(IDataSource firstDataSource, IDataSource secondDataSource, Dictionary<DataColumn, DataColumnFilter>? mainFilters = null, params DataColumnUnionMapping[] mappings)
     {
         _firstDataSource = firstDataSource;
         _secondDataSource = secondDataSource;
+        _mainFilters = mainFilters ?? new();
         _mappings = mappings;
         Columns = GetColumnList();
     }
@@ -23,10 +25,10 @@ public class UnionedDataSource : IDataSource
         if (dataQuery?.Sorters != null)
             foreach (var sortDefinition in dataQuery.Sorters)
                 rows = rows.Sort(sortDefinition.Key, sortDefinition.Value);
-        
+
         if (dataQuery?.Filters != null)
             foreach (var filterDefinition in dataQuery.Filters)
-                rows = rows.Fitler(filterDefinition.Key, filterDefinition.Value);
+                rows = rows.Filter(filterDefinition.Key, filterDefinition.Value);
 
         var totalRowCount = rows.Count();
 
@@ -39,7 +41,7 @@ public class UnionedDataSource : IDataSource
     private async Task<IEnumerable<Dictionary<DataColumn, object?>>> UnionTables()
     {
         var result = new List<Dictionary<DataColumn, object?>>();
-        DataQueryResult firstDataView = await _firstDataSource.ExecuteQuery(new DataQuery());
+        DataQueryResult firstDataView = await _firstDataSource.ExecuteQuery(new DataQuery {  PageSize = -1});
         foreach (var firstDataRow in firstDataView.Rows)
         {
             var resultDataRow = new Dictionary<DataColumn, object?>();
@@ -48,7 +50,7 @@ public class UnionedDataSource : IDataSource
             result.Add(resultDataRow);
         }
 
-        DataQueryResult secondDataView = await _secondDataSource.ExecuteQuery(new DataQuery());
+        DataQueryResult secondDataView = await _secondDataSource.ExecuteQuery(new DataQuery {  Filters = _mainFilters, PageSize = -1});
         foreach (var secondDataRow in secondDataView.Rows)
         {
             var resultDataRow = new Dictionary<DataColumn, object?>();

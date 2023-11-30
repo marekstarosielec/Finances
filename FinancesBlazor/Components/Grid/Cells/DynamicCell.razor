@@ -20,6 +20,7 @@
             DataViewColumnDataType.Text => typeof(TextCell),
             DataViewColumnDataType.Date => typeof(DateCell),
             DataViewColumnDataType.Amount => typeof(AmountCell),
+            DataViewColumnDataType.Precision => typeof(PrecisionCell),
             _ => throw new InvalidOperationException($"Unknown cell component for type {Column?.DataType}")
         };
 }
