@@ -19,22 +19,23 @@ internal static class RowsExtensions
 
     private static IEnumerable<Dictionary<DataColumn, object?>> SortBy<TKey>(this IEnumerable<Dictionary<DataColumn, object?>> source, Func<Dictionary<DataColumn, object?>, TKey> predicate, bool descending) => descending ? source.OrderByDescending(predicate) : source.OrderBy(predicate);
 
-    internal static IEnumerable<Dictionary<DataColumn, object?>> Filter(this IEnumerable<Dictionary<DataColumn, object?>> source, DataColumn column, DataColumnFilter filter) => column.ColumnDataType switch
+    internal static IEnumerable<Dictionary<DataColumn, object?>> Filter(this IEnumerable<Dictionary<DataColumn, object?>> source, DataColumn column, DataColumnFilter filter) => (column.ColumnDataType, filter.Equality) switch
     {
-        ColumnDataType.Text =>
-            source.Where(n =>
-                (string.IsNullOrWhiteSpace(n?[column] as string) && string.IsNullOrWhiteSpace(filter.StringValue))
-                || ((n?[column] as string)?.ToLowerInvariant().Contains(filter.StringValue!.ToLowerInvariant()) == true)
-                ),
-        ColumnDataType.Date =>
+        (ColumnDataType.Text, Equality.Equals) =>
+            source.Where(n => (n?[column] as string)?.ToLowerInvariant() == filter.StringValue!.ToLowerInvariant()),
+        (ColumnDataType.Text, Equality.NotEquals) =>
+            source.Where(n => (n?[column] as string)?.ToLowerInvariant() != filter.StringValue!.ToLowerInvariant()),
+        (ColumnDataType.Text, Equality.Contains) =>
+            source.Where(n => (n?[column] as string)?.ToLowerInvariant().Contains(filter.StringValue!.ToLowerInvariant()) == true),
+        (ColumnDataType.Date, _) =>
             source
                 .Select(n => new { Data = n, FilterData = n?[column] as DateTime? })
                 .Where(c => c.FilterData != null && c.FilterData >= filter.DateFrom && c.FilterData <= filter.DateTo)
                 .Select(c => c.Data),
-        ColumnDataType.Precision
+        (ColumnDataType.Precision, _)
             => throw new InvalidOperationException(),
-        ColumnDataType.Number
+        (ColumnDataType.Number, _)
             => throw new InvalidOperationException(),
-        _ => throw new InvalidOperationException()
+        (_, _) => throw new InvalidOperationException()
     };
 }

@@ -9,6 +9,23 @@
 <div class="toolbar">
     <button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
     <button class="btn btn-primary" @onclick="() => RemoveFilters()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
+    @if (DataView?.Query?.Prefilters != null)
+    {
+        <button class="btn btn-primary" @ref=_prefilterInvoker @onclick="@(args => _prefilterPopup.ToggleAsync(_prefilterInvoker))"><span class="fa fa-bolt"></span></button>
+        <Popup @ref=_prefilterPopup Lazy=false class="popup red" Style="display:none;position:absolute;padding:5px;border:1px">
+            <div class="prefilterContent">
+                @foreach (var prefilter in DataView.Query.Prefilters)
+                {
+                    <div class="form-check form-switch">
+                        <input class="form-check-input background-red" type="checkbox" value="" id=@prefilter.Name checked=@prefilter.Applied @onclick="() => ChangePrefilter(prefilter)">
+                        <label class="form-check-label default-text" for=@prefilter.Name>
+                            @prefilter.Title
+                        </label>
+                    </div>
+                }
+            </div>
+        </Popup>
+    }
 </div>
 
 @if (DataView?.Columns != null)
@@ -44,28 +61,13 @@
     private Dictionary<DataViewColumn, ElementReference> _popupInvokers = new();
     private Dictionary<DataViewColumn, Popup> _popups = new();
     private Dictionary<DataViewColumn, DynamicFilter> _dynamicFilters = new();
+    private Popup _prefilterPopup;
+    private ElementReference _prefilterInvoker;
 
     [Parameter]
     public DataView? DataView { get; set; }
 
     private List<JsonNode?>? _data;
-
-    // private string GetCellStyle(JsonNode row, PropertyInfoBase propertyInfo)
-    // {
-    //     var result = string.Empty;
-    //     if (propertyInfo == null)
-    //         return result;
-
-    //     if (propertyInfo.HorizontalAlign == ContentAlign.Right)
-    //         result += "text-end ";
-    //     if (propertyInfo.DataType == DataType.Date || propertyInfo.DataType == DataType.Precision)
-    //         result += "text-nowrap ";
-    //     if (propertyInfo.DataType == DataType.Money && row[propertyInfo.PropertyName]?.GetValue<decimal?>() > 0)
-    //         result += "green ";
-    //     if (propertyInfo.DataType == DataType.Money && row[propertyInfo.PropertyName]?.GetValue<decimal?>() < 0)
-    //         result += "red ";
-    //     return result;
-    // }
 
     protected override void OnInitialized()
     {
@@ -76,6 +78,12 @@
     {
         foreach (var kvp in _popups)
             await kvp.Value.CloseAsync();
+    }
+
+    private async Task ChangePrefilter(Prefilter prefilter)
+    {
+        prefilter.Applied = !prefilter.Applied;
+        await _dataViewManager.Save(DataView);
     }
 
     private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending) => DataView?.Query.Sorters.ContainsKey(column) == false || DataView?.Query.Sorters[column] != descending;

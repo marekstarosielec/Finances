@@ -40,3 +40,8 @@ table.table > tbody > tr:hover th {
     background-color: #383838;
     color: #FAFAFA;
 }
+
+.prefilterContent {
+    background-color: #2E2E2E;
+    padding: 5px;
+}

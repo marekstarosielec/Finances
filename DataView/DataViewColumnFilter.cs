@@ -12,11 +12,14 @@ public class DataViewColumnFilter
 
     public string? SecondaryStringValue { get; set; }
 
+    public Equality Equality { get; set; }
+
     public DataColumnFilter GetPrimaryDataColumnFilter() 
         => new DataColumnFilter { 
             StringValue = StringValue, 
             DateFrom = DateFrom, 
-            DateTo = DateTo 
+            DateTo = DateTo,
+            Equality = Equality 
         };
 
     public DataColumnFilter? GetSecondaryDataColumnFilter()

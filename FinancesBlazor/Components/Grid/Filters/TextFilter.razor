@@ -75,7 +75,7 @@
     {
         if (DataView?.Query.Filters == null || Column == null)
             return;
-        DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = currentText };
+        DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = currentText, Equality = DataSource.Equality.Contains };
         await InvokeAsync(async () =>
         {
             await _dataViewManager.Save(DataView);

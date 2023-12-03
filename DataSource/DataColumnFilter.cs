@@ -7,4 +7,6 @@ public class DataColumnFilter
     public DateTime? DateFrom { get; set; }
 
     public DateTime? DateTo { get; set; }
+
+    public Equality Equality { get; set; }
 }

@@ -13,7 +13,9 @@ public class DataViewQuery
     public Dictionary<DataViewColumn, DataViewColumnFilter> Filters { get; } = new ();
     public Dictionary<DataViewColumn, bool> Sorters = new();
     public int? PageSize = 100;
-    
+
+    public List<Prefilter> Prefilters { get; set; } = new();
+
     public DataViewQuery(DataQuery dataQuery, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns)
     {
         _dataQuery = dataQuery;
@@ -54,6 +56,17 @@ public class DataViewQuery
             _dataQuery.Filters[dataColumn] = filterValue;
         }
 
+        foreach (var prefilter in Prefilters)
+        {
+            if (!prefilter.Applied)
+                continue;
+
+            var dataColumn = _dataSource.Columns.FirstOrDefault(c => c.Key == prefilter.Column.PrimaryDataColumnName).Value;
+            if (dataColumn == null)
+                throw new InvalidOperationException($"Cannot find column named {prefilter.Column.PrimaryDataColumnName}");
+            _dataQuery.Filters[dataColumn] = prefilter.ColumnFilter.GetPrimaryDataColumnFilter();
+        }
+
         _dataQuery.PageSize = PageSize;
     }
 
@@ -75,6 +88,7 @@ public class DataViewQuery
                     data[$"f_{filter.Key.ShortName}_fr"] = filter.Value.DateFrom.Value.ToString("yyyyMMdd");
                 if (filter.Value.DateTo != null)
                     data[$"f_{filter.Key.ShortName}_to"] = filter.Value.DateTo.Value.ToString("yyyyMMdd");
+                data[$"f_{filter.Key.ShortName}_eq"] = filter.Value.Equality.ToString();
             }
         return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
     }
@@ -132,6 +146,19 @@ public class DataViewQuery
 
                 Filters[dataViewColumn] ??= new DataViewColumnFilter();
                 Filters[dataViewColumn].DateTo = DateTime.ParseExact(item.value, "yyyyMMdd", null);
+            }
+            else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_eq") == true)
+            {
+                var dataViewColumnShortName = item.key[2..^3];
+                var dataViewColumn = _columns.FirstOrDefault(c => c.ShortName == dataViewColumnShortName);
+                if (dataViewColumn == null)
+                    continue; //In case someone edited column name directly in url.
+
+                if (!Enum.TryParse<Equality>(item.value, out var equality))
+                    continue; //In case someone edited column name directly in url.
+
+                Filters[dataViewColumn] ??= new DataViewColumnFilter();
+                Filters[dataViewColumn].Equality = equality;
             }
         }
 

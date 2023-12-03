@@ -90,6 +90,10 @@ a, .btn-link {
     background-color: #7160E8;
 }
 
+.default-text {
+    color: #B2B2B2;
+}
+
 .yellow {
     color: #FFE39E;
 }
@@ -104,6 +108,12 @@ a, .btn-link {
 
 .green {
     color: #8AE28A;
+}
+
+.form-check-input:checked {
+    background-color: #7160E8;
+    border-color: #7160E8;
+    outline: none !important;
 }
 
 input, input:focus {

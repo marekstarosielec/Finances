@@ -1,5 +1,6 @@
 ﻿using DataView;
 using Finances.DataSource;
+using System.Data;
 
 namespace FinancesDataView;
 
@@ -30,8 +31,18 @@ public class TransactionMainList : IDataView
         };
 
         _dataView = new("t", "Tranzakcje", _dataSourceFactory.TransactionWithDocument, new(columns), presentation);
-
-        _dataView.Query.Sorters.Add(columns.Single(c => c.ShortName == "d"), true);
+        _dataView.Query.Prefilters.Add(
+            new Prefilter(
+                name: "savings", 
+                title: "Ukryj Oszczędzanie", 
+                column: columns.Single(c => c.PrimaryDataColumnName == "Category"),
+                columnFilter: new DataViewColumnFilter { 
+                    StringValue = "Oszczędzanie",
+                    Equality = DataSource.Equality.NotEquals
+                },
+                applied: true
+            ));
+        _dataView.Query.Sorters.Add(columns.Single(c => c.PrimaryDataColumnName == "Date"), true);
         return _dataView;
     }
 }
