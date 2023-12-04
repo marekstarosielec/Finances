@@ -16,7 +16,7 @@
                 {
                     <th>
                         <div class="@(column.HorizontalAlign == DataViewColumnContentAlign.Right ? "text-end dropdown" : "dropdown")">
-                            <button class="btn columnHeader" type="button" @ref=_popupInvokers[column] @onclick="@(args => _popups[column].ToggleAsync(_popupInvokers[column]))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down blue"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up yellow"></span></span></button>
+                            <button class="btn columnHeader" type="button" @ref=_popupInvokers[column] @onclick="@(args => ToggleFilter(column))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down blue"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up yellow"></span></span></button>
                             <Popup @ref=_popups[column] Lazy=false class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
                                 <DynamicFilter DataView=@DataView Column=column @ref=_dynamicFilters[column] Popup="@_popups[column]" ElementReference="@_popupInvokers[column]" />
                             </Popup>
@@ -57,6 +57,11 @@
         _dataViewManager.ViewChanged += ViewChanged;
     }
 
+    private void ToggleFilter(DataViewColumn column)
+    {
+        _popups[column].ToggleAsync(_popupInvokers[column]);
+    }
+
     private async Task CloseFilters()
     {
         foreach (var kvp in _popups)
@@ -72,7 +77,8 @@
         await _dataViewManager.Save(DataView);
     }
 
-    private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending) => DataView?.Query.Sorters.ContainsKey(column) == false || DataView?.Query.Sorters[column] != descending;
+    private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending) 
+        => DataView?.Query.Sorters.ContainsKey(column) == false || DataView?.Query.Sorters[column] != descending;
 
     void ViewChanged(object? sender, DataView e)
     {

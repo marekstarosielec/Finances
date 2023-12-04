@@ -4,6 +4,7 @@
 @using Radzen.Blazor.Rendering;
 
 @inject DataViewManager _dataViewManager;
+@implements IDisposable;
 
 <DateRangePicker Inline="true" AutoApply="true" LinkedCalendars="true" CustomDayNames="CustomDayNames" OnRangeSelect="OnRangeSelect" StartDate="DateFrom" EndDate="DateTo" />
 <button class="btn btn-primary" @onclick="() => SetPreviousMonth()">@PreviousMonthName</button>
@@ -35,13 +36,9 @@
 
     protected override void OnInitialized()
     {
-        //Set previously selected filter vaule in date picker (after renavigating to grid).
-        if (Column != null && DataView?.Query.Filters.ContainsKey(Column) == true)
-        {
-            DateFrom = DataView?.Query.Filters?[Column]?.DateFrom;
-            DateTo = DataView?.Query.Filters?[Column]?.DateTo;
-        }
+        _dataViewManager.ViewChanged += ViewChanged;
     }
+
     public async void OnRangeSelect(DateRange range)
     {
         await SetDates(range.Start.DateTime, range.End.DateTime);
@@ -82,5 +79,25 @@
         var today = DateTime.Today;
         DataView.Query.Filters[Column] = new DataViewColumnFilter { DateFrom = from, DateTo = to };
         await _dataViewManager.Save(DataView);
+    }
+
+    void ViewChanged(object? sender, DataView e)
+    {
+        if (DataView != e)
+            return;
+
+        //Set previously selected filter vaule in date picker (after renavigating to grid).
+        if (Column != null && DataView?.Query.Filters.ContainsKey(Column) == true)
+        {
+            DateFrom = DataView?.Query.Filters?[Column]?.DateFrom;
+            DateTo = DataView?.Query.Filters?[Column]?.DateTo;
+        }
+
+        //StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        _dataViewManager.ViewChanged -= ViewChanged;
     }
 }
