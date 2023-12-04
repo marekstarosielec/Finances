@@ -12,7 +12,7 @@ public class DataViewQuery
 
     public Dictionary<DataViewColumn, DataViewColumnFilter> Filters { get; } = new ();
     public Dictionary<DataViewColumn, bool> Sorters = new();
-    public int? PageSize = 100;
+    public int PageSize = 100;
 
     public List<Prefilter> Prefilters { get; set; } = new();
 
@@ -90,6 +90,8 @@ public class DataViewQuery
                     data[$"f_{filter.Key.ShortName}_to"] = filter.Value.DateTo.Value.ToString("yyyyMMdd");
                 data[$"f_{filter.Key.ShortName}_eq"] = filter.Value.Equality.ToString();
             }
+        if (PageSize != 100)
+            data["ps"] = PageSize.ToString();
         return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
     }
 
@@ -159,6 +161,13 @@ public class DataViewQuery
 
                 Filters[dataViewColumn] ??= new DataViewColumnFilter();
                 Filters[dataViewColumn].Equality = equality;
+            }
+            else if (item.key=="ps")
+            {
+                if (!int.TryParse(item.value, out var ps))
+                    continue;
+
+                PageSize = ps;
             }
         }
 

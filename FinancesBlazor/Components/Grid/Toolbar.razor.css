@@ -1,0 +1,21 @@
+﻿.toolbar {
+    background-color: #1E1E1E;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0px;
+}
+
+.btn-check:focus + .btn, .btn:focus {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.prefilterContent {
+    background-color: #2E2E2E;
+    padding: 5px;
+}
+
+.container-fluid {
+    padding-left: 0px;
+    padding-right: 0px;
+}

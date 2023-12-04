@@ -6,28 +6,7 @@
 @inject DataViewManager _dataViewManager;
 @implements IDisposable;
 
-<div class="toolbar">
-    <button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
-    <button class="btn btn-primary" @onclick="() => RemoveFilters()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
-    @if (DataView?.Query?.Prefilters != null)
-    {
-        <button class="btn btn-primary" @ref=_prefilterInvoker @onclick="@(args => _prefilterPopup.ToggleAsync(_prefilterInvoker))"><span class="fa fa-bolt"></span></button>
-        <Popup @ref=_prefilterPopup Lazy=false class="popup red" Style="display:none;position:absolute;padding:5px;border:1px">
-            <div class="prefilterContent">
-                @foreach (var prefilter in DataView.Query.Prefilters)
-                {
-                    <div class="form-check form-switch">
-                        <input class="form-check-input background-red" type="checkbox" value="" id=@prefilter.Name checked=@prefilter.Applied @onclick="() => ChangePrefilter(prefilter)">
-                        <label class="form-check-label default-text" for=@prefilter.Name>
-                            @prefilter.Title
-                        </label>
-                    </div>
-                }
-            </div>
-        </Popup>
-    }
-</div>
-
+<Toolbar DataView=DataView></Toolbar>
 @if (DataView?.Columns != null)
 {
     <table class="table table-borderless">
@@ -56,6 +35,10 @@
             }
         </tbody>
     </table>
+    @if (DataView?.Result != null && DataView.Result.Rows?.Count() < DataView.Result.TotalRowCount)
+    {
+        <button class="btn btn-primary" @onclick="() => LoadMore()">Wczytaj więcej</button>
+    }
 }
 @code {
     private Dictionary<DataViewColumn, ElementReference> _popupInvokers = new();
@@ -80,32 +63,16 @@
             await kvp.Value.CloseAsync();
     }
 
-    private async Task ChangePrefilter(Prefilter prefilter)
+    private async Task LoadMore()
     {
-        prefilter.Applied = !prefilter.Applied;
+        if (DataView == null)
+            return;
+
+        DataView.Query.PageSize += 100;
         await _dataViewManager.Save(DataView);
     }
 
     private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending) => DataView?.Query.Sorters.ContainsKey(column) == false || DataView?.Query.Sorters[column] != descending;
-
-    private async void ReloadDataRequest()
-    {
-        // if (View == null)
-        //     return;
-        // await CloseFilters();
-        // await View.Service.Reload();
-        // _data = View.Service.Data;
-        // StateHasChanged();
-    }
-
-    private async void RemoveFilters()
-    {
-        if (DataView == null || DataView?.Query.Filters == null)
-            return;
-
-        DataView.Query.Filters.Clear();
-        await _dataViewManager.Save(DataView);
-    }
 
     void ViewChanged(object? sender, DataView e)
     {

@@ -1,0 +1,77 @@
+﻿@using DataView;
+@using Radzen.Blazor.Rendering;
+@inject DataViewManager _dataViewManager;
+
+<nav class="navbar navbar-expand-md toolbar">
+    <div class="container-fluid">
+        <div class="navbar-collapse collapse" id="collapseNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <button class="btn btn-primary" @onclick="() => ReloadDataRequest()"><span class="fa fa-refresh"></span></button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-primary" @onclick="() => RemoveFilters()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
+                </li>
+                @if (DataView?.Query?.Prefilters != null)
+                {
+                    <li class="nav-item">
+                        <button class="btn btn-primary" @ref=_prefilterInvoker @onclick="@(args => _prefilterPopup.ToggleAsync(_prefilterInvoker))"><span class="fa fa-bolt"></span></button>
+                        <Popup @ref=_prefilterPopup Lazy=false class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
+                            <div class="prefilterContent">
+                                @foreach (var prefilter in DataView.Query.Prefilters)
+                                {
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" value="" id=@prefilter.Name checked=@prefilter.Applied @onclick="() => ChangePrefilter(prefilter)">
+                                        <label class="form-check-label default-text" for=@prefilter.Name>
+                                            @prefilter.Title
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </Popup>
+                    </li>
+                }
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item default-text">
+                    @DataView?.Result?.TotalRowCount.ToString("# ##0")
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+@code {
+    [Parameter]
+    public DataView? DataView { get; set; }
+
+    private Popup _prefilterPopup;
+    private ElementReference _prefilterInvoker;
+
+    private async void ReloadDataRequest()
+    {
+        // if (View == null)
+        //     return;
+        // await CloseFilters();
+        // await View.Service.Reload();
+        // _data = View.Service.Data;
+        // StateHasChanged();
+    }
+
+    private async void RemoveFilters()
+    {
+        if (DataView == null || DataView?.Query.Filters == null)
+            return;
+
+        DataView.Query.Filters.Clear();
+        await _dataViewManager.Save(DataView);
+    }
+
+    private async Task ChangePrefilter(Prefilter prefilter)
+    {
+        if (DataView == null || DataView?.Query.Filters == null)
+            return;
+        
+        prefilter.Applied = !prefilter.Applied;
+        await _dataViewManager.Save(DataView);
+    }
+}
