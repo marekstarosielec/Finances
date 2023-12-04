@@ -19,6 +19,7 @@ public class DataViewManager : IDisposable
     public event EventHandler<DataView.DataView>? ViewChanged;
     public event EventHandler<DataView.DataView>? ActiveViewChanged;
 
+    private string currentQueryString;
     public DataViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<DataView.DataView> dataViews)
     {
         _navigationManager = navigationManager;
@@ -58,7 +59,8 @@ public class DataViewManager : IDisposable
     {
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Query.Serialize();
-        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
+        currentQueryString = SerializeQueryString(qs);
+        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{currentQueryString}");
         await dataView.Requery();
         ViewChanged?.Invoke(this, dataView);
     }
@@ -71,7 +73,8 @@ public class DataViewManager : IDisposable
 
         var qs = GetQueryString();
         qs["av"] = dataView.Name;
-        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
+        currentQueryString = SerializeQueryString(qs);
+        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{currentQueryString}");
         await dataView.Requery();
 
         ActiveViewChanged?.Invoke(this, dataView);
@@ -118,7 +121,7 @@ public class DataViewManager : IDisposable
 
     private NameValueCollection GetQueryString()
     {
-        var query = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
+        var query = currentQueryString ?? _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
         if (query.StartsWith("?"))
             query = query.Substring(1);
         if (string.IsNullOrWhiteSpace(query))
