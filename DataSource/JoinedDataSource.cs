@@ -6,6 +6,7 @@ public class JoinedDataSource : IDataSource
     private readonly IDataSource _rightDataSource;
     private readonly string _joinColumn;
     private readonly DataColumnJoinMapping[] _mappings;
+    private IEnumerable<Dictionary<DataColumn, object?>> _cache;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
@@ -39,6 +40,9 @@ public class JoinedDataSource : IDataSource
 
     private async Task<IEnumerable<Dictionary<DataColumn, object?>>> LeftJoinTable()
     {
+        if (_cache != null)
+            return _cache;
+
         DataQueryResult leftDataView = await _leftDataSource.ExecuteQuery(new DataQuery{  PageSize = -1 });
         DataQueryResult rightDataView = await _rightDataSource.ExecuteQuery(new DataQuery{  PageSize = -1 });
         var leftDataViewJoinColumn = _leftDataSource.Columns.ContainsKey(_joinColumn) ? _leftDataSource.Columns[_joinColumn] : throw new InvalidOperationException($"Joined data source does not contain column {_joinColumn}");
@@ -64,6 +68,8 @@ public class JoinedDataSource : IDataSource
                 newRow[column.Value] = row[column.Value];
             result.Add(newRow);
         }
+        
+        _cache = result;
         return result;
     }
 

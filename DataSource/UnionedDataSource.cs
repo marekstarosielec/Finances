@@ -6,6 +6,7 @@ public class UnionedDataSource : IDataSource
     private readonly IDataSource _secondDataSource;
     private readonly Dictionary<DataColumn, DataColumnFilter> _mainFilters;
     private readonly DataColumnUnionMapping[] _mappings;
+    private IEnumerable<Dictionary<DataColumn, object?>> _cache;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
@@ -40,6 +41,9 @@ public class UnionedDataSource : IDataSource
 
     private async Task<IEnumerable<Dictionary<DataColumn, object?>>> UnionTables()
     {
+        if (_cache != null)
+            return _cache;
+
         var result = new List<Dictionary<DataColumn, object?>>();
         DataQueryResult firstDataView = await _firstDataSource.ExecuteQuery(new DataQuery {  PageSize = -1});
         foreach (var firstDataRow in firstDataView.Rows)
@@ -58,6 +62,8 @@ public class UnionedDataSource : IDataSource
                 resultDataRow[Columns[mapping.ResultDataSourceColumnName]] = mapping.SecondDataSourceColumnName == null ? null : secondDataRow[_secondDataSource.Columns[mapping.SecondDataSourceColumnName]];
             result.Add(resultDataRow);
         }
+        
+        _cache = result;
         return result;
     }
 
