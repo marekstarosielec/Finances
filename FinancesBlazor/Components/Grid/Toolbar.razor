@@ -59,10 +59,10 @@
 
     private async void RemoveFilters()
     {
-        if (DataView == null || DataView?.Query.Filters == null)
+        if (DataView == null)
             return;
 
-        DataView.Query.Filters.Clear();
+        DataView.Query.Reset();
         await _dataViewManager.Save(DataView);
     }
 

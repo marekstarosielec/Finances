@@ -18,12 +18,15 @@ public class DataView
 
     public DataViewQuery Query { get; init; }
 
+    public bool IsLoading { get; private set; } = true;
     public DataQueryResult? Result { get; private set; }
 
     public async Task Requery()
     {
+        IsLoading = true;
         Query.Apply();
         Result = await _dataSource.ExecuteQuery(_query);
+        IsLoading = false;
     }
 
     public DataView(string name, string title, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns, DataViewPresentation? presentation = null)

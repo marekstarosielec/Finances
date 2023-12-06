@@ -15,6 +15,7 @@ public class DataViewQuery
     public int PageSize = 100;
 
     public List<Prefilter> Prefilters { get; set; } = new();
+    public Dictionary<DataViewColumn, bool> PreSorters = new();
 
     public DataViewQuery(DataQuery dataQuery, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns)
     {
@@ -171,5 +172,16 @@ public class DataViewQuery
             }
         }
 
+    }
+
+    public void Reset()
+    {
+        Sorters.Clear();
+        foreach (var preSorter in PreSorters)
+            Sorters.Add(preSorter.Key, preSorter.Value);
+        
+        Filters.Clear();
+        foreach (var preFilter in Prefilters)
+            preFilter.Applied = preFilter.DefaultApplied;
     }
 }

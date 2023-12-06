@@ -42,7 +42,7 @@ public class TransactionMainList : IDataView
                 },
                 applied: true
             ));
-        _dataView.Query.Sorters.Add(columns.Single(c => c.PrimaryDataColumnName == "Date"), true);
+        _dataView.Query.PreSorters.Add(columns.Single(c => c.PrimaryDataColumnName == "Date"), true);
         return _dataView;
     }
 }

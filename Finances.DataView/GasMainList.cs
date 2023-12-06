@@ -29,7 +29,7 @@ public class GasMainList : IDataView
 
         _dataView = new("g", "Gaz", _dataSourceFactory.GasAndTransactionWithDocument, new(columns), presentation);
 
-        _dataView.Query.Sorters.Add(columns.Single(c => c.ShortName == "d"), true);
+        _dataView.Query.PreSorters.Add(columns.Single(c => c.ShortName == "d"), true);
         return _dataView;
     }
 }

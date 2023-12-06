@@ -28,7 +28,7 @@ public class DataViewManager : IDisposable
         DataViews = dataViews.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         if (DataViews.Count == 0)
             throw new InvalidOperationException("No view found");
-
+        
         //Determine initial view.
         NameValueCollection qs = GetQueryString();
         if (qs["av"] == null)
@@ -46,13 +46,22 @@ public class DataViewManager : IDisposable
             }
             _activeView = activeView;
         }
-        qs[_activeView.Name] = _activeView.Query.Serialize();
+
+        //Setup initial values
+        DataViews.ForEach(dv => {
+            var currentview = qs[dv.Name];
+            if (!string.IsNullOrWhiteSpace(currentview))
+                dv.Query.Deserialize(currentview);
+            else
+                dv.Query.Reset();
+            qs[dv.Name] = dv.Query.Serialize();
+        });
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
-    private async void _navigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
+    private void _navigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        await LoadFromQueryString();
+        LoadFromQueryString();
     }
 
     public async Task Save(DataView.DataView dataView)
@@ -78,7 +87,7 @@ public class DataViewManager : IDisposable
         ViewChanged?.Invoke(this, dataView);
     }
 
-    private async Task LoadFromQueryString()
+    private void LoadFromQueryString()
     {
         var qs = GetQueryString();
         var newActiveView = ActiveView;
@@ -93,7 +102,6 @@ public class DataViewManager : IDisposable
             if (view == null || qs[key] == null)
                 continue;
             view.Query.Deserialize(qs[key]!);
-         //   await view.Requery();
             ViewChanged?.Invoke(this, view);
         } 
         
@@ -101,7 +109,6 @@ public class DataViewManager : IDisposable
         _activeView = newActiveView;
         if (activeViewChanged)
             ActiveViewChanged?.Invoke(this, ActiveView);
-        
     }
 
     private DataView.DataView? FindView(string? viewName)

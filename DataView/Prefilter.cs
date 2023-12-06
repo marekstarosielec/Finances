@@ -12,6 +12,8 @@ public class Prefilter
 
     public bool Applied { get; set; }
 
+    public bool DefaultApplied { get; }
+
     public Prefilter(string name, string title, DataViewColumn column, DataViewColumnFilter columnFilter, bool applied = false)
     {
         Name = name;
@@ -19,6 +21,7 @@ public class Prefilter
         Column = column;
         ColumnFilter = columnFilter;
         Applied = applied;
+        DefaultApplied = applied;
     }
 
 }

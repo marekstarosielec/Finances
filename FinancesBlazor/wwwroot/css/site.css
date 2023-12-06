@@ -110,6 +110,10 @@ a, .btn-link {
     color: #8AE28A;
 }
 
+.purple {
+    color: #7160E8;
+}
+
 .form-check-input:checked {
     background-color: #7160E8;
     border-color: #7160E8;

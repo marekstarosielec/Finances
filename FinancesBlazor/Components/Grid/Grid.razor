@@ -2,13 +2,18 @@
 @using FinancesBlazor.Components.Grid.Filters;
 @using System.Text.Json.Nodes;
 @using FinancesBlazor.Components.Grid.Rows
+@using FinancesBlazor.Components.Spinner;
 @using Radzen.Blazor.Rendering;
 @inject DataViewManager _dataViewManager;
 @implements IDisposable;
 
-<Toolbar DataView=DataView></Toolbar>
-@if (DataView?.Columns != null)
+@if (DataView?.IsLoading != false)
 {
+    <Spinner></Spinner>
+}
+else
+{
+    <Toolbar DataView=DataView></Toolbar>
     <table class="table table-borderless">
         <thead>
             <tr>
@@ -62,11 +67,11 @@
         _popups[column].ToggleAsync(_popupInvokers[column]);
     }
 
-    private async Task CloseFilters()
-    {
-        foreach (var kvp in _popups)
-            await kvp.Value.CloseAsync();
-    }
+    // private async Task CloseFilters()
+    // {
+    //     foreach (var kvp in _popups)
+    //         await kvp.Value.CloseAsync();
+    // }
 
     private async Task LoadMore()
     {
