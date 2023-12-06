@@ -47,14 +47,11 @@
     private Popup _prefilterPopup;
     private ElementReference _prefilterInvoker;
 
-    private async void ReloadDataRequest()
+    private void ReloadDataRequest()
     {
-        // if (View == null)
-        //     return;
-        // await CloseFilters();
-        // await View.Service.Reload();
-        // _data = View.Service.Data;
-        // StateHasChanged();
+        if (DataView == null)
+            return;
+        _dataViewManager.RemoveCache(DataView);
     }
 
     private async void RemoveFilters()

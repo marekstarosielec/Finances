@@ -6,7 +6,7 @@ public class UnionedDataSource : IDataSource
     private readonly IDataSource _secondDataSource;
     private readonly Dictionary<DataColumn, DataColumnFilter> _mainFilters;
     private readonly DataColumnUnionMapping[] _mappings;
-    private IEnumerable<Dictionary<DataColumn, object?>> _cache;
+    private IEnumerable<Dictionary<DataColumn, object?>>? _cache;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
@@ -77,5 +77,12 @@ public class UnionedDataSource : IDataSource
             result.Add(mapping.ResultDataSourceColumnName, dataColumn);
         }
         return result;
+    }
+
+    public void RemoveCache()
+    {
+        _cache = null;
+        _firstDataSource.RemoveCache();
+        _secondDataSource.RemoveCache();
     }
 }

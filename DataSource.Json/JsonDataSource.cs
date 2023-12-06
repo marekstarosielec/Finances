@@ -100,4 +100,9 @@ public class JsonDataSource : IDataSource
             _semaphores[_fileName] = new SemaphoreSlim(1); 
         return _semaphores[_fileName];
     }
+
+    public void RemoveCache()
+    {
+        _contentString = null;
+    }
 }

@@ -89,6 +89,7 @@ else
     {
         if (DataView != e)
             return;
+        StateHasChanged();
         await DataView.Requery();
         StateHasChanged();
     }

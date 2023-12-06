@@ -21,6 +21,12 @@ public class DataView
     public bool IsLoading { get; private set; } = true;
     public DataQueryResult? Result { get; private set; }
 
+    public void RemoveCache()
+    {
+        _dataSource.RemoveCache();
+        IsLoading = true;
+    }
+
     public async Task Requery()
     {
         IsLoading = true;

@@ -73,6 +73,12 @@ public class DataViewManager : IDisposable
         ViewChanged?.Invoke(this, dataView);
     }
 
+    public void RemoveCache(DataView.DataView dataView)
+    {
+        dataView.RemoveCache();
+        ViewChanged?.Invoke(this, dataView);
+    }
+
     public async Task ChangeActiveView(DataView.DataView dataView)
     {
         if (_activeView.Name == dataView.Name)

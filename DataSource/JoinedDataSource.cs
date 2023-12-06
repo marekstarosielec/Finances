@@ -6,7 +6,7 @@ public class JoinedDataSource : IDataSource
     private readonly IDataSource _rightDataSource;
     private readonly string _joinColumn;
     private readonly DataColumnJoinMapping[] _mappings;
-    private IEnumerable<Dictionary<DataColumn, object?>> _cache;
+    private IEnumerable<Dictionary<DataColumn, object?>>? _cache;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
@@ -103,5 +103,12 @@ public class JoinedDataSource : IDataSource
                 result[mapping.NewColumnName] = new DataColumn(mapping.NewColumnName, column.Value.ColumnDataType);
         }
         return result;
+    }
+
+    public void RemoveCache()
+    {
+        _cache = null;
+        _leftDataSource.RemoveCache();
+        _rightDataSource.RemoveCache();
     }
 }
