@@ -61,7 +61,6 @@ public class DataViewManager : IDisposable
         qs[dataView.Name] = dataView.Query.Serialize();
         currentQueryString = SerializeQueryString(qs);
         await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{currentQueryString}");
-        await dataView.Requery();
         ViewChanged?.Invoke(this, dataView);
     }
 
@@ -75,9 +74,8 @@ public class DataViewManager : IDisposable
         qs["av"] = dataView.Name;
         currentQueryString = SerializeQueryString(qs);
         await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{currentQueryString}");
-        await dataView.Requery();
-
         ActiveViewChanged?.Invoke(this, dataView);
+        ViewChanged?.Invoke(this, dataView);
     }
 
     private async Task LoadFromQueryString()
@@ -95,7 +93,7 @@ public class DataViewManager : IDisposable
             if (view == null || qs[key] == null)
                 continue;
             view.Query.Deserialize(qs[key]!);
-            await view.Requery();
+         //   await view.Requery();
             ViewChanged?.Invoke(this, view);
         } 
         

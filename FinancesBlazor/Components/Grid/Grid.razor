@@ -80,10 +80,11 @@
     private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending) 
         => DataView?.Query.Sorters.ContainsKey(column) == false || DataView?.Query.Sorters[column] != descending;
 
-    void ViewChanged(object? sender, DataView e)
+    async void ViewChanged(object? sender, DataView e)
     {
         if (DataView != e)
             return;
+        await DataView.Requery();
         StateHasChanged();
     }
 
