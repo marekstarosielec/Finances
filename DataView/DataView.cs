@@ -6,6 +6,7 @@ namespace DataView;
 public class DataView
 {
     private IDataSource _dataSource;
+
     private DataQuery _query = new DataQuery();
 
     public string Name { get; }
