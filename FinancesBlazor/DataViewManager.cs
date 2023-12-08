@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using FinancesBlazor.Components.Spinner;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
 using Radzen;
@@ -13,6 +14,7 @@ public class DataViewManager : IDisposable
     public readonly List<DataView.DataView> DataViews;
     private readonly NavigationManager _navigationManager;
     private readonly IJSRuntime _jsRuntime;
+    private readonly DialogService _dialogService;
     private DataView.DataView _activeView;
     public DataView.DataView ActiveView { get => _activeView; }
 
@@ -20,11 +22,12 @@ public class DataViewManager : IDisposable
     public event EventHandler<DataView.DataView>? ActiveViewChanged;
 
     private string currentQueryString;
-    public DataViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<DataView.DataView> dataViews)
+    public DataViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<DataView.DataView> dataViews, DialogService dialogService)
     {
         _navigationManager = navigationManager;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
         _jsRuntime = jsRuntime;
+        _dialogService = dialogService;
         DataViews = dataViews.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         if (DataViews.Count == 0)
             throw new InvalidOperationException("No view found");
@@ -146,5 +149,15 @@ public class DataViewManager : IDisposable
 
     private string SerializeQueryString(NameValueCollection queryString) 
         => String.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
+
+    public async Task OpenSideDialog()
+    {
+        await _dialogService.OpenSideAsync<Spinner>(string.Empty, options: new SideDialogOptions { 
+            CloseDialogOnOverlayClick = false, 
+            Position = DialogPosition.Right, 
+            ShowMask = false, 
+            ShowTitle = false
+            });
+    }
 }
 

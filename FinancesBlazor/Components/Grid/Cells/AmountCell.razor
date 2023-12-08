@@ -1,7 +1,9 @@
 ﻿@using DataSource;
 @using DataView;
 
-<td class="@GetCellStyle()">@GetCellValue() @GetCurrencyValue()</td>
+@inject DataViewManager _dataViewManager;
+
+<td class="@GetCellStyle()" @onclick="_dataViewManager.OpenSideDialog">@GetCellValue() @GetCurrencyValue()</td>
 
 @code {
     [Parameter]

@@ -16,6 +16,7 @@ namespace FinancesBlazor
             builder.Services.AddScoped<DataViewManager>();
             builder.Services.InjectViews(builder.Configuration);
             builder.Services.AddRadzenComponents();
+            builder.Services.AddScoped<DialogService>();
             var app = builder.Build();
            
             // Configure the HTTP request pipeline.
