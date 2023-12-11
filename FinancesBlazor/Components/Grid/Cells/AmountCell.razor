@@ -3,7 +3,7 @@
 
 @inject DataViewManager _dataViewManager;
 
-<td class="@GetCellStyle()" @onclick="_dataViewManager.OpenSideDialog">@GetCellValue() @GetCurrencyValue()</td>
+<td class="@GetCellStyle()" @onclick="openDialog">@GetCellValue() @GetCurrencyValue()</td>
 
 @code {
     [Parameter]
@@ -28,7 +28,7 @@
         var dataColumn = DataView?.Result?.Columns.ToList().FirstOrDefault(dc => dc.ColumnName == Column.PrimaryDataColumnName);
         if (dataColumn == null)
             return result;
-        
+
         var value = Row?[dataColumn] as decimal?;
         if (value == null)
             return result;
@@ -73,5 +73,11 @@
             return "   ";
 
         return value.ToString();
+    }
+
+    void openDialog()
+    {
+        _dataViewManager.OpenSideDialog("100px");
+        _dataViewManager.OpenSideDialog("1000px");
     }
 }

@@ -1,4 +1,5 @@
-﻿using FinancesBlazor.Components.Spinner;
+﻿using FinancesBlazor.Components.Details;
+using FinancesBlazor.Components.Spinner;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
@@ -87,6 +88,7 @@ public class DataViewManager : IDisposable
         if (_activeView.Name == dataView.Name)
             return;
         _activeView = dataView;
+        _dialogService.CloseSide();
 
         var qs = GetQueryString();
         qs["av"] = dataView.Name;
@@ -150,11 +152,13 @@ public class DataViewManager : IDisposable
     private string SerializeQueryString(NameValueCollection queryString) 
         => String.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
 
-    public async Task OpenSideDialog()
+    public async Task OpenSideDialog(string width)
     {
-        await _dialogService.OpenSideAsync<Spinner>(string.Empty, options: new SideDialogOptions { 
+        _dialogService.CloseSide();
+        await _dialogService.OpenSideAsync<Details>(string.Empty, options: new SideDialogOptions { 
             CloseDialogOnOverlayClick = false, 
             Position = DialogPosition.Right, 
+            Width = width,
             ShowMask = false, 
             ShowTitle = false
             });

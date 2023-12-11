@@ -17176,9 +17176,9 @@ ul.rz-profile-menu {
     position: fixed;
     z-index: var(--rz-dialog-zindex);
     opacity: 1;
-    background-color: var(--rz-dialog-background-color);
+    background-color: #1E1E1E;
     box-shadow: var(--rz-dialog-shadow);
-    border-radius: var(--rz-dialog-border-radius);
+    border-radius: 0;
     overflow-y: auto;
 }
 
