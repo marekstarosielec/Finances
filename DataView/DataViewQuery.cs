@@ -1,5 +1,6 @@
 ﻿using DataSource;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Web;
 
 namespace DataView;
@@ -71,7 +72,7 @@ public class DataViewQuery
         _dataQuery.PageSize = PageSize;
     }
 
-    public string Serialize()
+    internal Dictionary<string, string> Serialize()
     {
         var data = new Dictionary<string, string>();
         if (Sorters != null)
@@ -93,79 +94,79 @@ public class DataViewQuery
             }
         if (PageSize != 100)
             data["ps"] = PageSize.ToString();
-        return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
+        return data;
     }
 
-    public void Deserialize(string serializedValue)
+    internal void Deserialize(NameValueCollection items)
     {
         Sorters.Clear();
         Filters.Clear();
-        if (serializedValue == null)
-            return;
-
-        var nvc = HttpUtility.ParseQueryString(serializedValue);
-        var items = nvc.AllKeys.SelectMany(nvc.GetValues, (k, v) => new { key = k, value = v });
-        foreach (var item in items)
+        foreach (string key in items)
         {
-            if (item.key == null)
+            if (key == null)
                 continue;
 
-            if (item.key.StartsWith("s_"))
+            if (key.StartsWith("s_"))
             {
-                var dataViewColumnShortName = item.key[2..];
+                var dataViewColumnShortName = key[2..];
                 var dataViewColumn = _columns.FirstOrDefault(c => c.ShortName == dataViewColumnShortName);
                 if (dataViewColumn == null)
                     continue; //In case someone edited column name directly in url.
 
-                Sorters[dataViewColumn] = item.value == "1" ? true : false;
+                Sorters[dataViewColumn] = items[key] == "1" ? true : false;
             }
-            else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_sv") == true)
+            else if (key?.StartsWith("f_") == true && key?.EndsWith("_sv") == true)
             {
-                var dataViewColumnShortName = item.key[2..^3];
+                var dataViewColumnShortName = key[2..^3];
                 var dataViewColumn = _columns.FirstOrDefault(c => c.ShortName == dataViewColumnShortName);
                 if (dataViewColumn == null)
                     continue; //In case someone edited column name directly in url.
 
                 Filters[dataViewColumn] = new DataViewColumnFilter { 
-                    StringValue = item.value 
+                    StringValue = items[key]
                 };
             }
-            else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_fr") == true)
+            else if (key?.StartsWith("f_") == true && key?.EndsWith("_fr") == true)
             {
-                var dataViewColumnShortName = item.key[2..^3];
+                if (items[key] == null)
+                    continue;
+                var dataViewColumnShortName = key[2..^3];
                 var dataViewColumn = _columns.FirstOrDefault(c => c.ShortName == dataViewColumnShortName);
                 if (dataViewColumn == null)
                     continue; //In case someone edited column name directly in url.
 
                 Filters[dataViewColumn] ??= new DataViewColumnFilter();
-                Filters[dataViewColumn].DateFrom = DateTime.ParseExact(item.value, "yyyyMMdd", null);
+                Filters[dataViewColumn].DateFrom = DateTime.ParseExact(items[key], "yyyyMMdd", null);
             }
-            else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_to") == true)
+            else if (key?.StartsWith("f_") == true && key?.EndsWith("_to") == true)
             {
-                var dataViewColumnShortName = item.key[2..^3];
+                if (items[key] == null)
+                    continue;
+
+                var dataViewColumnShortName = key[2..^3];
                 var dataViewColumn = _columns.FirstOrDefault(c => c.ShortName == dataViewColumnShortName);
                 if (dataViewColumn == null)
                     continue; //In case someone edited column name directly in url.
 
                 Filters[dataViewColumn] ??= new DataViewColumnFilter();
-                Filters[dataViewColumn].DateTo = DateTime.ParseExact(item.value, "yyyyMMdd", null);
+                Filters[dataViewColumn].DateTo = DateTime.ParseExact(items[key], "yyyyMMdd", null);
             }
-            else if (item.key?.StartsWith("f_") == true && item.key?.EndsWith("_eq") == true)
+            else if (key?.StartsWith("f_") == true && key?.EndsWith("_eq") == true)
             {
-                var dataViewColumnShortName = item.key[2..^3];
+                var dataViewColumnShortName = key[2..^3];
                 var dataViewColumn = _columns.FirstOrDefault(c => c.ShortName == dataViewColumnShortName);
                 if (dataViewColumn == null)
                     continue; //In case someone edited column name directly in url.
 
-                if (!Enum.TryParse<Equality>(item.value, out var equality))
+                if (!Enum.TryParse<Equality>(items[key], out var equality))
                     continue; //In case someone edited column name directly in url.
 
                 Filters[dataViewColumn] ??= new DataViewColumnFilter();
                 Filters[dataViewColumn].Equality = equality;
             }
-            else if (item.key=="ps")
+            else if (key =="ps")
             {
-                if (!int.TryParse(item.value, out var ps))
+                if (!int.TryParse(items[key], out var ps))
                     continue;
 
                 PageSize = ps;

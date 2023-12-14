@@ -1,5 +1,6 @@
 ﻿using DataSource;
 using System.Collections.ObjectModel;
+using System.Web;
 
 namespace DataView;
 
@@ -22,6 +23,9 @@ public class DataView
     public bool IsLoading { get; private set; } = true;
 
     public DataQueryResult? Result { get; private set; }
+
+    public string? DetailsViewName { get; }
+
 
     private List<string> _selectedRecords = new List<string>();
 
@@ -53,6 +57,37 @@ public class DataView
 
     public bool RowIsSelected(Dictionary<DataColumn, object?>? row) => _selectedRecords.Any(s => s == GetRowId(row));
 
+    public string Serialize()
+    {
+        var data = Query.Serialize();
+       // data["sr"] = string.Join(',', _selectedRecords);
+        return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
+    }
+
+    public void Deserialize(string serializedValue)
+    {
+        if (serializedValue == null)
+            return;
+
+        var items = HttpUtility.ParseQueryString(serializedValue);
+        Query.Deserialize(items);
+
+        foreach (string key in items)
+        {
+            if (key == null)
+                continue;
+
+            if (key == "sr")
+            {
+                var sr = items[key];
+                if (sr == null)
+                    return;
+
+                //_selectedRecords = sr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+        }
+    }
+
     public void RemoveCache()
     {
         _dataSource.RemoveCache();
@@ -67,7 +102,7 @@ public class DataView
         IsLoading = false;
     }
 
-    public DataView(string name, string title, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns, DataViewPresentation? presentation = null)
+    public DataView(string name, string title, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns, DataViewPresentation? presentation = null, string? detailsViewName = null)
     {
         Name = name;
         Title = title;
@@ -76,6 +111,7 @@ public class DataView
         Columns = columns;
         Query = new DataViewQuery(_query, _dataSource, Columns);
         ValidateColumns();
+        DetailsViewName = detailsViewName;
     }
 
     void ValidateColumns()

@@ -1,6 +1,5 @@
 ﻿using DataView;
 using Finances.DataSource;
-using System.Data;
 
 namespace FinancesDataView;
 
@@ -30,7 +29,7 @@ public class TransactionMainList : IDataView
             new DataViewColumnText("DocumentNumber", "Numer dokumentu", "n")
         };
 
-        _dataView = new("t", "Tranzakcje", _dataSourceFactory.TransactionWithDocument, new(columns), presentation);
+        _dataView = new("t", "Tranzakcje", _dataSourceFactory.TransactionWithDocument, new(columns), presentation, "td");
         _dataView.Query.Prefilters.Add(
             new Prefilter(
                 name: "savings", 

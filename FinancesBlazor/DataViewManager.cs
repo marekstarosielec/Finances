@@ -55,10 +55,10 @@ public class DataViewManager : IDisposable
         DataViews.ForEach(dv => {
             var currentview = qs[dv.Name];
             if (!string.IsNullOrWhiteSpace(currentview))
-                dv.Query.Deserialize(currentview);
+                dv.Deserialize(currentview);
             else
                 dv.Query.Reset();
-            qs[dv.Name] = dv.Query.Serialize();
+            qs[dv.Name] = dv.Serialize();
         });
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
@@ -71,7 +71,7 @@ public class DataViewManager : IDisposable
     public async Task Save(DataView.DataView dataView)
     {
         var qs = GetQueryString();
-        qs[dataView.Name] = dataView.Query.Serialize();
+        qs[dataView.Name] = dataView.Serialize();
         currentQueryString = SerializeQueryString(qs);
         await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{currentQueryString}");
         ViewChanged?.Invoke(this, dataView);
@@ -112,7 +112,7 @@ public class DataViewManager : IDisposable
             var view = FindView(key);
             if (view == null || qs[key] == null)
                 continue;
-            view.Query.Deserialize(qs[key]!);
+            view.Deserialize(qs[key]!);
             ViewChanged?.Invoke(this, view);
         } 
         
@@ -137,7 +137,9 @@ public class DataViewManager : IDisposable
 
     private NameValueCollection GetQueryString()
     {
-        var query = currentQueryString ?? _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
+        //This breaks back/forward browser navigation.
+       // var query = currentQueryString ?? _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
+        var query = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
         if (query.StartsWith("?"))
             query = query.Substring(1);
         if (string.IsNullOrWhiteSpace(query))
