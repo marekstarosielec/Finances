@@ -155,13 +155,17 @@ public class DataViewManager : IDisposable
     public async Task OpenSideDialog(string width)
     {
         _dialogService.CloseSide();
-        await _dialogService.OpenSideAsync<Details>(string.Empty, options: new SideDialogOptions { 
-            CloseDialogOnOverlayClick = false, 
-            Position = DialogPosition.Right, 
-            Width = width,
-            ShowMask = false, 
-            ShowTitle = false
-            });
+        await _dialogService.OpenSideAsync<Details>(string.Empty,
+            parameters: new Dictionary<string, object>() { 
+                { "DataView", ActiveView } 
+            },
+            options: new SideDialogOptions { 
+                CloseDialogOnOverlayClick = false, 
+                Position = DialogPosition.Right, 
+                Width = width,
+                ShowMask = false, 
+                ShowTitle = false
+                });
     }
 }
 

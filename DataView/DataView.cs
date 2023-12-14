@@ -20,7 +20,38 @@ public class DataView
     public DataViewQuery Query { get; init; }
 
     public bool IsLoading { get; private set; } = true;
+
     public DataQueryResult? Result { get; private set; }
+
+    private List<string> _selectedRecords = new List<string>();
+
+    private string GetRowId(Dictionary<DataColumn, object?>? row)
+    {
+        if (row == null)
+            throw new ArgumentNullException(nameof(row));
+
+        var idColumn = _dataSource.Columns.FirstOrDefault(c => c.Key == "Id").Value;
+        if (idColumn == null)
+            throw new InvalidOperationException("Cannot find Id column in data source");
+
+        var id = row[idColumn]?.ToString();
+        if (id == null)
+            throw new InvalidOperationException("Cannot find row id");
+        
+        return id;
+    }
+
+    public void SelectRow(Dictionary<DataColumn, object?>? row)
+    {
+        _selectedRecords.Add(GetRowId(row));
+    }
+
+    public void UnselectRow(Dictionary<DataColumn, object?>? row)
+    {
+        _selectedRecords.RemoveAll(s => s == GetRowId(row));
+    }
+
+    public bool RowIsSelected(Dictionary<DataColumn, object?>? row) => _selectedRecords.Any(s => s == GetRowId(row));
 
     public void RemoveCache()
     {

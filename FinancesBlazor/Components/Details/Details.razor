@@ -1,7 +1,11 @@
-﻿@inject DataViewManager _dataViewManager;
+﻿@using DataView;
+@inject DataViewManager _dataViewManager;
 
 <button class="btn btn-primary" @onclick="() => Test()">Test</button>
 @code {
+    [Parameter]
+    public DataView? DataView { get; set; }
+
     void Test()
     {
         _dataViewManager.OpenSideDialog("100px");

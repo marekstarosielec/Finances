@@ -1,9 +1,10 @@
 ﻿@using DataSource;
 @using DataView;
 @using FinancesBlazor.Components.Grid.Cells;
+@inject DataViewManager _dataViewManager;
 
 <tr class="@(_checked ? "checked" : null)">
-    <td><RadzenCheckBox class="checkbox" @bind-Value=@_checked /></td>
+    <td><RadzenCheckBox TValue="bool" class="checkbox" Value=@_checked Change=@(args => CheckChange(args)) /></td>
     @foreach (var column in DataView?.Columns!)
     {
         <DynamicCell DataView=@DataView Row=@Row Column=column></DynamicCell>
@@ -18,4 +19,21 @@
     public Dictionary<DataColumn, object?>? Row { get; set; }
 
     private bool _checked;
+
+    protected override void OnInitialized()
+    {
+        _checked = DataView?.RowIsSelected(Row) ?? false;
+    }
+
+    private async void CheckChange(bool args)
+    {
+        if (DataView == null)
+            return;
+        if (args)
+            DataView.SelectRow(Row);
+        else
+            DataView.UnselectRow(Row);
+        _checked = args;
+        await _dataViewManager.Save(DataView);
+    }
 }
