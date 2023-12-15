@@ -29,6 +29,20 @@ public class DataView
 
     private List<string> _selectedRecords = new List<string>();
 
+    private string? _singleRecordId;
+    public void SelectSingleRecord(Dictionary<DataColumn, object?>? row)
+    {
+        _singleRecordId = GetRowId(row);
+    }
+
+    public async Task<Dictionary<DataColumn, object?>?> GetSingleRecord(string id)
+    {
+        var query = new DataQuery();
+        query.Filters.Add(_dataSource.Columns["id"], new DataColumnFilter { StringValue = id });
+        var result = await _dataSource.ExecuteQuery(query);
+        return result.Rows.FirstOrDefault();
+    }
+
     private string GetRowId(Dictionary<DataColumn, object?>? row)
     {
         if (row == null)
@@ -57,6 +71,7 @@ public class DataView
 
     public bool RowIsSelected(Dictionary<DataColumn, object?>? row) => _selectedRecords.Any(s => s == GetRowId(row));
 
+    public int SelectedRowsCount => _selectedRecords.Count;
     public string Serialize()
     {
         var data = Query.Serialize();

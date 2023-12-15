@@ -127,8 +127,12 @@ public class DataViewManager : IDisposable
     private string SerializeQueryString(NameValueCollection queryString) 
         => String.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
 
-    public async Task OpenSideDialog(string width)
+    public async Task OpenSideDialog(bool singleRecord)
     {
+        if (ActiveView == null)
+            return;
+        var width = singleRecord ? 300 : Math.Min(3, ActiveView.SelectedRowsCount) * 300;
+
         _dialogService.CloseSide();
         await _dialogService.OpenSideAsync<Details>(string.Empty,
             parameters: new Dictionary<string, object>() { 
@@ -137,7 +141,7 @@ public class DataViewManager : IDisposable
             options: new SideDialogOptions { 
                 CloseDialogOnOverlayClick = false, 
                 Position = DialogPosition.Right, 
-                Width = width,
+                Width = $"{width}px",
                 ShowMask = false, 
                 ShowTitle = false
                 });

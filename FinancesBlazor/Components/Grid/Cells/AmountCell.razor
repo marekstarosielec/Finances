@@ -77,7 +77,7 @@
 
     void openDialog()
     {
-        _dataViewManager.OpenSideDialog("100px");
-        _dataViewManager.OpenSideDialog("1000px");
+        DataView.SelectSingleRecord(Row);
+        _dataViewManager.OpenSideDialog(true);
     }
 }
