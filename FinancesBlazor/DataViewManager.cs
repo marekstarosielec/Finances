@@ -131,9 +131,8 @@ public class DataViewManager : IDisposable
     {
         if (ActiveView == null)
             return;
-        var width = singleRecord ? 300 : Math.Min(3, ActiveView.SelectedRowsCount) * 300;
+        var width = singleRecord ? 300 : Math.Min(3, ActiveView.CheckedRecordsCount) * 300;
 
-        _dialogService.CloseSide();
         await _dialogService.OpenSideAsync<Details>(string.Empty,
             parameters: new Dictionary<string, object>() { 
                 { "DataView", ActiveView } 
