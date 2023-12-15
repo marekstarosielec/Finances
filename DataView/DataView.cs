@@ -27,21 +27,22 @@ public class DataView
     public string? DetailsViewName { get; }
 
 
-    private List<string> _selectedRecords = new List<string>();
+    private List<string> _checkedRecords = new List<string>();
 
-    private string? _singleRecordId;
-    public void SelectSingleRecord(Dictionary<DataColumn, object?>? row)
+    public string? SelectedRecordId { get; private set; }
+
+    public void SelectRecord(Dictionary<DataColumn, object?>? row)
     {
-        _singleRecordId = GetRowId(row);
+        SelectedRecordId = GetRowId(row);
     }
 
-    public async Task<Dictionary<DataColumn, object?>?> GetSingleRecord(string id)
-    {
-        var query = new DataQuery();
-        query.Filters.Add(_dataSource.Columns["id"], new DataColumnFilter { StringValue = id });
-        var result = await _dataSource.ExecuteQuery(query);
-        return result.Rows.FirstOrDefault();
-    }
+    //public async Task<Dictionary<DataColumn, object?>?> GetSingleRecord(string id)
+    //{
+    //    var query = new DataQuery();
+    //    query.Filters.Add(_dataSource.Columns["id"], new DataColumnFilter { StringValue = id });
+    //    var result = await _dataSource.ExecuteQuery(query);
+    //    return result.Rows.FirstOrDefault();
+    //}
 
     private string GetRowId(Dictionary<DataColumn, object?>? row)
     {
@@ -59,23 +60,27 @@ public class DataView
         return id;
     }
 
-    public void SelectRow(Dictionary<DataColumn, object?>? row)
+    public void CheckRecord(Dictionary<DataColumn, object?>? row)
     {
-        _selectedRecords.Add(GetRowId(row));
+        SelectedRecordId = null;
+        _checkedRecords.Add(GetRowId(row));
     }
 
-    public void UnselectRow(Dictionary<DataColumn, object?>? row)
+    public void UncheckRecord(Dictionary<DataColumn, object?>? row)
     {
-        _selectedRecords.RemoveAll(s => s == GetRowId(row));
+        _checkedRecords.RemoveAll(s => s == GetRowId(row));
     }
 
-    public bool RowIsSelected(Dictionary<DataColumn, object?>? row) => _selectedRecords.Any(s => s == GetRowId(row));
+    public bool RecordIsChecked(Dictionary<DataColumn, object?>? row) => _checkedRecords.Any(s => s == GetRowId(row));
 
-    public int SelectedRowsCount => _selectedRecords.Count;
+    public int CheckedRecordsCount => _checkedRecords.Count;
+
     public string Serialize()
     {
         var data = Query.Serialize();
-        data["sr"] = string.Join(',', _selectedRecords);
+        data["cr"] = string.Join(',', _checkedRecords);
+        if (SelectedRecordId != null)
+            data["sr"] = SelectedRecordId;
         return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
     }
 
@@ -92,13 +97,19 @@ public class DataView
             if (key == null)
                 continue;
 
+            if (key == "cr")
+            {
+                var cr = items[key];
+                if (cr == null)
+                    return;
+
+                _checkedRecords = cr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+
             if (key == "sr")
             {
                 var sr = items[key];
-                if (sr == null)
-                    return;
-
-                _selectedRecords = sr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+                SelectedRecordId = sr;
             }
         }
     }
