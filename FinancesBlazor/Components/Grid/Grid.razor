@@ -92,10 +92,6 @@ else
             return;
         StateHasChanged();
         await DataView.Requery();
-        if (DataView.SelectedRecordId != null)
-            _dataViewManager.OpenSideDialog(true);
-        if (DataView.CheckedRecordsCount > 0)
-            _dataViewManager.OpenSideDialog(false);
         StateHasChanged();
     }
 

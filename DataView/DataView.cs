@@ -34,6 +34,7 @@ public class DataView
     public void SelectRecord(Dictionary<DataColumn, object?>? row)
     {
         SelectedRecordId = GetRowId(row);
+        _checkedRecords = new List<string>();
     }
 
     //public async Task<Dictionary<DataColumn, object?>?> GetSingleRecord(string id)

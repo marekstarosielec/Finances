@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Radzen;
 using System.Collections.Specialized;
+using System.Data;
 using System.Web;
 
 namespace FinancesBlazor;
@@ -86,6 +87,11 @@ public class DataViewManager : IDisposable
                 ActiveViewChanged?.Invoke(this, _activeView);
             }
         }
+
+        if (_activeView?.SelectedRecordId != null)
+            OpenSideDialog(true);
+        if (_activeView?.CheckedRecordsCount > 0)
+            OpenSideDialog(false);
 
         foreach (var dv in DataViews)
         {
