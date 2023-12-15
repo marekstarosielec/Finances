@@ -12,7 +12,7 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        @foreach (var dataView in _dataViewManager.DataViews)
+        @foreach (var dataView in _dataViewManager.DataViews.Where(dv => dv.Presentation != null))
         {
             <div class="nav-item px-3" @onclick="() => Navigate(dataView)">
                 <NavLink class="nav-link" Match="NavLinkMatch.All">
@@ -37,7 +37,7 @@
 
     private string? GetViewIcon(DataView dataView) => $"oi {dataView.Presentation?.NavMenuIcon}";
 
-    private async void Navigate(DataView dataView)
-        => await _dataViewManager.ChangeActiveView(dataView);
+    private void Navigate(DataView dataView)
+        => _dataViewManager.ChangeActiveView(dataView);
     
 }

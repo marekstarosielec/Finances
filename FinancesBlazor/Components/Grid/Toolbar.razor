@@ -54,21 +54,21 @@
         _dataViewManager.RemoveCache(DataView);
     }
 
-    private async void RemoveFilters()
+    private void RemoveFilters()
     {
         if (DataView == null)
             return;
 
         DataView.Query.Reset();
-        await _dataViewManager.Save(DataView);
+        _dataViewManager.Save(DataView);
     }
 
-    private async Task ChangePrefilter(Prefilter prefilter)
+    private void ChangePrefilter(Prefilter prefilter)
     {
         if (DataView == null || DataView?.Query.Filters == null)
             return;
         
         prefilter.Applied = !prefilter.Applied;
-        await _dataViewManager.Save(DataView);
+        _dataViewManager.Save(DataView);
     }
 }

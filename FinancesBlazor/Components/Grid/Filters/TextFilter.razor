@@ -48,7 +48,7 @@
         if (Popup != null && ElementReference != null)
             await Popup.CloseAsync(ElementReference.Value);
         debounce.Stop();
-        await ApplyFilter();
+        ApplyFilter();
     }
 
     private void TextChanged(ChangeEventArgs e)
@@ -61,7 +61,7 @@
     private async void TimerCallback(object? sender, ElapsedEventArgs e)
     {
         debounce.Stop();
-        await ApplyFilter();
+        ApplyFilter();
     }
 
     void IDisposable.Dispose()
@@ -71,15 +71,12 @@
         debounce.Dispose();
     }
 
-    public async Task ApplyFilter()
+    public void ApplyFilter()
     {
         if (DataView?.Query.Filters == null || Column == null)
             return;
         DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = currentText, Equality = DataSource.Equality.Contains };
-        await InvokeAsync(async () =>
-        {
-            await _dataViewManager.Save(DataView);
-        });
+        _dataViewManager.Save(DataView);
     }
 
     private async Task OnOpen()

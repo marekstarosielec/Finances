@@ -42,7 +42,7 @@
 
         DataView.Query.Filters.Remove(Column);
 
-        await _dataViewManager.Save(DataView);
+        _dataViewManager.Save(DataView);
     }
 
     public async Task SortClick(bool descending)
@@ -55,7 +55,7 @@
 
         DataView.Query.Sorters.Clear();
         DataView.Query.Sorters.Add(Column, descending);
-        await _dataViewManager.Save(DataView);
+        _dataViewManager.Save(DataView);
     }
 
     private Type GetFilterComponent(string filterComponentName)

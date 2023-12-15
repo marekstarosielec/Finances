@@ -16,7 +16,7 @@
         _dataViewManager.ActiveViewChanged += ActiveDataViewChanged;
     }
 
-    async void ActiveDataViewChanged(object? sender, DataView.DataView e)
+    void ActiveDataViewChanged(object? sender, DataView.DataView e)
     {
         gridId = Guid.NewGuid();
         StateHasChanged();

@@ -74,13 +74,13 @@ else
     //         await kvp.Value.CloseAsync();
     // }
 
-    private async Task LoadMore()
+    private void LoadMore()
     {
         if (DataView == null)
             return;
 
         DataView.Query.PageSize += 100;
-        await _dataViewManager.Save(DataView);
+        _dataViewManager.Save(DataView);
     }
 
     private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending) 

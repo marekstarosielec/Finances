@@ -85,12 +85,14 @@ public class DataViewQuery
             foreach (var filter in Filters)
             {
                 if (!string.IsNullOrWhiteSpace(filter.Value.StringValue))
+                {
                     data[$"f_{filter.Key.ShortName}_sv"] = filter.Value.StringValue;
+                    data[$"f_{filter.Key.ShortName}_eq"] = filter.Value.Equality.ToString();
+                }
                 if (filter.Value.DateFrom != null)
                     data[$"f_{filter.Key.ShortName}_fr"] = filter.Value.DateFrom.Value.ToString("yyyyMMdd");
                 if (filter.Value.DateTo != null)
                     data[$"f_{filter.Key.ShortName}_to"] = filter.Value.DateTo.Value.ToString("yyyyMMdd");
-                data[$"f_{filter.Key.ShortName}_eq"] = filter.Value.Equality.ToString();
             }
         if (PageSize != 100)
             data["ps"] = PageSize.ToString();
@@ -135,7 +137,8 @@ public class DataViewQuery
                 if (dataViewColumn == null)
                     continue; //In case someone edited column name directly in url.
 
-                Filters[dataViewColumn] ??= new DataViewColumnFilter();
+                if (!Filters.ContainsKey(dataViewColumn))
+                    Filters.Add(dataViewColumn, new DataViewColumnFilter());
                 Filters[dataViewColumn].DateFrom = DateTime.ParseExact(items[key], "yyyyMMdd", null);
             }
             else if (key?.StartsWith("f_") == true && key?.EndsWith("_to") == true)
@@ -148,7 +151,8 @@ public class DataViewQuery
                 if (dataViewColumn == null)
                     continue; //In case someone edited column name directly in url.
 
-                Filters[dataViewColumn] ??= new DataViewColumnFilter();
+                if (!Filters.ContainsKey(dataViewColumn))
+                    Filters.Add(dataViewColumn, new DataViewColumnFilter());
                 Filters[dataViewColumn].DateTo = DateTime.ParseExact(items[key], "yyyyMMdd", null);
             }
             else if (key?.StartsWith("f_") == true && key?.EndsWith("_eq") == true)
@@ -161,7 +165,8 @@ public class DataViewQuery
                 if (!Enum.TryParse<Equality>(items[key], out var equality))
                     continue; //In case someone edited column name directly in url.
 
-                Filters[dataViewColumn] ??= new DataViewColumnFilter();
+                if (!Filters.ContainsKey(dataViewColumn))
+                    Filters.Add(dataViewColumn, new DataViewColumnFilter());
                 Filters[dataViewColumn].Equality = equality;
             }
             else if (key =="ps")

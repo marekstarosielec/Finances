@@ -1,10 +1,7 @@
 ﻿using FinancesBlazor.Components.Details;
-using FinancesBlazor.Components.Spinner;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.JSInterop;
 using Radzen;
-using System;
 using System.Collections.Specialized;
 using System.Web;
 
@@ -14,20 +11,17 @@ public class DataViewManager : IDisposable
 {
     public readonly List<DataView.DataView> DataViews;
     private readonly NavigationManager _navigationManager;
-    private readonly IJSRuntime _jsRuntime;
     private readonly DialogService _dialogService;
-    private DataView.DataView _activeView;
-    public DataView.DataView ActiveView { get => _activeView; }
+    private DataView.DataView? _activeView;
+    public DataView.DataView? ActiveView { get => _activeView; }
 
     public event EventHandler<DataView.DataView>? ViewChanged;
     public event EventHandler<DataView.DataView>? ActiveViewChanged;
 
-    private string currentQueryString;
-    public DataViewManager(NavigationManager navigationManager, IJSRuntime jsRuntime, List<DataView.DataView> dataViews, DialogService dialogService)
+    public DataViewManager(NavigationManager navigationManager, List<DataView.DataView> dataViews, DialogService dialogService)
     {
         _navigationManager = navigationManager;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
-        _jsRuntime = jsRuntime;
         _dialogService = dialogService;
         DataViews = dataViews.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         if (DataViews.Count == 0)
@@ -35,24 +29,12 @@ public class DataViewManager : IDisposable
         
         //Determine initial view.
         NameValueCollection qs = GetQueryString();
-        if (qs["av"] == null)
-        {
-            qs["av"] = DataViews.First().Name;
-            _activeView = DataViews.First();
-        } 
-        else
-        {
-            var activeView = FindView(qs["av"]);
-            if (activeView == null)
-            {
-                qs["av"] = DataViews.First().Name;
-                activeView = DataViews.First();
-            }
-            _activeView = activeView;
-        }
+        if (qs["av"] == null || FindView(qs["av"]) == null)
+            qs["av"] = DataViews.First(dv => dv.Presentation != null).Name;
 
         //Setup initial values
-        DataViews.ForEach(dv => {
+        DataViews.ForEach(dv =>
+        {
             var currentview = qs[dv.Name];
             if (!string.IsNullOrWhiteSpace(currentview))
                 dv.Deserialize(currentview);
@@ -68,13 +50,11 @@ public class DataViewManager : IDisposable
         LoadFromQueryString();
     }
 
-    public async Task Save(DataView.DataView dataView)
+    public void Save(DataView.DataView dataView)
     {
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
-        currentQueryString = SerializeQueryString(qs);
-        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{currentQueryString}");
-        ViewChanged?.Invoke(this, dataView);
+        _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
     public void RemoveCache(DataView.DataView dataView)
@@ -83,43 +63,38 @@ public class DataViewManager : IDisposable
         ViewChanged?.Invoke(this, dataView);
     }
 
-    public async Task ChangeActiveView(DataView.DataView dataView)
+    public void ChangeActiveView(DataView.DataView dataView)
     {
-        if (_activeView.Name == dataView.Name)
+        if (_activeView?.Name == dataView.Name)
             return;
-        _activeView = dataView;
         _dialogService.CloseSide();
 
         var qs = GetQueryString();
         qs["av"] = dataView.Name;
-        currentQueryString = SerializeQueryString(qs);
-        await _jsRuntime.InvokeVoidAsync("ChangeUrl", $"{GetUriWithoutQueryString()}?{currentQueryString}");
-        ActiveViewChanged?.Invoke(this, dataView);
-        ViewChanged?.Invoke(this, dataView);
+        _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
     private void LoadFromQueryString()
     {
         var qs = GetQueryString();
-        var newActiveView = ActiveView;
-        foreach (var key in qs.AllKeys)
+        if (!string.Equals(qs["av"],ActiveView?.Name, StringComparison.CurrentCultureIgnoreCase))
         {
-            if (key == "av")
+            var newActiveView = DataViews.FirstOrDefault(dv => string.Equals(qs["av"], dv.Name, StringComparison.CurrentCultureIgnoreCase));
+            if (newActiveView != null)
             {
-                newActiveView = FindView(qs[key]) ?? ActiveView;
-                continue;
+                _activeView = newActiveView;
+                ActiveViewChanged?.Invoke(this, _activeView);
             }
-            var view = FindView(key);
-            if (view == null || qs[key] == null)
+        }
+
+        foreach (var dv in DataViews)
+        {
+            if (qs[dv.Name] == null)
                 continue;
-            view.Deserialize(qs[key]!);
-            ViewChanged?.Invoke(this, view);
-        } 
-        
-        var activeViewChanged = ActiveView.Name != newActiveView.Name;
-        _activeView = newActiveView;
-        if (activeViewChanged)
-            ActiveViewChanged?.Invoke(this, ActiveView);
+
+            dv.Deserialize(qs[dv.Name]!);
+            ViewChanged?.Invoke(this, dv);
+        }
     }
 
     private DataView.DataView? FindView(string? viewName)
@@ -137,8 +112,6 @@ public class DataViewManager : IDisposable
 
     private NameValueCollection GetQueryString()
     {
-        //This breaks back/forward browser navigation.
-       // var query = currentQueryString ?? _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
         var query = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
         if (query.StartsWith("?"))
             query = query.Substring(1);

@@ -60,7 +60,7 @@ public class DataView
     public string Serialize()
     {
         var data = Query.Serialize();
-       // data["sr"] = string.Join(',', _selectedRecords);
+        data["sr"] = string.Join(',', _selectedRecords);
         return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
     }
 
@@ -83,7 +83,7 @@ public class DataView
                 if (sr == null)
                     return;
 
-                //_selectedRecords = sr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+                _selectedRecords = sr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
             }
         }
     }

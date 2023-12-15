@@ -25,7 +25,7 @@
         _checked = DataView?.RowIsSelected(Row) ?? false;
     }
 
-    private async void CheckChange(bool args)
+    private void CheckChange(bool args)
     {
         if (DataView == null)
             return;
@@ -34,6 +34,6 @@
         else
             DataView.UnselectRow(Row);
         _checked = args;
-        await _dataViewManager.Save(DataView);
+        _dataViewManager.Save(DataView);
     }
 }
