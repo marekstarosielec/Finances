@@ -2,6 +2,7 @@
 @using DataView;
 @using FinancesBlazor.Components.Grid.Cells;
 @inject DataViewManager _dataViewManager;
+@implements IDisposable;
 
 <tr class="@(_checked ? "checked" : null)">
     <td><RadzenCheckBox TValue="bool" class="checkbox" Value=@_checked Change=@(args => CheckChange(args)) /></td>
@@ -22,6 +23,7 @@
 
     protected override void OnInitialized()
     {
+        _dataViewManager.ViewChanged += ViewChanged;
         _checked = DataView?.RowIsSelected(Row) ?? false;
     }
 
@@ -35,5 +37,18 @@
             DataView.UnselectRow(Row);
         _checked = args;
         _dataViewManager.Save(DataView);
+    }
+
+    void ViewChanged(object? sender, DataView e)
+    {
+        if (DataView != e)
+            return;
+        _checked = DataView?.RowIsSelected(Row) ?? false;
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        _dataViewManager.ViewChanged -= ViewChanged;
     }
 }
