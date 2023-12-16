@@ -1,0 +1,18 @@
+﻿tr:hover {
+    background-color: #383838;
+    color: #FAFAFA;
+    cursor: pointer;
+}
+
+.checked {
+    background-color: #383838;
+    color: #FAFAFA;
+}
+
+.checkbox {
+    background-color: #383838 !important;
+}
+
+.rz-chkbox-box {
+    background-color: #383838 !important;
+}

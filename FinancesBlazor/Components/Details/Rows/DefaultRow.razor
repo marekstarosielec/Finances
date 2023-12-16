@@ -1,0 +1,34 @@
+﻿@using DataSource;
+@using DataView;
+@using FinancesBlazor.Components.Grid.Cells;
+@inject DataViewManager _dataViewManager;
+@implements IDisposable;
+
+<div>Record</div>
+
+@code {
+    [Parameter]
+    public DataView? DataView { get; set; }
+
+    [Parameter]
+    public Dictionary<DataColumn, object?>? Row { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        _dataViewManager.ViewChanged += ViewChanged;
+       
+    }
+
+    void ViewChanged(object? sender, DataView e)
+    {
+        if (DataView != e)
+            return;
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        _dataViewManager.ViewChanged -= ViewChanged;
+    }
+}

@@ -1,14 +1,34 @@
-﻿@using DataView;
+﻿@using DataSource;
+@using DataView;
+@using FinancesBlazor.Components.Details.Rows;
+
 @inject DataViewManager _dataViewManager;
 
 <button class="btn btn-primary" @onclick="() => Test()">Test</button>
+@if (DataView?.Result?.Rows != null)
+{
+    @foreach (var row in _details.Keys)
+    {
+        <DynamicRow DataView=@DataView Row=@(_details[row]?.Result?.GetById(row))></DynamicRow>
+    }
+}
 @code {
     [Parameter]
-    public DataView? DataView { get; set; }
+    public DataView? DataView  { get; set; }
+    private Dictionary<string, DataView?> _details = new();
 
-    [Parameter]
-    public bool SingleRecord { get; set; }
+    protected override async void OnAfterRender(bool firstRender)
+    {
+       
+        // var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == DataView.GetDetailsDataViewName());
+        // if (detailsView == null)
+        //     return;
 
+        // detailsView.Query.IdFilters.Clear();
+        // detailsView.Query.IdFilters.AddRange(DataView.CheckedRecords.Keys);
+        // await detailsView.Requery();
+        // var t = detailsView.Result;
+    }
 
     async Task Test()
     {
@@ -16,15 +36,21 @@
         if (DataView == null)
             return;
 
-        
-        var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == DataView.GetDetailsDataViewName());
-        if (detailsView == null)
-            return;
+        _details = DataView.CheckedRecords.Keys.ToDictionary(k => k, v => (DataView?)null);
+        foreach (var group in DataView.CheckedRecords.GroupBy(cr => cr.Value))
+        {
+            var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == group.Key);
+            if (detailsView == null)
+                continue;
 
-        detailsView.Query.IdFilters.Clear();
-        detailsView.Query.IdFilters.AddRange(DataView.CheckedRecords.Keys);
-        await detailsView.Requery();
-        var t = detailsView.Result;
+            var ids = group.Select((k, v) => k.Key).ToList();
+            detailsView.Query.IdFilters.Clear();
+            detailsView.Query.IdFilters.AddRange(ids);
+            await detailsView.Requery();
+
+            foreach (var id in ids)
+                _details[id] = detailsView;
+        }
 
     }
 }
