@@ -74,7 +74,7 @@ public class DataView
 
     public bool RecordIsChecked(Dictionary<DataColumn, object?>? row) => _checkedRecords.Any(s => s == GetRowId(row));
 
-    public int CheckedRecordsCount => _checkedRecords.Count;
+    public ReadOnlyCollection<string> CheckedRecords => _checkedRecords.AsReadOnly();
 
     public string Serialize()
     {

@@ -70,6 +70,9 @@ public class DataViewQuery
             _dataQuery.Filters[dataColumn] = prefilter.ColumnFilter.GetPrimaryDataColumnFilter();
         }
 
+        var idColumn = _dataSource.Columns.FirstOrDefault(c => c.Key == "Id").Value;
+        if (idColumn != null && IdFilters != null && IdFilters.Count > 0)
+            _dataQuery.Filters[idColumn] = new DataColumnFilter() { StringValue = IdFilters };
 
         _dataQuery.PageSize = PageSize;
     }

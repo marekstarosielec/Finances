@@ -6,8 +6,30 @@
     [Parameter]
     public DataView? DataView { get; set; }
 
-    void Test()
+    [Parameter]
+    public bool SingleRecord { get; set; }
+
+
+    async Task Test()
     {
-        _dataViewManager.OpenSideDialog(false);
+        if (DataView == null)
+            return;
+
+        //    _dataViewManager.OpenSideDialog(false);
+        List<string> ids = new List<string>();
+        if (SingleRecord)
+            ids.Add(DataView.SelectedRecordId);
+        else
+            ids.AddRange(DataView.CheckedRecords);
+
+        var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == DataView.DetailsViewName);
+        if (detailsView == null)
+            return;
+
+        detailsView.Query.IdFilters.Clear();
+        detailsView.Query.IdFilters.AddRange(ids);
+        await detailsView.Requery();
+        var t = detailsView.Result;
+
     }
 }
