@@ -21,9 +21,8 @@ internal static class JsonExtensions
     {
         ColumnDataType.Text =>
             source.Where(n =>
-                (string.IsNullOrWhiteSpace(n?[column.ColumnName]?.GetValue<string?>()) && string.IsNullOrWhiteSpace(filter.StringValue))
-                || (n?[column.ColumnName]?.GetValue<string?>()?.ToLowerInvariant().Contains(filter.StringValue!.ToLowerInvariant()) == true)
-                ),
+                (string.IsNullOrWhiteSpace(n?[column.ColumnName]?.GetValue<string?>()) && filter.StringValue.Count == 0)
+                || (filter.StringValue.Any(s => n?[column.ColumnName]?.GetValue<string?>()?.ToLowerInvariant().Contains(s.ToLowerInvariant()) == true))),
         ColumnDataType.Date =>
             source
                 .Select(n => new { Data = n, FilterData = n?[column.ColumnName]?.GetValue<DateTime?>() })

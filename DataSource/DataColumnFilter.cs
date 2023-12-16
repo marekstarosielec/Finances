@@ -2,7 +2,7 @@
 
 public class DataColumnFilter
 {
-    public string? StringValue { get; set; }
+    public List<string> StringValue { get; set; }
 
     public DateTime? DateFrom { get; set; }
 

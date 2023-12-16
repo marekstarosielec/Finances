@@ -33,7 +33,7 @@
     protected override void OnInitialized()
     {
         if (Column != null && DataView?.Query.Filters?.ContainsKey(Column) == true)
-            currentText = DataView?.Query.Filters?[Column]?.StringValue;
+            currentText = DataView?.Query.Filters?[Column]?.StringValue?.FirstOrDefault();
 
         debounce.Elapsed += TimerCallback;
 
@@ -75,7 +75,7 @@
     {
         if (DataView?.Query.Filters == null || Column == null)
             return;
-        DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = currentText, Equality = DataSource.Equality.Contains };
+        DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = new List<string> { currentText } , Equality = DataSource.Equality.Contains };
         _dataViewManager.Save(DataView);
     }
 
@@ -83,7 +83,7 @@
     {
         if (DataView?.Query.Filters == null || Column == null)
             return;
-        currentText = DataView.Query.Filters.ContainsKey(Column) ? DataView.Query.Filters[Column].StringValue : string.Empty;
+        currentText = DataView.Query.Filters.ContainsKey(Column) ? DataView.Query.Filters[Column].StringValue.FirstOrDefault() : string.Empty;
         await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
 }

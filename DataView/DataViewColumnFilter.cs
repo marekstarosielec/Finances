@@ -4,7 +4,7 @@ namespace DataView;
 
 public class DataViewColumnFilter
 {
-    public string? StringValue { get; set; }
+    public List<string>? StringValue { get; set; }
 
     public DateTime? DateFrom { get; set; }
 
@@ -16,7 +16,7 @@ public class DataViewColumnFilter
 
     public DataColumnFilter GetPrimaryDataColumnFilter() 
         => new DataColumnFilter { 
-            StringValue = StringValue, 
+            StringValue = StringValue?.Select(s => s.ToLowerInvariant()).ToList() ?? new List<string>(), 
             DateFrom = DateFrom, 
             DateTo = DateTo,
             Equality = Equality 
@@ -27,7 +27,7 @@ public class DataViewColumnFilter
         ? null
         : new DataColumnFilter
         {
-            StringValue = SecondaryStringValue
+            StringValue = new List<string> { SecondaryStringValue }
         };
 
 

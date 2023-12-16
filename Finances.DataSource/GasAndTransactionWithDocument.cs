@@ -12,7 +12,7 @@ public partial class DataSourceFactory
             _gasAndtransactionWithDocument ??= new UnionedDataSource(Gas, TransactionWithDocument, 
                     new Dictionary<DataColumn, DataColumnFilter>
                     {
-                        { TransactionWithDocument.Columns["Category"], new DataColumnFilter { StringValue = "Gaz" } }
+                        { TransactionWithDocument.Columns["Category"], new DataColumnFilter { StringValue = new List<string> { "Gaz" } } }
                     },
                     new DataColumnUnionMapping("Id", "Id", "Id"),
                     new DataColumnUnionMapping("Date", "Date", "Date"),

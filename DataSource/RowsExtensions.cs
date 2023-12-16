@@ -22,11 +22,11 @@ internal static class RowsExtensions
     internal static IEnumerable<Dictionary<DataColumn, object?>> Filter(this IEnumerable<Dictionary<DataColumn, object?>> source, DataColumn column, DataColumnFilter filter) => (column.ColumnDataType, filter.Equality) switch
     {
         (ColumnDataType.Text, Equality.Equals) =>
-            source.Where(n => filter.StringValue == null || (n?[column] as string)?.ToLowerInvariant() == filter.StringValue!.ToLowerInvariant()),
+            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => s == (n?[column] as string)?.ToLowerInvariant())),
         (ColumnDataType.Text, Equality.NotEquals) =>
-            source.Where(n => filter.StringValue == null || (n?[column] as string)?.ToLowerInvariant() != filter.StringValue!.ToLowerInvariant()),
+            source.Where(n => filter.StringValue.Count == 0 || !filter.StringValue.Any(s => s == (n?[column] as string)?.ToLowerInvariant())),
         (ColumnDataType.Text, Equality.Contains) =>
-            source.Where(n => filter.StringValue == null || (n?[column] as string)?.ToLowerInvariant().Contains(filter.StringValue.ToLowerInvariant()) == true),
+            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => (n?[column] as string)?.ToLowerInvariant().Contains(s) ?? false)),
         (ColumnDataType.Date, _) =>
             source
                 .Select(n => new { Data = n, FilterData = n?[column] as DateTime? })

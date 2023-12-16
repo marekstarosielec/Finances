@@ -36,7 +36,7 @@ public class TransactionMainList : IDataView
                 title: "Ukryj Oszczędzanie", 
                 column: columns.Single(c => c.PrimaryDataColumnName == "Category"),
                 columnFilter: new DataViewColumnFilter { 
-                    StringValue = "Oszczędzanie",
+                    StringValue = new List<string> { "Oszczędzanie" },
                     Equality = DataSource.Equality.NotEquals
                 },
                 applied: true

@@ -11,6 +11,7 @@ public class DataViewQuery
     private readonly IDataSource _dataSource;
     private readonly ReadOnlyCollection<DataViewColumn> _columns;
 
+    public List<string> IdFilters { get; } = new();
     public Dictionary<DataViewColumn, DataViewColumnFilter> Filters { get; } = new ();
     public Dictionary<DataViewColumn, bool> Sorters = new();
     public int PageSize = 100;
@@ -69,6 +70,7 @@ public class DataViewQuery
             _dataQuery.Filters[dataColumn] = prefilter.ColumnFilter.GetPrimaryDataColumnFilter();
         }
 
+
         _dataQuery.PageSize = PageSize;
     }
 
@@ -84,9 +86,9 @@ public class DataViewQuery
         if (Filters != null)
             foreach (var filter in Filters)
             {
-                if (!string.IsNullOrWhiteSpace(filter.Value.StringValue))
+                if (filter.Value.StringValue?.Count > 0)
                 {
-                    data[$"f_{filter.Key.ShortName}_sv"] = filter.Value.StringValue;
+                    data[$"f_{filter.Key.ShortName}_sv"] = string.Join(',', filter.Value.StringValue);
                     data[$"f_{filter.Key.ShortName}_eq"] = filter.Value.Equality.ToString();
                 }
                 if (filter.Value.DateFrom != null)
@@ -125,7 +127,7 @@ public class DataViewQuery
                     continue; //In case someone edited column name directly in url.
 
                 Filters[dataViewColumn] = new DataViewColumnFilter { 
-                    StringValue = items[key]
+                    StringValue = items[key].Split(',', StringSplitOptions.RemoveEmptyEntries).ToList(),
                 };
             }
             else if (key?.StartsWith("f_") == true && key?.EndsWith("_fr") == true)
