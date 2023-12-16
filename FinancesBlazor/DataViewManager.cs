@@ -88,10 +88,8 @@ public class DataViewManager : IDisposable
             }
         }
 
-        if (_activeView?.SelectedRecordId != null)
-            OpenSideDialog(true);
         if (_activeView?.CheckedRecords.Count > 0)
-            OpenSideDialog(false);
+            OpenSideDialog();
 
         foreach (var dv in DataViews)
         {
@@ -133,16 +131,15 @@ public class DataViewManager : IDisposable
     private string SerializeQueryString(NameValueCollection queryString) 
         => String.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
 
-    public async Task OpenSideDialog(bool singleRecord)
+    public async Task OpenSideDialog()
     {
         if (ActiveView == null)
             return;
-        var width = singleRecord ? 300 : Math.Min(3, ActiveView.CheckedRecords.Count) * 300;
+        var width = Math.Min(3, ActiveView.CheckedRecords.Count) * 300;
 
         await _dialogService.OpenSideAsync<Details>(string.Empty,
             parameters: new Dictionary<string, object>() { 
-                { "DataView", ActiveView },
-                { "SingleRecord", singleRecord }
+                { "DataView", ActiveView }
             },
             options: new SideDialogOptions { 
                 CloseDialogOnOverlayClick = false, 

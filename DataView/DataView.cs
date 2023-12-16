@@ -24,26 +24,10 @@ public class DataView
 
     public DataQueryResult? Result { get; private set; }
 
-    public string? DetailsViewName { get; }
+    private string? _detailsViewName { get; }
 
 
-    private List<string> _checkedRecords = new List<string>();
-
-    public string? SelectedRecordId { get; private set; }
-
-    public void SelectRecord(Dictionary<DataColumn, object?>? row)
-    {
-        SelectedRecordId = GetRowId(row);
-        _checkedRecords = new List<string>();
-    }
-
-    //public async Task<Dictionary<DataColumn, object?>?> GetSingleRecord(string id)
-    //{
-    //    var query = new DataQuery();
-    //    query.Filters.Add(_dataSource.Columns["id"], new DataColumnFilter { StringValue = id });
-    //    var result = await _dataSource.ExecuteQuery(query);
-    //    return result.Rows.FirstOrDefault();
-    //}
+    private Dictionary<string,string> _checkedRecords = new Dictionary<string, string>();
 
     private string GetRowId(Dictionary<DataColumn, object?>? row)
     {
@@ -63,25 +47,30 @@ public class DataView
 
     public void CheckRecord(Dictionary<DataColumn, object?>? row)
     {
-        SelectedRecordId = null;
-        _checkedRecords.Add(GetRowId(row));
+        var detailsView = GetDetailsDataViewName();
+        if (detailsView == null)
+            return;
+        _checkedRecords.Add(GetRowId(row), detailsView);
     }
 
     public void UncheckRecord(Dictionary<DataColumn, object?>? row)
     {
-        _checkedRecords.RemoveAll(s => s == GetRowId(row));
+        _checkedRecords.Remove(GetRowId(row));
     }
 
-    public bool RecordIsChecked(Dictionary<DataColumn, object?>? row) => _checkedRecords.Any(s => s == GetRowId(row));
+    public void UncheckRecords()
+    {
+        _checkedRecords.Clear();
+    }
 
-    public ReadOnlyCollection<string> CheckedRecords => _checkedRecords.AsReadOnly();
+    public bool RecordIsChecked(Dictionary<DataColumn, object?>? row) => _checkedRecords.ContainsKey(GetRowId(row));
+
+    public ReadOnlyDictionary<string, string> CheckedRecords => new ReadOnlyDictionary<string, string>(_checkedRecords);
 
     public string Serialize()
     {
         var data = Query.Serialize();
-        data["cr"] = string.Join(',', _checkedRecords);
-        if (SelectedRecordId != null)
-            data["sr"] = SelectedRecordId;
+        data["cr"] = string.Join(',', _checkedRecords.Keys);
         return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
     }
 
@@ -104,13 +93,14 @@ public class DataView
                 if (cr == null)
                     return;
 
-                _checkedRecords = cr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
-            }
-
-            if (key == "sr")
-            {
-                var sr = items[key];
-                SelectedRecordId = sr;
+                var checkedRecordsIds = cr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+                foreach (var checkedRecordId in checkedRecordsIds)
+                {
+                    var detailsView = GetDetailsDataViewName();
+                    if (detailsView == null)
+                        continue;
+                    _checkedRecords[checkedRecordId] = detailsView;
+                }
             }
         }
     }
@@ -138,7 +128,7 @@ public class DataView
         Columns = columns;
         Query = new DataViewQuery(_query, _dataSource, Columns);
         ValidateColumns();
-        DetailsViewName = detailsViewName;
+        _detailsViewName = detailsViewName;
     }
 
     void ValidateColumns()
@@ -150,5 +140,10 @@ public class DataView
             if (column.SecondaryDataColumnName != null && !_dataSource.Columns.ContainsKey(column.SecondaryDataColumnName))
                 throw new InvalidOperationException($"DataViewColumn {column.ShortName} refers to DataColumn {column.SecondaryDataColumnName} which does not exist.");
         }
+    }
+
+    public string? GetDetailsDataViewName()
+    {
+        return _detailsViewName;
     }
 }

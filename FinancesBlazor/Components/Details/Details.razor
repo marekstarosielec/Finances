@@ -12,22 +12,17 @@
 
     async Task Test()
     {
+        //    _dataViewManager.OpenSideDialog(false);
         if (DataView == null)
             return;
 
-        //    _dataViewManager.OpenSideDialog(false);
-        List<string> ids = new List<string>();
-        if (SingleRecord)
-            ids.Add(DataView.SelectedRecordId);
-        else
-            ids.AddRange(DataView.CheckedRecords);
-
-        var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == DataView.DetailsViewName);
+        
+        var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == DataView.GetDetailsDataViewName());
         if (detailsView == null)
             return;
 
         detailsView.Query.IdFilters.Clear();
-        detailsView.Query.IdFilters.AddRange(ids);
+        detailsView.Query.IdFilters.AddRange(DataView.CheckedRecords.Keys);
         await detailsView.Requery();
         var t = detailsView.Result;
 

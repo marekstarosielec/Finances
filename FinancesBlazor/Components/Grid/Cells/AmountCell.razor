@@ -79,7 +79,8 @@
     {
         if (DataView == null)
             return;
-        DataView.SelectRecord(Row);
+        DataView.UncheckRecords();
+        DataView.CheckRecord(Row);
         _dataViewManager.Save(DataView);
     }
 }
