@@ -1,18 +1,7 @@
-﻿tr:hover {
-    background-color: #383838;
-    color: #FAFAFA;
-    cursor: pointer;
-}
-
-.checked {
-    background-color: #383838;
-    color: #FAFAFA;
-}
-
-.checkbox {
-    background-color: #383838 !important;
-}
-
-.rz-chkbox-box {
-    background-color: #383838 !important;
+﻿div {
+    width: 100%;
+    color: white;
+    border-right-width: 1px;
+    border-right-color: #7160E8;
+    border-right-style: solid;
 }

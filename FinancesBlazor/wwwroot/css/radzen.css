@@ -17248,6 +17248,7 @@ ul.rz-profile-menu {
     flex: 0 1 auto;
     padding: var(--rz-dialog-content-padding);
     overflow: auto;
+    height: 100%;
 }
 
 :root {

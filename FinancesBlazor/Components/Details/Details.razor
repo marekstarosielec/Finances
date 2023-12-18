@@ -7,15 +7,18 @@
 <button class="btn btn-primary" @onclick="() => Test()">Test</button>
 @if (DataView?.Result?.Rows != null)
 {
+    <div class="d-flex flex-nowrap">
     @foreach (var row in _details.Keys)
     {
         <DynamicRow DataView=@DataView Row=@(_details[row]?.Result?.GetById(row))></DynamicRow>
     }
+    </div>
 }
 @code {
     [Parameter]
     public DataView? DataView  { get; set; }
     private Dictionary<string, DataView?> _details = new();
+    private Dictionary<string, DataView?> _visibleDetails = new();
 
     protected override async void OnAfterRender(bool firstRender)
     {
@@ -51,6 +54,8 @@
             foreach (var id in ids)
                 _details[id] = detailsView;
         }
+
+
 
     }
 }
