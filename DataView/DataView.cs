@@ -26,6 +26,7 @@ public class DataView
 
     private string? _detailsViewName { get; }
 
+    public int DetailsIndex { get; set; }
 
     private Dictionary<string,string> _checkedRecords = new Dictionary<string, string>();
 
@@ -71,11 +72,15 @@ public class DataView
     {
         var data = Query.Serialize();
         data["cr"] = string.Join(',', _checkedRecords.Keys);
+        data["di"] = DetailsIndex.ToString();
         return new StreamReader(new FormUrlEncodedContent(data).ReadAsStream()).ReadToEnd();
     }
 
     public void Deserialize(string serializedValue)
     {
+        _checkedRecords?.Clear();
+        DetailsIndex = 0;
+
         if (serializedValue == null)
             return;
 
@@ -102,6 +107,8 @@ public class DataView
                     _checkedRecords[checkedRecordId] = detailsView;
                 }
             }
+            else if (key == "di" && int.TryParse(items[key], out var di))
+                DetailsIndex = di;
         }
     }
 

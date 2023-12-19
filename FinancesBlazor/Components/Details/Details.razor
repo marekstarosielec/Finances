@@ -1,16 +1,16 @@
 ﻿@using DataSource;
 @using DataView;
 @using FinancesBlazor.Components.Details.Rows;
-
+@implements IDisposable;
 @inject DataViewManager _dataViewManager;
 
 <button class="btn btn-primary" @onclick="() => Test()">Test</button>
 @if (DataView?.Result?.Rows != null)
 {
     <div class="d-flex flex-nowrap">
-    @foreach (var row in _details.Keys)
+    @foreach (var row in _visibleDetails.Keys)
     {
-        <DynamicRow DataView=@DataView Row=@(_details[row]?.Result?.GetById(row))></DynamicRow>
+        <DynamicRow DataView=@_visibleDetails[row] Row=@(_visibleDetails[row]?.Result?.GetById(row))></DynamicRow>
     }
     </div>
 }
@@ -18,11 +18,27 @@
     [Parameter]
     public DataView? DataView  { get; set; }
     private Dictionary<string, DataView?> _details = new();
-    private Dictionary<string, DataView?> _visibleDetails = new();
+    private Dictionary<string, DataView?> _visibleDetails
+    {
+        get
+        {
+            if (_details == null || DataView == null)
+                return new();
+            var startingIndex = Math.Min(DataView.DetailsIndex, _details.Count - 3);
+            if (startingIndex < 0)
+                startingIndex = 0;
+            return _details.Skip(startingIndex).Take(3).ToDictionary(k=> k.Key, v=> v.Value);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _dataViewManager.ViewChanged += ViewChanged;
+    }
 
     protected override async void OnAfterRender(bool firstRender)
     {
-       
+
         // var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == DataView.GetDetailsDataViewName());
         // if (detailsView == null)
         //     return;
@@ -58,4 +74,16 @@
 
 
     }
+
+    async void ViewChanged(object? sender, DataView e)
+    {
+    }
+
+
+
+    void IDisposable.Dispose()
+    {
+        _dataViewManager.ViewChanged -= ViewChanged;
+    }
+
 }
