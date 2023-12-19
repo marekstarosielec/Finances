@@ -10,7 +10,7 @@ public abstract class DataViewColumn
 
     public string Title { get; }
     
-    public string ShortName { get; set; }
+    public string ShortName { get; }
 
     public string? NullValue { get; set; }
 
@@ -20,6 +20,7 @@ public abstract class DataViewColumn
 
     public string? PreferredFilterComponentType { get; set; }
 
+    public int? NumberOfLinesInDetails { get; set; }
     public DataViewColumn(string primaryDataColumnName, DataViewColumnDataType dataType, string title, string shortName, string? preferredFilterComponentType = null)
     {
         PrimaryDataColumnName = primaryDataColumnName;

@@ -20,11 +20,11 @@ public class TransactionDetails : IDataView
 
         var columns = new List<DataViewColumn>
         {
-            new DataViewColumnDate("Date", "Data", "d", DataViewColumnDateFilterComponents.Default),
-            new DataViewColumnText("Account", "Konto", "a"),
-            new DataViewColumnText("Category", "Kategoria", "ct"),
-            new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
-            new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default)
+            //new DataViewColumnDate("Date", "Data", "d"),
+            //new DataViewColumnText("Account", "Konto", "a"),
+            //new DataViewColumnText("Category", "Kategoria", "ct"),
+            //new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
+            new DataViewColumnText("Description", "Opis", "de", numberOfLinesInDetails: 3)
         };
 
         _dataView = new("td", "Szczegóły tranzakcji", _dataSourceFactory.Transaction, new(columns));

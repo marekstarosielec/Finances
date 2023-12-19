@@ -1,8 +1,13 @@
 ﻿@using DataSource;
 @using DataView;
 
-<div class="@GetCellStyle()">@GetCellValue()</div>
-
+@if ((Column?.NumberOfLinesInDetails ?? 1) == 1)
+{
+    <input type="text" aria-label="@Column?.Title" aria-describedby="@Column?.Title" value="@Value" autocomplete="off" placeholder="@Column?.Title" />
+} else
+{
+    <textarea rows="@Column?.NumberOfLinesInDetails" type="text" aria-label="@Column?.Title" aria-describedby="@Column?.Title" placeholder="@Column?.Title" value="@Value" autocomplete="off" />
+}
 @code {
     [Parameter]
     public DataView? DataView { get; set; }
@@ -13,32 +18,15 @@
     [Parameter]
     public DataViewColumn? Column { get; set; }
 
-    private string GetCellStyle()
-    {
-        var result = string.Empty;
-        if (Column == null)
-            return result;
-
-        if (Column.HorizontalAlign == DataViewColumnContentAlign.Right)
-            result += "text-end ";
-
-        return result;
-    }
-
-    public string? GetCellValue()
-    {
-        var result = string.Empty;
-        if (Column == null || Row == null)
-            return result;
-
-        var dataColumn = DataView?.Result?.Columns.ToList().FirstOrDefault(dc => dc.ColumnName == Column.PrimaryDataColumnName);
-        if (dataColumn == null)
-            return "Column not found";
-
-        var value = Row[dataColumn];
-        if (value == null)
-            return Column.NullValue;
-
-        return value.ToString();
+    public string? Value {
+        get 
+        {
+            if (DataView == null || Column == null || Row == null)
+                return null;
+            var column = DataView.Result?.Columns.FirstOrDefault(c => c.ColumnName == Column.PrimaryDataColumnName);
+            if (column == null)
+                return null;
+            return Row[column]?.ToString();
+        }
     }
 }
