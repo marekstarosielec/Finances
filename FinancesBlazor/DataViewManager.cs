@@ -135,7 +135,7 @@ public class DataViewManager : IDisposable
     {
         if (ActiveView == null)
             return;
-        var width = Math.Min(3, ActiveView.CheckedRecords.Count) * 300;
+        var width = Math.Min(DetailSettings.MaximumNumberOfDetails, ActiveView.CheckedRecords.Count) * DetailSettings.DetailsWidth;
 
         await _dialogService.OpenSideAsync<Details>(string.Empty,
             parameters: new Dictionary<string, object>() { 

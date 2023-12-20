@@ -20,7 +20,7 @@ public class TransactionDetails : IDataView
 
         var columns = new List<DataViewColumn>
         {
-            //new DataViewColumnDate("Date", "Data", "d"),
+            new DataViewColumnDate("Date", "Data", "d"),
             //new DataViewColumnText("Account", "Konto", "a"),
             //new DataViewColumnText("Category", "Kategoria", "ct"),
             //new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),

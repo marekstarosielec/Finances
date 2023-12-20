@@ -1,7 +1,7 @@
 ﻿div {
     width: 100%;
-    color: white;
-    border-right-width: 1px;
     border-right-color: #7160E8;
     border-right-style: solid;
+    padding-top: 5px;
+    padding-right: 5px;
 }

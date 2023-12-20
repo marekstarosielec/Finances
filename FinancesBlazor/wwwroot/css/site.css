@@ -120,7 +120,7 @@ a, .btn-link {
     outline: none !important;
 }
 
-input, input:focus {
+input, input:focus, textarea, textarea:focus {
     background-color: #383838;
     color: #FAFAFA;
     border-radius: 0;

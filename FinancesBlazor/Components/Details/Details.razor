@@ -24,7 +24,7 @@
         {
             if (_details == null || DataView == null)
                 return new();
-            var startingIndex = Math.Min(DataView.DetailsIndex, _details.Count - 3);
+            var startingIndex = Math.Min(DataView.DetailsIndex, _details.Count - DetailSettings.MaximumNumberOfDetails);
             if (startingIndex < 0)
                 startingIndex = 0;
             return _details.Skip(startingIndex).Take(3).ToDictionary(k=> k.Key, v=> v.Value);

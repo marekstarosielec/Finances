@@ -1,9 +1,9 @@
 ﻿@using DataSource;
 @using DataView;
 
-@inject DialogService DialogService;
-
-<DynamicComponent Type="@(GetCellComponent())" Parameters="@(new Dictionary<string, object?>() { { "DataView", @DataView }, { "Row", @Row}, { "Column", @Column}})" />
+<div>
+    <DynamicComponent Type="@(GetCellComponent())" Parameters="@(new Dictionary<string, object?>() { { "DataView", @DataView }, { "Row", @Row}, { "Column", @Column}})" />
+</div>
 
 @code {
     [Parameter]

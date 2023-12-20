@@ -254,7 +254,7 @@
 
 :root {
     --rz-text-title-color: var(--rz-base-900);
-    --rz-text-color: var(--rz-base-800);
+    --rz-text-color: #FAFAFA;
     --rz-text-secondary-color: var(--rz-base-700);
     --rz-text-tertiary-color: var(--rz-base-600);
     --rz-text-disabled-color: var(--rz-base-500);
@@ -293,7 +293,7 @@
 }
 
 :root {
-    --rz-base-background-color: var(--rz-white);
+    --rz-base-background-color: #383838;
 }
 
 :root {
@@ -14006,7 +14006,7 @@ ul.rz-profile-menu {
     --rz-datepicker-trigger-icon-hover-color: var(--rz-text-title-color);
     --rz-datepicker-panel-border: var(--rz-border-normal);
     --rz-datepicker-panel-background-color: var(--rz-base-background-color);
-    --rz-datepicker-panel-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.04), 0px 2px 4px rgba(0, 0, 0, 0.04), 0px 4px 16px rgba(0, 0, 0, 0.1);
+    --rz-datepicker-panel-shadow: 0 0 0 0 rgba(0, 0, 0, 0), 0 0 0 rgba(0, 0, 0, 0), 0 0 0 rgba(0, 0, 0, 0);
     --rz-datepicker-panel-margin: 0;
     --rz-datepicker-header-background-color: var(--rz-base-background-color);
     --rz-datepicker-header-color: var(--rz-text-color);
