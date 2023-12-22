@@ -6,7 +6,7 @@ public class JoinedDataSource : IDataSource
     private readonly IDataSource _rightDataSource;
     private readonly string _joinColumn;
     private readonly DataColumnJoinMapping[] _mappings;
-    private IEnumerable<Dictionary<DataColumn, object?>>? _cache;
+    private IEnumerable<DataRow>? _cache;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
@@ -21,7 +21,7 @@ public class JoinedDataSource : IDataSource
     
     public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
     {
-        IEnumerable<Dictionary<DataColumn, object?>> rows = await LeftJoinTable();
+        IEnumerable<DataRow> rows = await LeftJoinTable();
         if (dataQuery?.Sorters != null)
             foreach (var sortDefinition in dataQuery.Sorters)
                 rows = rows.Sort(sortDefinition.Key, sortDefinition.Value);
@@ -38,7 +38,7 @@ public class JoinedDataSource : IDataSource
         return new DataQueryResult(Columns.Values, rows, totalRowCount);
     }
 
-    private async Task<IEnumerable<Dictionary<DataColumn, object?>>> LeftJoinTable()
+    private async Task<IEnumerable<DataRow>> LeftJoinTable()
     {
         if (_cache != null)
             return _cache;
@@ -53,17 +53,17 @@ public class JoinedDataSource : IDataSource
             if (leftDataRow[leftDataViewJoinColumn] == null)
                 JoinRightRow(leftDataRow, null);
 
-            var matching = rightDataView.Rows.FirstOrDefault(r => r[rightDataViewJoinColumn] as string == leftDataRow[leftDataViewJoinColumn] as string);
+            var matching = rightDataView.Rows.FirstOrDefault(r => r[rightDataViewJoinColumn].OriginalValue as string == leftDataRow[leftDataViewJoinColumn].OriginalValue as string);
             if (matching == null)
                 JoinRightRow(leftDataRow, null);
 
             JoinRightRow(leftDataRow, matching);
         }
 
-        var result = new List<Dictionary<DataColumn, object?>>();
+        var result = new List<DataRow>();
         foreach (var row in leftDataView.Rows)
         {
-            var newRow = new Dictionary<DataColumn, object?>();
+            var newRow = new DataRow();
             foreach (var column in Columns)
                 newRow[column.Value] = row[column.Value];
             result.Add(newRow);
@@ -73,17 +73,17 @@ public class JoinedDataSource : IDataSource
         return result;
     }
 
-    private void JoinRightRow(Dictionary<DataColumn, object?> leftDataRow, Dictionary<DataColumn, object?>? rightDataRow)
+    private void JoinRightRow(DataRow leftDataRow, DataRow? rightDataRow)
     {
         foreach (var column in _rightDataSource.Columns)
         {
             var mapping = _mappings?.FirstOrDefault(c => c.ColumnName == column.Key);
             if (mapping == null)
-                leftDataRow[column.Value] = column.Value;
+                leftDataRow[column.Value] = new DataValue(column.Value);
             else if (mapping.NewColumnName == null)
                 continue;
             else
-                leftDataRow[Columns[mapping.NewColumnName]] = rightDataRow?[column.Value];
+                leftDataRow[Columns[mapping.NewColumnName]] = rightDataRow?[column.Value] ?? new DataValue(null);
         }
     }
 

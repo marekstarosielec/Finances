@@ -6,7 +6,7 @@ public class UnionedDataSource : IDataSource
     private readonly IDataSource _secondDataSource;
     private readonly Dictionary<DataColumn, DataColumnFilter> _mainFilters;
     private readonly DataColumnUnionMapping[] _mappings;
-    private IEnumerable<Dictionary<DataColumn, object?>>? _cache;
+    private IEnumerable<DataRow>? _cache;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
@@ -21,7 +21,7 @@ public class UnionedDataSource : IDataSource
 
     public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
     {
-        IEnumerable<Dictionary<DataColumn, object?>> rows = await UnionTables();
+        IEnumerable<DataRow> rows = await UnionTables();
 
         if (dataQuery?.Sorters != null)
             foreach (var sortDefinition in dataQuery.Sorters)
@@ -39,16 +39,16 @@ public class UnionedDataSource : IDataSource
         return new DataQueryResult(Columns.Values, rows, totalRowCount);
     }
 
-    private async Task<IEnumerable<Dictionary<DataColumn, object?>>> UnionTables()
+    private async Task<IEnumerable<DataRow>> UnionTables()
     {
         if (_cache != null)
             return _cache;
 
-        var result = new List<Dictionary<DataColumn, object?>>();
+        var result = new List<DataRow>();
         DataQueryResult firstDataView = await _firstDataSource.ExecuteQuery(new DataQuery {  PageSize = -1});
         foreach (var firstDataRow in firstDataView.Rows)
         {
-            var resultDataRow = new Dictionary<DataColumn, object?>();
+            var resultDataRow = new DataRow();
             foreach (var mapping in _mappings)
                 resultDataRow[Columns[mapping.ResultDataSourceColumnName]] = mapping.FirstDataSourceColumnName == null ? null : firstDataRow[_firstDataSource.Columns[mapping.FirstDataSourceColumnName]];
             result.Add(resultDataRow);
@@ -57,7 +57,7 @@ public class UnionedDataSource : IDataSource
         DataQueryResult secondDataView = await _secondDataSource.ExecuteQuery(new DataQuery {  Filters = _mainFilters, PageSize = -1});
         foreach (var secondDataRow in secondDataView.Rows)
         {
-            var resultDataRow = new Dictionary<DataColumn, object?>();
+            var resultDataRow = new DataRow();
             foreach (var mapping in _mappings)
                 resultDataRow[Columns[mapping.ResultDataSourceColumnName]] = mapping.SecondDataSourceColumnName == null ? null : secondDataRow[_secondDataSource.Columns[mapping.SecondDataSourceColumnName]];
             result.Add(resultDataRow);
