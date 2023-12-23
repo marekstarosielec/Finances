@@ -13,7 +13,7 @@
     public DataView? DataView { get; set; }
 
     [Parameter]
-    public Dictionary<DataColumn, object?>? Row { get; set; }
+    public DataRow? Row { get; set; }
 
     [Parameter]
     public DataViewColumn? Column { get; set; }
@@ -26,7 +26,7 @@
             var column = DataView.Result?.Columns.FirstOrDefault(c => c.ColumnName == Column.PrimaryDataColumnName);
             if (column == null)
                 return null;
-            return Row[column] as string;
+            return Row[column].CurrentValue as string;
         }
     }
 }

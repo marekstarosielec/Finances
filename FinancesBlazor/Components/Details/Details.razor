@@ -5,31 +5,40 @@
 @inject DataViewManager _dataViewManager;
 
 <button class="btn btn-primary" @onclick="() => Test()">Test</button>
-@if (DataView?.Result?.Rows != null)
+@* @if (DataView?.Result?.Rows != null)
 {
     <div class="d-flex flex-nowrap">
-    @foreach (var row in _visibleDetails.Keys)
+        @foreach (var row in _details.Keys)
     {
-        <DynamicRow DataView=@_visibleDetails[row] Row=@(_visibleDetails[row]?.Result?.GetById(row))></DynamicRow>
+            <DynamicRow DataView=@_details[row] Row=@GetRow(_details[row],row)></DynamicRow>
     }
     </div>
-}
+} *@
+
+<div class="d-flex flex-nowrap">
+    @foreach (var checkedRecordKey in _dataViewManager.CheckedRecords.Keys)
+    {
+        <DynamicRow DataView=@_dataViewManager.CheckedRecords[checkedRecordKey] Row=@GetRow(_dataViewManager.CheckedRecords[checkedRecordKey],checkedRecordKey)></DynamicRow>
+    }
+</div>
 @code {
     [Parameter]
     public DataView? DataView  { get; set; }
     private Dictionary<string, DataView?> _details = new();
-    private Dictionary<string, DataView?> _visibleDetails
-    {
-        get
-        {
-            if (_details == null || DataView == null)
-                return new();
-            var startingIndex = Math.Min(DataView.DetailsIndex, _details.Count - DetailSettings.MaximumNumberOfDetails);
-            if (startingIndex < 0)
-                startingIndex = 0;
-            return _details.Skip(startingIndex).Take(3).ToDictionary(k=> k.Key, v=> v.Value);
-        }
-    }
+
+    private DataRow? GetRow(DataView? dv, string id) => dv?.Result?.GetById(id);
+    // private Dictionary<string, DataView?> _visibleDetails
+    // {
+    //     get
+    //     {
+    //         if (_details == null || DataView == null)
+    //             return new();
+    //         var startingIndex = Math.Min(DataView.DetailsIndex, _details.Count - DetailSettings.MaximumNumberOfDetails);
+    //         if (startingIndex < 0)
+    //             startingIndex = 0;
+    //         return _details.Skip(startingIndex).Take(DetailSettings.MaximumNumberOfDetails).ToDictionary(k => k.Key, v => v.Value);
+    //     }
+    // }
 
     protected override void OnInitialized()
     {
@@ -51,24 +60,16 @@
 
     async Task Test()
     {
-        //    _dataViewManager.OpenSideDialog(false);
         if (DataView == null)
             return;
 
-        _details = DataView.CheckedRecords.Keys.ToDictionary(k => k, v => (DataView?)null);
-        foreach (var group in DataView.CheckedRecords.GroupBy(cr => cr.Value))
+        _details = _dataViewManager.CheckedRecords.Keys.ToDictionary(k => k, v => (DataView?)null);
+        foreach (var group in _dataViewManager.CheckedRecords.GroupBy(cr => cr.Value))
         {
-            var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == group.Key);
-            if (detailsView == null)
-                continue;
-
             var ids = group.Select((k, v) => k.Key).ToList();
-            detailsView.Query.IdFilters.Clear();
-            detailsView.Query.IdFilters.AddRange(ids);
-            await detailsView.Requery();
-
-            foreach (var id in ids)
-                _details[id] = detailsView;
+            group.Key.Query.IdFilters.Clear();
+            group.Key.Query.IdFilters.AddRange(ids);
+            await group.Key.Requery();
         }
 
 

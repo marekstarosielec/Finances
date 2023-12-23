@@ -50,7 +50,7 @@ public class UnionedDataSource : IDataSource
         {
             var resultDataRow = new DataRow();
             foreach (var mapping in _mappings)
-                resultDataRow[Columns[mapping.ResultDataSourceColumnName]] = mapping.FirstDataSourceColumnName == null ? null : firstDataRow[_firstDataSource.Columns[mapping.FirstDataSourceColumnName]];
+                resultDataRow[Columns[mapping.ResultDataSourceColumnName]] = mapping.FirstDataSourceColumnName == null ? new DataValue(null) : firstDataRow[_firstDataSource.Columns[mapping.FirstDataSourceColumnName]];
             result.Add(resultDataRow);
         }
 
@@ -59,7 +59,7 @@ public class UnionedDataSource : IDataSource
         {
             var resultDataRow = new DataRow();
             foreach (var mapping in _mappings)
-                resultDataRow[Columns[mapping.ResultDataSourceColumnName]] = mapping.SecondDataSourceColumnName == null ? null : secondDataRow[_secondDataSource.Columns[mapping.SecondDataSourceColumnName]];
+                resultDataRow[Columns[mapping.ResultDataSourceColumnName]] = mapping.SecondDataSourceColumnName == null ? new DataValue(null) : secondDataRow[_secondDataSource.Columns[mapping.SecondDataSourceColumnName]];
             result.Add(resultDataRow);
         }
         

@@ -1,7 +1,10 @@
-﻿using FinancesBlazor.Components.Details;
+﻿using DataSource;
+using DataView;
+using FinancesBlazor.Components.Details;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Radzen;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Data;
 using System.Web;
@@ -18,6 +21,10 @@ public class DataViewManager : IDisposable
 
     public event EventHandler<DataView.DataView>? ViewChanged;
     public event EventHandler<DataView.DataView>? ActiveViewChanged;
+
+    private Dictionary<string, DataView.DataView> _checkedRecords = new Dictionary<string, DataView.DataView>();
+
+    public ReadOnlyDictionary<string, DataView.DataView> CheckedRecords => new ReadOnlyDictionary<string, DataView.DataView>(_checkedRecords);
 
     public DataViewManager(NavigationManager navigationManager, List<DataView.DataView> dataViews, DialogService dialogService)
     {
@@ -43,6 +50,7 @@ public class DataViewManager : IDisposable
                 dv.Query.Reset();
             qs[dv.Name] = dv.Serialize();
         });
+
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
@@ -55,6 +63,7 @@ public class DataViewManager : IDisposable
     {
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
+        qs["cr"] = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
@@ -88,7 +97,28 @@ public class DataViewManager : IDisposable
             }
         }
 
-        if (_activeView?.CheckedRecords.Count > 0)
+        _checkedRecords.Clear();
+        var cr = qs["cr"];
+        if (cr != null)
+
+        {
+            var checkedRecords = cr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach (var checkedRecord in checkedRecords)
+            {
+                var pos = checkedRecord.IndexOf(':');
+                if (pos == -1)
+                    continue;
+                var checkedRecordId = checkedRecord.Substring(0, pos);
+                var checkedRecordDataViewId = checkedRecord.Substring(pos+1);
+                var checkedRecordDataView = DataViews.FirstOrDefault(dv => dv.Name == checkedRecordDataViewId);
+                if (checkedRecordDataView == null)
+                    continue;
+
+                _checkedRecords[checkedRecordId] = checkedRecordDataView;
+            }
+        }
+
+        if (_checkedRecords.Count > 0)
             OpenSideDialog();
 
         foreach (var dv in DataViews)
@@ -135,7 +165,7 @@ public class DataViewManager : IDisposable
     {
         if (ActiveView == null)
             return;
-        var width = Math.Min(DetailSettings.MaximumNumberOfDetails, ActiveView.CheckedRecords.Count) * DetailSettings.DetailsWidth;
+        var width = Math.Min(DetailSettings.MaximumNumberOfDetails, CheckedRecords.Count) * DetailSettings.DetailsWidth;
 
         await _dialogService.OpenSideAsync<Details>(string.Empty,
             parameters: new Dictionary<string, object>() { 
@@ -149,5 +179,43 @@ public class DataViewManager : IDisposable
                 ShowTitle = false
                 });
     }
+
+    private string GetRowId(DataView.DataView dataView, DataSource.DataRow? row)
+    {
+        if (row == null)
+            throw new ArgumentNullException(nameof(row));
+
+        var idColumn = dataView.DataSource.Columns.FirstOrDefault(c => c.Key == "Id").Value;
+        if (idColumn == null)
+            throw new InvalidOperationException("Cannot find Id column in data source");
+
+        var id = row[idColumn]?.OriginalValue?.ToString();
+        if (id == null)
+            throw new InvalidOperationException("Cannot find row id");
+
+        return id;
+    }
+
+    public void CheckRecord(DataView.DataView dataView, DataSource.DataRow? row)
+    {
+        var detailsView = DataViews.FirstOrDefault(dv => dv.Name == dataView.GetDetailsDataViewName());
+        if (detailsView == null)
+            return;
+
+        _checkedRecords.Add(GetRowId(dataView, row), detailsView);
+    }
+
+    public void UncheckRecord(DataView.DataView dataView, DataSource.DataRow? row)
+    {
+        _checkedRecords.Remove(GetRowId(dataView, row));
+    }
+
+    public void UncheckRecords()
+    {
+        _checkedRecords.Clear();
+    }
+
+    public bool RecordIsChecked(DataView.DataView dataView, DataSource.DataRow? row) => _checkedRecords.ContainsKey(GetRowId(dataView, row));
+
 }
 

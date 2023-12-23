@@ -17,14 +17,17 @@
     public DataView? DataView { get; set; }
 
     [Parameter]
-    public Dictionary<DataColumn, object?>? Row { get; set; }
+    public DataRow? Row { get; set; }
 
     private bool _checked;
 
     protected override void OnInitialized()
     {
         _dataViewManager.ViewChanged += ViewChanged;
-        _checked = DataView?.RecordIsChecked(Row) ?? false;
+
+        if (DataView == null)
+            return;
+        _checked = _dataViewManager.RecordIsChecked(DataView, Row);
     }
 
     private void CheckChange(bool args)
@@ -32,9 +35,9 @@
         if (DataView == null)
             return;
         if (args)
-            DataView.CheckRecord(Row);
+            _dataViewManager.CheckRecord(DataView, Row);
         else
-            DataView.UncheckRecord(Row);
+            _dataViewManager.UncheckRecord(DataView, Row);
         _checked = args;
         _dataViewManager.Save(DataView);
     }
@@ -43,7 +46,7 @@
     {
         if (DataView != e)
             return;
-        _checked = DataView?.RecordIsChecked(Row) ?? false;
+        _checked = _dataViewManager.RecordIsChecked(DataView, Row);
         StateHasChanged();
     }
 

@@ -8,7 +8,7 @@
     public DataView? DataView { get; set; }
 
     [Parameter]
-    public Dictionary<DataColumn, object?>? Row { get; set; }
+    public DataRow? Row { get; set; }
 
     [Parameter]
     public DataViewColumn? Column { get; set; }
@@ -40,6 +40,6 @@
         if (value == null)
             return Column.NullValue;
 
-        return (value as decimal?)?.ToString(Column.Format);
+        return (value.CurrentValue as decimal?)?.ToString(Column.Format);
     }
 }

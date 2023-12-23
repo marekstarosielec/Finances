@@ -44,22 +44,22 @@ public class JsonDataSource : IDataSource
 
     private DataQueryResult TransformNodes(NodesList nodes)
     {
-        var rows = new List<Dictionary<DataColumn, object?>>();
+        var rows = new List<DataRow>();
         var result = new DataQueryResult(Columns.Values, rows, nodes.Count);
         foreach (var node in nodes.Nodes)
         {
-            var row = new Dictionary<DataColumn, object?>();
+            var row = new DataRow();
             foreach (var column in Columns)
                 try
                 {
-                    row[column.Value] = column.Value.ColumnDataType switch
+                    row[column.Value] = new DataValue(column.Value.ColumnDataType switch
                     {
                         ColumnDataType.Text => node[column.Key]?.GetValue<string>(),
                         ColumnDataType.Date => node[column.Key]?.GetValue<DateTime>(),
                         ColumnDataType.Precision => node[column.Key]?.GetValue<decimal>(),
                         ColumnDataType.Number => node[column.Key]?.GetValue<int>(),
                         _ => throw new Exception("Unsupported DataType")
-                    };
+                    });
                 }
                 catch (Exception ex)
                 {

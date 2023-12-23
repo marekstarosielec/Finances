@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataSource\DataSource.csproj" />
     <ProjectReference Include="..\Finances.DataView\Finances.DataView.csproj" />
   </ItemGroup>
 

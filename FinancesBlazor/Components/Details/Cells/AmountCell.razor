@@ -10,7 +10,7 @@
     public DataView? DataView { get; set; }
 
     [Parameter]
-    public Dictionary<DataColumn, object?>? Row { get; set; }
+    public DataRow? Row { get; set; }
 
     [Parameter]
     public DataViewColumn? Column { get; set; }
@@ -29,7 +29,7 @@
         if (dataColumn == null)
             return result;
 
-        var value = Row?[dataColumn] as decimal?;
+        var value = Row?[dataColumn].CurrentValue as decimal?;
         if (value == null)
             return result;
 
@@ -51,7 +51,7 @@
         if (dataColumn == null)
             return "Column not found";
 
-        var value = Row[dataColumn];
+        var value = Row[dataColumn].OriginalValue;
         if (value == null)
             return Column.NullValue;
 
@@ -79,8 +79,8 @@
     {
         if (DataView == null)
             return;
-        DataView.UncheckRecords();
-        DataView.CheckRecord(Row);
+        _dataViewManager.UncheckRecords();
+        _dataViewManager.CheckRecord(DataView, Row);
         _dataViewManager.Save(DataView);
     }
 }
