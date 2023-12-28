@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace DataSource.Json;
@@ -20,6 +21,48 @@ public class JsonDataSource : IDataSource
     }
 
     public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null) => TransformNodes(await GetNodes(dataQuery));
+
+    public async Task Save(DataRow row)
+    {
+        var nodes = await GetData();
+        var id = row[Columns["Id"]].OriginalValue as string;
+        var changedNode = nodes.ToList().FirstOrDefault(n => n["Id"]?.GetValue<string>() == id)?.AsObject();
+        if (changedNode == null)
+            return; //TODO: New row created;
+        foreach ( var cell in row)
+        {
+            if (cell.Value.CurrentValue == cell.Value.OriginalValue)
+                continue;
+
+            //if (changedNode.Remove(cell.Key.ColumnName, out var value))
+            //{
+            //    changedNode.Add(cell.Key.ColumnName, value);
+            //}
+            changedNode[cell.Key.ColumnName] = JsonValue.Create(cell.Value.CurrentValue);
+        }
+
+        var result = JsonSerializer.Serialize(nodes);
+        var _semaphore = GetSemaphore();
+
+        try
+        {
+            _semaphore.Wait();
+            if (!File.Exists(_fileName))
+                await File.WriteAllTextAsync(_fileName, "[]");
+            await File.WriteAllTextAsync(_fileName, result);
+        }
+        catch(Exception ex)
+        {
+            //TODO: restore data?
+            return;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+        //TODO: updating transaction need to invalidate cache of transactionwithdocument
+        _contentString = result;
+    }
 
     internal async Task<NodesList> GetNodes(DataQuery? dataQuery)
     {

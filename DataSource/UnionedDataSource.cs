@@ -85,4 +85,9 @@ public class UnionedDataSource : IDataSource
         _firstDataSource.RemoveCache();
         _secondDataSource.RemoveCache();
     }
+
+    public Task Save(DataRow row)
+    {
+        throw new NotImplementedException();
+    }
 }

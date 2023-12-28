@@ -26,7 +26,12 @@
         }
         set
         {
-            
+            if (DataView == null || Column == null || Row == null)
+                return;
+            var column = DataView.Result?.Columns.FirstOrDefault(c => c.ColumnName == Column.PrimaryDataColumnName);
+            if (column == null)
+                return;
+            Row[column].CurrentValue = value;
         }
     }
 }

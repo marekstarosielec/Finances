@@ -1,6 +1,7 @@
 ﻿@using DataSource;
 @using DataView;
 
+
 <DynamicComponent Type="@(GetRowComponent())" Parameters="@(new Dictionary<string, object?>() { { "DataView", @DataView }, { "Row", @Row}})" />
 
 @code {

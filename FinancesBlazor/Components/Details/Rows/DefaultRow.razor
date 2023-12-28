@@ -7,6 +7,7 @@
 @if (DataView != null && Row != null)
 {
     <div>
+        <button class="btn btn-primary" @onclick="() => Save()">Zapisz</button>
         @foreach (var column in DataView.Columns)
         {
             <DynamicCell DataView=@DataView Row=@Row Column=column></DynamicCell>
@@ -24,7 +25,7 @@
     protected override void OnInitialized()
     {
         _dataViewManager.ViewChanged += ViewChanged;
-       
+
     }
 
     void ViewChanged(object? sender, DataView e)
@@ -32,6 +33,11 @@
         if (DataView != e)
             return;
         StateHasChanged();
+    }
+
+    private async Task Save()
+    {
+        await _dataViewManager.SaveChanges(DataView, Row);
     }
 
     void IDisposable.Dispose()

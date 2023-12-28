@@ -111,4 +111,9 @@ public class JoinedDataSource : IDataSource
         _leftDataSource.RemoveCache();
         _rightDataSource.RemoveCache();
     }
+
+    public Task Save(DataRow row)
+    {
+        throw new NotImplementedException();
+    }
 }

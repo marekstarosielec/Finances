@@ -217,5 +217,13 @@ public class DataViewManager : IDisposable
 
     public bool RecordIsChecked(DataView.DataView dataView, DataSource.DataRow? row) => _checkedRecords.ContainsKey(GetRowId(dataView, row));
 
+
+    public async Task SaveChanges(DataView.DataView? dataView, DataSource.DataRow? row)
+    {
+        if (dataView == null || row == null)
+            return;
+
+        await dataView.DataSource.Save(row);
+    }
 }
 

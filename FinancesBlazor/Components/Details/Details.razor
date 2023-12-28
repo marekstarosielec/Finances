@@ -4,17 +4,7 @@
 @implements IDisposable;
 @inject DataViewManager _dataViewManager;
 
-<button class="btn btn-primary" @onclick="() => Test()">Test</button>
-@* @if (DataView?.Result?.Rows != null)
-{
-    <div class="d-flex flex-nowrap">
-        @foreach (var row in _details.Keys)
-    {
-            <DynamicRow DataView=@_details[row] Row=@GetRow(_details[row],row)></DynamicRow>
-    }
-    </div>
-} *@
-
+@* <button class="btn btn-primary" @onclick="() => Test()">Test</button> *@
 <div class="d-flex flex-nowrap">
     @foreach (var checkedRecordKey in _dataViewManager.CheckedRecords.Keys)
     {
@@ -45,20 +35,7 @@
         _dataViewManager.ViewChanged += ViewChanged;
     }
 
-    protected override async void OnAfterRender(bool firstRender)
-    {
-
-        // var detailsView = _dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == DataView.GetDetailsDataViewName());
-        // if (detailsView == null)
-        //     return;
-
-        // detailsView.Query.IdFilters.Clear();
-        // detailsView.Query.IdFilters.AddRange(DataView.CheckedRecords.Keys);
-        // await detailsView.Requery();
-        // var t = detailsView.Result;
-    }
-
-    async Task Test()
+    protected override async Task OnInitializedAsync()
     {
         if (DataView == null)
             return;
@@ -71,9 +48,6 @@
             group.Key.Query.IdFilters.AddRange(ids);
             await group.Key.Requery();
         }
-
-
-
     }
 
     async void ViewChanged(object? sender, DataView e)
