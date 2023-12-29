@@ -6,7 +6,8 @@ public class JoinedDataSource : IDataSource
     private readonly IDataSource _rightDataSource;
     private readonly string _joinColumn;
     private readonly DataColumnJoinMapping[] _mappings;
-    private IEnumerable<DataRow>? _cache;
+    public JoinedDataSourceCache Cache { get; } = new ();
+    public DateTime? CacheTimeStamp => Cache.TimeStamp;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
@@ -21,7 +22,7 @@ public class JoinedDataSource : IDataSource
     
     public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
     {
-        IEnumerable<DataRow> rows = await LeftJoinTable();
+        IEnumerable<DataRow> rows = await Cache.Get(_leftDataSource, _rightDataSource, LeftJoinTable);
         if (dataQuery?.Sorters != null)
             foreach (var sortDefinition in dataQuery.Sorters)
                 rows = rows.Sort(sortDefinition.Key, sortDefinition.Value);
@@ -40,9 +41,6 @@ public class JoinedDataSource : IDataSource
 
     private async Task<IEnumerable<DataRow>> LeftJoinTable()
     {
-        if (_cache != null)
-            return _cache;
-
         DataQueryResult leftDataView = await _leftDataSource.ExecuteQuery(new DataQuery{  PageSize = -1 });
         DataQueryResult rightDataView = await _rightDataSource.ExecuteQuery(new DataQuery{  PageSize = -1 });
         var leftDataViewJoinColumn = _leftDataSource.Columns.ContainsKey(_joinColumn) ? _leftDataSource.Columns[_joinColumn] : throw new InvalidOperationException($"Joined data source does not contain column {_joinColumn}");
@@ -68,8 +66,6 @@ public class JoinedDataSource : IDataSource
                 newRow[column.Value] = row[column.Value];
             result.Add(newRow);
         }
-        
-        _cache = result;
         return result;
     }
 
@@ -107,9 +103,7 @@ public class JoinedDataSource : IDataSource
 
     public void RemoveCache()
     {
-        _cache = null;
-        _leftDataSource.RemoveCache();
-        _rightDataSource.RemoveCache();
+        Cache.Clean();
     }
 
     public Task Save(DataRow row)

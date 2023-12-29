@@ -6,7 +6,8 @@ public class UnionedDataSource : IDataSource
     private readonly IDataSource _secondDataSource;
     private readonly Dictionary<DataColumn, DataColumnFilter> _mainFilters;
     private readonly DataColumnUnionMapping[] _mappings;
-    private IEnumerable<DataRow>? _cache;
+    public UnionedDataSourceCache Cache { get; } = new();
+    public DateTime? CacheTimeStamp => Cache.TimeStamp;
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
@@ -21,7 +22,7 @@ public class UnionedDataSource : IDataSource
 
     public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
     {
-        IEnumerable<DataRow> rows = await UnionTables();
+        IEnumerable<DataRow> rows = await Cache.Get(_firstDataSource, _secondDataSource, UnionTables);
 
         if (dataQuery?.Sorters != null)
             foreach (var sortDefinition in dataQuery.Sorters)
@@ -41,9 +42,6 @@ public class UnionedDataSource : IDataSource
 
     private async Task<IEnumerable<DataRow>> UnionTables()
     {
-        if (_cache != null)
-            return _cache;
-
         var result = new List<DataRow>();
         DataQueryResult firstDataView = await _firstDataSource.ExecuteQuery(new DataQuery {  PageSize = -1});
         foreach (var firstDataRow in firstDataView.Rows)
@@ -63,7 +61,6 @@ public class UnionedDataSource : IDataSource
             result.Add(resultDataRow);
         }
         
-        _cache = result;
         return result;
     }
 
@@ -81,9 +78,7 @@ public class UnionedDataSource : IDataSource
 
     public void RemoveCache()
     {
-        _cache = null;
-        _firstDataSource.RemoveCache();
-        _secondDataSource.RemoveCache();
+        Cache.Clean();
     }
 
     public Task Save(DataRow row)

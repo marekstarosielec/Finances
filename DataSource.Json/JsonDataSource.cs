@@ -8,8 +8,10 @@ public class JsonDataSource : IDataSource
 {
     private readonly string _fileName;
     protected static Dictionary<string, SemaphoreSlim> _semaphores = new ();
-    private string? _contentString = null;
     public Dictionary<string, DataColumn> Columns { get; private set; }
+    public DataSourceCache<string> Cache { get; } = new DataSourceCache<string>();
+
+    public DateTime? CacheTimeStamp => Cache.TimeStamp;
 
     public JsonDataSource(string fileName, params DataColumn[] dataColumns)
     {
@@ -29,15 +31,11 @@ public class JsonDataSource : IDataSource
         var changedNode = nodes.ToList().FirstOrDefault(n => n["Id"]?.GetValue<string>() == id)?.AsObject();
         if (changedNode == null)
             return; //TODO: New row created;
-        foreach ( var cell in row)
+        foreach (var cell in row)
         {
             if (cell.Value.CurrentValue == cell.Value.OriginalValue)
                 continue;
 
-            //if (changedNode.Remove(cell.Key.ColumnName, out var value))
-            //{
-            //    changedNode.Add(cell.Key.ColumnName, value);
-            //}
             changedNode[cell.Key.ColumnName] = JsonValue.Create(cell.Value.CurrentValue);
         }
 
@@ -61,7 +59,8 @@ public class JsonDataSource : IDataSource
             _semaphore.Release();
         }
         //TODO: updating transaction need to invalidate cache of transactionwithdocument
-        _contentString = result;
+        Cache.Clean();
+        await GetData();
     }
 
     internal async Task<NodesList> GetNodes(DataQuery? dataQuery)
@@ -113,14 +112,11 @@ public class JsonDataSource : IDataSource
         return result;
     }
 
-    private async Task<IEnumerable<JsonNode>> GetData()
-    {
-        if (_contentString == null)
-            await Load();
-        return JsonNode.Parse(_contentString!)?.AsArray()?.Where(a => a != null)?.Select(a => a!) ?? throw new InvalidOperationException($"Failed to deserialize data from {_fileName}");
-    }
+    private async Task<IEnumerable<JsonNode>> GetData() 
+        => JsonNode.Parse(await Cache.Get(Load))?.AsArray()?.Where(a => a != null)?.Select(a => a!) 
+        ?? throw new InvalidOperationException($"Failed to deserialize data from {_fileName}");
 
-    private async Task Load()
+    private async Task<string> Load()
     {
         var _semaphore = GetSemaphore();
 
@@ -129,7 +125,7 @@ public class JsonDataSource : IDataSource
             _semaphore.Wait();
             if (!File.Exists(_fileName))
                 await File.WriteAllTextAsync(_fileName, "[]");
-            _contentString = await File.ReadAllTextAsync(_fileName, Encoding.Latin1);
+            return await File.ReadAllTextAsync(_fileName, Encoding.Latin1);
         }
         finally
         {
@@ -146,6 +142,8 @@ public class JsonDataSource : IDataSource
 
     public void RemoveCache()
     {
-        _contentString = null;
+        Cache.Clean();
     }
+
+    
 }
