@@ -223,7 +223,17 @@ public class DataViewManager : IDisposable
         if (dataView == null || row == null)
             return;
 
-        await dataView.DataSource.Save(row);
+        ViewChanged?.Invoke(this, dataView);
+        await dataView.Save(row);
+        ViewChanged?.Invoke(this, dataView);
+        foreach(var dv in DataViews) {
+            if (dv.GetDetailsDataViewName() == dataView.Name) //TODO: If more than 1 details view is used it needs to be cehcked too.
+            {
+                ViewChanged?.Invoke(this, dv);
+                dataView.RemoveCache();
+                ViewChanged?.Invoke(this, dv);
+            }
+        }
     }
 }
 

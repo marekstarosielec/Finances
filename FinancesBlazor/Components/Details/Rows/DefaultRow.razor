@@ -1,10 +1,15 @@
 ﻿@using DataSource;
 @using DataView;
 @using FinancesBlazor.Components.Details.Cells;
+@using FinancesBlazor.Components.Spinner
 @inject DataViewManager _dataViewManager;
 @implements IDisposable;
 
-@if (DataView != null && Row != null)
+@if (DataView?.IsSaving != false)
+{
+    <Spinner></Spinner>
+}
+else
 {
     <div>
         <button class="btn btn-primary" @onclick="() => Save()">Zapisz</button>
@@ -14,6 +19,7 @@
         }
     </div>   
 }
+
 @code {
     [Parameter]
     public DataView? DataView { get; set; }

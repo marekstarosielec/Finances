@@ -21,6 +21,7 @@ public class DataView
     public DataViewQuery Query { get; init; }
 
     public bool IsLoading { get; private set; } = true;
+    public bool IsSaving { get; private set; } = false;
 
     public DataQueryResult? Result { get; private set; }
 
@@ -82,5 +83,12 @@ public class DataView
     public string? GetDetailsDataViewName()
     {
         return _detailsViewName;
+    }
+
+    public async Task Save(DataRow row)
+    {
+        IsSaving = true;
+        await DataSource.Save(row);
+        IsSaving = false;
     }
 }
