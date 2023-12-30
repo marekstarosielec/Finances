@@ -12,8 +12,6 @@
     }
 </div>
 @code {
-    [Parameter]
-    public DataView? DataView  { get; set; }
     private Dictionary<string, DataView?> _details = new();
 
     private DataRow? GetRow(DataView? dv, string id) => dv?.Result?.GetById(id);
@@ -37,9 +35,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (DataView == null)
-            return;
-
         _details = _dataViewManager.CheckedRecords.Keys.ToDictionary(k => k, v => (DataView?)null);
         foreach (var group in _dataViewManager.CheckedRecords.GroupBy(cr => cr.Value))
         {

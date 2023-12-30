@@ -13,6 +13,7 @@ else
 {
     <div>
         <button class="btn btn-primary" @onclick="() => Save()">Zapisz</button>
+        <button class="btn btn-primary" @onclick="Close">X</button>
         @foreach (var column in DataView.Columns)
         {
             <DynamicCell DataView=@DataView Row=@Row Column=column></DynamicCell>
@@ -44,6 +45,12 @@ else
     private async Task Save()
     {
         await _dataViewManager.SaveChanges(DataView, Row);
+    }
+
+    private void Close()
+    {
+        _dataViewManager.UncheckRecord(DataView, Row);
+        _dataViewManager.Save(DataView);
     }
 
     void IDisposable.Dispose()

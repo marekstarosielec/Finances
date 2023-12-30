@@ -22,9 +22,9 @@ public class DataViewManager : IDisposable
     public event EventHandler<DataView.DataView>? ViewChanged;
     public event EventHandler<DataView.DataView>? ActiveViewChanged;
 
-    private Dictionary<string, DataView.DataView> _checkedRecords = new Dictionary<string, DataView.DataView>();
+    private Dictionary<string, DataView.DataView> _checkedRecords = new ();
 
-    public ReadOnlyDictionary<string, DataView.DataView> CheckedRecords => new ReadOnlyDictionary<string, DataView.DataView>(_checkedRecords);
+    public ReadOnlyDictionary<string, DataView.DataView> CheckedRecords => new (_checkedRecords);
 
     public DataViewManager(NavigationManager navigationManager, List<DataView.DataView> dataViews, DialogService dialogService)
     {
@@ -109,7 +109,7 @@ public class DataViewManager : IDisposable
                 if (pos == -1)
                     continue;
                 var checkedRecordId = checkedRecord.Substring(0, pos);
-                var checkedRecordDataViewId = checkedRecord.Substring(pos+1);
+                var checkedRecordDataViewId = checkedRecord.Substring(pos + 1);
                 var checkedRecordDataView = DataViews.FirstOrDefault(dv => dv.Name == checkedRecordDataViewId);
                 if (checkedRecordDataView == null)
                     continue;
@@ -161,20 +161,17 @@ public class DataViewManager : IDisposable
     private string SerializeQueryString(NameValueCollection queryString) 
         => String.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
 
-    public async Task OpenSideDialog()
+    public void OpenSideDialog()
     {
         if (ActiveView == null)
             return;
         var width = Math.Min(DetailSettings.MaximumNumberOfDetails, CheckedRecords.Count) * DetailSettings.DetailsWidth;
 
-        await _dialogService.OpenSideAsync<Details>(string.Empty,
-            parameters: new Dictionary<string, object>() { 
-                { "DataView", ActiveView }
-            },
-            options: new SideDialogOptions { 
+        _dialogService.OpenSideAsync<Details>(string.Empty,
+           options: new SideDialogOptions { 
                 CloseDialogOnOverlayClick = false, 
                 Position = DialogPosition.Right, 
-                Width = $"{width}px",
+                //Width = $"{width}px",
                 ShowMask = false, 
                 ShowTitle = false
                 });
@@ -223,17 +220,17 @@ public class DataViewManager : IDisposable
         if (dataView == null || row == null)
             return;
 
-        ViewChanged?.Invoke(this, dataView);
+     //   ViewChanged?.Invoke(this, dataView);
         await dataView.Save(row);
-        ViewChanged?.Invoke(this, dataView);
         foreach(var dv in DataViews) {
             if (dv.GetDetailsDataViewName() == dataView.Name) //TODO: If more than 1 details view is used it needs to be cehcked too.
             {
-                ViewChanged?.Invoke(this, dv);
                 dataView.RemoveCache();
                 ViewChanged?.Invoke(this, dv);
             }
         }
+      //  ViewChanged?.Invoke(this, dataView);
+
     }
 }
 

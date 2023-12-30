@@ -1,8 +1,6 @@
-﻿using System.Text.Json.Nodes;
+﻿namespace DataSource;
 
-namespace DataSource;
-
-internal static class RowsExtensions
+internal static class DataRowsExtensions
 {
     internal static IEnumerable<DataRow> Sort(this IEnumerable<DataRow> source, DataColumn column, bool descending) => column.ColumnDataType switch
     {
