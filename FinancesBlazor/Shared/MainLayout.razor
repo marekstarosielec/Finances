@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using FinancesBlazor.Components.Details;
+@inherits LayoutComponentBase
+@inject DataViewManager _dataViewManager;
+@implements IDisposable;
+
 
 <PageTitle>Finanse</PageTitle>
 <RadzenComponents />
@@ -17,6 +21,39 @@
             @Body
         </article>
     </main>
+    <div class="sidebar2" style="@GetWidth()">
+        <FinancesBlazor.Components.Details.Details @ref="details" />
+    </div>
+
 </div>
 <link rel="stylesheet" href="css/font-awesome/css/fontawesome.min.css" />
 <script src="css/font-awesome/js/all.min.js"></script>
+
+@code{
+    Details? details;
+    int width = 0;
+
+    public string GetWidth()
+    {
+        return $"width:{width}px";
+    }
+
+    protected override void OnInitialized()
+    {
+        _dataViewManager.DetailsChanged += DetailsChanged;
+    }
+
+    async void DetailsChanged(object? sender, Dictionary<string, DataView.DataView> checkedRecords)
+    {
+        if (details == null)
+            return;
+        
+        width = Math.Min(DetailSettings.MaximumNumberOfDetails, checkedRecords.Count) * DetailSettings.DetailsWidth;
+        await details.LoadDetails();
+    }
+
+    void IDisposable.Dispose()
+    {
+        _dataViewManager.DetailsChanged -= DetailsChanged;
+    }
+}

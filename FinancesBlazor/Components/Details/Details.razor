@@ -5,7 +5,7 @@
 @inject DataViewManager _dataViewManager;
 
 @* <button class="btn btn-primary" @onclick="() => Test()">Test</button> *@
-<div class="d-flex flex-nowrap">
+<div class="d-flex flex-nowrap" style="@GetStyle()">
     @foreach (var checkedRecordKey in _dataViewManager.CheckedRecords.Keys)
     {
         <DynamicRow DataView=@_dataViewManager.CheckedRecords[checkedRecordKey] Row=@GetRow(_dataViewManager.CheckedRecords[checkedRecordKey],checkedRecordKey)></DynamicRow>
@@ -15,18 +15,11 @@
     private Dictionary<string, DataView?> _details = new();
 
     private DataRow? GetRow(DataView? dv, string id) => dv?.Result?.GetById(id);
-    // private Dictionary<string, DataView?> _visibleDetails
-    // {
-    //     get
-    //     {
-    //         if (_details == null || DataView == null)
-    //             return new();
-    //         var startingIndex = Math.Min(DataView.DetailsIndex, _details.Count - DetailSettings.MaximumNumberOfDetails);
-    //         if (startingIndex < 0)
-    //             startingIndex = 0;
-    //         return _details.Skip(startingIndex).Take(DetailSettings.MaximumNumberOfDetails).ToDictionary(k => k.Key, v => v.Value);
-    //     }
-    // }
+
+    private string GetStyle()
+    {
+        return $"overflow-x:{ (_dataViewManager.CheckedRecords.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto") }";
+    }
 
     protected override void OnInitialized()
     {
@@ -34,6 +27,18 @@
     }
 
     protected override async Task OnInitializedAsync()
+    {
+
+        _details = _dataViewManager.CheckedRecords.Keys.ToDictionary(k => k, v => (DataView?)null);
+        foreach (var group in _dataViewManager.CheckedRecords.GroupBy(cr => cr.Value))
+        {
+            var ids = group.Select((k, v) => k.Key).ToList();
+            group.Key.Query.IdFilters.Clear();
+            group.Key.Query.IdFilters.AddRange(ids);
+            await group.Key.Requery();
+        }
+    }
+    public async Task LoadDetails()
     {
         _details = _dataViewManager.CheckedRecords.Keys.ToDictionary(k => k, v => (DataView?)null);
         foreach (var group in _dataViewManager.CheckedRecords.GroupBy(cr => cr.Value))
@@ -43,6 +48,7 @@
             group.Key.Query.IdFilters.AddRange(ids);
             await group.Key.Requery();
         }
+        StateHasChanged();
     }
 
     async void ViewChanged(object? sender, DataView e)

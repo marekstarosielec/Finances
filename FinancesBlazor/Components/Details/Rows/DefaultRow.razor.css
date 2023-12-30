@@ -4,6 +4,7 @@
     border-right-style: solid;
     padding-top: 5px;
     padding-right: 5px;
+    min-width: 400px;
 }
 
 button {
