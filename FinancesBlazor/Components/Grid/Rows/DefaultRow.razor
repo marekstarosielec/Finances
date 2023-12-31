@@ -23,7 +23,7 @@
 
     protected override void OnInitialized()
     {
-        _dataViewManager.ViewChanged += ViewChanged;
+        _dataViewManager.DetailsChanged += DetailsChanged;
 
         if (DataView == null)
             return;
@@ -42,9 +42,9 @@
         _dataViewManager.Save(DataView);
     }
 
-    void ViewChanged(object? sender, DataView e)
+    async void DetailsChanged(object? sender, Dictionary<string, DataView> checkedRecords)
     {
-        if (DataView != e)
+        if (DataView == null)
             return;
         _checked = _dataViewManager.RecordIsChecked(DataView, Row);
         StateHasChanged();
@@ -52,6 +52,6 @@
 
     void IDisposable.Dispose()
     {
-        _dataViewManager.ViewChanged -= ViewChanged;
+        _dataViewManager.DetailsChanged -= DetailsChanged;
     }
 }

@@ -1,10 +1,10 @@
 ﻿div {
-    width: 100%;
     border-right-color: #7160E8;
     border-right-style: solid;
     padding-top: 5px;
     padding-right: 5px;
-    min-width: 400px;
+    width: 380px;
+    padding: 10px;
 }
 
 button {

@@ -12,7 +12,7 @@
 else
 {
     <div>
-        <button class="btn btn-primary" @onclick="() => Save()">Zapisz</button>
+        <button class="btn btn-primary" @onclick="Save">Zapisz</button>
         <button class="btn btn-primary" @onclick="Close">X</button>
         @foreach (var column in DataView.Columns)
         {
@@ -49,6 +49,8 @@ else
 
     private void Close()
     {
+        if (DataView == null)
+            return;
         _dataViewManager.UncheckRecord(DataView, Row);
         _dataViewManager.Save(DataView);
     }

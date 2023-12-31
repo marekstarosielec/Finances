@@ -64,7 +64,7 @@ public class DataViewManager : IDisposable
     {
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
-        qs["cr"] = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
+        qs["cr"] = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}").OrderBy(cr => cr));
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
@@ -98,26 +98,25 @@ public class DataViewManager : IDisposable
             }
         }
 
-        //_checkedRecords.Clear();
-        //var cr = qs["cr"];
-        //if (cr != null)
+        var currentCheckedRecords = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}").OrderBy(cr => cr));
+        var cr = qs["cr"];
+        _checkedRecords.Clear();
+        var checkedRecords = cr?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new ();
+        foreach (var checkedRecord in checkedRecords)
+        {
+            var pos = checkedRecord.IndexOf(':');
+            if (pos == -1)
+                continue;
+            var checkedRecordId = checkedRecord.Substring(0, pos);
+            var checkedRecordDataViewId = checkedRecord.Substring(pos + 1);
+            var checkedRecordDataView = DataViews.FirstOrDefault(dv => dv.Name == checkedRecordDataViewId);
+            if (checkedRecordDataView == null)
+                continue;
 
-        //{
-        //    var checkedRecords = cr.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
-        //    foreach (var checkedRecord in checkedRecords)
-        //    {
-        //        var pos = checkedRecord.IndexOf(':');
-        //        if (pos == -1)
-        //            continue;
-        //        var checkedRecordId = checkedRecord.Substring(0, pos);
-        //        var checkedRecordDataViewId = checkedRecord.Substring(pos + 1);
-        //        var checkedRecordDataView = DataViews.FirstOrDefault(dv => dv.Name == checkedRecordDataViewId);
-        //        if (checkedRecordDataView == null)
-        //            continue;
-
-        //        _checkedRecords[checkedRecordId] = checkedRecordDataView;
-        //    }
-        //}
+            _checkedRecords[checkedRecordId] = checkedRecordDataView;
+        }
+        DetailsChanged?.Invoke(this, _checkedRecords);
+      
 
         //if (_checkedRecords.Count > 0)
         //    OpenSideDialog();
@@ -201,19 +200,19 @@ public class DataViewManager : IDisposable
             return;
 
         _checkedRecords.Add(GetRowId(dataView, row), detailsView);
-        DetailsChanged?.Invoke(this, _checkedRecords);
+   //     DetailsChanged?.Invoke(this, _checkedRecords);
     }
 
     public void UncheckRecord(DataView.DataView dataView, DataSource.DataRow? row)
     {
         _checkedRecords.Remove(GetRowId(dataView, row));
-        DetailsChanged?.Invoke(this, _checkedRecords);
+   //     DetailsChanged?.Invoke(this, _checkedRecords);
     }
 
     public void UncheckRecords()
     {
         _checkedRecords.Clear();
-        DetailsChanged?.Invoke(this, _checkedRecords);
+  //      DetailsChanged?.Invoke(this, _checkedRecords);
     }
 
     public bool RecordIsChecked(DataView.DataView dataView, DataSource.DataRow? row) => _checkedRecords.ContainsKey(GetRowId(dataView, row));

@@ -47,9 +47,10 @@
     {
         if (details == null)
             return;
-        
+
         width = Math.Min(DetailSettings.MaximumNumberOfDetails, checkedRecords.Count) * DetailSettings.DetailsWidth;
         await details.LoadDetails();
+        StateHasChanged();
     }
 
     void IDisposable.Dispose()
