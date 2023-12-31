@@ -1,9 +1,5 @@
-﻿using DataSource;
-using DataView;
-using FinancesBlazor.Components.Details;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
-using Radzen;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Data;
@@ -15,7 +11,6 @@ public class DataViewManager : IDisposable
 {
     public readonly List<DataView.DataView> DataViews;
     private readonly NavigationManager _navigationManager;
-    private readonly DialogService _dialogService;
     private DataView.DataView? _activeView;
     public DataView.DataView? ActiveView { get => _activeView; }
 
@@ -29,11 +24,10 @@ public class DataViewManager : IDisposable
 
     public ReadOnlyDictionary<string, DataView.DataView> CheckedRecords => new (_checkedRecords);
 
-    public DataViewManager(NavigationManager navigationManager, List<DataView.DataView> dataViews, DialogService dialogService)
+    public DataViewManager(NavigationManager navigationManager, List<DataView.DataView> dataViews)
     {
         _navigationManager = navigationManager;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
-        _dialogService = dialogService;
         DataViews = dataViews.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         if (DataViews.Count == 0)
             throw new InvalidOperationException("No view found");
@@ -81,7 +75,6 @@ public class DataViewManager : IDisposable
     {
         if (_activeView?.Name == dataView.Name)
             return;
-        _dialogService.CloseSide();
 
         var qs = GetQueryString();
         qs["av"] = dataView.Name;
