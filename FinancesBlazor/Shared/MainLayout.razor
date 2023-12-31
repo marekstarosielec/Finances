@@ -47,8 +47,10 @@
     {
         if (details == null)
             return;
-
-        width = Math.Min(DetailSettings.MaximumNumberOfDetails, checkedRecords.Count) * DetailSettings.DetailsWidth;
+        if (_dataViewManager.ShowHide && checkedRecords.Count > 0)
+            width = 50;
+        else
+            width = Math.Min(DetailSettings.MaximumNumberOfDetails, checkedRecords.Count) * DetailSettings.DetailsWidth;
         await details.LoadDetails();
         StateHasChanged();
     }

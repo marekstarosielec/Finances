@@ -4,16 +4,19 @@
 @implements IDisposable;
 @inject DataViewManager _dataViewManager;
 
-@* <button class="btn btn-primary" @onclick="() => Test()">Test</button> *@
-<div class="d-flex flex-nowrap" style="@GetStyle()">
-    @foreach (var checkedRecordKey in _dataViewManager.CheckedRecords.Keys)
-    {
-        <DynamicRow DataView=@_dataViewManager.CheckedRecords[checkedRecordKey] Row=@GetRow(_dataViewManager.CheckedRecords[checkedRecordKey],checkedRecordKey)></DynamicRow>
-    }
-</div>
+<button class="btn btn-primary" @onclick="ShowHide">+</button> 
+@if (!_showHide)
+{
+    <div class="d-flex flex-nowrap" style="@GetStyle()">
+        @foreach (var checkedRecordKey in _dataViewManager.CheckedRecords.Keys)
+        {
+            <DynamicRow DataView=@_dataViewManager.CheckedRecords[checkedRecordKey] Row=@GetRow(_dataViewManager.CheckedRecords[checkedRecordKey],checkedRecordKey)></DynamicRow>
+        }
+    </div>
+}
 @code {
     private Dictionary<string, DataView?> _details = new();
-
+    private bool _showHide = true;
     private DataRow? GetRow(DataView? dv, string id) => dv?.Result?.GetById(id);
 
     private string GetStyle()
@@ -24,6 +27,7 @@
     protected override void OnInitialized()
     {
         _dataViewManager.ViewChanged += ViewChanged;
+        _dataViewManager.DetailsChanged += DetailsChanged;
     }
 
     protected override async Task OnInitializedAsync()
@@ -55,11 +59,24 @@
     {
     }
 
-
+    private void ShowHide()
+    {
+        _dataViewManager.ShowHideDetails();
+        _dataViewManager.Save(_dataViewManager.ActiveView);
+    }
 
     void IDisposable.Dispose()
     {
         _dataViewManager.ViewChanged -= ViewChanged;
+        _dataViewManager.DetailsChanged -= DetailsChanged;
+    }
+
+    async void DetailsChanged(object? sender, Dictionary<string, DataView> checkedRecords)
+    {
+        if (_showHide == _dataViewManager.ShowHide)
+            return;
+        _showHide = _dataViewManager.ShowHide;
+        StateHasChanged();
     }
 
 }

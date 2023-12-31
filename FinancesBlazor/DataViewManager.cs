@@ -24,6 +24,7 @@ public class DataViewManager : IDisposable
     public event EventHandler<Dictionary<string, DataView.DataView>>? DetailsChanged;
 
     private Dictionary<string, DataView.DataView> _checkedRecords = new ();
+    public bool ShowHide;
 
     public ReadOnlyDictionary<string, DataView.DataView> CheckedRecords => new (_checkedRecords);
 
@@ -64,7 +65,8 @@ public class DataViewManager : IDisposable
     {
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
-        qs["cr"] = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}").OrderBy(cr => cr));
+        qs["cr"] = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
+        qs["sd"] = ShowHide ? "1" : "0";
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
@@ -85,6 +87,11 @@ public class DataViewManager : IDisposable
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
+    public void ShowHideDetails()
+    {
+        ShowHide = !ShowHide;
+    }
+
     private void LoadFromQueryString()
     {
         var qs = GetQueryString();
@@ -98,7 +105,8 @@ public class DataViewManager : IDisposable
             }
         }
 
-        var currentCheckedRecords = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}").OrderBy(cr => cr));
+        ShowHide = qs["sd"] == "1";
+
         var cr = qs["cr"];
         _checkedRecords.Clear();
         var checkedRecords = cr?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new ();
@@ -116,10 +124,6 @@ public class DataViewManager : IDisposable
             _checkedRecords[checkedRecordId] = checkedRecordDataView;
         }
         DetailsChanged?.Invoke(this, _checkedRecords);
-      
-
-        //if (_checkedRecords.Count > 0)
-        //    OpenSideDialog();
 
         foreach (var dv in DataViews)
         {
@@ -159,23 +163,7 @@ public class DataViewManager : IDisposable
         => _navigationManager.ToAbsoluteUri(_navigationManager.Uri).GetLeftPart(UriPartial.Path);
 
     private string SerializeQueryString(NameValueCollection queryString) 
-        => String.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
-
-    public void OpenSideDialog()
-    {
-        if (ActiveView == null)
-            return;
-        //var width = Math.Min(DetailSettings.MaximumNumberOfDetails, CheckedRecords.Count) * DetailSettings.DetailsWidth;
-
-        //_dialogService.OpenSideAsync<Details>(string.Empty,
-        //   options: new SideDialogOptions { 
-        //        CloseDialogOnOverlayClick = false, 
-        //        Position = DialogPosition.Right, 
-        //        Width = $"{width}px",
-        //        ShowMask = false, 
-        //        ShowTitle = false
-        //        });
-    }
+        => string.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
 
     private string GetRowId(DataView.DataView dataView, DataSource.DataRow? row)
     {
@@ -200,19 +188,16 @@ public class DataViewManager : IDisposable
             return;
 
         _checkedRecords.Add(GetRowId(dataView, row), detailsView);
-   //     DetailsChanged?.Invoke(this, _checkedRecords);
     }
 
     public void UncheckRecord(DataView.DataView dataView, DataSource.DataRow? row)
     {
         _checkedRecords.Remove(GetRowId(dataView, row));
-   //     DetailsChanged?.Invoke(this, _checkedRecords);
     }
 
     public void UncheckRecords()
     {
         _checkedRecords.Clear();
-  //      DetailsChanged?.Invoke(this, _checkedRecords);
     }
 
     public bool RecordIsChecked(DataView.DataView dataView, DataSource.DataRow? row) => _checkedRecords.ContainsKey(GetRowId(dataView, row));
