@@ -51,8 +51,9 @@
             width = 50;
         else
             width = Math.Min(DetailSettings.MaximumNumberOfDetails, checkedRecords.Count) * DetailSettings.DetailsWidth;
-        await details.LoadDetails();
         StateHasChanged();
+        await details.LoadDetails();
+        
     }
 
     void IDisposable.Dispose()

@@ -5,23 +5,21 @@
 @inject DataViewManager _dataViewManager;
 
 <button class="btn btn-primary" @onclick="ShowHide">+</button> 
-@if (!_showHide)
-{
-    <div class="d-flex flex-nowrap" style="@GetStyle()">
-        @foreach (var checkedRecordKey in _dataViewManager.CheckedRecords.Keys)
-        {
-            <DynamicRow DataView=@_dataViewManager.CheckedRecords[checkedRecordKey] Row=@GetRow(_dataViewManager.CheckedRecords[checkedRecordKey],checkedRecordKey)></DynamicRow>
-        }
-    </div>
-}
+<div class="d-flex flex-nowrap" style="@GetStyle()">
+    @foreach (var checkedRecordKey in _dataViewManager.CheckedRecords.Keys)
+    {
+        <DynamicRow DataView=@_dataViewManager.CheckedRecords[checkedRecordKey] Row=@GetRow(_dataViewManager.CheckedRecords[checkedRecordKey],checkedRecordKey)></DynamicRow>
+    }
+</div>
+
 @code {
     private Dictionary<string, DataView?> _details = new();
-    private bool _showHide = true;
     private DataRow? GetRow(DataView? dv, string id) => dv?.Result?.GetById(id);
 
     private string GetStyle()
     {
-        return $"overflow-x:{ (_dataViewManager.CheckedRecords.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto") }";
+        var result = $"overflow-x:{(_dataViewManager.CheckedRecords.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.ShowHide ? "none!important" : "block")}";
+        return result;
     }
 
     protected override void OnInitialized()
@@ -73,9 +71,6 @@
 
     async void DetailsChanged(object? sender, Dictionary<string, DataView> checkedRecords)
     {
-        if (_showHide == _dataViewManager.ShowHide)
-            return;
-        _showHide = _dataViewManager.ShowHide;
         StateHasChanged();
     }
 
