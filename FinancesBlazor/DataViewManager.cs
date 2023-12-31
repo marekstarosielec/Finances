@@ -22,6 +22,7 @@ public class DataViewManager : IDisposable
     public event EventHandler<DataView.DataView>? ViewChanged;
     public event EventHandler<DataView.DataView>? ActiveViewChanged;
     public event EventHandler<Dictionary<string, DataView.DataView>>? DetailsChanged;
+    public event EventHandler? DetailsExpandChanged;
 
     private Dictionary<string, DataView.DataView> _checkedRecords = new ();
     public bool ShowHide;
@@ -105,8 +106,12 @@ public class DataViewManager : IDisposable
             }
         }
 
-        ShowHide = qs["sd"] == "1";
-
+        var newShowHide = qs["sd"] == "1";
+        if (newShowHide != ShowHide)
+        {
+            ShowHide = newShowHide;
+            DetailsExpandChanged?.Invoke(this, EventArgs.Empty);
+        }
         var cr = qs["cr"];
         _checkedRecords.Clear();
         var checkedRecords = cr?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new ();

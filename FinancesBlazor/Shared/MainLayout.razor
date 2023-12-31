@@ -41,6 +41,7 @@
     protected override void OnInitialized()
     {
         _dataViewManager.DetailsChanged += DetailsChanged;
+        _dataViewManager.DetailsExpandChanged += DetailsExpandChanged;
     }
 
     async void DetailsChanged(object? sender, Dictionary<string, DataView.DataView> checkedRecords)
@@ -53,11 +54,21 @@
             width = Math.Min(DetailSettings.MaximumNumberOfDetails, checkedRecords.Count) * DetailSettings.DetailsWidth;
         StateHasChanged();
         await details.LoadDetails();
-        
+
+    }
+
+    void DetailsExpandChanged(object? sender, EventArgs e)
+    {
+        if (_dataViewManager.ShowHide && _dataViewManager.CheckedRecords.Count > 0)
+            width = 50;
+        else
+            width = Math.Min(DetailSettings.MaximumNumberOfDetails, _dataViewManager.CheckedRecords.Count) * DetailSettings.DetailsWidth;
+        StateHasChanged();
     }
 
     void IDisposable.Dispose()
     {
         _dataViewManager.DetailsChanged -= DetailsChanged;
+        _dataViewManager.DetailsExpandChanged -= DetailsExpandChanged;
     }
 }
