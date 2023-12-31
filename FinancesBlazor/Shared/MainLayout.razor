@@ -16,13 +16,12 @@
        @*  <div class="top-row px-4">
             
         </div> *@
-
         <article class="content px-4">
             @Body
         </article>
     </main>
     <div class="sidebar2" style="@GetWidth()">
-        <FinancesBlazor.Components.Details.Details @ref="details" />
+        <FinancesBlazor.Components.Details.Details @ref="detailsComponent" />
     </div>
 
 </div>
@@ -30,7 +29,7 @@
 <script src="css/font-awesome/js/all.min.js"></script>
 
 @code{
-    Details? details;
+    Details? detailsComponent;
     int width = 0;
 
     public string GetWidth()
@@ -44,26 +43,28 @@
         _dataViewManager.DetailsExpandChanged += DetailsExpandChanged;
     }
 
-    async void DetailsChanged(object? sender, Dictionary<string, DataView.DataView> checkedRecords)
+    async void DetailsChanged(object? sender, EventArgs e)
     {
-        if (details == null)
+        if (detailsComponent == null)
             return;
-        if (_dataViewManager.ShowHide && checkedRecords.Count > 0)
-            width = 50;
-        else
-            width = Math.Min(DetailSettings.MaximumNumberOfDetails, checkedRecords.Count) * DetailSettings.DetailsWidth;
-        StateHasChanged();
-        await details.LoadDetails();
 
+        CalculateDetailsWidth();
+        StateHasChanged();
+        await detailsComponent.LoadDetails();
     }
 
     void DetailsExpandChanged(object? sender, EventArgs e)
     {
-        if (_dataViewManager.ShowHide && _dataViewManager.CheckedRecords.Count > 0)
+        CalculateDetailsWidth();
+        StateHasChanged();
+    }
+
+    private void CalculateDetailsWidth()
+    {
+        if (_dataViewManager.DetailsCollapsed && _dataViewManager.CheckedRecords.Count > 0)
             width = 50;
         else
             width = Math.Min(DetailSettings.MaximumNumberOfDetails, _dataViewManager.CheckedRecords.Count) * DetailSettings.DetailsWidth;
-        StateHasChanged();
     }
 
     void IDisposable.Dispose()

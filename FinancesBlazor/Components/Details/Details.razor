@@ -18,7 +18,7 @@
 
     private string GetStyle()
     {
-        var result = $"overflow-x:{(_dataViewManager.CheckedRecords.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.ShowHide ? "none!important" : "block")}";
+        var result = $"overflow-x:{(_dataViewManager.CheckedRecords.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.DetailsCollapsed ? "none!important" : "block")}";
         return result;
     }
 
@@ -59,7 +59,7 @@
 
     private void ShowHide()
     {
-        _dataViewManager.ShowHideDetails();
+        _dataViewManager.DetailsCollapseExpand();
         _dataViewManager.Save(_dataViewManager.ActiveView);
     }
 
@@ -69,7 +69,7 @@
         _dataViewManager.DetailsChanged -= DetailsChanged;
     }
 
-    async void DetailsChanged(object? sender, Dictionary<string, DataView> checkedRecords)
+    async void DetailsChanged(object? sender, EventArgs e)
     {
         StateHasChanged();
     }

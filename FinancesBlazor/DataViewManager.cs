@@ -21,11 +21,11 @@ public class DataViewManager : IDisposable
 
     public event EventHandler<DataView.DataView>? ViewChanged;
     public event EventHandler<DataView.DataView>? ActiveViewChanged;
-    public event EventHandler<Dictionary<string, DataView.DataView>>? DetailsChanged;
+    public event EventHandler? DetailsChanged;
     public event EventHandler? DetailsExpandChanged;
 
     private Dictionary<string, DataView.DataView> _checkedRecords = new ();
-    public bool ShowHide;
+    public bool DetailsCollapsed;
 
     public ReadOnlyDictionary<string, DataView.DataView> CheckedRecords => new (_checkedRecords);
 
@@ -67,7 +67,7 @@ public class DataViewManager : IDisposable
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
         qs["cr"] = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
-        qs["sd"] = ShowHide ? "1" : "0";
+        qs["sd"] = DetailsCollapsed ? "1" : "0";
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
@@ -88,9 +88,9 @@ public class DataViewManager : IDisposable
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
-    public void ShowHideDetails()
+    public void DetailsCollapseExpand()
     {
-        ShowHide = !ShowHide;
+        DetailsCollapsed = !DetailsCollapsed;
     }
 
     private void LoadFromQueryString()
@@ -107,9 +107,9 @@ public class DataViewManager : IDisposable
         }
 
         var newShowHide = qs["sd"] == "1";
-        if (newShowHide != ShowHide)
+        if (newShowHide != DetailsCollapsed)
         {
-            ShowHide = newShowHide;
+            DetailsCollapsed = newShowHide;
             DetailsExpandChanged?.Invoke(this, EventArgs.Empty);
         }
         var cr = qs["cr"];
@@ -128,7 +128,7 @@ public class DataViewManager : IDisposable
 
             _checkedRecords[checkedRecordId] = checkedRecordDataView;
         }
-        DetailsChanged?.Invoke(this, _checkedRecords);
+        DetailsChanged?.Invoke(this, EventArgs.Empty);
 
         foreach (var dv in DataViews)
         {

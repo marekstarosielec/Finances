@@ -42,7 +42,7 @@
         _dataViewManager.Save(DataView);
     }
 
-    async void DetailsChanged(object? sender, Dictionary<string, DataView> checkedRecords)
+    async void DetailsChanged(object? sender, EventArgs e)
     {
         if (DataView == null)
             return;
