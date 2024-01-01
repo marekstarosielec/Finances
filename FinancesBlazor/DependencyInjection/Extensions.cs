@@ -1,4 +1,4 @@
-﻿using DataView;
+﻿using DataViews;
 using Finances.DataSource;
 using System.Reflection;
 
@@ -17,7 +17,7 @@ public static class Extensions
     {
         var dataSourceFactory = new DataSourceFactory(configuration);
         var allEntitiesTypes = AppDomain.CurrentDomain.Load("Finances.DataView").GetTypes().Where(m => m.IsClass && m.GetInterface(nameof(IDataView)) != null).ToList();
-        var allEntitiesInstances = new List<DataView.DataView>();
+        var allEntitiesInstances = new List<DataView>();
         foreach (var entityType in allEntitiesTypes)
         {
             var entityInstance = Activator.CreateInstance(entityType, dataSourceFactory) as IDataView;

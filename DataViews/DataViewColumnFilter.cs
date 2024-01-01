@@ -1,6 +1,6 @@
 ﻿using DataSource;
 
-namespace DataView;
+namespace DataViews;
 
 public class DataViewColumnFilter
 {

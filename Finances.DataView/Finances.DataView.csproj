@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataView\DataView.csproj" />
+    <ProjectReference Include="..\DataViews\DataViews.csproj" />
   </ItemGroup>
 
 </Project>

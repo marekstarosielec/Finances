@@ -1,14 +1,14 @@
 ﻿@using DataSource;
-@using DataView;
+@using DataViews;
 @using FinancesBlazor.Components.Details.Rows;
 @implements IDisposable;
 @inject DataViewManager _dataViewManager;
 
 <button class="btn btn-primary" @onclick="ShowHide">+</button> 
 <div class="d-flex flex-nowrap" style="@GetStyle()">
-    @foreach (var checkedRecordKey in _dataViewManager.CheckedRecords.Keys)
+    @foreach (var checkedRecordKey in _dataViewManager.SelectedData.Ids.Keys)
     {
-        <DynamicRow DataView=@_dataViewManager.CheckedRecords[checkedRecordKey] Row=@GetRow(_dataViewManager.CheckedRecords[checkedRecordKey],checkedRecordKey)></DynamicRow>
+        <DynamicRow DataView=@_dataViewManager.SelectedData.Ids[checkedRecordKey] Row=@GetRow(_dataViewManager.SelectedData.Ids[checkedRecordKey],checkedRecordKey)></DynamicRow>
     }
 </div>
 
@@ -18,7 +18,7 @@
 
     private string GetStyle()
     {
-        var result = $"overflow-x:{(_dataViewManager.CheckedRecords.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.DetailsCollapsed ? "none!important" : "block")}";
+        var result = $"overflow-x:{(_dataViewManager.SelectedData.Ids.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.DetailsCollapsed ? "none!important" : "block")}";
         return result;
     }
 
@@ -31,8 +31,8 @@
     protected override async Task OnInitializedAsync()
     {
 
-        _details = _dataViewManager.CheckedRecords.Keys.ToDictionary(k => k, v => (DataView?)null);
-        foreach (var group in _dataViewManager.CheckedRecords.GroupBy(cr => cr.Value))
+        _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
+        foreach (var group in _dataViewManager.SelectedData.Ids.GroupBy(cr => cr.Value))
         {
             var ids = group.Select((k, v) => k.Key).ToList();
             group.Key.Query.IdFilters.Clear();
@@ -42,8 +42,8 @@
     }
     public async Task LoadDetails()
     {
-        _details = _dataViewManager.CheckedRecords.Keys.ToDictionary(k => k, v => (DataView?)null);
-        foreach (var group in _dataViewManager.CheckedRecords.GroupBy(cr => cr.Value))
+        _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
+        foreach (var group in _dataViewManager.SelectedData.Ids.GroupBy(cr => cr.Value))
         {
             var ids = group.Select((k, v) => k.Key).ToList();
             group.Key.Query.IdFilters.Clear();

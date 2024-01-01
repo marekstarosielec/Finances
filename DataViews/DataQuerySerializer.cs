@@ -1,7 +1,7 @@
 ﻿//using DataSource;
 //using System.Web;
 
-//namespace DataView;
+//namespace DataViews;
 
 //public class DataQuerySerializer
 //{

@@ -1,30 +1,29 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using DataViews;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Data;
 using System.Web;
 
 namespace FinancesBlazor;
 
 public class DataViewManager : IDisposable
 {
-    public readonly List<DataView.DataView> DataViews;
+    public readonly List<DataView> DataViews;
     private readonly NavigationManager _navigationManager;
-    private DataView.DataView? _activeView;
-    public DataView.DataView? ActiveView { get => _activeView; }
+    private DataView? _activeView;
+    public DataView? ActiveView { get => _activeView; }
 
-    public event EventHandler<DataView.DataView>? ViewChanged;
-    public event EventHandler<DataView.DataView>? ActiveViewChanged;
+    public event EventHandler<DataView>? ViewChanged;
+    public event EventHandler<DataView>? ActiveViewChanged;
     public event EventHandler? DetailsChanged;
     public event EventHandler? DetailsExpandChanged;
 
-    private Dictionary<string, DataView.DataView> _checkedRecords = new ();
+
     public bool DetailsCollapsed;
 
-    public ReadOnlyDictionary<string, DataView.DataView> CheckedRecords => new (_checkedRecords);
+    public SelectedData SelectedData { get; } = new SelectedData();
 
-    public DataViewManager(NavigationManager navigationManager, List<DataView.DataView> dataViews)
+    public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews)
     {
         _navigationManager = navigationManager;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
@@ -56,22 +55,22 @@ public class DataViewManager : IDisposable
         LoadFromQueryString();
     }
 
-    public void Save(DataView.DataView dataView)
+    public void Save(DataView dataView)
     {
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
-        qs["cr"] = string.Join(',', _checkedRecords.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
+        qs["cr"] = string.Join(',', SelectedData.Ids.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
         qs["sd"] = DetailsCollapsed ? "1" : "0";
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
-    public void RemoveCache(DataView.DataView dataView)
+    public void RemoveCache(DataView dataView)
     {
         dataView.RemoveCache();
         ViewChanged?.Invoke(this, dataView);
     }
 
-    public void ChangeActiveView(DataView.DataView dataView)
+    public void ChangeActiveView(DataView dataView)
     {
         if (_activeView?.Name == dataView.Name)
             return;
@@ -106,7 +105,7 @@ public class DataViewManager : IDisposable
             DetailsExpandChanged?.Invoke(this, EventArgs.Empty);
         }
         var cr = qs["cr"];
-        _checkedRecords.Clear();
+        SelectedData.Clear();
         var checkedRecords = cr?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new ();
         foreach (var checkedRecord in checkedRecords)
         {
@@ -119,7 +118,7 @@ public class DataViewManager : IDisposable
             if (checkedRecordDataView == null)
                 continue;
 
-            _checkedRecords[checkedRecordId] = checkedRecordDataView;
+            SelectedData.Add(checkedRecordDataView, checkedRecordId);
         }
         DetailsChanged?.Invoke(this, EventArgs.Empty);
 
@@ -133,13 +132,15 @@ public class DataViewManager : IDisposable
         }
     }
 
-    private DataView.DataView? FindView(string? viewName)
+    private DataView? FindView(string? viewName)
     {
         if (string.IsNullOrWhiteSpace(viewName))
             return null;
 
         return DataViews.FirstOrDefault(v => v.Name == viewName);
     }
+
+    public DataView FindViewByName(string? viewName) => DataViews.FirstOrDefault(v => v.Name == viewName) ?? throw new InvalidOperationException($"Cannot find view {viewName}");
 
     public void Dispose()
     {
@@ -163,45 +164,19 @@ public class DataViewManager : IDisposable
     private string SerializeQueryString(NameValueCollection queryString) 
         => string.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
 
-    private string GetRowId(DataView.DataView dataView, DataSource.DataRow? row)
-    {
-        if (row == null)
-            throw new ArgumentNullException(nameof(row));
+    
 
-        var idColumn = dataView.DataSource.Columns.FirstOrDefault(c => c.Key == "Id").Value;
-        if (idColumn == null)
-            throw new InvalidOperationException("Cannot find Id column in data source");
+    //public void CheckRecord(DataView dataView, DataSource.DataRow? row)
+    //{
+    //    var detailsView = DataViews.FirstOrDefault(dv => dv.Name == dataView.GetDetailsDataViewName());
+    //    if (detailsView == null)
+    //        return;
 
-        var id = row[idColumn]?.OriginalValue?.ToString();
-        if (id == null)
-            throw new InvalidOperationException("Cannot find row id");
-
-        return id;
-    }
-
-    public void CheckRecord(DataView.DataView dataView, DataSource.DataRow? row)
-    {
-        var detailsView = DataViews.FirstOrDefault(dv => dv.Name == dataView.GetDetailsDataViewName());
-        if (detailsView == null)
-            return;
-
-        _checkedRecords.Add(GetRowId(dataView, row), detailsView);
-    }
-
-    public void UncheckRecord(DataView.DataView dataView, DataSource.DataRow? row)
-    {
-        _checkedRecords.Remove(GetRowId(dataView, row));
-    }
-
-    public void UncheckRecords()
-    {
-        _checkedRecords.Clear();
-    }
-
-    public bool RecordIsChecked(DataView.DataView dataView, DataSource.DataRow? row) => _checkedRecords.ContainsKey(GetRowId(dataView, row));
+       
+    //}
 
 
-    public async Task SaveChanges(DataView.DataView? dataView, DataSource.DataRow? row)
+    public async Task SaveChanges(DataView? dataView, DataSource.DataRow? row)
     {
         if (dataView == null || row == null)
             return;
@@ -215,7 +190,7 @@ public class DataViewManager : IDisposable
                 ViewChanged?.Invoke(this, dv);
             }
         }
-      //  ViewChanged?.Invoke(this, dataView);
+        ViewChanged?.Invoke(this, dataView);
 
     }
 }

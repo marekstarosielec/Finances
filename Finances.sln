@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSource.Json", "DataSour
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finances.DataSource", "Finances.DataSource\Finances.DataSource.csproj", "{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataView", "DataView\DataView.csproj", "{47293FB6-4C34-42AF-A475-F3698DB60B24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataViews", "DataViews\DataViews.csproj", "{47293FB6-4C34-42AF-A475-F3698DB60B24}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finances.DataView", "Finances.DataView\Finances.DataView.csproj", "{2AB1EF07-C05D-479F-A01D-C8E0F9BFBC1F}"
 EndProject

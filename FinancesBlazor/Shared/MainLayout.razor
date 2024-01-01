@@ -61,10 +61,10 @@
 
     private void CalculateDetailsWidth()
     {
-        if (_dataViewManager.DetailsCollapsed && _dataViewManager.CheckedRecords.Count > 0)
+        if (_dataViewManager.DetailsCollapsed && _dataViewManager.SelectedData.Ids.Count > 0)
             width = 50;
         else
-            width = Math.Min(DetailSettings.MaximumNumberOfDetails, _dataViewManager.CheckedRecords.Count) * DetailSettings.DetailsWidth;
+            width = Math.Min(DetailSettings.MaximumNumberOfDetails, _dataViewManager.SelectedData.Ids.Count) * DetailSettings.DetailsWidth;
     }
 
     void IDisposable.Dispose()

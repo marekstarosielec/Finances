@@ -1,5 +1,5 @@
 ﻿@using DataSource;
-@using DataView;
+@using DataViews;
 
 @inject DataViewManager _dataViewManager;
 
@@ -77,10 +77,11 @@
 
     void openDialog()
     {
-        if (DataView == null)
+        if (DataView == null || Row == null)
             return;
-        _dataViewManager.UncheckRecords();
-        _dataViewManager.CheckRecord(DataView, Row);
+        var detailsDataView = _dataViewManager.FindViewByName(DataView.GetDetailsDataViewName());
+        _dataViewManager.SelectedData.Clear();
+        _dataViewManager.SelectedData.Add(detailsDataView, Row);
         _dataViewManager.Save(DataView);
     }
 }

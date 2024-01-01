@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using DataViews;
 @using FinancesBlazor.Components.Grid;
 @using System.Text.Json.Nodes;
 @inject DataViewManager _dataViewManager;
@@ -16,7 +17,7 @@
         _dataViewManager.ActiveViewChanged += ActiveDataViewChanged;
     }
 
-    void ActiveDataViewChanged(object? sender, DataView.DataView e)
+    void ActiveDataViewChanged(object? sender, DataView e)
     {
         gridId = Guid.NewGuid();
         StateHasChanged();

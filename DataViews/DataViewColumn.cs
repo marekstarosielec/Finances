@@ -1,4 +1,4 @@
-﻿namespace DataView;
+﻿namespace DataViews;
 
 public abstract class DataViewColumn
 {

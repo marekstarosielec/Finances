@@ -1,5 +1,5 @@
 ﻿@using DataSource;
-@using DataView;
+@using DataViews;
 @using FinancesBlazor.Components.Grid.Cells;
 @inject DataViewManager _dataViewManager;
 @implements IDisposable;
@@ -24,29 +24,32 @@
     protected override void OnInitialized()
     {
         _dataViewManager.DetailsChanged += DetailsChanged;
-
-        if (DataView == null)
+     
+        if (DataView == null || Row == null)
             return;
-        _checked = _dataViewManager.RecordIsChecked(DataView, Row);
+        _checked = _dataViewManager.SelectedData.IsSelected(DataView, Row);
     }
 
     private void CheckChange(bool args)
     {
-        if (DataView == null)
+        if (DataView == null || Row == null)
             return;
+
+        var detailsDataView = _dataViewManager.FindViewByName(DataView.GetDetailsDataViewName());
+
         if (args)
-            _dataViewManager.CheckRecord(DataView, Row);
+            _dataViewManager.SelectedData.Add(detailsDataView, Row);
         else
-            _dataViewManager.UncheckRecord(DataView, Row);
+            _dataViewManager.SelectedData.Remove(detailsDataView, Row);
         _checked = args;
         _dataViewManager.Save(DataView);
     }
 
-    async void DetailsChanged(object? sender, EventArgs e)
+    void DetailsChanged(object? sender, EventArgs e)
     {
-        if (DataView == null)
+        if (DataView == null || Row == null)
             return;
-        _checked = _dataViewManager.RecordIsChecked(DataView, Row);
+        _checked = _dataViewManager.SelectedData.IsSelected(DataView, Row);
         StateHasChanged();
     }
 

@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Web;
 
-namespace DataView;
+namespace DataViews;
 
 public class DataViewQuery
 {

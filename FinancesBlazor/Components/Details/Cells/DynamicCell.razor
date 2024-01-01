@@ -1,5 +1,5 @@
 ﻿@using DataSource;
-@using DataView;
+@using DataViews;
 
 <div>
     <DynamicComponent Type="@(GetCellComponent())" Parameters="@(new Dictionary<string, object?>() { { "DataView", @DataView }, { "Row", @Row}, { "Column", @Column}})" />

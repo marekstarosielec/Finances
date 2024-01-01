@@ -1,4 +1,4 @@
-﻿using DataView;
+﻿using DataViews;
 using Finances.DataSource;
 
 namespace FinancesDataView;
@@ -6,14 +6,14 @@ namespace FinancesDataView;
 public class TransactionDetails : IDataView
 {
     private readonly DataSourceFactory _dataSourceFactory;
-    private DataView.DataView? _dataView;
+    private DataView? _dataView;
 
     public TransactionDetails(DataSourceFactory dataSourceFactory)
     {
         _dataSourceFactory = dataSourceFactory;
     }
 
-    public DataView.DataView GetDataView()
+    public DataView GetDataView()
     {
         if (_dataView != null)
             return _dataView;

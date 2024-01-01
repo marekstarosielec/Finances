@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Web;
 
-namespace DataView;
+namespace DataViews;
 
 public class DataView
 {

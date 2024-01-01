@@ -1,5 +1,5 @@
 ﻿
-using DataView;
+using DataViews;
 using FinancesBlazor.Components.Grid.Filters;
 using Microsoft.AspNetCore.Components;
 using Radzen.Blazor.Rendering;
@@ -13,7 +13,7 @@ public partial class Grid
     private Dictionary<DataViewColumn, DynamicFilter> _dynamicFilters = new();
 
     [Parameter]
-    public DataView.DataView? DataView { get; set; }
+    public DataView? DataView { get; set; }
 
     protected override void OnInitialized()
     {
@@ -43,7 +43,7 @@ public partial class Grid
     private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending)
         => DataView?.Query.Sorters.ContainsKey(column) == false || DataView?.Query.Sorters[column] != descending;
 
-    async void ViewChanged(object? sender, DataView.DataView e)
+    async void ViewChanged(object? sender, DataView e)
     {
         if (DataView != e)
             return;
