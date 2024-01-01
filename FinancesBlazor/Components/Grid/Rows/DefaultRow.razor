@@ -23,7 +23,7 @@
 
     protected override void OnInitialized()
     {
-        _dataViewManager.DetailsChanged += DetailsChanged;
+        _dataViewManager.SelectedData.Changed += SelectedDataChanged;
      
         if (DataView == null || Row == null)
             return;
@@ -45,7 +45,7 @@
         _dataViewManager.Save(DataView);
     }
 
-    void DetailsChanged(object? sender, EventArgs e)
+    void SelectedDataChanged(object? sender, EventArgs e)
     {
         if (DataView == null || Row == null)
             return;
@@ -55,6 +55,6 @@
 
     void IDisposable.Dispose()
     {
-        _dataViewManager.DetailsChanged -= DetailsChanged;
+        _dataViewManager.SelectedData.Changed -= SelectedDataChanged;
     }
 }

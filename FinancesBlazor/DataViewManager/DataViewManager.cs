@@ -15,7 +15,6 @@ public class DataViewManager : IDisposable
 
     public event EventHandler<DataView>? ViewChanged;
     public event EventHandler<DataView>? ActiveViewChanged;
-    public event EventHandler? DetailsChanged;
     public event EventHandler? DetailsExpandChanged;
 
 
@@ -120,7 +119,7 @@ public class DataViewManager : IDisposable
 
             SelectedData.Add(checkedRecordDataView, checkedRecordId);
         }
-        DetailsChanged?.Invoke(this, EventArgs.Empty);
+        SelectedData.InvokeChanged();
 
         foreach (var dv in DataViews)
         {
@@ -163,17 +162,6 @@ public class DataViewManager : IDisposable
 
     private string SerializeQueryString(NameValueCollection queryString) 
         => string.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
-
-    
-
-    //public void CheckRecord(DataView dataView, DataSource.DataRow? row)
-    //{
-    //    var detailsView = DataViews.FirstOrDefault(dv => dv.Name == dataView.GetDetailsDataViewName());
-    //    if (detailsView == null)
-    //        return;
-
-       
-    //}
 
 
     public async Task SaveChanges(DataView? dataView, DataSource.DataRow? row)

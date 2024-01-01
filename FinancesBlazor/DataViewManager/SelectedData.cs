@@ -9,6 +9,7 @@ public class SelectedData
     private Dictionary<string, DataView> _ids = new();
 
     private ReadOnlyDictionary<string, DataView>? _readOnlyIds;
+
     public ReadOnlyDictionary<string, DataView> Ids
     {
         get
@@ -17,6 +18,8 @@ public class SelectedData
             return _readOnlyIds;
         }
     }
+
+    public event EventHandler? Changed;
 
     public void Clear() => _ids.Clear();
 
@@ -36,6 +39,8 @@ public class SelectedData
     }
 
     public bool IsSelected(DataView dataView, DataRow row) => _ids.ContainsKey(GetRowId(dataView, row));
+
+    internal void InvokeChanged() => Changed?.Invoke(this, EventArgs.Empty);
 
     private string GetRowId(DataView dataView, DataRow row)
     {

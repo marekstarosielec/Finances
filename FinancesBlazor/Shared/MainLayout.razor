@@ -39,11 +39,11 @@
 
     protected override void OnInitialized()
     {
-        _dataViewManager.DetailsChanged += DetailsChanged;
+        _dataViewManager.SelectedData.Changed += SelectedDataChanged;
         _dataViewManager.DetailsExpandChanged += DetailsExpandChanged;
     }
 
-    async void DetailsChanged(object? sender, EventArgs e)
+    async void SelectedDataChanged(object? sender, EventArgs e)
     {
         if (detailsComponent == null)
             return;
@@ -69,7 +69,7 @@
 
     void IDisposable.Dispose()
     {
-        _dataViewManager.DetailsChanged -= DetailsChanged;
+        _dataViewManager.SelectedData.Changed -= SelectedDataChanged;
         _dataViewManager.DetailsExpandChanged -= DetailsExpandChanged;
     }
 }

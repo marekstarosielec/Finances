@@ -25,7 +25,7 @@
     protected override void OnInitialized()
     {
         _dataViewManager.ViewChanged += ViewChanged;
-        _dataViewManager.DetailsChanged += DetailsChanged;
+        _dataViewManager.SelectedData.Changed += SelectedDataChanged;
     }
 
     protected override async Task OnInitializedAsync()
@@ -66,12 +66,9 @@
     void IDisposable.Dispose()
     {
         _dataViewManager.ViewChanged -= ViewChanged;
-        _dataViewManager.DetailsChanged -= DetailsChanged;
+        _dataViewManager.SelectedData.Changed -= SelectedDataChanged;
     }
 
-    async void DetailsChanged(object? sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
+    async void SelectedDataChanged(object? sender, EventArgs e) => StateHasChanged();
 
 }
