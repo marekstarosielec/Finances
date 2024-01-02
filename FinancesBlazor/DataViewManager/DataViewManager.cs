@@ -15,11 +15,7 @@ public class DataViewManager : IDisposable
 
     public event EventHandler<DataView>? ViewChanged;
     public event EventHandler<DataView>? ActiveViewChanged;
-    public event EventHandler? DetailsExpandChanged;
-
-
-    public bool DetailsCollapsed;
-
+    
     public SelectedData SelectedData { get; } = new SelectedData();
 
     public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews)
@@ -59,7 +55,7 @@ public class DataViewManager : IDisposable
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
         qs["cr"] = string.Join(',', SelectedData.Ids.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
-        qs["sd"] = DetailsCollapsed ? "1" : "0";
+        qs["sd"] = SelectedData.DetailsCollapsed ? "1" : "0";
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
@@ -79,10 +75,7 @@ public class DataViewManager : IDisposable
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
-    public void DetailsCollapseExpand()
-    {
-        DetailsCollapsed = !DetailsCollapsed;
-    }
+
 
     private void LoadFromQueryString()
     {
@@ -97,12 +90,13 @@ public class DataViewManager : IDisposable
             }
         }
 
-        var newShowHide = qs["sd"] == "1";
-        if (newShowHide != DetailsCollapsed)
+        var newDetailsCollapsed = qs["sd"] == "1";
+        if (newDetailsCollapsed != SelectedData.DetailsCollapsed)
         {
-            DetailsCollapsed = newShowHide;
-            DetailsExpandChanged?.Invoke(this, EventArgs.Empty);
+            SelectedData.DetailsCollapsed = newDetailsCollapsed;
+            SelectedData.InvokeDetailsCollapsedChanged();
         }
+
         var cr = qs["cr"];
         SelectedData.Clear();
         var checkedRecords = cr?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new ();

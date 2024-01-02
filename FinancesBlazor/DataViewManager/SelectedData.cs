@@ -20,6 +20,11 @@ public class SelectedData
     }
 
     public event EventHandler? Changed;
+    public event EventHandler? DetailsCollapsedChanged;
+
+    public bool DetailsCollapsed { get; set; }
+
+    internal void InvokeDetailsCollapsedChanged() => DetailsCollapsedChanged?.Invoke(this, EventArgs.Empty);
 
     public void Clear() => _ids.Clear();
 
@@ -41,7 +46,7 @@ public class SelectedData
     public bool IsSelected(DataView dataView, DataRow row) => _ids.ContainsKey(GetRowId(dataView, row));
 
     internal void InvokeChanged() => Changed?.Invoke(this, EventArgs.Empty);
-
+    
     private string GetRowId(DataView dataView, DataRow row)
     {
         if (row == null)

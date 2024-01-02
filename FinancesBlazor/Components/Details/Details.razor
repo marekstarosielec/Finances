@@ -4,7 +4,7 @@
 @implements IDisposable;
 @inject DataViewManager _dataViewManager;
 
-<button class="btn btn-primary" @onclick="ShowHide">+</button> 
+<button class="btn btn-primary" @onclick="DetailsCollapse">+</button> 
 <div class="d-flex flex-nowrap" style="@GetStyle()">
     @foreach (var checkedRecordKey in _dataViewManager.SelectedData.Ids.Keys)
     {
@@ -18,7 +18,7 @@
 
     private string GetStyle()
     {
-        var result = $"overflow-x:{(_dataViewManager.SelectedData.Ids.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.DetailsCollapsed ? "none!important" : "block")}";
+        var result = $"overflow-x:{(_dataViewManager.SelectedData.Ids.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.SelectedData.DetailsCollapsed ? "none!important" : "block")}";
         return result;
     }
 
@@ -40,6 +40,7 @@
             await group.Key.Requery();
         }
     }
+
     public async Task LoadDetails()
     {
         _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
@@ -57,9 +58,9 @@
     {
     }
 
-    private void ShowHide()
+    private void DetailsCollapse()
     {
-        _dataViewManager.DetailsCollapseExpand();
+        _dataViewManager.SelectedData.DetailsCollapsed = !_dataViewManager.SelectedData.DetailsCollapsed;
         _dataViewManager.Save(_dataViewManager.ActiveView);
     }
 
