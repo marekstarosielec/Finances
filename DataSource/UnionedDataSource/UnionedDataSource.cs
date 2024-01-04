@@ -24,12 +24,12 @@ public class UnionedDataSource : IDataSource
     {
         IEnumerable<DataRow> rows = await Cache.Get(_firstDataSource, _secondDataSource, UnionTables);
 
-        if (dataQuery != null)
-            rows = rows.Sort(dataQuery.Sorters);
-
         if (dataQuery?.Filters != null)
             foreach (var filterDefinition in dataQuery.Filters)
                 rows = rows.Filter(filterDefinition.Key, filterDefinition.Value);
+
+        if (dataQuery != null)
+            rows = rows.Sort(dataQuery.Sorters);
 
         var totalRowCount = rows.Count();
 

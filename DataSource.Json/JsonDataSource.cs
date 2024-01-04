@@ -31,11 +31,12 @@ public class JsonDataSource : IDataSource
             var clonedData = allData.Clone();
             var clonedRows = clonedData.Rows;
 
-            clonedRows = clonedRows.Sort(dataQuery.Sorters);
-
             if (dataQuery?.Filters != null)
                 foreach (var filterDefinition in dataQuery.Filters)
                     clonedRows = clonedRows.Filter(filterDefinition.Key, filterDefinition.Value).ToList();
+
+            if (dataQuery != null)
+                clonedRows = clonedRows.Sort(dataQuery.Sorters);
 
             var count = clonedRows.Count();
 
@@ -49,40 +50,48 @@ public class JsonDataSource : IDataSource
     public async Task Save(DataRow row)
     {
         var allData = await GetAllData();
-        var id = row["Id"].OriginalValue as string;
-       // var changedRow = allData.Rows.FirstOrDefault(r => r["Id"]?.GetValue<string>() == id)?.AsObject();
-        //if (changedNode == null)
-        //    return; //TODO: New row created;
-        //foreach (var cell in row)
-        //{
-        //    if (cell.Value.CurrentValue == cell.Value.OriginalValue)
-        //        continue;
+        var originalRow = allData.Rows.FirstOrDefault(r => r.Id?.OriginalValue == row.Id.OriginalValue);
+        if (originalRow == null)
+            return; //TODO: New row created;
 
-        //    changedNode[cell.Key.ColumnName] = JsonValue.Create(cell.Value.CurrentValue);
-        //}
+        //Copy values to main storage
+        foreach (var cell in row)
+        {
+            if (cell.Value.CurrentValue == cell.Value.OriginalValue)
+                continue;
 
-        //var result = JsonSerializer.Serialize(nodes);
-        //var _semaphore = GetSemaphore();
+            originalRow[cell.Key].CurrentValue = row[cell.Key].CurrentValue;
+        }
 
-        //try
-        //{
-        //    _semaphore.Wait();
-        //    if (!File.Exists(_fileName))
-        //        await File.WriteAllTextAsync(_fileName, "[]");
-        //    await File.WriteAllTextAsync(_fileName, result);
-        //}
-        //catch(Exception ex)
-        //{
-        //    //TODO: restore data?
-        //    return;
-        //}
-        //finally
-        //{
-        //    _semaphore.Release();
-        //}
-        ////TODO: updating transaction need to invalidate cache of transactionwithdocument
-        //Cache.Clean();
-        //await GetData();
+        var nodes = new List<Dictionary<string, object?>>();
+        foreach (var saveRow in allData.Rows)
+        {
+            var node = new Dictionary<string, object?>();
+            foreach (var column in Columns)
+            {
+                node[column.Key] = saveRow[column.Key]?.CurrentValue;
+            }
+            nodes.Add(node);
+        }
+        var result = JsonSerializer.Serialize(nodes);
+        var _semaphore = GetSemaphore();
+
+        try
+        {
+            _semaphore.Wait();
+            if (!File.Exists(_fileName))
+                await File.WriteAllTextAsync(_fileName, "[]");
+            await File.WriteAllTextAsync(_fileName, result);
+        }
+        catch (Exception ex)
+        {
+            //TODO: restore data?
+            return;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     private async Task<DataQueryResult> GetAllData() => await Cache.Get(Load);

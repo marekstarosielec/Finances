@@ -6,23 +6,14 @@ public class DataQueryResult
     public IEnumerable<DataRow> Rows { get; }
     public int TotalRowCount { get; }
 
-    private DataColumn? IdColumn;
-
     public DataQueryResult(IEnumerable<DataColumn> columns, IEnumerable<DataRow> rows, int totalRowCount)
     {
         Columns = columns;
         Rows = rows;
         TotalRowCount = totalRowCount;
-        IdColumn = Columns.FirstOrDefault(c => c.ColumnName == "Id");
     }
 
-    public DataRow? GetById(string id)
-    {
-        if (IdColumn == null)
-            throw new InvalidOperationException("Column Id not present in data source");
-
-        return Rows.FirstOrDefault(r => r["Id"]?.OriginalValue as string == id);
-    }
+    public DataRow? GetById(string id) => Rows.FirstOrDefault(r => r.Id?.OriginalValue as string == id);
 
     public DataQueryResult Clone()
     {
