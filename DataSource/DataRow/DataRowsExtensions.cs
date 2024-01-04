@@ -1,23 +1,39 @@
-﻿namespace DataSource;
+﻿using System.Data;
 
-internal static class DataRowsExtensions
+namespace DataSource;
+
+public static class DataRowsExtensions
 {
-    internal static IEnumerable<DataRow> Sort(this IEnumerable<DataRow> source, DataColumn column, bool descending) => column.ColumnDataType switch
+    public static IEnumerable<DataRow> Sort(this IEnumerable<DataRow> source, Dictionary<DataColumn, bool>? sorters)
     {
-        ColumnDataType.Text
-            => source.SortBy(n => n?[column].OriginalValue as string, descending),
-        ColumnDataType.Date
-            => source.SortBy(n => n?[column].OriginalValue as DateTime?, descending),
-        ColumnDataType.Precision
-            => source.SortBy(n => n?[column].OriginalValue as decimal?, descending),
-        ColumnDataType.Number
-            => source.SortBy(n => n?[column].OriginalValue as int?, descending),
-        _ => throw new InvalidOperationException(),
-    };
+        if (sorters == null || sorters.Count == 0)
+            return source;
+        var firstDataColumn = sorters.FirstOrDefault().Key;
+        var result = source.OrderBy(s => 1) ?? throw new InvalidCastException("Failed to case list to IOrderedEnumerable");
+        foreach (var dataColumn in sorters.Keys)
+        {
+            result = dataColumn.ColumnDataType switch
+            {
+                ColumnDataType.Text
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn].OriginalValue as string, sorters[dataColumn]),
+                ColumnDataType.Date
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn].OriginalValue as DateTime?, sorters[dataColumn]),
+                ColumnDataType.Precision
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn].OriginalValue as decimal?, sorters[dataColumn]),
+                ColumnDataType.Number
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn].OriginalValue as int?, sorters[dataColumn]),
+                _ => throw new InvalidOperationException(),
+            };
+        }
+        return result;
+    }
 
-    private static IEnumerable<DataRow> SortBy<TKey>(this IEnumerable<DataRow> source, Func<DataRow, TKey> predicate, bool descending) => descending ? source.OrderByDescending(predicate) : source.OrderBy(predicate);
+    private static IOrderedEnumerable<DataRow> SortBy<TKey>(this IOrderedEnumerable<DataRow> source, bool IsFirstSort, Func<DataRow, TKey> predicate, bool descending) => IsFirstSort ? FirstSortBy(source, predicate, descending) : ThenSortBy(source, predicate, descending);
 
-    internal static IEnumerable<DataRow> Filter(this IEnumerable<DataRow> source, DataColumn column, DataColumnFilter filter) => (column.ColumnDataType, filter.Equality) switch
+    private static IOrderedEnumerable<DataRow> FirstSortBy<TKey>(this IEnumerable<DataRow> source, Func<DataRow, TKey> predicate, bool descending) => descending ? source.OrderByDescending(predicate) : source.OrderBy(predicate);
+    private static IOrderedEnumerable<DataRow> ThenSortBy<TKey>(this IOrderedEnumerable<DataRow> source, Func<DataRow, TKey> predicate, bool descending) => descending ? source.ThenByDescending(predicate) : source.ThenBy(predicate);
+
+    public static IEnumerable<DataRow> Filter(this IEnumerable<DataRow> source, DataColumn column, DataColumnFilter filter) => (column.ColumnDataType, filter.Equality) switch
     {
         (ColumnDataType.Text, Equality.Equals) =>
             source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => s == (n?[column].OriginalValue as string)?.ToLowerInvariant())),

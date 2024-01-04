@@ -23,4 +23,21 @@ public class DataQueryResult
 
         return Rows.FirstOrDefault(r => r[IdColumn]?.OriginalValue as string == id);
     }
+
+    public DataQueryResult Clone()
+    {
+        var columns = new List<DataColumn>();
+        foreach (var column in Columns)
+            columns.Add(new DataColumn(column.ColumnName, column.ColumnDataType));
+
+        var rows = new List<DataRow>();
+        foreach (var row in Rows)
+        { 
+            var dataRow = new DataRow();    
+            foreach (var key in row.Keys)
+                dataRow[key] = new DataValue(row[key].OriginalValue);
+            rows.Add(dataRow);
+        }
+        return new DataQueryResult(columns, rows, rows.Count);
+    }
 }

@@ -24,9 +24,8 @@ public class UnionedDataSource : IDataSource
     {
         IEnumerable<DataRow> rows = await Cache.Get(_firstDataSource, _secondDataSource, UnionTables);
 
-        if (dataQuery?.Sorters != null)
-            foreach (var sortDefinition in dataQuery.Sorters)
-                rows = rows.Sort(sortDefinition.Key, sortDefinition.Value);
+        if (dataQuery != null)
+            rows = rows.Sort(dataQuery.Sorters);
 
         if (dataQuery?.Filters != null)
             foreach (var filterDefinition in dataQuery.Filters)

@@ -23,9 +23,11 @@ public class JoinedDataSource : IDataSource
     public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
     {
         IEnumerable<DataRow> rows = await Cache.Get(_leftDataSource, _rightDataSource, LeftJoinTable);
-        if (dataQuery?.Sorters != null)
-            foreach (var sortDefinition in dataQuery.Sorters)
-                rows = rows.Sort(sortDefinition.Key, sortDefinition.Value);
+        //if (dataQuery?.Sorters != null)
+        //    foreach (var sortDefinition in dataQuery.Sorters)
+        //        rows = rows.Sort(sortDefinition.Key, sortDefinition.Value);
+        if (dataQuery != null) 
+            rows = rows.Sort(dataQuery.Sorters);
 
         if (dataQuery?.Filters != null)
             foreach (var filterDefinition in dataQuery.Filters)
