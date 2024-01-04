@@ -15,13 +15,13 @@ public static class DataRowsExtensions
             result = dataColumn.ColumnDataType switch
             {
                 ColumnDataType.Text
-                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn].OriginalValue as string, sorters[dataColumn]),
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn.ColumnName].OriginalValue as string, sorters[dataColumn]),
                 ColumnDataType.Date
-                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn].OriginalValue as DateTime?, sorters[dataColumn]),
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn.ColumnName].OriginalValue as DateTime?, sorters[dataColumn]),
                 ColumnDataType.Precision
-                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn].OriginalValue as decimal?, sorters[dataColumn]),
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn.ColumnName].OriginalValue as decimal?, sorters[dataColumn]),
                 ColumnDataType.Number
-                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn].OriginalValue as int?, sorters[dataColumn]),
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn.ColumnName].OriginalValue as int?, sorters[dataColumn]),
                 _ => throw new InvalidOperationException(),
             };
         }
@@ -36,14 +36,14 @@ public static class DataRowsExtensions
     public static IEnumerable<DataRow> Filter(this IEnumerable<DataRow> source, DataColumn column, DataColumnFilter filter) => (column.ColumnDataType, filter.Equality) switch
     {
         (ColumnDataType.Text, Equality.Equals) =>
-            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => s == (n?[column].OriginalValue as string)?.ToLowerInvariant())),
+            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => s == (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant())),
         (ColumnDataType.Text, Equality.NotEquals) =>
-            source.Where(n => filter.StringValue.Count == 0 || !filter.StringValue.Any(s => s == (n?[column].OriginalValue as string)?.ToLowerInvariant())),
+            source.Where(n => filter.StringValue.Count == 0 || !filter.StringValue.Any(s => s == (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant())),
         (ColumnDataType.Text, Equality.Contains) =>
-            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => (n?[column].OriginalValue as string)?.ToLowerInvariant().Contains(s) ?? false)),
+            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant().Contains(s) ?? false)),
         (ColumnDataType.Date, _) =>
             source
-                .Select(n => new { Data = n, FilterData = n?[column].OriginalValue as DateTime? })
+                .Select(n => new { Data = n, FilterData = n?[column.ColumnName].OriginalValue as DateTime? })
                 .Where(c => c.FilterData != null && c.FilterData >= filter.DateFrom && c.FilterData <= filter.DateTo)
                 .Select(c => c.Data),
         (ColumnDataType.Precision, _)

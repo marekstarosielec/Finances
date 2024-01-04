@@ -52,11 +52,7 @@ public class SelectedData
         if (row == null)
             throw new ArgumentNullException(nameof(row));
 
-        var idColumn = dataView.DataSource.Columns.FirstOrDefault(c => c.Key == "Id").Value;
-        if (idColumn == null)
-            throw new InvalidOperationException("Cannot find Id column in data source");
-
-        var id = row[idColumn]?.OriginalValue?.ToString();
+        var id = row["Id"]?.OriginalValue?.ToString();
         if (id == null)
             throw new InvalidOperationException("Cannot find row id");
 

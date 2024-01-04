@@ -23,19 +23,13 @@
         {
             if (DataView == null || Column == null || Row == null)
                 return null;
-            var column = DataView.Result?.Columns.FirstOrDefault(c => c.ColumnName == Column.PrimaryDataColumnName);
-            if (column == null)
-                return null;
-            return Row[column].CurrentValue as string;
+            return Row[Column.PrimaryDataColumnName].CurrentValue as string;
         }
         set
         {
             if (DataView == null || Column == null || Row == null)
                 return;
-            var column = DataView.Result?.Columns.FirstOrDefault(c => c.ColumnName == Column.PrimaryDataColumnName);
-            if (column == null)
-                return;
-            Row[column].CurrentValue = value;
+            Row[Column.PrimaryDataColumnName].CurrentValue = value;
         }
     }
 }

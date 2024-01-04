@@ -21,7 +21,7 @@ public class DataQueryResult
         if (IdColumn == null)
             throw new InvalidOperationException("Column Id not present in data source");
 
-        return Rows.FirstOrDefault(r => r[IdColumn]?.OriginalValue as string == id);
+        return Rows.FirstOrDefault(r => r["Id"]?.OriginalValue as string == id);
     }
 
     public DataQueryResult Clone()

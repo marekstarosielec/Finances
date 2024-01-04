@@ -1,6 +1,6 @@
 ﻿namespace DataSource;
 
-public class DataRow : Dictionary<DataColumn, DataValue>
+public class DataRow : Dictionary<string, DataValue>
 {
 
 }

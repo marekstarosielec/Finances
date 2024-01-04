@@ -48,9 +48,9 @@ public class JsonDataSource : IDataSource
 
     public async Task Save(DataRow row)
     {
-        //var nodes = await GetData();
-        //var id = row[Columns["Id"]].OriginalValue as string;
-        //var changedNode = nodes.Nodes.FirstOrDefault(n => n["Id"]?.GetValue<string>() == id)?.AsObject();
+        var allData = await GetAllData();
+        var id = row["Id"].OriginalValue as string;
+       // var changedRow = allData.Rows.FirstOrDefault(r => r["Id"]?.GetValue<string>() == id)?.AsObject();
         //if (changedNode == null)
         //    return; //TODO: New row created;
         //foreach (var cell in row)
@@ -115,7 +115,7 @@ public class JsonDataSource : IDataSource
                 foreach (var column in Columns)
                     try
                     {
-                        dataRow[column.Value] = new DataValue(column.Value.ColumnDataType switch
+                        dataRow[column.Value.ColumnName] = new DataValue(column.Value.ColumnDataType switch
                         {
                             ColumnDataType.Text => node[column.Key]?.GetValue<string>(),
                             ColumnDataType.Date => node[column.Key]?.GetValue<DateTime>(),

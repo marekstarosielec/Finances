@@ -31,11 +31,7 @@
         if (Column == null || Row == null)
             return result;
 
-        var dataColumn = DataView?.Result?.Columns.ToList().FirstOrDefault(dc => dc.ColumnName == Column.PrimaryDataColumnName);
-        if (dataColumn == null)
-            return "Column not found";
-
-        var value = Row[dataColumn].OriginalValue;
+        var value = Row[Column.PrimaryDataColumnName].OriginalValue;
         if (value == null)
             return Column.NullValue;
         

@@ -50,10 +50,10 @@ public class JoinedDataSource : IDataSource
 
         foreach (var leftDataRow in leftDataView.Rows)
         {
-            if (leftDataRow[leftDataViewJoinColumn] == null)
+            if (leftDataRow[leftDataViewJoinColumn.ColumnName] == null)
                 JoinRightRow(leftDataRow, null);
 
-            var matching = rightDataView.Rows.FirstOrDefault(r => r[rightDataViewJoinColumn].OriginalValue as string == leftDataRow[leftDataViewJoinColumn].OriginalValue as string);
+            var matching = rightDataView.Rows.FirstOrDefault(r => r[rightDataViewJoinColumn.ColumnName].OriginalValue as string == leftDataRow[leftDataViewJoinColumn.ColumnName].OriginalValue as string);
             if (matching == null)
                 JoinRightRow(leftDataRow, null);
 
@@ -65,7 +65,7 @@ public class JoinedDataSource : IDataSource
         {
             var newRow = new DataRow();
             foreach (var column in Columns)
-                newRow[column.Value] = row[column.Value];
+                newRow[column.Value.ColumnName] = row[column.Value.ColumnName];
             result.Add(newRow);
         }
         return result;
@@ -77,11 +77,11 @@ public class JoinedDataSource : IDataSource
         {
             var mapping = _mappings?.FirstOrDefault(c => c.ColumnName == column.Key);
             if (mapping == null)
-                leftDataRow[column.Value] = new DataValue(column.Value);
+                leftDataRow[column.Value.ColumnName] = new DataValue(column.Value);
             else if (mapping.NewColumnName == null)
                 continue;
             else
-                leftDataRow[Columns[mapping.NewColumnName]] = rightDataRow?[column.Value] ?? new DataValue(null);
+                leftDataRow[mapping.NewColumnName] = rightDataRow?[column.Value.ColumnName] ?? new DataValue(null);
         }
     }
 
