@@ -14,7 +14,7 @@ public class DataViewQuery
     public List<string> IdFilters { get; } = new();
     public Dictionary<DataViewColumn, DataViewColumnFilter> Filters { get; } = new ();
     public Dictionary<DataViewColumn, bool> Sorters = new();
-    public int PageSize = 100;
+    public int PageSize = 200;
 
     public List<Prefilter> Prefilters { get; set; } = new();
     public Dictionary<DataViewColumn, bool> PreSorters = new();

@@ -3,6 +3,7 @@ using DataViews;
 using FinancesBlazor.Components.Grid.Filters;
 using Microsoft.AspNetCore.Components;
 using Radzen.Blazor.Rendering;
+using System.Diagnostics;
 
 namespace FinancesBlazor.Components.Grid;
 
@@ -11,7 +12,7 @@ public partial class Grid
     private Dictionary<DataViewColumn, ElementReference> _popupInvokers = new();
     private Dictionary<DataViewColumn, Popup> _popups = new();
     private Dictionary<DataViewColumn, DynamicFilter> _dynamicFilters = new();
-
+    private Stopwatch _timer = new Stopwatch();
     [Parameter]
     public DataView? DataView { get; set; }
 
@@ -20,6 +21,14 @@ public partial class Grid
         _dataViewManager.ViewChanged += ViewChanged;
     }
 
+    protected override void OnParametersSet()
+    {
+        _timer.Restart();
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine($"Grid rendering: {_timer.ElapsedMilliseconds} ms");
+    }
     private void ToggleFilter(DataViewColumn column)
     {
         _popups[column].ToggleAsync(_popupInvokers[column]);

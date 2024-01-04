@@ -2,7 +2,7 @@
 
 namespace DataSource.Json;
 
-internal class NodesList
+public class NodesList
 {
     internal IEnumerable<JsonNode> Nodes { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -9,7 +10,7 @@ public class JsonDataSource : IDataSource
     private readonly string _fileName;
     protected static Dictionary<string, SemaphoreSlim> _semaphores = new ();
     public Dictionary<string, DataColumn> Columns { get; private set; }
-    public DataSourceCache<string> Cache { get; } = new DataSourceCache<string>();
+    public DataSourceCache<NodesList> Cache { get; } = new ();
 
     public DateTime? CacheTimeStamp => Cache.TimeStamp;
 
@@ -28,7 +29,7 @@ public class JsonDataSource : IDataSource
     {
         var nodes = await GetData();
         var id = row[Columns["Id"]].OriginalValue as string;
-        var changedNode = nodes.ToList().FirstOrDefault(n => n["Id"]?.GetValue<string>() == id)?.AsObject();
+        var changedNode = nodes.Nodes.FirstOrDefault(n => n["Id"]?.GetValue<string>() == id)?.AsObject();
         if (changedNode == null)
             return; //TODO: New row created;
         foreach (var cell in row)
@@ -65,8 +66,7 @@ public class JsonDataSource : IDataSource
 
     internal async Task<NodesList> GetNodes(DataQuery? dataQuery)
     {
-        var nodes = await GetData();
-        var result = new NodesList(nodes);
+        var result = await GetData();
         
         if (dataQuery?.Sorters != null)
             foreach (var sortDefinition in dataQuery.Sorters)
@@ -88,6 +88,7 @@ public class JsonDataSource : IDataSource
     {
         var rows = new List<DataRow>();
         var result = new DataQueryResult(Columns.Values, rows, nodes.Count);
+        var watch = System.Diagnostics.Stopwatch.StartNew();
         foreach (var node in nodes.Nodes)
         {
             var row = new DataRow();
@@ -109,29 +110,40 @@ public class JsonDataSource : IDataSource
                 }
             rows.Add(row);
         }
+        Console.WriteLine($"Query processing: {watch.ElapsedMilliseconds} ms");
         return result;
     }
 
-    private async Task<IEnumerable<JsonNode>> GetData() 
-        => JsonNode.Parse(await Cache.Get(Load))?.AsArray()?.Where(a => a != null)?.Select(a => a!) 
-        ?? throw new InvalidOperationException($"Failed to deserialize data from {_fileName}");
+    private async Task<NodesList> GetData() => await Cache.Get(Load);
 
-    private async Task<string> Load()
+    private async Task<NodesList> Load()
     {
         var _semaphore = GetSemaphore();
 
         try
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             _semaphore.Wait();
             if (!File.Exists(_fileName))
                 await File.WriteAllTextAsync(_fileName, "[]");
-            return await File.ReadAllTextAsync(_fileName, Encoding.Latin1);
+            var json = await File.ReadAllTextAsync(_fileName, Encoding.Latin1);
+            if (string.IsNullOrWhiteSpace(json))
+                throw new InvalidOperationException("Input json evaluated to null");
+            Console.WriteLine($"Json file loading: {watch.ElapsedMilliseconds} ms");
+
+            watch.Restart();
+            var result = JsonNode.Parse(json)?.AsArray()?.Where(a => a != null)?.Select(a => a!);
+            if (result == null)
+                throw new InvalidOperationException("Input json evaluated to null");
+            Console.WriteLine($"Json file parsing: {watch.ElapsedMilliseconds} ms");
+            return new NodesList(result);
         }
         finally
         {
             _semaphore.Release();
         }
     }
+
 
     private SemaphoreSlim GetSemaphore()
     {
