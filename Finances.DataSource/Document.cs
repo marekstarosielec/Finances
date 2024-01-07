@@ -12,6 +12,7 @@ public partial class DataSourceFactory
         {
             _document ??= new JsonDataSource(Path.Combine(_dataFilePath!, "documents.json"),
                 new DataColumn("Id", ColumnDataType.Text),
+                new DataColumn("Date", ColumnDataType.Date),
                 new DataColumn("Number", ColumnDataType.Number),
                 new DataColumn("Pages", ColumnDataType.Number),
                 new DataColumn("Description", ColumnDataType.Text),

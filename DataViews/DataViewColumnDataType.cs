@@ -6,4 +6,5 @@ public enum DataViewColumnDataType
     Date = 1,
     Precision = 2,
     Amount = 3,
+    DocumentLink = 4
 }

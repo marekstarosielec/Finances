@@ -75,7 +75,7 @@ public class JoinedDataSource : IDataSource
         {
             var mapping = _mappings?.FirstOrDefault(c => c.ColumnName == column.Key);
             if (mapping == null)
-                leftDataRow[column.Value.ColumnName] = new DataValue(column.Value);
+                leftDataRow[column.Value.ColumnName] ??= new DataValue(column.Value);
             else if (mapping.NewColumnName == null)
                 continue;
             else

@@ -1,0 +1,15 @@
+﻿@using DataSource;
+@using DataViews;
+
+<td><i class="fa-regular fa-file fa-lg"></i></td>
+
+@code {
+    [Parameter]
+    public DataView? DataView { get; set; }
+
+    [Parameter]
+    public DataRow? Row { get; set; }
+
+    [Parameter]
+    public DataViewColumn? Column { get; set; }
+}

@@ -20,6 +20,7 @@
             DataViewColumnDataType.Date => typeof(DateCell),
             DataViewColumnDataType.Amount => typeof(AmountCell),
             DataViewColumnDataType.Precision => typeof(PrecisionCell),
+            DataViewColumnDataType.DocumentLink => typeof(DocumentLinkCell),
             _ => throw new InvalidOperationException($"Unknown cell component for type {Column?.DataType}")
         };
 }
