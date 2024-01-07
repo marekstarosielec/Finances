@@ -1,7 +1,7 @@
 ﻿@using DataSource;
 @using DataViews;
 
-<td><i class="fa-regular fa-file fa-lg"></i></td>
+<td onclick="@(() => OnClick())"><i class="fa-regular fa-file fa-lg"></i></td>
 
 @code {
     [Parameter]
@@ -12,4 +12,12 @@
 
     [Parameter]
     public DataViewColumn? Column { get; set; }
+
+    private void OnClick()
+    {
+        if (DataView == null || Row == null || Column == null)
+            return;
+
+
+    }
 }
