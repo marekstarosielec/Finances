@@ -21,9 +21,10 @@ public class DocumentMainList : IDataView
         var presentation = new DataViewPresentation(60, "fa-regular fa-folder-open", "Dokumenty");
         var columns = new List<DataViewColumn>
         {
-            new DataViewColumnDocumentLink("Number", "Document", "l"),
+            new DataViewColumnText("Number", "Dokument", "l"),
             new DataViewColumnDate("Date", "Data", "d", DataViewColumnDateFilterComponents.Default),
             new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default),
+        //    new DataViewColumnText("FileLink", "Plik", "f")
         };
 
         _dataView = new("d", "Dokumenty", _dataSourceFactory.Document, new(columns), presentation);

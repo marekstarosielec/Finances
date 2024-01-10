@@ -124,14 +124,22 @@ public class JsonDataSource : IDataSource
                 foreach (var column in Columns)
                     try
                     {
-                        dataRow[column.Value.ColumnName] = new DataValue(column.Value.ColumnDataType switch
+                        if (column.Value.CustomCreator != null)
                         {
-                            ColumnDataType.Text => node[column.Key]?.GetValue<string>(),
-                            ColumnDataType.Date => node[column.Key]?.GetValue<DateTime>(),
-                            ColumnDataType.Precision => node[column.Key]?.GetValue<decimal>(),
-                            ColumnDataType.Number => node[column.Key]?.GetValue<int>(),
-                            _ => throw new Exception("Unsupported DataType")
-                        });
+                            var result = column.Value.CustomCreator(dataRow);
+                            dataRow[column.Value.ColumnName] = new DataValue(result);
+                        }
+                        else
+                        {
+                            dataRow[column.Value.ColumnName] = new DataValue(column.Value.ColumnDataType switch
+                            {
+                                ColumnDataType.Text => node[column.Key]?.GetValue<string>(),
+                                ColumnDataType.Date => node[column.Key]?.GetValue<DateTime>(),
+                                ColumnDataType.Precision => node[column.Key]?.GetValue<decimal>(),
+                                ColumnDataType.Number => node[column.Key]?.GetValue<int>(),
+                                _ => throw new Exception("Unsupported DataType")
+                            });
+                        }
                     }
                     catch (Exception ex)
                     {

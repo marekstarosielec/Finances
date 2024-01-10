@@ -86,8 +86,12 @@ public class JoinedDataSource : IDataSource
     private Dictionary<string, DataColumn> GetColumnList()
     {
         var result = new Dictionary<string, DataColumn>();
+        
+        //Use all columns from left data source
         foreach (var column in _leftDataSource.Columns)
             result[column.Key] = column.Value;
+        
+        //Use all columns from right data source
         foreach (var column in _rightDataSource.Columns)
         {
             var mapping = _mappings?.FirstOrDefault(c => c.ColumnName == column.Key);

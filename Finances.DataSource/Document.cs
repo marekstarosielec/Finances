@@ -34,10 +34,21 @@ public partial class DataSourceFactory
                 new DataColumn("Net", ColumnDataType.Precision),
                 new DataColumn("Vat", ColumnDataType.Precision),
                 new DataColumn("Gross", ColumnDataType.Precision),
-                new DataColumn("Currency", ColumnDataType.Text)
+                new DataColumn("Currency", ColumnDataType.Text),
+                new DataColumn("FileLink", ColumnDataType.Text, CreateDocumentFullName)
                 );
             return _document;
         }
+    }
+
+    private string? CreateDocumentFullName(DataRow row)
+    {
+        var number = row["Number"].OriginalValue?.ToString();
+        if (string.IsNullOrWhiteSpace(number))
+            return null;
+
+        var fileNumber = $"MX{number.PadLeft(5, '0')}.zip";
+        return Path.Combine(_dataFilePath!, "documents", fileNumber);
     }
 }
 

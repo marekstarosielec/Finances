@@ -1,5 +1,6 @@
 ﻿@using DataSource;
 @using DataViews;
+@inject DataViewManager _dataViewManager;
 
 <td onclick="@(() => OnClick())"><i class="fa-regular fa-file fa-lg"></i></td>
 
@@ -18,6 +19,6 @@
         if (DataView == null || Row == null || Column == null)
             return;
 
-
+        _dataViewManager.OpenDocument(Row["Number"].CurrentValue as int?);
     }
 }

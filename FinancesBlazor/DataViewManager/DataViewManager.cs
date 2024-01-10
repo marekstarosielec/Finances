@@ -1,4 +1,5 @@
-﻿using DataViews;
+﻿using DataSource.Document;
+using DataViews;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using System.Collections.Specialized;
@@ -15,7 +16,8 @@ public class DataViewManager : IDisposable
 
     public event EventHandler<DataView>? ViewChanged;
     public event EventHandler<DataView>? ActiveViewChanged;
-    
+    private static string _documentPass = "";
+
     public SelectedData SelectedData { get; } = new SelectedData();
 
     public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews)
@@ -74,8 +76,6 @@ public class DataViewManager : IDisposable
         qs["av"] = dataView.Name;
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
-
-
 
     private void LoadFromQueryString()
     {
@@ -173,7 +173,14 @@ public class DataViewManager : IDisposable
             }
         }
         ViewChanged?.Invoke(this, dataView);
+    }
 
+    public void OpenDocument(int? documentNumber)
+    {
+        if (documentNumber == null)
+            return;
+
+       // DocumentManager.
     }
 }
 
