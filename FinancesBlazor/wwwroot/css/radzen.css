@@ -17028,7 +17028,7 @@ ul.rz-profile-menu {
     --rz-dialog-title-line-height: 1.25em;
     --rz-dialog-title-font-weight: 700;
     --rz-dialog-title-letter-spacing: -0.03em;
-    --rz-dialog-title-color: var(--rz-text-title-color);
+    --rz-dialog-title-color: #FFFFFF;
     --rz-dialog-close-font-size: var(--rz-icon-size);
     --rz-dialog-close-color: var(--rz-text-tertiary-color);
     --rz-dialog-close-hover-color: var(--rz-text-color);

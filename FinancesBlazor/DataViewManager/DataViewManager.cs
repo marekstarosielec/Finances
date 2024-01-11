@@ -2,8 +2,10 @@
 using DataViews;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
+using Radzen;
 using System.Collections.Specialized;
 using System.Web;
+using FinancesBlazor.Components.Password;
 
 namespace FinancesBlazor;
 
@@ -11,6 +13,8 @@ public class DataViewManager : IDisposable
 {
     public readonly List<DataView> DataViews;
     private readonly NavigationManager _navigationManager;
+    private readonly IDocumentManager _documentManager;
+    private readonly DialogService _dialogService;
     private DataView? _activeView;
     public DataView? ActiveView { get => _activeView; }
 
@@ -20,9 +24,11 @@ public class DataViewManager : IDisposable
 
     public SelectedData SelectedData { get; } = new SelectedData();
 
-    public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews)
+    public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews, IDocumentManager documentManager, DialogService dialogService)
     {
         _navigationManager = navigationManager;
+        _documentManager = documentManager;
+        _dialogService = dialogService;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
         DataViews = dataViews.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         if (DataViews.Count == 0)
@@ -175,11 +181,21 @@ public class DataViewManager : IDisposable
         ViewChanged?.Invoke(this, dataView);
     }
 
-    public void OpenDocument(int? documentNumber)
+    public async Task OpenDocument(string? fileName)
     {
-        if (documentNumber == null)
+        if (string.IsNullOrWhiteSpace(fileName))
             return;
 
+        if (!_documentManager.IsDocumentDecompressed(fileName))
+        {
+            if (string.IsNullOrEmpty(_documentPass))
+            {
+                _documentPass = await _dialogService.OpenAsync<PasswordInput>("Hasło");
+            }
+            if (string.IsNullOrEmpty(_documentPass))
+                return;
+            _documentManager.DecompressDocument(fileName, _documentPass);
+        }
        // DocumentManager.
     }
 }

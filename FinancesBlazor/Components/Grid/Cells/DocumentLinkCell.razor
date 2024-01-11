@@ -14,11 +14,13 @@
     [Parameter]
     public DataViewColumn? Column { get; set; }
 
-    private void OnClick()
+    private async void OnClick()
     {
         if (DataView == null || Row == null || Column == null)
             return;
 
-        _dataViewManager.OpenDocument(Row["Number"].CurrentValue as int?);
+        var fileName = Row[Column.PrimaryDataColumnName].OriginalValue as string;
+
+        await _dataViewManager.OpenDocument(fileName);
     }
 }

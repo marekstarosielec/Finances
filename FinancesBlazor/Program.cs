@@ -1,3 +1,4 @@
+using DataSource.Document;
 using Finances.DependencyInjection;
 using Radzen;
 
@@ -17,6 +18,7 @@ namespace FinancesBlazor
             builder.Services.InjectViews(builder.Configuration);
             builder.Services.AddRadzenComponents();
             builder.Services.AddScoped<DialogService>();
+            builder.Services.AddSingleton<IDocumentManager, DocumentManager>();
             var app = builder.Build();
            
             // Configure the HTTP request pipeline.
