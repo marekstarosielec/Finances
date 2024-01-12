@@ -194,13 +194,10 @@ public class DataViewManager : IDisposable
         if (!_documentManager.IsDocumentDecompressed(fileName))
         {
             if (string.IsNullOrEmpty(_documentPass))
-            {
                 _documentPass = await _dialogService.OpenAsync<PasswordInput>("Hasło");
-            }
             if (string.IsNullOrEmpty(_documentPass))
                 return;
             _documentManager.DecompressDocument(fileName, _documentPass);
-
         }
 
         var files = _documentManager.GetDecompressedInfo(fileName).ToList();

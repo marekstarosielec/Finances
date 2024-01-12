@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Finances.DataView\Finances.DataView.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\documents\" />
+  </ItemGroup>
+
 </Project>
