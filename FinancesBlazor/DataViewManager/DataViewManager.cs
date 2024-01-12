@@ -6,6 +6,7 @@ using Radzen;
 using System.Collections.Specialized;
 using System.Web;
 using FinancesBlazor.Components.Password;
+using Microsoft.JSInterop;
 
 namespace FinancesBlazor;
 
@@ -15,6 +16,8 @@ public class DataViewManager : IDisposable
     private readonly NavigationManager _navigationManager;
     private readonly IDocumentManager _documentManager;
     private readonly DialogService _dialogService;
+    private readonly IJSRuntime _js;
+    private readonly DocumentManagerOptions _documentManagerOptions;
     private DataView? _activeView;
     public DataView? ActiveView { get => _activeView; }
 
@@ -24,11 +27,13 @@ public class DataViewManager : IDisposable
 
     public SelectedData SelectedData { get; } = new SelectedData();
 
-    public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews, IDocumentManager documentManager, DialogService dialogService)
+    public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews, IDocumentManager documentManager, DialogService dialogService, IJSRuntime js, DocumentManagerOptions documentManagerOptions)
     {
         _navigationManager = navigationManager;
         _documentManager = documentManager;
         _dialogService = dialogService;
+        _js = js;
+        _documentManagerOptions = documentManagerOptions;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
         DataViews = dataViews.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         if (DataViews.Count == 0)
@@ -195,8 +200,17 @@ public class DataViewManager : IDisposable
             if (string.IsNullOrEmpty(_documentPass))
                 return;
             _documentManager.DecompressDocument(fileName, _documentPass);
+
         }
-       // DocumentManager.
+
+        var files = _documentManager.GetDecompressedInfo(fileName).ToList();
+        var url = "documents";
+        if (files.Count == 1 && Path.GetExtension(files.First()).ToLowerInvariant() is ".pdf" or ".png" or ".jpg" or ".jpeg" or ".bmp")
+            url = $"{url}/{files.First().Replace("\\", "/")}";
+        else
+            url = $"{url}/{Path.GetDirectoryName(files.First())}";
+        url = $"{GetUriWithoutQueryString()}{url}";
+        await _js.InvokeVoidAsync("openFile", url);
     }
 }
 

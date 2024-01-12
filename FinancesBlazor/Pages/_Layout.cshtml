@@ -32,5 +32,15 @@
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/BlazorDateRangePicker/clickAndPositionHandler.js"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+    <script>
+        function openFile(url) {
+            var link = this.document.createElement('a');
+            link.href = url;
+            link.target = "_blank";
+            this.document.body.appendChild(link);
+            link.click();
+            this.document.body.removeChild(link);
+        }
+    </script>
 </body>
 </html>
