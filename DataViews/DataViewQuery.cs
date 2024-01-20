@@ -26,7 +26,7 @@ public class DataViewQuery
         _columns = columns;
     }
 
-    internal void Apply()
+    internal void ApplyToDataQuery()
     {
         _dataQuery.Sorters.Clear();
         foreach (var sorter in Sorters)

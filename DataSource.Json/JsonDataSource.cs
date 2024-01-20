@@ -1,8 +1,6 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Xml.Linq;
 
 namespace DataSource.Json;
 
@@ -26,25 +24,23 @@ public class JsonDataSource : IDataSource
 
     public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
     {
-        {
-            var allData = await GetAllData();
-            var clonedData = allData.Clone();
-            var clonedRows = clonedData.Rows;
+        var allData = await GetAllData();
+        var clonedData = allData.Clone();
+        var clonedRows = clonedData.Rows;
 
-            if (dataQuery?.Filters != null)
-                foreach (var filterDefinition in dataQuery.Filters)
-                    clonedRows = clonedRows.Filter(filterDefinition.Key, filterDefinition.Value).ToList();
+        if (dataQuery?.Filters != null)
+            foreach (var filterDefinition in dataQuery.Filters)
+                clonedRows = clonedRows.Filter(filterDefinition.Key, filterDefinition.Value).ToList();
 
-            if (dataQuery != null)
-                clonedRows = clonedRows.Sort(dataQuery.Sorters);
+        if (dataQuery != null)
+            clonedRows = clonedRows.Sort(dataQuery.Sorters);
 
-            var count = clonedRows.Count();
+        var count = clonedRows.Count();
 
-            if (dataQuery?.PageSize.GetValueOrDefault(-1) > -1)
-                clonedRows = clonedRows.Take(dataQuery.PageSize!.Value);
+        if (dataQuery?.PageSize.GetValueOrDefault(-1) > -1)
+            clonedRows = clonedRows.Take(dataQuery.PageSize!.Value);
 
-            return new DataQueryResult(clonedData.Columns, clonedRows, count);
-        }
+        return new DataQueryResult(clonedData.Columns, clonedRows, count);
     }
 
     public async Task Save(DataRow row)

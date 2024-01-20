@@ -5,6 +5,7 @@
 @inject DataViewManager _dataViewManager;
 
 <button class="btn btn-primary" @onclick="DetailsCollapse">+</button> 
+<button class="btn btn-primary" @onclick="Group">Group</button>
 <div class="d-flex flex-nowrap" style="@GetStyle()">
     @foreach (var checkedRecordKey in _dataViewManager.SelectedData.Ids.Keys)
     {
@@ -31,14 +32,14 @@
     protected override async Task OnInitializedAsync()
     {
 
-        _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
-        foreach (var group in _dataViewManager.SelectedData.Ids.GroupBy(cr => cr.Value))
-        {
-            var ids = group.Select((k, v) => k.Key).ToList();
-            group.Key.Query.IdFilters.Clear();
-            group.Key.Query.IdFilters.AddRange(ids);
-            await group.Key.Requery();
-        }
+        // _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
+        // foreach (var group in _dataViewManager.SelectedData.Ids.GroupBy(cr => cr.Value))
+        // {
+        //     var ids = group.Select((k, v) => k.Key).ToList();
+        //     group.Key.Query.IdFilters.Clear();
+        //     group.Key.Query.IdFilters.AddRange(ids);
+        //     await group.Key.Requery();
+        // }
     }
 
     public async Task LoadDetails()
@@ -46,10 +47,15 @@
         _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
         foreach (var group in _dataViewManager.SelectedData.Ids.GroupBy(cr => cr.Value))
         {
-            var ids = group.Select((k, v) => k.Key).ToList();
-            group.Key.Query.IdFilters.Clear();
-            group.Key.Query.IdFilters.AddRange(ids);
-            await group.Key.Requery();
+            var dv = group.Key;
+            var newIds = group.Select((k, v) => k.Key).ToList();
+            // var oldIds = dv.Query.IdFilters;
+            // var removedIds = oldIds.Except(newIds);
+            // var addedIds = newIds.Except(oldIds);
+            dv.Query.PageSize = -1; //Return all details, no matter how many of them there is.
+            dv.Query.IdFilters.Clear();
+            dv.Query.IdFilters.AddRange(newIds);
+            await dv.Requery(preservePrevious: true);
         }
         StateHasChanged();
     }
@@ -62,6 +68,11 @@
     {
         _dataViewManager.SelectedData.DetailsCollapsed = !_dataViewManager.SelectedData.DetailsCollapsed;
         _dataViewManager.Save(_dataViewManager.ActiveView);
+    }
+
+    private void Group()
+    {
+
     }
 
     void IDisposable.Dispose()

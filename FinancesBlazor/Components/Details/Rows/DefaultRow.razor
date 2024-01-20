@@ -13,6 +13,7 @@ else
 {
     <div>
         <button class="btn btn-primary" @onclick="Save">Zapisz</button>
+        <button class="btn btn-primary" @onclick="Select"> <RadzenCheckBox TValue="bool" class="checkbox" Value=@Row.SelectedInDetails/></button>
         <button class="btn btn-primary" @onclick="Close">X</button>
         @foreach (var column in DataView.Columns)
         {
@@ -28,7 +29,6 @@ else
     [Parameter]
     public DataRow? Row { get; set; }
 
-
     protected override void OnInitialized()
     {
         _dataViewManager.ViewChanged += ViewChanged;
@@ -42,6 +42,7 @@ else
         StateHasChanged();
     }
 
+    private void Select() => Row!.SelectedInDetails = !Row.SelectedInDetails;
     private async Task Save()
     {
         await _dataViewManager.SaveChanges(DataView, Row);

@@ -8,7 +8,7 @@ public class DataView
 {
     public IDataSource DataSource { get; }
 
-    private DataQuery _query = new DataQuery();
+    private DataQuery _dataQuery = new DataQuery();
 
     public string Name { get; }
 
@@ -27,6 +27,17 @@ public class DataView
 
     private string? _detailsViewName { get; }
 
+    public DataView(string name, string title, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns, DataViewPresentation? presentation = null, string? detailsViewName = null)
+    {
+        Name = name;
+        Title = title;
+        DataSource = dataSource;
+        Presentation = presentation;
+        Columns = columns;
+        Query = new DataViewQuery(_dataQuery, DataSource, Columns);
+        ValidateColumns();
+        _detailsViewName = detailsViewName;
+    }
 
     public string Serialize()
     {
@@ -49,24 +60,31 @@ public class DataView
         IsLoading = true;
     }
 
-    public async Task Requery()
+    /// <summary>
+    /// Reloads data from data source.
+    /// </summary>
+    /// <param name="preservePrevious">If same rows are in previous query, they are used instead of new values. 
+    /// That allows to preserve changes in edited details in case view is reloaded (e.g. new detail view is added).</param>
+    /// <returns></returns>
+    public async Task Requery(bool preservePrevious = false)
     {
         IsLoading = true;
-        Query.Apply();
-        Result = await DataSource.ExecuteQuery(_query);
+        Query.ApplyToDataQuery();
+        var previousResultRows = preservePrevious ? Result?.Clone().Rows.ToList() : null;
+        Result = await DataSource.ExecuteQuery(_dataQuery);
+        var resultRows = Result.Rows.ToList();
+        if (previousResultRows != null)
+        {
+            foreach (var previousResultRow in previousResultRows)
+            {
+                var i = resultRows.FindIndex(r => r.Id.OriginalValue == previousResultRow.Id.OriginalValue);
+                if (i == -1)
+                    continue;
+                resultRows[i] = previousResultRow;
+            }
+            Result = new DataQueryResult(Result.Columns, resultRows, Result.TotalRowCount);
+        }
         IsLoading = false;
-    }
-
-    public DataView(string name, string title, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns, DataViewPresentation? presentation = null, string? detailsViewName = null)
-    {
-        Name = name;
-        Title = title;
-        DataSource = dataSource;
-        Presentation = presentation;
-        Columns = columns;
-        Query = new DataViewQuery(_query, DataSource, Columns);
-        ValidateColumns();
-        _detailsViewName = detailsViewName;
     }
 
     void ValidateColumns()
@@ -92,3 +110,4 @@ public class DataView
         IsSaving = false;
     }
 }
+

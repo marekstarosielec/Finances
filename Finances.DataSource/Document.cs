@@ -35,6 +35,7 @@ public partial class DataSourceFactory
                 new DataColumn("Vat", ColumnDataType.Precision),
                 new DataColumn("Gross", ColumnDataType.Precision),
                 new DataColumn("Currency", ColumnDataType.Text),
+                new DataColumn("GroupId", ColumnDataType.Text),
                 new DataColumn("FileLink", ColumnDataType.Text, CreateDocumentFullName)
                 );
             return _document;

@@ -18,7 +18,7 @@ public class DocumentMainList : IDataView
         if (_dataView != null)
             return _dataView;
 
-        var presentation = new DataViewPresentation(0, "fa-regular fa-folder-open", "Dokumenty");
+        var presentation = new DataViewPresentation(60, "fa-regular fa-folder-open", "Dokumenty");
         var columns = new List<DataViewColumn>
         {
             new DataViewColumnText("Number", "Dokument", "l"),

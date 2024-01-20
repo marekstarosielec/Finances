@@ -9,4 +9,6 @@ public class DataRow : Dictionary<string, DataValue>
             return this["Id"];
         }
     }
+
+    public bool SelectedInDetails {get; set;}
 }

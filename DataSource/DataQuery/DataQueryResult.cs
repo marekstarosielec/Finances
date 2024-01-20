@@ -24,9 +24,13 @@ public class DataQueryResult
         var rows = new List<DataRow>();
         foreach (var row in Rows)
         { 
-            var dataRow = new DataRow();    
+            var dataRow = new DataRow();
             foreach (var key in row.Keys)
+            {
                 dataRow[key] = new DataValue(row[key].OriginalValue);
+                dataRow[key].CurrentValue = row[key].CurrentValue;
+                dataRow.SelectedInDetails = row.SelectedInDetails;
+            }
             rows.Add(dataRow);
         }
         return new DataQueryResult(columns, rows, rows.Count);
