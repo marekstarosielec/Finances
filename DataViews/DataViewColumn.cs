@@ -19,14 +19,16 @@ public abstract class DataViewColumn
     public DataViewColumnContentAlign? HorizontalAlign { get; set; }
 
     public string? PreferredFilterComponentType { get; set; }
-
+    public bool Visible { get; }
     public int? NumberOfLinesInDetails { get; set; }
-    public DataViewColumn(string primaryDataColumnName, DataViewColumnDataType dataType, string title, string shortName, string? preferredFilterComponentType = null)
+
+    public DataViewColumn(string primaryDataColumnName, DataViewColumnDataType dataType, string title, string shortName, string? preferredFilterComponentType = null, bool visible = true)
     {
         PrimaryDataColumnName = primaryDataColumnName;
         DataType = dataType;
         Title = title;
         ShortName = shortName;
         PreferredFilterComponentType = preferredFilterComponentType;
+        Visible = visible;
     }
 }

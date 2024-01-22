@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using static DataSource.DataColumn;
 
 namespace DataSource.Json;
 
@@ -22,25 +23,35 @@ public class JsonDataSource : IDataSource
         Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
     }
 
-    public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
+    public async Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
     {
         var allData = await GetAllData();
         var clonedData = allData.Clone();
         var clonedRows = clonedData.Rows;
 
-        if (dataQuery?.Filters != null)
+        if (dataQuery.Filters != null)
             foreach (var filterDefinition in dataQuery.Filters)
                 clonedRows = clonedRows.Filter(filterDefinition.Key, filterDefinition.Value).ToList();
 
-        if (dataQuery != null)
-            clonedRows = clonedRows.Sort(dataQuery.Sorters);
+        clonedRows = clonedRows.Sort(dataQuery.Sorters);
 
         var count = clonedRows.Count();
 
-        if (dataQuery?.PageSize.GetValueOrDefault(-1) > -1)
+        if (dataQuery.PageSize.GetValueOrDefault(-1) > -1)
             clonedRows = clonedRows.Take(dataQuery.PageSize!.Value);
 
-        return new DataQueryResult(clonedData.Columns, clonedRows, count);
+        //Remove columns (and its data) that are not specified in dataQuery
+        var validColumns = clonedData.Columns.Where(c => dataQuery.Columns.Any(dq => dq.ColumnName == c.ColumnName));
+        var validRows = new List<DataRow>();
+        foreach (var clonedRow in clonedRows)
+        {
+            var validRow = new DataRow();
+            foreach (var dataColumn in validColumns)
+                validRow[dataColumn.ColumnName] = clonedRow[dataColumn.ColumnName];
+            validRows.Add(validRow);
+        }
+
+        return new DataQueryResult(validColumns, validRows, count);
     }
 
     public async Task Save(DataRow row)

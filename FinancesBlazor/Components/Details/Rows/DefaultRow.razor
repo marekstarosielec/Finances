@@ -15,7 +15,7 @@ else
         <button class="btn btn-primary" @onclick="Save">Zapisz</button>
         <button class="btn btn-primary" @onclick="Select"> <RadzenCheckBox TValue="bool" class="checkbox" Value=@Row.SelectedInDetails/></button>
         <button class="btn btn-primary" @onclick="Close">X</button>
-        @foreach (var column in DataView.Columns)
+        @foreach (var column in DataView.Columns.Where(c => c.Visible))
         {
             <DynamicCell DataView=@DataView Row=@Row Column=column></DynamicCell>
         }
@@ -52,7 +52,7 @@ else
     {
         if (DataView == null || Row == null)
             return;
-        _dataViewManager.SelectedData.Remove(DataView, Row);
+        _dataViewManager.SelectedData.Remove(Row);
         _dataViewManager.Save(DataView);
     }
 

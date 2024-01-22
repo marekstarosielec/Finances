@@ -20,7 +20,7 @@ public class JoinedDataSource : IDataSource
         Columns = GetColumnList();
     }
     
-    public async Task<DataQueryResult> ExecuteQuery(DataQuery? dataQuery = null)
+    public async Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
     {
         IEnumerable<DataRow> rows = await Cache.Get(_leftDataSource, _rightDataSource, LeftJoinTable);
 

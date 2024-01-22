@@ -9,15 +9,7 @@ public class SelectedData
     private Dictionary<string, DataView> _ids = new();
 
     private ReadOnlyDictionary<string, DataView>? _readOnlyIds;
-
-    public ReadOnlyDictionary<string, DataView> Ids
-    {
-        get
-        {
-            _readOnlyIds ??= new(_ids);
-            return _readOnlyIds;
-        }
-    }
+    public ReadOnlyDictionary<string, DataView> Ids => _readOnlyIds ??= new(_ids);
 
     public event EventHandler? Changed;
     public event EventHandler? DetailsCollapsedChanged;
@@ -30,7 +22,7 @@ public class SelectedData
 
     public void Add(DataView dataView, DataRow row)
     {
-        _ids.Add(GetRowId(dataView, row), dataView);
+        _ids.Add(GetRowId(row), dataView);
     }
 
     public void Add(DataView dataView, string id)
@@ -38,21 +30,21 @@ public class SelectedData
         _ids.Add(id, dataView);
     }
 
-    public void Remove(DataView dataView, DataRow row)
+    public void Remove(DataRow row)
     {
-        _ids.Remove(GetRowId(dataView, row));
+        _ids.Remove(GetRowId(row));
     }
 
-    public bool IsSelected(DataView dataView, DataRow row) => _ids.ContainsKey(GetRowId(dataView, row));
+    public bool IsSelected(DataRow row) => _ids.ContainsKey(GetRowId(row));
 
     internal void InvokeChanged() => Changed?.Invoke(this, EventArgs.Empty);
     
-    private string GetRowId(DataView dataView, DataRow row)
+    private string GetRowId(DataRow row)
     {
         if (row == null)
             throw new ArgumentNullException(nameof(row));
 
-        var id = row["Id"]?.OriginalValue?.ToString();
+        var id = row.Id?.OriginalValue?.ToString();
         if (id == null)
             throw new InvalidOperationException("Cannot find row id");
 

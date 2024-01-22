@@ -25,26 +25,23 @@
 
     protected override void OnInitialized()
     {
-        _dataViewManager.ViewChanged += ViewChanged;
-        _dataViewManager.SelectedData.Changed += SelectedDataChanged;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-
-        // _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
-        // foreach (var group in _dataViewManager.SelectedData.Ids.GroupBy(cr => cr.Value))
-        // {
-        //     var ids = group.Select((k, v) => k.Key).ToList();
-        //     group.Key.Query.IdFilters.Clear();
-        //     group.Key.Query.IdFilters.AddRange(ids);
-        //     await group.Key.Requery();
-        // }
+        //  _dataViewManager.ViewChanged += ViewChanged;
+        //  _dataViewManager.SelectedData.Changed += SelectedDataChanged;
     }
 
     public async Task LoadDetails()
     {
         _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
+        await LoadDataIntoSelectedDetails();
+        StateHasChanged();
+    }
+
+    // async void ViewChanged(object? sender, DataView e)
+    // {
+    // }
+
+    private async Task LoadDataIntoSelectedDetails()
+    {        
         foreach (var group in _dataViewManager.SelectedData.Ids.GroupBy(cr => cr.Value))
         {
             var dv = group.Key;
@@ -55,13 +52,8 @@
             dv.Query.PageSize = -1; //Return all details, no matter how many of them there is.
             dv.Query.IdFilters.Clear();
             dv.Query.IdFilters.AddRange(newIds);
-            await dv.Requery(preservePrevious: true);
+            await dv.Requery(preservePrevious: true); //Do not reload details that were already loded (changes made would be lost).
         }
-        StateHasChanged();
-    }
-
-    async void ViewChanged(object? sender, DataView e)
-    {
     }
 
     private void DetailsCollapse()
@@ -72,15 +64,37 @@
 
     private void Group()
     {
-
+        // TODO: Move this outside of component
+        var id = string.Empty;
+        foreach (var kvp in _dataViewManager.SelectedData.Ids)
+        {
+            var row = GetRow(kvp.Value, kvp.Key);
+            if (row == null)
+                continue;
+            if (row.GroupId != null)
+            {
+                if (id == string.Empty)
+                    id = row.GroupId.CurrentValue as string;
+                //TODO: If two different groups are marked, need to inform user that two groups cannot be merged.
+            }
+        }
+        if (id == string.Empty)
+            id = Guid.NewGuid().ToString();
+        foreach (var kvp in _dataViewManager.SelectedData.Ids)
+        {
+            var row = GetRow(kvp.Value, kvp.Key);
+            if (row == null || row.GroupId == null)
+                continue;
+            row.GroupId.CurrentValue = id;
+        }
     }
 
     void IDisposable.Dispose()
     {
-        _dataViewManager.ViewChanged -= ViewChanged;
-        _dataViewManager.SelectedData.Changed -= SelectedDataChanged;
+        // _dataViewManager.ViewChanged -= ViewChanged;
+        // _dataViewManager.SelectedData.Changed -= SelectedDataChanged;
     }
 
-    async void SelectedDataChanged(object? sender, EventArgs e) => StateHasChanged();
+  //  async void SelectedDataChanged(object? sender, EventArgs e) => StateHasChanged();
 
 }

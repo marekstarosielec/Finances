@@ -21,11 +21,13 @@ public class TransactionMainList : IDataView
         var presentation = new DataViewPresentation(50, "fa-solid fa-money-bill-transfer", "Tranzakcje");
         var columns = new List<DataViewColumn>
         {
+            new DataViewColumnText("Id", "Id", "id", visible: false),
             new DataViewColumnDate("Date", "Data", "d", DataViewColumnDateFilterComponents.Default),
             new DataViewColumnText("Account", "Konto", "a"),
             new DataViewColumnText("Category", "Kategoria", "ct"),
             new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
-            new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default)
+            new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default),
+            new DataViewColumnText("GroupId", "GroupId", "gid", visible: false),
         };
 
         _dataView = new("t", "Tranzakcje", _dataSourceFactory.Transaction, new(columns), presentation, "td");

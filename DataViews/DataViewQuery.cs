@@ -1,7 +1,6 @@
 ﻿using DataSource;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Web;
 
 namespace DataViews;
 
@@ -75,6 +74,16 @@ public class DataViewQuery
             _dataQuery.Filters[idColumn] = new DataColumnFilter() { StringValue = IdFilters };
 
         _dataQuery.PageSize = PageSize;
+
+        foreach (var column in _columns)
+        {
+            var dataColumn = _dataSource.Columns.FirstOrDefault(c => c.Key == column.PrimaryDataColumnName).Value;
+            if (dataColumn != null && !_dataQuery.Columns.Any(c => c.ColumnName == dataColumn.ColumnName))
+                _dataQuery.Columns.Add(dataColumn);
+            dataColumn = _dataSource.Columns.FirstOrDefault(c => c.Key == column.SecondaryDataColumnName).Value;
+            if (dataColumn != null && !_dataQuery.Columns.Any(c => c.ColumnName == dataColumn.ColumnName))
+                _dataQuery.Columns.Add(dataColumn);
+        }
     }
 
     internal Dictionary<string, string> Serialize()

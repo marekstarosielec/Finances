@@ -6,7 +6,7 @@
 
 <tr class="@(_checked ? "checked" : null)">
     <td><RadzenCheckBox TValue="bool" class="checkbox" Value=@_checked Change=@(args => CheckChange(args)) /></td>
-    @foreach (var column in DataView?.Columns!)
+    @foreach (var column in DataView?.Columns!.Where(c => c.Visible)!)
     {
         <DynamicCell DataView=@DataView Row=@Row Column=column></DynamicCell>
     }
@@ -27,7 +27,7 @@
      
         if (DataView == null || Row == null)
             return;
-        _checked = _dataViewManager.SelectedData.IsSelected(DataView, Row);
+        _checked = _dataViewManager.SelectedData.IsSelected(Row);
     }
 
     private void CheckChange(bool args)
@@ -40,7 +40,7 @@
         if (args)
             _dataViewManager.SelectedData.Add(detailsDataView, Row);
         else
-            _dataViewManager.SelectedData.Remove(detailsDataView, Row);
+            _dataViewManager.SelectedData.Remove(Row);
         _checked = args;
         _dataViewManager.Save(DataView);
     }
@@ -49,7 +49,7 @@
     {
         if (DataView == null || Row == null)
             return;
-        _checked = _dataViewManager.SelectedData.IsSelected(DataView, Row);
+        _checked = _dataViewManager.SelectedData.IsSelected(Row);
         StateHasChanged();
     }
 
