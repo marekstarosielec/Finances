@@ -36,11 +36,11 @@ public static class DataRowsExtensions
     public static IEnumerable<DataRow> Filter(this IEnumerable<DataRow> source, DataColumn column, DataColumnFilter filter) => (column.ColumnDataType, filter.Equality) switch
     {
         (ColumnDataType.Text, Equality.Equals) =>
-            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => s == (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant())),
+            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => s.ToLowerInvariant() == (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant())),
         (ColumnDataType.Text, Equality.NotEquals) =>
-            source.Where(n => filter.StringValue.Count == 0 || !filter.StringValue.Any(s => s == (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant())),
+            source.Where(n => filter.StringValue.Count == 0 || !filter.StringValue.Any(s => s.ToLowerInvariant() == (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant())),
         (ColumnDataType.Text, Equality.Contains) =>
-            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant().Contains(s) ?? false)),
+            source.Where(n => filter.StringValue.Count == 0 || filter.StringValue.Any(s => (n?[column.ColumnName].OriginalValue as string)?.ToLowerInvariant().Contains(s.ToLowerInvariant()) ?? false)),
         (ColumnDataType.Date, _) =>
             source
                 .Select(n => new { Data = n, FilterData = n?[column.ColumnName].OriginalValue as DateTime? })

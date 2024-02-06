@@ -83,10 +83,12 @@
         foreach (var kvp in _dataViewManager.SelectedData.Ids)
         {
             var row = GetRow(kvp.Value, kvp.Key);
-            if (row == null || row.GroupId == null)
+            if (row == null || row.GroupId == null || !row.SelectedInDetails)
                 continue;
             row.GroupId.CurrentValue = id;
+            
         }
+
     }
 
     void IDisposable.Dispose()

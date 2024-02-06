@@ -19,7 +19,8 @@ public partial class DataSourceFactory
                     new DataColumnUnionMapping("Meter", "Meter", null),
                     new DataColumnUnionMapping("Comment", "Comment", "Comment"),
                     new DataColumnUnionMapping("Amount", null, "Amount"),
-                    new DataColumnUnionMapping("Currency", null, "Currency")
+                    new DataColumnUnionMapping("Currency", null, "Currency"),
+                    new DataColumnUnionMapping("FileLink", null, "FileLink")
                     );
             return _gasAndtransactionWithDocument;
         }

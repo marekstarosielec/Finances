@@ -2,7 +2,12 @@
 @using DataViews;
 @inject DataViewManager _dataViewManager;
 
-<td onclick="@(() => OnClick())"><i class="fa-regular fa-file fa-lg"></i></td>
+<td onclick="@(() => OnClick())">
+    @if (Column?.PrimaryDataColumnName != null && Row?[Column.PrimaryDataColumnName]?.OriginalValue as string != null)
+    {
+        <i class="fa-regular fa-file fa-lg"></i>
+    }
+</td>
 
 @code {
     [Parameter]

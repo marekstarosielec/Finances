@@ -17,7 +17,7 @@ public class JoinedDataSource : IDataSource
         _rightDataSource = rightDataSource;
         _joinColumn = joinColumn;
         _mappings = mappings;
-        Columns = GetColumnList();
+        Columns = BuildJoinedColumnList();
     }
     
     public async Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
@@ -48,13 +48,16 @@ public class JoinedDataSource : IDataSource
 
         foreach (var leftDataRow in leftDataView.Rows)
         {
+            //If join column is not filled, columns from right table are all null.
             if (leftDataRow[leftDataViewJoinColumn.ColumnName] == null)
                 JoinRightRow(leftDataRow, null);
 
+            //Find matching row in right table.
             var matching = rightDataView.Rows.FirstOrDefault(r => r[rightDataViewJoinColumn.ColumnName].OriginalValue as string == leftDataRow[leftDataViewJoinColumn.ColumnName].OriginalValue as string);
             if (matching == null)
-                JoinRightRow(leftDataRow, null);
+                JoinRightRow(leftDataRow, null); //No matching row in right table found, fill columns with null.
 
+            //Fill columns with data from matching row.
             JoinRightRow(leftDataRow, matching);
         }
 
@@ -75,15 +78,27 @@ public class JoinedDataSource : IDataSource
         {
             var mapping = _mappings?.FirstOrDefault(c => c.ColumnName == column.Key);
             if (mapping == null)
-                leftDataRow[column.Value.ColumnName] ??= new DataValue(column.Value);
+            {
+                //No information about mapping, so just adding column to result.
+                if (!leftDataRow.ContainsKey(column.Value.ColumnName))
+                    leftDataRow.Add(column.Value.ColumnName, new DataValue(column.Value));
+                else
+                    leftDataRow[column.Value.ColumnName] ??= new DataValue(column.Value);
+            }
             else if (mapping.NewColumnName == null)
-                continue;
+                continue; //Passed null as NewColumnName means column should not be included in joined result set.
             else
-                leftDataRow[mapping.NewColumnName] = rightDataRow?[column.Value.ColumnName] ?? new DataValue(null);
+            {
+                //Mapping contains NewColumnName, use it instead of previous name.
+                if (!leftDataRow.ContainsKey(mapping.NewColumnName))
+                    leftDataRow.Add(mapping.NewColumnName, new DataValue(column.Value));
+                else
+                    leftDataRow[mapping.NewColumnName] = rightDataRow?[column.Value.ColumnName] ?? new DataValue(null);
+            }
         }
     }
 
-    private Dictionary<string, DataColumn> GetColumnList()
+    private Dictionary<string, DataColumn> BuildJoinedColumnList()
     {
         var result = new Dictionary<string, DataColumn>();
         

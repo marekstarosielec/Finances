@@ -17,7 +17,6 @@ public class DataViewManager : IDisposable
     private readonly IDocumentManager _documentManager;
     private readonly DialogService _dialogService;
     private readonly IJSRuntime _js;
-    private readonly DocumentManagerOptions _documentManagerOptions;
     private DataView? _activeView;
     public DataView? ActiveView { get => _activeView; }
 
@@ -27,13 +26,12 @@ public class DataViewManager : IDisposable
 
     public SelectedData SelectedData { get; } = new SelectedData();
 
-    public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews, IDocumentManager documentManager, DialogService dialogService, IJSRuntime js, DocumentManagerOptions documentManagerOptions)
+    public DataViewManager(NavigationManager navigationManager, List<DataView> dataViews, IDocumentManager documentManager, DialogService dialogService, IJSRuntime js)
     {
         _navigationManager = navigationManager;
         _documentManager = documentManager;
         _dialogService = dialogService;
         _js = js;
-        _documentManagerOptions = documentManagerOptions;
         _navigationManager.LocationChanged += _navigationManager_LocationChanged;
         DataViews = dataViews.OrderBy(v => v.Presentation?.NavMenuIndex).ToList();
         if (DataViews.Count == 0)
@@ -67,8 +65,8 @@ public class DataViewManager : IDisposable
     {
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
-        qs["cr"] = string.Join(',', SelectedData.Ids.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
-        qs["sd"] = SelectedData.DetailsCollapsed ? "1" : "0";
+        qs["sdi"] = string.Join(',', SelectedData.Ids.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
+        qs["sdc"] = SelectedData.DetailsCollapsed ? "1" : "0";
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
 
@@ -101,14 +99,14 @@ public class DataViewManager : IDisposable
             }
         }
 
-        var newDetailsCollapsed = qs["sd"] == "1";
+        var newDetailsCollapsed = qs["sdc"] == "1";
         if (newDetailsCollapsed != SelectedData.DetailsCollapsed)
         {
             SelectedData.DetailsCollapsed = newDetailsCollapsed;
             SelectedData.InvokeDetailsCollapsedChanged();
         }
 
-        var cr = qs["cr"];
+        var cr = qs["sdi"];
         SelectedData.Clear();
         var checkedRecords = cr?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new ();
         foreach (var checkedRecord in checkedRecords)
@@ -177,7 +175,7 @@ public class DataViewManager : IDisposable
      //   ViewChanged?.Invoke(this, dataView);
         await dataView.Save(row);
         foreach(var dv in DataViews) {
-            if (dv.GetDetailsDataViewName() == dataView.Name) //TODO: If more than 1 details view is used it needs to be cehcked too.
+            if (dv.GetDetailsDataViewName() == dataView.Name) //TODO: If more than 1 details view is used it needs to be checked too.
             {
                 dataView.RemoveCache();
                 ViewChanged?.Invoke(this, dv);

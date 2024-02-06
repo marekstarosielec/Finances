@@ -17,8 +17,8 @@ else
     <table class="table table-borderless">
         <thead>
             <tr>
-                <th></th> 
-                @foreach (var column in DataView.Columns)
+                <th></th>
+                @foreach (var column in DataView.Columns.Where(c => c.Visible))
                 {
                     <th>
                         <div class="@(column.HorizontalAlign == DataViewColumnContentAlign.Right ? "text-end dropdown" : "dropdown")">

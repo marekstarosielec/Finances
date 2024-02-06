@@ -21,10 +21,12 @@ public class GasMainList : IDataView
         var presentation = new DataViewPresentation(100, "fa-solid fa-fire", "Gaz");
         var columns = new List<DataViewColumn>
         {
+            new DataViewColumnText("Id", "Id", "id", visible: false),
             new DataViewColumnDate("Date", "Data", "d", DataViewColumnDateFilterComponents.Default),
             new DataViewColumnPrecision("Meter", "Licznik", "m") { Format = "0.000" },
             new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
-            new DataViewColumnText("Comment", "Opis", "de", DataViewColumnTextFilterComponents.Default)
+            new DataViewColumnText("Comment", "Opis", "de", DataViewColumnTextFilterComponents.Default),
+            new DataViewColumnDocumentLink("FileLink", "Plik", "f")
         };
 
         _dataView = new("g", "Gaz", _dataSourceFactory.GasAndTransactionWithDocument, new(columns), presentation);

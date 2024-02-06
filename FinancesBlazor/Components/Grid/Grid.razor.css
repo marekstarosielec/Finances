@@ -16,7 +16,7 @@ th {
     position: sticky;
     position: -webkit-sticky;
     top: 37px;
-    z-index: 2;
+    z-index: 1;
 }
 
 .table {

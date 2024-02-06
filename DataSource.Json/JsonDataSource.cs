@@ -39,9 +39,9 @@ public class JsonDataSource : IDataSource
 
         if (dataQuery.PageSize.GetValueOrDefault(-1) > -1)
             clonedRows = clonedRows.Take(dataQuery.PageSize!.Value);
-
-        //Remove columns (and its data) that are not specified in dataQuery
-        var validColumns = clonedData.Columns.Where(c => dataQuery.Columns.Any(dq => dq.ColumnName == c.ColumnName));
+         
+        //Remove columns (and its data) that are not specified in dataQuery. If no columns are specified (before joining or unioning tables), return all columns.
+        var validColumns = clonedData.Columns.Where(c => dataQuery.Columns.Count == 0 || dataQuery.Columns.Any(dq => dq.ColumnName == c.ColumnName));
         var validRows = new List<DataRow>();
         foreach (var clonedRow in clonedRows)
         {
