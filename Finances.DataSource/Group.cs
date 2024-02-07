@@ -13,7 +13,7 @@ public partial class DataSourceFactory
             _group ??= new JsonDataSource(Path.Combine(_dataFilePath!, "group.json"),
                 new DataColumn("Id", ColumnDataType.Text),
                 new DataColumn("GroupId", ColumnDataType.Text),
-                new DataColumn("DataViewName", ColumnDataType.Date),
+                new DataColumn("DataViewName", ColumnDataType.Text),
                 new DataColumn("RowId", ColumnDataType.Text)
                 );
             return _group;

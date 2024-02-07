@@ -9,7 +9,7 @@ public class SelectedData
     private Dictionary<string, DataView> _ids = new();
 
     private ReadOnlyDictionary<string, DataView>? _readOnlyIds;
-    public ReadOnlyDictionary<string, DataView> Ids => _readOnlyIds ??= new(_ids);
+    public ReadOnlyDictionary<string, DataView> Records => _readOnlyIds ??= new(_ids);
 
     public event EventHandler? Changed;
     public event EventHandler? DetailsCollapsedChanged;

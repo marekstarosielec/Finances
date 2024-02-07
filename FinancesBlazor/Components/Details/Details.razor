@@ -7,9 +7,9 @@
 <button class="btn btn-primary" @onclick="DetailsCollapse">+</button> 
 <button class="btn btn-primary" @onclick="Group">Group</button>
 <div class="d-flex flex-nowrap" style="@GetStyle()">
-    @foreach (var checkedRecordKey in _dataViewManager.SelectedData.Ids.Keys)
+    @foreach (var checkedRecordKey in _dataViewManager.SelectedData.Records.Keys)
     {
-        <DynamicRow DataView=@_dataViewManager.SelectedData.Ids[checkedRecordKey] Row=@GetRow(_dataViewManager.SelectedData.Ids[checkedRecordKey],checkedRecordKey)></DynamicRow>
+        <DynamicRow DataView=@_dataViewManager.SelectedData.Records[checkedRecordKey] Row=@GetRow(_dataViewManager.SelectedData.Records[checkedRecordKey],checkedRecordKey)></DynamicRow>
     }
 </div>
 
@@ -19,7 +19,7 @@
 
     private string GetStyle()
     {
-        var result = $"overflow-x:{(_dataViewManager.SelectedData.Ids.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.SelectedData.DetailsCollapsed ? "none!important" : "block")}";
+        var result = $"overflow-x:{(_dataViewManager.SelectedData.Records.Count <= DetailSettings.MaximumNumberOfDetails ? "hidden" : "auto")};display:{(_dataViewManager.SelectedData.DetailsCollapsed ? "none!important" : "block")}";
         return result;
     }
 
@@ -31,7 +31,7 @@
 
     public async Task LoadDetails()
     {
-        _details = _dataViewManager.SelectedData.Ids.Keys.ToDictionary(k => k, v => (DataView?)null);
+        _details = _dataViewManager.SelectedData.Records.Keys.ToDictionary(k => k, v => (DataView?)null);
         await LoadDataIntoSelectedDetails();
         StateHasChanged();
     }
@@ -42,7 +42,7 @@
 
     private async Task LoadDataIntoSelectedDetails()
     {        
-        foreach (var group in _dataViewManager.SelectedData.Ids.GroupBy(cr => cr.Value))
+        foreach (var group in _dataViewManager.SelectedData.Records.GroupBy(cr => cr.Value))
         {
             var dv = group.Key;
             var newIds = group.Select((k, v) => k.Key).ToList();
@@ -62,30 +62,38 @@
         _dataViewManager.Save(_dataViewManager.ActiveView);
     }
 
-    private void Group()
+    private async void Group()
     {
         // TODO: Move this outside of component
-        var id = string.Empty;
-        foreach (var kvp in _dataViewManager.SelectedData.Ids)
+        var groupId = string.Empty;
+        foreach (var kvp in _dataViewManager.SelectedData.Records)
         {
             var row = GetRow(kvp.Value, kvp.Key);
             if (row == null)
                 continue;
             if (row.GroupId != null)
             {
-                if (id == string.Empty)
-                    id = row.GroupId.CurrentValue as string;
+                if (groupId == string.Empty)
+                    groupId = row.GroupId.CurrentValue as string;
                 //TODO: If two different groups are marked, need to inform user that two groups cannot be merged.
             }
         }
-        if (id == string.Empty)
-            id = Guid.NewGuid().ToString();
-        foreach (var kvp in _dataViewManager.SelectedData.Ids)
+        if (groupId == string.Empty)
+            groupId = Guid.NewGuid().ToString();
+        var id = Guid.NewGuid().ToString();
+        foreach (var kvp in _dataViewManager.SelectedData.Records)
         {
-            var row = GetRow(kvp.Value, kvp.Key);
-            if (row == null || row.GroupId == null || !row.SelectedInDetails)
-                continue;
-            row.GroupId.CurrentValue = id;
+            //TODO: Need to save multiple changes in one batch.
+            var dataRow = new DataRow();
+            dataRow["Id"] = new DataValue(null, id);
+            dataRow["GroupId"] = new DataValue(null, groupId);
+            dataRow["DataViewName"] = new DataValue(null, kvp.Value.Name);
+            dataRow["RowId"] = new DataValue(null, kvp.Key);
+            await _dataViewManager.SaveChanges(_dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == "gr"), dataRow);
+            // var row = GetRow(kvp.Value, kvp.Key);
+            // if (row == null || row.GroupId == null || !row.SelectedInDetails)
+            //     continue;
+            //row.GroupId.CurrentValue = id;
             
         }
 

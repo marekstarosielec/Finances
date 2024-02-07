@@ -65,7 +65,7 @@ public class DataViewManager : IDisposable
     {
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
-        qs["sdi"] = string.Join(',', SelectedData.Ids.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
+        qs["sdi"] = string.Join(',', SelectedData.Records.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
         qs["sdc"] = SelectedData.DetailsCollapsed ? "1" : "0";
         _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
     }
@@ -174,6 +174,8 @@ public class DataViewManager : IDisposable
 
      //   ViewChanged?.Invoke(this, dataView);
         await dataView.Save(row);
+
+        //Refresh lists that use updated details view.
         foreach(var dv in DataViews) {
             if (dv.GetDetailsDataViewName() == dataView.Name) //TODO: If more than 1 details view is used it needs to be checked too.
             {

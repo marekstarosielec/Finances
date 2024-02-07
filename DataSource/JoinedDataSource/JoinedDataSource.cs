@@ -81,9 +81,9 @@ public class JoinedDataSource : IDataSource
             {
                 //No information about mapping, so just adding column to result.
                 if (!leftDataRow.ContainsKey(column.Value.ColumnName))
-                    leftDataRow.Add(column.Value.ColumnName, new DataValue(column.Value));
+                    leftDataRow.Add(column.Value.ColumnName, new DataValue(column.Value, column.Value));
                 else
-                    leftDataRow[column.Value.ColumnName] ??= new DataValue(column.Value);
+                    leftDataRow[column.Value.ColumnName] ??= new DataValue(column.Value, column.Value);
             }
             else if (mapping.NewColumnName == null)
                 continue; //Passed null as NewColumnName means column should not be included in joined result set.
@@ -91,9 +91,9 @@ public class JoinedDataSource : IDataSource
             {
                 //Mapping contains NewColumnName, use it instead of previous name.
                 if (!leftDataRow.ContainsKey(mapping.NewColumnName))
-                    leftDataRow.Add(mapping.NewColumnName, new DataValue(column.Value));
+                    leftDataRow.Add(mapping.NewColumnName, new DataValue(column.Value, column.Value ));
                 else
-                    leftDataRow[mapping.NewColumnName] = rightDataRow?[column.Value.ColumnName] ?? new DataValue(null);
+                    leftDataRow[mapping.NewColumnName] = rightDataRow?[column.Value.ColumnName] ?? new DataValue(null, null);
             }
         }
     }

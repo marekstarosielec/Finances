@@ -27,8 +27,7 @@ public class DataQueryResult
             var dataRow = new DataRow();
             foreach (var key in row.Keys)
             {
-                dataRow[key] = new DataValue(row[key].OriginalValue);
-                dataRow[key].CurrentValue = row[key].CurrentValue;
+                dataRow[key] = new DataValue(row[key].OriginalValue, row[key].CurrentValue);
                 dataRow.SelectedInDetails = row.SelectedInDetails;
             }
             rows.Add(dataRow);

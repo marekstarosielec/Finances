@@ -2,12 +2,12 @@
 
 public class DataValue
 {
-    public object? OriginalValue { get; }
+    public object? OriginalValue { get; set; }
     public object? CurrentValue { get; set; }
 
-    public DataValue(object? value)
+    public DataValue(object? originalValue, object? currentValue)
     {
-        OriginalValue = value;
-        CurrentValue = value;
+        OriginalValue = originalValue;
+        CurrentValue = currentValue;
     }
 }

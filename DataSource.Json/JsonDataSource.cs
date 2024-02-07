@@ -134,18 +134,19 @@ public class JsonDataSource : IDataSource
                         if (column.Value.CustomCreator != null)
                         {
                             var result = column.Value.CustomCreator(dataRow);
-                            dataRow[column.Value.ColumnName] = new DataValue(result);
+                            dataRow[column.Value.ColumnName] = new DataValue(result, result);
                         }
                         else
                         {
-                            dataRow[column.Value.ColumnName] = new DataValue(column.Value.ColumnDataType switch
+                            object? value = column.Value.ColumnDataType switch
                             {
                                 ColumnDataType.Text => node[column.Key]?.GetValue<string>(),
                                 ColumnDataType.Date => node[column.Key]?.GetValue<DateTime>(),
                                 ColumnDataType.Precision => node[column.Key]?.GetValue<decimal>(),
                                 ColumnDataType.Number => node[column.Key]?.GetValue<int>(),
                                 _ => throw new Exception("Unsupported DataType")
-                            });
+                            };
+                            dataRow[column.Value.ColumnName] = new DataValue(value, value);
                         }
                     }
                     catch (Exception ex)
