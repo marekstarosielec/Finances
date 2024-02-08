@@ -167,13 +167,13 @@ public class DataViewManager : IDisposable
         => string.Join("&", queryString.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(queryString[a])));
 
 
-    public async Task SaveChanges(DataView? dataView, DataSource.DataRow? row)
+    public async Task SaveChanges(DataView? dataView, List<DataSource.DataRow>? rows)
     {
-        if (dataView == null || row == null)
+        if (dataView == null || rows == null)
             return;
 
      //   ViewChanged?.Invoke(this, dataView);
-        await dataView.Save(row);
+        await dataView.Save(rows);
 
         //Refresh lists that use updated details view.
         foreach(var dv in DataViews) {

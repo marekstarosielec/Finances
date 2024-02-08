@@ -7,5 +7,5 @@ public interface IDataSource
     void RemoveCache();
     DateTime? CacheTimeStamp { get; }
 
-    Task Save(DataRow row);
+    Task Save(List<DataRow> rows);
 }

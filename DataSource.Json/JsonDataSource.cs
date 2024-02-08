@@ -54,24 +54,39 @@ public class JsonDataSource : IDataSource
         return new DataQueryResult(validColumns, validRows, count);
     }
 
-    public async Task Save(DataRow row)
+    public async Task Save(List<DataRow> rows)
     {
-        var allData = await GetAllData();
-        var originalRow = allData.Rows.FirstOrDefault(r => r.Id?.OriginalValue == row.Id.OriginalValue);
-        if (originalRow == null)
-            return; //TODO: New row created;
-
-        //Copy values to main storage
-        foreach (var cell in row)
+        var allDataRows = (await GetAllData()).Rows.ToList();
+        foreach (DataRow row in rows)
         {
-            if (cell.Value.CurrentValue == cell.Value.OriginalValue)
-                continue;
+            var originalRow = allDataRows.FirstOrDefault(r => r.Id?.OriginalValue == row.Id.OriginalValue);
+            if (originalRow == null)
+            {
+                //New row created
+                var newRow = new DataRow();
+                //Copy new values
+                foreach (var cell in row)
+                {
+                    newRow[cell.Key] = new DataValue(row[cell.Key].CurrentValue, row[cell.Key].CurrentValue);
+                }
+                allDataRows.Add(newRow);
+            }
+            else
+            {
+                //Copy modified values to main storage
+                foreach (var cell in row)
+                {
+                    if (cell.Value.CurrentValue == cell.Value.OriginalValue)
+                        continue;
 
-            originalRow[cell.Key].CurrentValue = row[cell.Key].CurrentValue;
+                    originalRow[cell.Key].CurrentValue = row[cell.Key].CurrentValue;
+                }
+            }
         }
 
+        //Build structure for serialization.
         var nodes = new List<Dictionary<string, object?>>();
-        foreach (var saveRow in allData.Rows)
+        foreach (var saveRow in allDataRows)
         {
             var node = new Dictionary<string, object?>();
             foreach (var column in Columns)
@@ -80,6 +95,7 @@ public class JsonDataSource : IDataSource
             }
             nodes.Add(node);
         }
+
         var result = JsonSerializer.Serialize(nodes);
         var _semaphore = GetSemaphore();
 

@@ -64,39 +64,38 @@
 
     private async void Group()
     {
+        // TODO: Not sure if DataRow will continue to have information about GroupId (need to build a joind dataSource).
         // TODO: Move this outside of component
-        var groupId = string.Empty;
-        foreach (var kvp in _dataViewManager.SelectedData.Records)
-        {
-            var row = GetRow(kvp.Value, kvp.Key);
-            if (row == null)
-                continue;
-            if (row.GroupId != null)
-            {
-                if (groupId == string.Empty)
-                    groupId = row.GroupId.CurrentValue as string;
-                //TODO: If two different groups are marked, need to inform user that two groups cannot be merged.
-            }
-        }
-        if (groupId == string.Empty)
-            groupId = Guid.NewGuid().ToString();
-        var id = Guid.NewGuid().ToString();
-        foreach (var kvp in _dataViewManager.SelectedData.Records)
-        {
-            //TODO: Need to save multiple changes in one batch.
-            var dataRow = new DataRow();
-            dataRow["Id"] = new DataValue(null, id);
-            dataRow["GroupId"] = new DataValue(null, groupId);
-            dataRow["DataViewName"] = new DataValue(null, kvp.Value.Name);
-            dataRow["RowId"] = new DataValue(null, kvp.Key);
-            await _dataViewManager.SaveChanges(_dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == "gr"), dataRow);
-            // var row = GetRow(kvp.Value, kvp.Key);
-            // if (row == null || row.GroupId == null || !row.SelectedInDetails)
-            //     continue;
-            //row.GroupId.CurrentValue = id;
-            
-        }
+        var allSelectedDataRows = _dataViewManager.SelectedData.Records.Select(r => GetRow(r.Value, r.Key)).ToList();
 
+        //Check if we are connecting to existing group or creating new one.
+        var groupId = string.Empty;
+        var allGroupIds = allSelectedDataRows.Where(dr => dr?.GroupId?.CurrentValue != null).ToList();
+        //if no groupId generate new
+        if (allGroupIds.Count == 0)
+            groupId = Guid.NewGuid().ToString();
+        //if 1 groupId, reuse it (attach to existing group)
+        if (allGroupIds.Count == 1)
+            groupId = allGroupIds.First()!.GroupId!.CurrentValue as string;
+        //if more than 1 groupId throw error (cannot merge 2 groups)
+        if (allGroupIds.Count > 1)
+            return;
+
+        //Create rows that need to be added into group dataSource.
+        var dataRowsToAdd = new List<DataRow>();
+        foreach (var selectedDataRow in allSelectedDataRows)
+        {
+            if (selectedDataRow?.GroupId?.CurrentValue != null)
+                continue; //No need to update records which are already in group.
+            var groupDataRow = new DataRow();
+            groupDataRow["Id"] = new DataValue(null, Guid.NewGuid().ToString());
+            groupDataRow["GroupId"] = new DataValue(null, groupId);
+            //Find view related to given detail
+            groupDataRow["DataViewName"] = new DataValue(null, _dataViewManager.SelectedData.Records[selectedDataRow.Id.CurrentValue as string].Name);
+            groupDataRow["RowId"] = new DataValue(null, selectedDataRow.Id.CurrentValue as string);
+            dataRowsToAdd.Add(groupDataRow);
+        }
+        await _dataViewManager.SaveChanges(_dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == "gr"), dataRowsToAdd);
     }
 
     void IDisposable.Dispose()

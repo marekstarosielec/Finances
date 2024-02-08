@@ -45,7 +45,7 @@ else
     private void Select() => Row!.SelectedInDetails = !Row.SelectedInDetails;
     private async Task Save()
     {
-        await _dataViewManager.SaveChanges(DataView, Row);
+        await _dataViewManager.SaveChanges(DataView, new List<DataRow> { Row });
     }
 
     private void Close()

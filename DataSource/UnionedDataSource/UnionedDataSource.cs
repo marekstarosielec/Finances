@@ -80,7 +80,7 @@ public class UnionedDataSource : IDataSource
         Cache.Clean();
     }
 
-    public Task Save(DataRow row)
+    public Task Save(List<DataRow> rows)
     {
         throw new NotImplementedException();
     }

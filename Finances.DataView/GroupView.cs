@@ -25,7 +25,7 @@ public class GroupView : IDataView
             new DataViewColumnText("Id", "Id", "id", visible: false),
             new DataViewColumnText("GroupId", "Grupa", "g"),
             new DataViewColumnText("DataViewName", "Widok", "v"),
-            new DataViewColumnDate("RowId", "Id wiersza", "rid")
+            new DataViewColumnText("RowId", "Id wiersza", "rid")
         };
 
         _dataView = new("gr", "Grupy", _dataSourceFactory.Group, new(columns), presentation);

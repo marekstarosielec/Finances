@@ -28,7 +28,7 @@ public class DocumentMainList : IDataView
             new DataViewColumnDocumentLink("FileLink", "Plik", "f")
         };
 
-        _dataView = new("d", "Dokumenty", _dataSourceFactory.Document, new(columns), presentation);
+        _dataView = new("d", "Dokumenty", _dataSourceFactory.Document, new(columns), presentation, "dd");
         _dataView.Query.PreSorters.Add(columns.First(c => c.PrimaryDataColumnName == "Number"), true);
         return _dataView;
     }

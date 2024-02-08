@@ -103,10 +103,10 @@ public class DataView
         return _detailsViewName;
     }
 
-    public async Task Save(DataRow row)
+    public async Task Save(List<DataRow> rows)
     {
         IsSaving = true;
-        await DataSource.Save(row);
+        await DataSource.Save(rows);
         IsSaving = false;
     }
 }
