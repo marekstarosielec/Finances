@@ -30,7 +30,7 @@ public class TransactionDetails : IDataView
 
         };
 
-        _dataView = new("td", "Szczegóły tranzakcji", _dataSourceFactory.Transaction, new(columns));
+        _dataView = new("td", "Szczegóły tranzakcji", _dataSourceFactory.TransactionJoinGroup, new(columns));
         return _dataView;
     }
 }

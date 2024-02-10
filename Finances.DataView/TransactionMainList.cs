@@ -27,10 +27,10 @@ public class TransactionMainList : IDataView
             new DataViewColumnText("Category", "Kategoria", "ct"),
             new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
             new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default),
-            new DataViewColumnText("GroupId", "GroupId", "gid", visible: false),
+            new DataViewColumnText("GroupId", "GroupId", "gid"),
         };
 
-        _dataView = new("t", "Tranzakcje", _dataSourceFactory.Transaction, new(columns), presentation, "td");
+        _dataView = new("t", "Tranzakcje", _dataSourceFactory.TransactionJoinGroup, new(columns), presentation, "td");
         _dataView.Query.Prefilters.Add(
             new Prefilter(
                 name: "savings", 

@@ -41,24 +41,39 @@ public class JoinedDataSource : IDataSource
 
     private async Task<IEnumerable<DataRow>> LeftJoinTable()
     {
-        DataQueryResult leftDataView = await _leftDataSource.ExecuteQuery(new DataQuery{  PageSize = -1 });
-        DataQueryResult rightDataView = await _rightDataSource.ExecuteQuery(new DataQuery{  PageSize = -1 });
-        var leftDataViewJoinColumn = _leftDataSource.Columns.ContainsKey(_joinColumn) ? _leftDataSource.Columns[_joinColumn] : throw new InvalidOperationException($"Joined data source does not contain column {_joinColumn}");
-        var rightDataViewJoinColumn = _rightDataSource.Columns["Id"];
+        DataQueryResult leftDataView = await _leftDataSource.ExecuteQuery(new DataQuery { PageSize = -1 });
+        DataQueryResult rightDataView = await _rightDataSource.ExecuteQuery(new DataQuery { PageSize = -1 });
+        DataColumn? leftDataViewJoinColumn;
+        DataColumn? rightDataViewJoinColumn;
+        if (_leftDataSource.Columns.ContainsKey(_joinColumn))
+        {
+            leftDataViewJoinColumn = _leftDataSource.Columns[_joinColumn];
+            rightDataViewJoinColumn = _rightDataSource.Columns["Id"];
+        }
+        else if (_rightDataSource.Columns.ContainsKey(_joinColumn))
+        {
+            leftDataViewJoinColumn = _leftDataSource.Columns["Id"];
+            rightDataViewJoinColumn = _rightDataSource.Columns[_joinColumn];
+        }
+        else
+            throw new InvalidOperationException($"Joined data source does not contain column {_joinColumn}");
 
         foreach (var leftDataRow in leftDataView.Rows)
         {
-            //If join column is not filled, columns from right table are all null.
             if (leftDataRow[leftDataViewJoinColumn.ColumnName] == null)
+                //If join column is not filled, columns from right table are all null.
                 JoinRightRow(leftDataRow, null);
-
-            //Find matching row in right table.
-            var matching = rightDataView.Rows.FirstOrDefault(r => r[rightDataViewJoinColumn.ColumnName].OriginalValue as string == leftDataRow[leftDataViewJoinColumn.ColumnName].OriginalValue as string);
-            if (matching == null)
-                JoinRightRow(leftDataRow, null); //No matching row in right table found, fill columns with null.
-
-            //Fill columns with data from matching row.
-            JoinRightRow(leftDataRow, matching);
+            else
+            {
+                //Find matching row in right table.
+                var matching = rightDataView.Rows.FirstOrDefault(r => r[rightDataViewJoinColumn.ColumnName].OriginalValue as string == leftDataRow[leftDataViewJoinColumn.ColumnName].OriginalValue as string);
+                if (matching == null)
+                    //No matching row in right table found, fill columns with null.
+                    JoinRightRow(leftDataRow, null); 
+                else
+                    //Fill columns with data from matching row.
+                    JoinRightRow(leftDataRow, matching);
+            }
         }
 
         var result = new List<DataRow>();
@@ -76,14 +91,16 @@ public class JoinedDataSource : IDataSource
     {
         foreach (var column in _rightDataSource.Columns)
         {
+            var originalValue = rightDataRow?[column.Value.ColumnName].OriginalValue;
+            var originalDataValue = new DataValue(originalValue, originalValue);
             var mapping = _mappings?.FirstOrDefault(c => c.ColumnName == column.Key);
             if (mapping == null)
             {
                 //No information about mapping, so just adding column to result.
                 if (!leftDataRow.ContainsKey(column.Value.ColumnName))
-                    leftDataRow.Add(column.Value.ColumnName, new DataValue(column.Value, column.Value));
+                    leftDataRow.Add(column.Value.ColumnName, originalDataValue);
                 else
-                    leftDataRow[column.Value.ColumnName] ??= new DataValue(column.Value, column.Value);
+                    leftDataRow[column.Value.ColumnName] = originalDataValue;
             }
             else if (mapping.NewColumnName == null)
                 continue; //Passed null as NewColumnName means column should not be included in joined result set.
@@ -91,9 +108,9 @@ public class JoinedDataSource : IDataSource
             {
                 //Mapping contains NewColumnName, use it instead of previous name.
                 if (!leftDataRow.ContainsKey(mapping.NewColumnName))
-                    leftDataRow.Add(mapping.NewColumnName, new DataValue(column.Value, column.Value ));
+                    leftDataRow.Add(mapping.NewColumnName, originalDataValue);
                 else
-                    leftDataRow[mapping.NewColumnName] = rightDataRow?[column.Value.ColumnName] ?? new DataValue(null, null);
+                    leftDataRow[mapping.NewColumnName] = originalDataValue;
             }
         }
     }

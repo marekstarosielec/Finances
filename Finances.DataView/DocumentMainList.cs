@@ -25,10 +25,11 @@ public class DocumentMainList : IDataView
             new DataViewColumnText("Number", "Dokument", "l"),
             new DataViewColumnDate("Date", "Data", "d", DataViewColumnDateFilterComponents.Default),
             new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default),
-            new DataViewColumnDocumentLink("FileLink", "Plik", "f")
+            new DataViewColumnDocumentLink("FileLink", "Plik", "f"),
+            new DataViewColumnText("GroupId", "GroupId", "gid"),
         };
 
-        _dataView = new("d", "Dokumenty", _dataSourceFactory.Document, new(columns), presentation, "dd");
+        _dataView = new("d", "Dokumenty", _dataSourceFactory.DocumentJoinGroup, new(columns), presentation, "dd");
         _dataView.Query.PreSorters.Add(columns.First(c => c.PrimaryDataColumnName == "Number"), true);
         return _dataView;
     }
