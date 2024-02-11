@@ -2,6 +2,8 @@
 
 public class GroupDataSource
 {
+    public static string Id = "group.json";
+
     private static IDataSource? _group = null;
     public static IDataSource GetInstance(string dataFilePath)
     {

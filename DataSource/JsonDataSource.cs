@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -25,10 +24,8 @@ public class JsonDataSource : IDataSource
         Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
         _fileName = fileName;
         
-        var groupDataSource = GroupDataSource.GetInstance(Path.GetFullPath(fileName));
-
         if (Columns.TryGetValue("Group", out var groupColumn) && groupColumn.ColumnDataType == ColumnDataType.Subquery)
-            _cacheStamp = new DataSourceCacheStamp(fileName, groupDataSource.Id);
+            _cacheStamp = new DataSourceCacheStamp(fileName, GroupDataSource.Id);
         else
             _cacheStamp = new DataSourceCacheStamp(fileName);
     }
@@ -162,7 +159,7 @@ public class JsonDataSource : IDataSource
                             var result = column.Value.CustomCreator(dataRow);
                             dataRow[column.Value.ColumnName] = new DataValue(result, result);
                         }
-                        else
+                        else if (column.Value.ColumnDataType != ColumnDataType.Subquery) //Subqueries are not stored directly in source.
                         {
                             object? value = column.Value.ColumnDataType switch
                             {
