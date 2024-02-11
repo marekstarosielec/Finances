@@ -1,5 +1,4 @@
 ﻿using DataSource;
-using DataSource.Json;
 
 namespace Finances.DataSource;
 
@@ -11,7 +10,7 @@ public partial class DataSourceFactory
         get
         {
             _group ??= new JsonDataSource(Path.Combine(_dataFilePath!, "group.json"),
-                new DataColumn("Id", ColumnDataType.Text),
+                new IdDataColumn(),
                 new DataColumn("GroupId", ColumnDataType.Text),
                 new DataColumn("DataViewName", ColumnDataType.Text),
                 new DataColumn("RowId", ColumnDataType.Text)

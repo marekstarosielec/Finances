@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinancesBlazor", "FinancesB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSource", "DataSource\DataSource.csproj", "{7BCA98FA-89BF-4CFD-B016-4397101C3C35}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSource.Json", "DataSource.Json\DataSource.Json.csproj", "{D2D56ECE-9282-45A9-ABE2-152AEEBA7E9D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finances.DataSource", "Finances.DataSource\Finances.DataSource.csproj", "{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataViews", "DataViews\DataViews.csproj", "{47293FB6-4C34-42AF-A475-F3698DB60B24}"
@@ -59,10 +57,6 @@ Global
 		{7BCA98FA-89BF-4CFD-B016-4397101C3C35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BCA98FA-89BF-4CFD-B016-4397101C3C35}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BCA98FA-89BF-4CFD-B016-4397101C3C35}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2D56ECE-9282-45A9-ABE2-152AEEBA7E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2D56ECE-9282-45A9-ABE2-152AEEBA7E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2D56ECE-9282-45A9-ABE2-152AEEBA7E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D2D56ECE-9282-45A9-ABE2-152AEEBA7E9D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DAFB37A-37E8-4257-B1C1-DDFF1A6D928A}.Release|Any CPU.ActiveCfg = Release|Any CPU

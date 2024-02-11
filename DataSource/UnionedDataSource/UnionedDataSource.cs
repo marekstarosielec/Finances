@@ -11,6 +11,8 @@ public class UnionedDataSource : IDataSource
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
+    public string Id => $"{_firstDataSource.Id}_union_{_secondDataSource.Id}";
+
     public UnionedDataSource(IDataSource firstDataSource, IDataSource secondDataSource, Dictionary<DataColumn, DataColumnFilter>? mainFilters = null, params DataColumnUnionMapping[] mappings)
     {
         _firstDataSource = firstDataSource;

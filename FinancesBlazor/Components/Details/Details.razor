@@ -64,7 +64,6 @@
 
     private async void Group()
     {
-        // TODO: Not sure if DataRow will continue to have information about GroupId (need to build a joind dataSource).
         // TODO: Move this outside of component
         var allSelectedDataRows = _dataViewManager.SelectedData.Records.Select(r => GetRow(r.Value, r.Key)).ToList();
 

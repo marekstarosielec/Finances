@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataSource.Json\DataSource.Json.csproj" />
+    <ProjectReference Include="..\DataSource\DataSource.csproj" />
   </ItemGroup>
 
 </Project>

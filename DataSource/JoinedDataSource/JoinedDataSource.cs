@@ -11,6 +11,8 @@ public class JoinedDataSource : IDataSource
 
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
+    public string Id => $"{_leftDataSource.Id}_join_{_rightDataSource.Id}";
+
     public JoinedDataSource(IDataSource leftDataSource, IDataSource rightDataSource, string joinColumn, params DataColumnJoinMapping[] mappings)
     {
         _leftDataSource = leftDataSource;

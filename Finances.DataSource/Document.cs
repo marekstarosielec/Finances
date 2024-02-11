@@ -1,5 +1,4 @@
-﻿using DataSource.Json;
-using DataSource;
+﻿using DataSource;
 
 namespace Finances.DataSource;
 
@@ -11,7 +10,7 @@ public partial class DataSourceFactory
         get
         {
             _document ??= new JsonDataSource(Path.Combine(_dataFilePath!, "documents.json"),
-                new DataColumn("Id", ColumnDataType.Text),
+                new IdDataColumn(),
                 new DataColumn("Date", ColumnDataType.Date),
                 new DataColumn("Number", ColumnDataType.Number),
                 new DataColumn("Pages", ColumnDataType.Number),

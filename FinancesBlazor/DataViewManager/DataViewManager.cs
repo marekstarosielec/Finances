@@ -61,8 +61,11 @@ public class DataViewManager : IDisposable
         LoadFromQueryString();
     }
 
-    public void Save(DataView dataView)
+    public void Save(DataView? dataView)
     {
+        if (dataView == null)
+            throw new ArgumentNullException(nameof(dataView));
+
         var qs = GetQueryString();
         qs[dataView.Name] = dataView.Serialize();
         qs["sdi"] = string.Join(',', SelectedData.Records.Select(cr => $"{cr.Key}:{cr.Value.Name}"));

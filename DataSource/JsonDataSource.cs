@@ -1,9 +1,9 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using static DataSource.DataColumn;
 
-namespace DataSource.Json;
+namespace DataSource;
 
 public class JsonDataSource : IDataSource
 {
@@ -11,16 +11,26 @@ public class JsonDataSource : IDataSource
     protected static Dictionary<string, SemaphoreSlim> _semaphores = new ();
     public Dictionary<string, DataColumn> Columns { get; private set; }
     public DataSourceCache<DataQueryResult> Cache { get; } = new ();
-
     public DateTime? CacheTimeStamp => Cache.TimeStamp;
+
+    public string Id => _fileName;
+
+    private readonly DataSourceCacheStamp _cacheStamp;
 
     public JsonDataSource(string fileName, params DataColumn[] dataColumns)
     {
         if (string.IsNullOrWhiteSpace(fileName)) 
             throw new ArgumentException("FileName cannot be whitespace");
-        
-        _fileName = fileName;
+
         Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
+        _fileName = fileName;
+        
+        var groupDataSource = GroupDataSource.GetInstance(Path.GetFullPath(fileName));
+
+        if (Columns.TryGetValue("Group", out var groupColumn) && groupColumn.ColumnDataType == ColumnDataType.Subquery)
+            _cacheStamp = new DataSourceCacheStamp(fileName, groupDataSource.Id);
+        else
+            _cacheStamp = new DataSourceCacheStamp(fileName);
     }
 
     public async Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
@@ -117,7 +127,7 @@ public class JsonDataSource : IDataSource
         }
     }
 
-    private async Task<DataQueryResult> GetAllData() => await Cache.Get(Load);
+    private async Task<DataQueryResult> GetAllData() => await DataSourceCache.Instance.Get(Id, _cacheStamp, Load);
 
     private async Task<DataQueryResult> Load()
     {
