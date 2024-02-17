@@ -16,6 +16,8 @@ public class JsonDataSource : IDataSource
 
     private readonly DataSourceCacheStamp _cacheStamp;
 
+    private readonly DataQueryExecutor _dataQueryExecutor = new();
+
     public JsonDataSource(string fileName, params DataColumn[] dataColumns)
     {
         if (string.IsNullOrWhiteSpace(fileName)) 
@@ -27,37 +29,8 @@ public class JsonDataSource : IDataSource
         _cacheStamp = DataSourceCache.Instance.Register(Id, Load);
     }
 
-    public async Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
-    {
-        var allData = await DataSourceCache.Instance.Get(Id, _cacheStamp);
-        var clonedData = allData.Clone();
-        var clonedRows = clonedData.Rows;
-
-        if (dataQuery.Filters != null)
-            foreach (var filterDefinition in dataQuery.Filters)
-                clonedRows = clonedRows.Filter(filterDefinition.Key, filterDefinition.Value).ToList();
-
-        clonedRows = clonedRows.Sort(dataQuery.Sorters);
-
-        var count = clonedRows.Count();
-
-        if (dataQuery.PageSize.GetValueOrDefault(-1) > -1)
-            clonedRows = clonedRows.Take(dataQuery.PageSize!.Value);
-         
-        //Remove columns (and its data) that are not specified in dataQuery. If no columns are specified (before joining or unioning tables), return all columns.
-        var validColumns = clonedData.Columns.Where(c => dataQuery.Columns.Count == 0 || dataQuery.Columns.Any(dq => dq.ColumnName == c.ColumnName));
-        var validRows = new List<DataRow>();
-        foreach (var clonedRow in clonedRows)
-        {
-            var validRow = new DataRow();
-            foreach (var dataColumn in validColumns)
-                if (clonedRow.ContainsKey(dataColumn.ColumnName)) //Columns that are generated (e.g. Group) are not available here
-                    validRow[dataColumn.ColumnName] = clonedRow[dataColumn.ColumnName];
-            validRows.Add(validRow);
-        }
-
-        return new DataQueryResult(validColumns, validRows, count);
-    }
+    public Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
+        => _dataQueryExecutor.ExecuteQuery(Id, _cacheStamp, dataQuery);
 
     public async Task Save(List<DataRow> rows)
     {
