@@ -26,10 +26,10 @@ public class GasMainList : IDataView
             new DataViewColumnPrecision("Meter", "Licznik", "m") { Format = "0.000" },
             new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
             new DataViewColumnText("Comment", "Opis", "de", DataViewColumnTextFilterComponents.Default),
-            new DataViewColumnDocumentLink("FileLink", "Plik", "f")
+         //   new DataViewColumnDocumentLink("FileLink", "Plik", "f")
         };
 
-        _dataView = new("g", "Gaz", _dataSourceFactory.GasAndTransactionWithDocument, new(columns), presentation);
+        _dataView = new("g", "Gaz", _dataSourceFactory.GasUnionTransaction, new(columns), presentation);
 
         _dataView.Query.PreSorters.Add(columns.Single(c => c.ShortName == "d"), true);
         return _dataView;

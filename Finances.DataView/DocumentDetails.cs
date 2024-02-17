@@ -24,7 +24,7 @@ public class DocumentDetails : IDataView
             new DataViewColumnDate("Date", "Data", "d")
         };
 
-        _dataView = new("dd", "Szczegóły dokumentu", _dataSourceFactory.DocumentJoinGroup, new(columns));
+        _dataView = new("dd", "Szczegóły dokumentu", _dataSourceFactory.Document, new(columns));
         return _dataView;
     }
 }

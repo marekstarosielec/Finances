@@ -2,15 +2,15 @@
 
 internal class DataSourceCache
 {
-    private Dictionary<string, DataSourceCacheContainer> _cache = new();
-
+    
     private static DataSourceCache? _instance;
 
     public static DataSourceCache Instance { get; private set; } = _instance ??= new DataSourceCache();
 
+    private Dictionary<string, DataSourceCacheContainer> _cache = new();
     private bool _areDependenciesListBuilt;
-
-    public void Register(string id, Func<Task<DataQueryResult>> factory, params string[] relatedIds)
+    
+    public DataSourceCacheStamp Register(string id, Func<Task<DataQueryResult>> factory, params string[] relatedIds)
     {
         _cache[id] = new DataSourceCacheContainer
         {
@@ -18,45 +18,40 @@ internal class DataSourceCache
             Factory = factory,
             RelatedIds = relatedIds.ToList()
         };
+        return new DataSourceCacheStamp(id);
     }
 
-    public async Task<DataQueryResult> Get(string id, DataSourceCacheStamp dataSourceCacheStamp, Func<Task<DataQueryResult>> factory)
+    public async Task<DataQueryResult> Get(string id, DataSourceCacheStamp dataSourceCacheStamp)
     {
         if (!_areDependenciesListBuilt)
             BuildDependenciesLists();
 
         if (dataSourceCacheStamp.CacheIsExpired(_cache))
-            await StoreContainer(id, factory);
+            await StoreContainer(id, _cache[id].Factory);
 
         dataSourceCacheStamp.ResetFromCache(_cache);
-        return _cache[id].Result;
+        return _cache[id].Result!;
     }
 
+    public void Clean(string id)
+    {
+        _cache[id].TimeStamp = DateTime.MinValue;
+        _cache[id].Result = null;
+    }
 
     private void BuildDependenciesLists()
     {
-        foreach (var id in _cache.Keys) 
-            foreach (var id2 in _cache.Keys)
-            {
-                if (id == id2)
-                    continue;
+        var source = new Dictionary<string, List<string>>();
+        foreach (var id in _cache.Keys)
+            source[id] = _cache[id].RelatedIds;
+        var relationsFinder = new DataSourceRelationsFinder(source);
+        foreach (var id in _cache.Keys)
+        {
+            _cache[id].RelatedIds.Clear();
+            _cache[id].RelatedIds.AddRange(relationsFinder.FindAllRelatedElements(id));
+        }
 
-                var container = _cache[id2];
-                if (container.RelatedIds.Contains(id)) 
-                {
-                    var parentContainer = _cache[id];
-                    container.RelatedIds.AddRange(parentContainer.RelatedIds.Where(rid => rid != id2));
-                    container.RelatedIds = container.RelatedIds.Distinct().ToList();
-                }
-
-            }
-        
         _areDependenciesListBuilt = true;
-    }
-
-    private void FindAllRelatedIds(string id, HashSet<string> relatedIds)
-    {
-       
     }
 
     private async Task StoreContainer(string id, Func<Task<DataQueryResult>> factory)
@@ -66,6 +61,6 @@ internal class DataSourceCache
             Result = await factory.Invoke(),
             TimeStamp = DateTime.UtcNow
         };
-        _cache.Add(id, container);
+        _cache[id] = container;
     }
 }

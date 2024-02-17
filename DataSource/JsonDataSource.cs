@@ -7,10 +7,10 @@ namespace DataSource;
 public class JsonDataSource : IDataSource
 {
     private readonly string _fileName;
+    
     protected static Dictionary<string, SemaphoreSlim> _semaphores = new ();
+    
     public Dictionary<string, DataColumn> Columns { get; private set; }
-    public DataSourceCache<DataQueryResult> Cache { get; } = new ();
-    public DateTime? CacheTimeStamp => Cache.TimeStamp;
 
     public string Id => _fileName;
 
@@ -23,16 +23,13 @@ public class JsonDataSource : IDataSource
 
         Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
         _fileName = fileName;
-        
-        if (Columns.TryGetValue("Group", out var groupColumn) && groupColumn.ColumnDataType == ColumnDataType.Subquery)
-            _cacheStamp = new DataSourceCacheStamp(fileName, GroupDataSource.Id);
-        else
-            _cacheStamp = new DataSourceCacheStamp(fileName);
+
+        _cacheStamp = DataSourceCache.Instance.Register(Id, Load);
     }
 
     public async Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
     {
-        var allData = await GetAllData();
+        var allData = await DataSourceCache.Instance.Get(Id, _cacheStamp);
         var clonedData = allData.Clone();
         var clonedRows = clonedData.Rows;
 
@@ -54,7 +51,8 @@ public class JsonDataSource : IDataSource
         {
             var validRow = new DataRow();
             foreach (var dataColumn in validColumns)
-                validRow[dataColumn.ColumnName] = clonedRow[dataColumn.ColumnName];
+                if (clonedRow.ContainsKey(dataColumn.ColumnName)) //Columns that are generated (e.g. Group) are not available here
+                    validRow[dataColumn.ColumnName] = clonedRow[dataColumn.ColumnName];
             validRows.Add(validRow);
         }
 
@@ -63,7 +61,7 @@ public class JsonDataSource : IDataSource
 
     public async Task Save(List<DataRow> rows)
     {
-        var allDataRows = (await GetAllData()).Rows.ToList();
+        var allDataRows = (await DataSourceCache.Instance.Get(Id, _cacheStamp)).Rows.ToList();
         foreach (DataRow row in rows)
         {
             var originalRow = allDataRows.FirstOrDefault(r => r.Id?.OriginalValue == row.Id.OriginalValue);
@@ -124,7 +122,10 @@ public class JsonDataSource : IDataSource
         }
     }
 
-    private async Task<DataQueryResult> GetAllData() => await DataSourceCache.Instance.Get(Id, _cacheStamp, Load);
+    public void RemoveCache()
+    {
+        DataSourceCache.Instance.Clean(Id);
+    }
 
     private async Task<DataQueryResult> Load()
     {
@@ -193,11 +194,4 @@ public class JsonDataSource : IDataSource
             _semaphores[_fileName] = new SemaphoreSlim(1); 
         return _semaphores[_fileName];
     }
-
-    public void RemoveCache()
-    {
-        Cache.Clean();
-    }
-
-    
 }

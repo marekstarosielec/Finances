@@ -30,16 +30,16 @@ internal class DataSourceCacheStamp
 
 
     /// <summary>
-    /// Checks if _stamps are different fromn ones provided in cache.
+    /// Checks if _stamps are different from ones provided in cache.
     /// </summary>
     /// <param name="cache"></param>
     /// <returns></returns>
     public bool CacheIsExpired(Dictionary<string, DataSourceCacheContainer> cache)
     {
-        foreach(var id in _stamps.Keys)
+        foreach (var id in _stamps.Keys)
         {
             //Cache does not contain requested data.
-            if (!cache.TryGetValue(id, out var container))
+            if (!cache.TryGetValue(id, out var container) || container.TimeStamp == DateTime.MinValue)
                 return true;
 
             //Cached data timestamp is different then previously used timestamp. 

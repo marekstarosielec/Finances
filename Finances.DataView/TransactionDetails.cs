@@ -25,12 +25,11 @@ public class TransactionDetails : IDataView
             //new DataViewColumnText("Account", "Konto", "a"),
             //new DataViewColumnText("Category", "Kategoria", "ct"),
             //new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
-            new DataViewColumnText("Description", "Opis", "de", numberOfLinesInDetails: 3),
-            new DataViewColumnText("GroupId", "GroupId", "gid", visible: false),
+            new DataViewColumnText("Description", "Opis", "de", numberOfLinesInDetails: 3)
 
         };
 
-        _dataView = new("td", "Szczegóły tranzakcji", _dataSourceFactory.TransactionJoinGroup, new(columns));
+        _dataView = new("td", "Szczegóły tranzakcji", _dataSourceFactory.Transaction, new(columns));
         return _dataView;
     }
 }

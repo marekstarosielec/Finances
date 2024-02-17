@@ -1,4 +1,7 @@
-﻿namespace DataSource;
+﻿using System.Data;
+using System.Data.Common;
+
+namespace DataSource;
 
 public class JoinedDataSource : IDataSource
 {
@@ -6,12 +9,12 @@ public class JoinedDataSource : IDataSource
     private readonly IDataSource _rightDataSource;
     private readonly string _joinColumn;
     private readonly DataColumnJoinMapping[] _mappings;
-    public JoinedDataSourceCache Cache { get; } = new ();
-    public DateTime? CacheTimeStamp => Cache.TimeStamp;
-
+    
     public Dictionary<string, DataColumn> Columns { get; private set; }
 
     public string Id => $"{_leftDataSource.Id}_join_{_rightDataSource.Id}";
+
+    private readonly DataSourceCacheStamp _cacheStamp;
 
     public JoinedDataSource(IDataSource leftDataSource, IDataSource rightDataSource, string joinColumn, params DataColumnJoinMapping[] mappings)
     {
@@ -20,28 +23,41 @@ public class JoinedDataSource : IDataSource
         _joinColumn = joinColumn;
         _mappings = mappings;
         Columns = BuildJoinedColumnList();
+        _cacheStamp = DataSourceCache.Instance.Register(Id, LeftJoinTable, _leftDataSource.Id, _rightDataSource.Id);
     }
     
     public async Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
     {
-        IEnumerable<DataRow> rows = await Cache.Get(_leftDataSource, _rightDataSource, LeftJoinTable);
+        var allData = await DataSourceCache.Instance.Get(Id, _cacheStamp);
+        var clonedData = allData.Clone();
+        var clonedRows = clonedData.Rows;
 
-        if (dataQuery?.Filters != null)
+        if (dataQuery.Filters != null)
             foreach (var filterDefinition in dataQuery.Filters)
-                rows = rows.Filter(filterDefinition.Key, filterDefinition.Value);
+                clonedRows = clonedRows.Filter(filterDefinition.Key, filterDefinition.Value).ToList();
 
-        if (dataQuery != null)
-            rows = rows.Sort(dataQuery.Sorters);
+        clonedRows = clonedRows.Sort(dataQuery.Sorters);
+        var count = clonedRows.Count();
 
-        var totalRowCount = rows.Count();
-        
-        if (dataQuery?.PageSize.GetValueOrDefault(-1) > -1)
-            rows = rows.Take(dataQuery.PageSize!.Value);
+        if (dataQuery.PageSize.GetValueOrDefault(-1) > -1)
+            clonedRows = clonedRows.Take(dataQuery.PageSize!.Value);
 
-        return new DataQueryResult(Columns.Values, rows, totalRowCount);
+        //Remove columns (and its data) that are not specified in dataQuery. If no columns are specified (before joining or unioning tables), return all columns.
+        var validColumns = clonedData.Columns.Where(c => dataQuery.Columns.Count == 0 || dataQuery.Columns.Any(dq => dq.ColumnName == c.ColumnName));
+        var validRows = new List<DataRow>();
+        foreach (var clonedRow in clonedRows)
+        {
+            var validRow = new DataRow();
+            foreach (var dataColumn in validColumns)
+                if (clonedRow.ContainsKey(dataColumn.ColumnName)) //Columns that are generated (e.g. Group) are not available here
+                    validRow[dataColumn.ColumnName] = clonedRow[dataColumn.ColumnName];
+            validRows.Add(validRow);
+        }
+
+        return new DataQueryResult(validColumns, validRows, count);
     }
 
-    private async Task<IEnumerable<DataRow>> LeftJoinTable()
+    private async Task<DataQueryResult> LeftJoinTable()
     {
         DataQueryResult leftDataView = await _leftDataSource.ExecuteQuery(new DataQuery { PageSize = -1 });
         DataQueryResult rightDataView = await _rightDataSource.ExecuteQuery(new DataQuery { PageSize = -1 });
@@ -83,10 +99,11 @@ public class JoinedDataSource : IDataSource
         {
             var newRow = new DataRow();
             foreach (var column in Columns)
-                newRow[column.Value.ColumnName] = row[column.Value.ColumnName];
+                if (row.ContainsKey(column.Value.ColumnName)) //Columns that are generated (e.g. Group) are not available here
+                    newRow[column.Value.ColumnName] = row[column.Value.ColumnName];
             result.Add(newRow);
         }
-        return result;
+        return new DataQueryResult(Columns.Values, result, result.Count);
     }
 
     private void JoinRightRow(DataRow leftDataRow, DataRow? rightDataRow)
@@ -141,7 +158,7 @@ public class JoinedDataSource : IDataSource
 
     public void RemoveCache()
     {
-        Cache.Clean();
+        DataSourceCache.Instance.Clean(Id);
     }
 
     public Task Save(List<DataRow> rows)
