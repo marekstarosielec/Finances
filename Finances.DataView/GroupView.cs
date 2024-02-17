@@ -1,4 +1,5 @@
-﻿using DataViews;
+﻿using DataSource;
+using DataViews;
 using Finances.DataSource;
 
 namespace FinancesDataView;
@@ -28,7 +29,7 @@ public class GroupView : IDataView
             new DataViewColumnText("RowId", "Id wiersza", "rid")
         };
 
-        _dataView = new("gr", "Grupy", _dataSourceFactory.Group, new(columns), presentation);
+        _dataView = new("gr", "Grupy", GroupDataSource.Instance, new(columns), presentation);
         return _dataView;
     }
 }

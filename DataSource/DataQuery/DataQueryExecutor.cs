@@ -2,7 +2,7 @@
 
 internal class DataQueryExecutor
 {
-    public async Task<DataQueryResult> ExecuteQuery(string id, DataSourceCacheStamp cacheStamp, DataQuery dataQuery)
+    public async Task<DataQueryResult> ExecuteQuery(string id, DataSourceCacheStamp cacheStamp, DataQuery dataQuery, DataSourceCacheStamp? groupStamp = null)
     {
         var allData = await DataSourceCache.Instance.Get(id, cacheStamp);
         var clonedData = allData.Clone();
@@ -30,7 +30,22 @@ internal class DataQueryExecutor
                     validRow[dataColumn.ColumnName] = clonedRow[dataColumn.ColumnName];
             validRows.Add(validRow);
         }
+        var result = new DataQueryResult(validColumns, validRows, count);
+        await AddGroupColumn(result, groupStamp);
+        return result;
+    }
 
-        return new DataQueryResult(validColumns, validRows, count);
+    /// <summary>
+    /// Get related group data, if group column was added to data source.
+    /// </summary>
+    /// <param name="dataQueryResult"></param>
+    /// <param name="groupStamp"></param>
+    public async Task AddGroupColumn(DataQueryResult dataQueryResult, DataSourceCacheStamp? groupStamp)
+    {
+        if (groupStamp == null)
+            return;
+
+        var allData = await DataSourceCache.Instance.Get(GroupDataSource.Id, groupStamp);
+
     }
 }

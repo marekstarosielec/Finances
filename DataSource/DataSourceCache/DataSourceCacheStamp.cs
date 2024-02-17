@@ -4,10 +4,16 @@ internal class DataSourceCacheStamp
 {
     private Dictionary<string, DateTime> _stamps = new Dictionary<string, DateTime>();
 
-    public DataSourceCacheStamp(params string[] ids)
+    public DataSourceCacheStamp(List<string> ids)
     {
         foreach (var id in ids)
             _stamps[id] = DateTime.MinValue;
+    }
+
+    public void AddNewRelatedId(string id)
+    {
+        if (_stamps.ContainsKey(id))
+            _stamps.Add(id, DateTime.MinValue);
     }
 
     /// <summary>

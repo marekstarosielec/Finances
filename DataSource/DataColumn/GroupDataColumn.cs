@@ -2,7 +2,12 @@
 
 public class GroupDataColumn : DataColumn
 {
-    public GroupDataColumn() : base("Group", ColumnDataType.Subquery)
+    private const string Name = "Group";
+    private const ColumnDataType DataType = ColumnDataType.Subquery;
+
+    public static bool IsGroupColumn(DataColumn column) => column.ColumnName == Name && column.ColumnDataType == DataType;
+
+    public GroupDataColumn() : base(Name, DataType)
     {
     }
 }

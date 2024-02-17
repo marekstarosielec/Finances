@@ -69,6 +69,8 @@
 
         //Check if we are connecting to existing group or creating new one.
         var groupId = string.Empty;
+
+        //TODO: GroupId does not exist anymore - need to check otherwise if is attached to group or add GroupId.
         var allGroupIds = allSelectedDataRows.Where(dr => dr?.GroupId?.CurrentValue != null).ToList();
         //if no groupId generate new
         if (allGroupIds.Count == 0)

@@ -9,7 +9,7 @@ public partial class DataSourceFactory
     {
         get
         {
-            _gas ??= new JsonDataSource(Path.Combine(_dataFilePath!, "gas.json"),
+            _gas ??= new JsonDataSource(_dataFilePath!, "gas.json",
                 new IdDataColumn(),
                 new DataColumn("Date", ColumnDataType.Date),
                 new DataColumn("Meter", ColumnDataType.Precision),

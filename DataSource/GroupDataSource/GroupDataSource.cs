@@ -1,20 +1,22 @@
 ﻿namespace DataSource;
 
-public class GroupDataSource
+public static class GroupDataSource
 {
-    public static string Id = "group.json";
+    public static string Id { get => _group.Id ?? throw new InvalidOperationException("DataSource is not created yet"); }
 
     private static IDataSource? _group = null;
-    public static IDataSource GetInstance(string dataFilePath)
-    {
-        if (string.IsNullOrWhiteSpace(dataFilePath))
-            throw new ArgumentNullException(nameof(dataFilePath));
 
-        return _group ??= new JsonDataSource(Path.Combine(dataFilePath, "group.json"),
+    internal static void Create(string dataFilePath)
+    {
+        if (_group != null) 
+            return;
+        _group = new JsonDataSource(dataFilePath, "group.json",
             new IdDataColumn(),
             new DataColumn("GroupId", ColumnDataType.Text),
             new DataColumn("DataViewName", ColumnDataType.Text),
             new DataColumn("RowId", ColumnDataType.Text)
             );
     }
+
+    public static IDataSource Instance { get => _group ?? throw new InvalidOperationException("DataSource is not created yet"); }
 }

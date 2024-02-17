@@ -9,7 +9,7 @@ public partial class DataSourceFactory
     {
         get
         {
-            _document ??= new JsonDataSource(Path.Combine(_dataFilePath!, "documents.json"),
+            _document ??= new JsonDataSource(_dataFilePath!, "documents.json",
                 new IdDataColumn(),
                 new DataColumn("Date", ColumnDataType.Date),
                 new DataColumn("Number", ColumnDataType.Number),

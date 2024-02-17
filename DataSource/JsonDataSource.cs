@@ -16,21 +16,30 @@ public class JsonDataSource : IDataSource
 
     private readonly DataSourceCacheStamp _cacheStamp;
 
+    private readonly DataSourceCacheStamp? _groupStamp;
     private readonly DataQueryExecutor _dataQueryExecutor = new();
 
-    public JsonDataSource(string fileName, params DataColumn[] dataColumns)
+    public JsonDataSource(string path, string fileName, params DataColumn[] dataColumns)
     {
         if (string.IsNullOrWhiteSpace(fileName)) 
             throw new ArgumentException("FileName cannot be whitespace");
 
+        
         Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
-        _fileName = fileName;
+        _fileName = Path.Combine(path, fileName);
 
         _cacheStamp = DataSourceCache.Instance.Register(Id, Load);
+
+        var groupColumn = dataColumns.FirstOrDefault(GroupDataColumn.IsGroupColumn);
+        if (groupColumn != null)
+        {
+            GroupDataSource.Create(path); //Needed to create instance of group data source
+            _groupStamp = new DataSourceCacheStamp(new List<string> { GroupDataSource.Id });
+        }
     }
 
     public Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
-        => _dataQueryExecutor.ExecuteQuery(Id, _cacheStamp, dataQuery);
+        => _dataQueryExecutor.ExecuteQuery(Id, _cacheStamp, dataQuery, _groupStamp);
 
     public async Task Save(List<DataRow> rows)
     {
@@ -44,9 +53,7 @@ public class JsonDataSource : IDataSource
                 var newRow = new DataRow();
                 //Copy new values
                 foreach (var cell in row)
-                {
                     newRow[cell.Key] = new DataValue(row[cell.Key].CurrentValue, row[cell.Key].CurrentValue);
-                }
                 allDataRows.Add(newRow);
             }
             else
