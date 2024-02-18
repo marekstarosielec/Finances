@@ -258,7 +258,6 @@ namespace MBankScrapper
             var accountNumber = 2;
             while (await _browser.IsElementPresent(GetAccountFilterXPath(accountNumber)))
             {
-                await _browser.Click(GetAccountFilterXPath(accountNumber));
                 var title = await _browser.GetInnerText(GetAccountFilterXPath(accountNumber));
                 title = title
                     .Replace("EUR mBiznes konto walutowe", "")
@@ -276,10 +275,10 @@ namespace MBankScrapper
                 {
                     //Filtering option is not on a list of accounts (from accounts and savings screen).
                     //Propably some bank specific filter so ignoring it.
-                    await _browser.Click(GetAccountFilterXPath(accountNumber));
                     accountNumber++;
                     continue;
                 }
+                await _browser.Click(GetAccountFilterXPath(accountNumber));
                 await SetDateFilter(DateTime.Today.AddYears(-1).AddDays(1), DateTime.Today);
                 var transactionCount = await TransactionCount();
                 if (transactionCount.total > 50)
@@ -288,7 +287,7 @@ namespace MBankScrapper
                     //navigate thru transactions day by day.
                     var currentDay = DateTime.Now;
                     var daysWithoutNewTransactions = 0;
-                    while (daysWithoutNewTransactions < 7)
+                    while (daysWithoutNewTransactions < 14)
                     {
                         await SetDateFilter(currentDay, currentDay);
                         var newTransactions = await ScrapVisibleTransactions(a.Title);
