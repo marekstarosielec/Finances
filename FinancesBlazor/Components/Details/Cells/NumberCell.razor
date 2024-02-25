@@ -36,6 +36,6 @@
         if (value == null)
             return Column.NullValue;
 
-        return (value.CurrentValue as decimal?)?.ToString(Column.Format);
+        return (value.CurrentValue as int?)?.ToString(Column.Format);
     }
 }

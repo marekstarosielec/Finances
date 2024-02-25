@@ -1,4 +1,5 @@
-﻿using DataViews;
+﻿using DataSource;
+using DataViews;
 using Finances.DataSource;
 
 namespace FinancesDataView;
@@ -26,7 +27,8 @@ public class TransactionMainList : IDataView
             new DataViewColumnText("Account", "Konto", "a"),
             new DataViewColumnText("Category", "Kategoria", "ct"),
             new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
-            new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default)
+            new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default),
+            new DataViewColumnGroupSubquery(GroupDataColumn.Name, "Dokumenty", "ds")
         };
 
         _dataView = new("t", "Tranzakcje", _dataSourceFactory.Transaction, new(columns), presentation, "td");

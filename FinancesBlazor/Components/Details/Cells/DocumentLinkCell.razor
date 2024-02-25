@@ -1,0 +1,33 @@
+﻿@using DataSource;
+@using DataViews;
+@inject DataViewManager _dataViewManager;
+
+
+@if (Column?.PrimaryDataColumnName != null && Row?[Column.PrimaryDataColumnName]?.OriginalValue as string != null)
+{
+    <span onclick="@(() => OnClick())">
+        <i class="fa-regular fa-file fa-2xl"></i>
+    </span>
+}
+
+
+@code {
+    [Parameter]
+    public DataView? DataView { get; set; }
+
+    [Parameter]
+    public DataRow? Row { get; set; }
+
+    [Parameter]
+    public DataViewColumn? Column { get; set; }
+
+    private async void OnClick()
+    {
+        if (DataView == null || Row == null || Column == null)
+            return;
+
+        var fileName = Row[Column.PrimaryDataColumnName].OriginalValue as string;
+
+        await _dataViewManager.OpenDocument(fileName);
+    }
+}

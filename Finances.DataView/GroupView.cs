@@ -26,7 +26,8 @@ public class GroupView : IDataView
             new DataViewColumnText("Id", "Id", "id", visible: false),
             new DataViewColumnText("GroupId", "Grupa", "g"),
             new DataViewColumnText("DataViewName", "Widok", "v"),
-            new DataViewColumnText("RowId", "Id wiersza", "rid")
+            new DataViewColumnText("RowId", "Id wiersza", "rid"),
+            new DataViewColumnDocumentLink("FileLink", "Plik", "f")
         };
 
         _dataView = new("gr", "Grupy", GroupDataSource.Instance, new(columns), presentation);

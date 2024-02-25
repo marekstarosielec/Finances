@@ -21,7 +21,9 @@ public class DocumentDetails : IDataView
         var columns = new List<DataViewColumn>
         {
             new DataViewColumnText("Id", "Id", "id", visible: false),
-            new DataViewColumnDate("Date", "Data", "d")
+            new DataViewColumnDate("Date", "Data", "d"),
+            new DataViewColumnNumber("Number", "Numer", "n"),
+            new DataViewColumnDocumentLink("FileLink", "plik", "f")
         };
 
         _dataView = new("dd", "Szczegóły dokumentu", _dataSourceFactory.Document, new(columns));

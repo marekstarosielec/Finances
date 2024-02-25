@@ -1,4 +1,6 @@
-﻿namespace DataSource;
+﻿using System.Collections;
+
+namespace DataSource;
 
 internal class DataQueryExecutor
 {
@@ -46,6 +48,16 @@ internal class DataQueryExecutor
             return;
 
         var allData = await DataSourceCache.Instance.Get(GroupDataSource.Id, groupStamp);
+        foreach (var row in dataQueryResult.Rows)
+        {
+            row[GroupDataColumn.Name] = new DataValue(null);
+            var groupId = allData.Rows.Filter(GroupDataSource.RowIdDataColumn, new DataColumnFilter { StringValue = new List<string> { (string) row.Id.CurrentValue! } })?.FirstOrDefault()?[GroupDataSource.GroupIdDataColumn.ColumnName].CurrentValue as string;
+            if (groupId == null)
+                continue;
 
+            var groupData = allData.Rows.Filter(GroupDataSource.GroupIdDataColumn, new DataColumnFilter { StringValue = new List<string> { groupId } });
+            row[GroupDataColumn.Name] = new DataValue(groupData.ToList());
+            
+        }
     }
 }

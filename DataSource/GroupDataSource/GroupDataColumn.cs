@@ -1,8 +1,11 @@
 ﻿namespace DataSource;
 
+/// <summary>
+/// Groupping column available in other DataSources.
+/// </summary>
 public class GroupDataColumn : DataColumn
 {
-    private const string Name = "Group";
+    public const string Name = "Group";
     private const ColumnDataType DataType = ColumnDataType.Subquery;
 
     public static bool IsGroupColumn(DataColumn column) => column.ColumnName == Name && column.ColumnDataType == DataType;

@@ -74,7 +74,7 @@ public class JsonDataSource : IDataSource
         foreach (var saveRow in allDataRows)
         {
             var node = new Dictionary<string, object?>();
-            foreach (var column in Columns)
+            foreach (var column in Columns.Where(c => c.Value.CustomCreator == null)) //Do not save changes to calculated columns
             {
                 node[column.Key] = saveRow[column.Key]?.CurrentValue;
             }
