@@ -64,40 +64,7 @@
 
     private async void Group()
     {
-        // TODO: Move this outside of component
-        var allSelectedDataRows = _dataViewManager.SelectedData.Records.Select(r => GetRow(r.Value, r.Key)).ToList();
-
-        //Check if we are connecting to existing group or creating new one.
-        var groupId = string.Empty;
-
-        //TODO: GroupId does not exist anymore - need to check other way if is attached to group or add GroupId.
-        var allGroupIds = allSelectedDataRows.Where(dr => dr?.GroupId?.CurrentValue != null).ToList();
-        //if no groupId generate new
-        if (allGroupIds.Count == 0)
-            groupId = Guid.NewGuid().ToString();
-        //if 1 groupId, reuse it (attach to existing group)
-        if (allGroupIds.Count == 1)
-            groupId = allGroupIds.First()!.GroupId!.CurrentValue as string;
-        //if more than 1 groupId throw error (cannot merge 2 groups)
-        if (allGroupIds.Count > 1)
-            return;
-
-        //Create rows that need to be added into group dataSource.
-        var dataRowsToAdd = new List<DataRow>();
-        foreach (var selectedDataRow in allSelectedDataRows)
-        {
-            if (selectedDataRow?.GroupId?.CurrentValue != null)
-                continue; //No need to update records which are already in group.
-            var groupDataRow = new DataRow();
-            groupDataRow["Id"] = new DataValue(null, Guid.NewGuid().ToString());
-            groupDataRow["GroupId"] = new DataValue(null, groupId);
-            //Find view related to given detail
-            groupDataRow["DataViewName"] = new DataValue(null, _dataViewManager.SelectedData.Records[selectedDataRow.Id.CurrentValue as string].Name);
-            groupDataRow["RowId"] = new DataValue(null, selectedDataRow.Id.CurrentValue as string);
-            groupDataRow["DocumentNumber"] = new DataValue(null, selectedDataRow.ContainsKey("Number") ? selectedDataRow["Number"].OriginalValue : null);
-            dataRowsToAdd.Add(groupDataRow);
-        }
-        await _dataViewManager.SaveChanges(_dataViewManager.DataViews.FirstOrDefault(dv => dv.Name == "gr"), dataRowsToAdd);
+        await _dataViewManager.GroupSelectedData();
     }
 
     void IDisposable.Dispose()

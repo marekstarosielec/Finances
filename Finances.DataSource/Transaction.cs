@@ -29,7 +29,8 @@ public partial class DataSourceFactory
                 new DataColumn("CaseName", ColumnDataType.Text),
                 new DataColumn("Settlement", ColumnDataType.Text),
                 new DataColumn("DocumentId", ColumnDataType.Text),
-                new GroupDataColumn()
+                new GroupDataColumn(),
+                new GroupIdDataColumn()
                 //new DataColumn("DocumentCategory", ColumnDataType.Text),
                 //new DataColumn("DocumentInvoiceNumber", ColumnDataType.Text),
                 //new DataColumn("DocumentNumber", ColumnDataType.Number)

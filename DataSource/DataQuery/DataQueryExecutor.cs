@@ -51,9 +51,12 @@ internal class DataQueryExecutor
         foreach (var row in dataQueryResult.Rows)
         {
             row[GroupDataColumn.Name] = new DataValue(null);
+            row[GroupIdDataColumn.Name] = new DataValue(null);
             var groupId = allData.Rows.Filter(GroupDataSource.RowIdDataColumn, new DataColumnFilter { StringValue = new List<string> { (string) row.Id.CurrentValue! } })?.FirstOrDefault()?[GroupDataSource.GroupIdDataColumn.ColumnName].CurrentValue as string;
             if (groupId == null)
                 continue;
+
+            row[GroupIdDataColumn.Name] = new DataValue(groupId, groupId);
 
             var groupData = allData.Rows.Filter(GroupDataSource.GroupIdDataColumn, new DataColumnFilter { StringValue = new List<string> { groupId } });
             row[GroupDataColumn.Name] = new DataValue(groupData.ToList());

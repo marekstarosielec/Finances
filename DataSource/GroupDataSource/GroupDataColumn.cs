@@ -1,7 +1,7 @@
 ﻿namespace DataSource;
 
 /// <summary>
-/// Groupping column available in other DataSources.
+/// Groupping column containing subquery available in other DataSources.
 /// </summary>
 public class GroupDataColumn : DataColumn
 {
