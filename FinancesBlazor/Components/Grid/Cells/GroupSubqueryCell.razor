@@ -2,10 +2,17 @@
 @using DataViews;
 @inject DataViewManager _dataViewManager;
 
-<td onclick="@(() => OnClick())">
-    @if (Column?.PrimaryDataColumnName != null && Row?[Column.PrimaryDataColumnName]?.OriginalValue != null)
+<td>
+    @if (Column?.PrimaryDataColumnName != null && (Row?[Column.PrimaryDataColumnName]?.CurrentValue as IEnumerable<DataRow>) != null)
     {
-        <i class="fa-regular fa-file fa-lg"></i>
+        //Find rows that have file name linked.
+        var rows = (Row?[Column.PrimaryDataColumnName]?.CurrentValue as IEnumerable<DataRow>)?.Where(r => !string.IsNullOrWhiteSpace(r[GroupDataSource.FileLinkColumnId].CurrentValue as string));
+        foreach(var row in rows!)
+        {
+            <span onclick ="@(() => OnClick(row[GroupDataSource.FileLinkColumnId].CurrentValue as string))">
+                <i class="fa-regular fa-file fa-lg" ></i>
+            </span>
+        } 
     }
 </td>
 
@@ -19,12 +26,10 @@
     [Parameter]
     public DataViewColumn? Column { get; set; }
 
-    private async void OnClick()
+    private async void OnClick(string? fileName)
     {
-        if (DataView == null || Row == null || Column == null)
+        if (string.IsNullOrWhiteSpace(fileName))
             return;
-
-        var fileName = Row[Column.PrimaryDataColumnName].OriginalValue as string;
 
         await _dataViewManager.OpenDocument(fileName);
     }

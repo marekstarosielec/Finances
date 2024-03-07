@@ -8,6 +8,7 @@ public static class GroupDataSource
 
     public static DataColumn RowIdDataColumn => new("RowId", ColumnDataType.Text);
     public static DataColumn GroupIdDataColumn => new("GroupId", ColumnDataType.Text);
+    public static string FileLinkColumnId => "FileLink";
     internal static void Create(string dataFilePath)
     {
         if (_group != null)
@@ -18,7 +19,7 @@ public static class GroupDataSource
             new DataColumn("DataViewName", ColumnDataType.Text),
             RowIdDataColumn,
             new DataColumn("DocumentNumber", ColumnDataType.Number),
-            new DataColumn("FileLink", ColumnDataType.Text, r => CreateDocumentFullName(r, dataFilePath))
+            new DataColumn(FileLinkColumnId, ColumnDataType.Text, r => CreateDocumentFullName(r, dataFilePath))
         );
     }
 
