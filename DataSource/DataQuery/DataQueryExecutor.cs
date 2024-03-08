@@ -4,7 +4,7 @@ namespace DataSource;
 
 internal class DataQueryExecutor
 {
-    public async Task<DataQueryResult> ExecuteQuery(string id, DataSourceCacheStamp cacheStamp, DataQuery dataQuery, DataSourceCacheStamp? groupStamp = null)
+    public async Task<DataQueryResult> ExecuteQuery(string id, DataSourceCacheStamp cacheStamp, DataQuery dataQuery)
     {
         var allData = await DataSourceCache.Instance.Get(id, cacheStamp);
         var clonedData = allData.Clone();
@@ -33,7 +33,7 @@ internal class DataQueryExecutor
             validRows.Add(validRow);
         }
         var result = new DataQueryResult(validColumns, validRows, count);
-        await AddGroupColumn(result, groupStamp);
+        await AddGroupColumn(result, cacheStamp);
         return result;
     }
 
@@ -42,24 +42,21 @@ internal class DataQueryExecutor
     /// </summary>
     /// <param name="dataQueryResult"></param>
     /// <param name="groupStamp"></param>
-    public async Task AddGroupColumn(DataQueryResult dataQueryResult, DataSourceCacheStamp? groupStamp)
+    public async Task AddGroupColumn(DataQueryResult dataQueryResult, DataSourceCacheStamp cacheStamp)
     {
-        if (groupStamp == null)
+        if (!dataQueryResult.Columns.Any(dc => GroupDataColumn.IsGroupColumn(dc)))
             return;
 
-        var allData = await DataSourceCache.Instance.Get(GroupDataSource.Id, groupStamp);
+        var allData = await DataSourceCache.Instance.Get(GroupDataSource.Id, cacheStamp);
         foreach (var row in dataQueryResult.Rows)
         {
             row[GroupDataColumn.Name] = new DataValue(null);
-            row[GroupIdDataColumn.Name] = new DataValue(null);
             var groupId = allData.Rows.Filter(GroupDataSource.RowIdDataColumn, new DataColumnFilter { StringValue = new List<string> { (string) row.Id.CurrentValue! } })?.FirstOrDefault()?[GroupDataSource.GroupIdDataColumn.ColumnName].CurrentValue as string;
             if (groupId == null)
                 continue;
 
-            row[GroupIdDataColumn.Name] = new DataValue(groupId, groupId);
-
             var groupData = allData.Rows.Filter(GroupDataSource.GroupIdDataColumn, new DataColumnFilter { StringValue = new List<string> { groupId } });
-            row[GroupDataColumn.Name] = new DataValue(groupData.ToList());
+            row[GroupDataColumn.Name] = new DataValue(new GroupDataValue(groupId, groupData));
             
         }
     }

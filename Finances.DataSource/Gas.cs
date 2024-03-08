@@ -10,6 +10,7 @@ public partial class DataSourceFactory
         get
         {
             _gas ??= new JsonDataSource(_dataFilePath!, "gas.json",
+                includeGroups: true,
                 new IdDataColumn(),
                 new DataColumn("Date", ColumnDataType.Date),
                 new DataColumn("Meter", ColumnDataType.Precision),

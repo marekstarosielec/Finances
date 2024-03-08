@@ -22,12 +22,15 @@ public class SelectedData
 
     public void Add(DataView dataView, DataRow row)
     {
-        _ids.Add(GetRowId(row), dataView);
+        _ids[GetRowId(row)] = dataView;
     }
+
+    public bool Contains(DataRow row) => _ids.ContainsKey(GetRowId(row));
+
 
     public void Add(DataView dataView, string id)
     {
-        _ids.Add(id, dataView);
+        _ids[id] = dataView;
     }
 
     public void Remove(DataRow row)

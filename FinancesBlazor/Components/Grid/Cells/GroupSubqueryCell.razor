@@ -3,13 +3,19 @@
 @inject DataViewManager _dataViewManager;
 
 <td>
-    @if (Column?.PrimaryDataColumnName != null && (Row?[Column.PrimaryDataColumnName]?.CurrentValue as IEnumerable<DataRow>) != null)
+    @if (Column?.PrimaryDataColumnName != null && (Row?[Column.PrimaryDataColumnName]?.CurrentValue as GroupDataValue) != null)
     {
         //Find rows that have file name linked.
-        var rows = (Row?[Column.PrimaryDataColumnName]?.CurrentValue as IEnumerable<DataRow>)?.Where(r => !string.IsNullOrWhiteSpace(r[GroupDataSource.FileLinkColumnId].CurrentValue as string));
+        var groupId = (Row?[Column.PrimaryDataColumnName]?.CurrentValue as GroupDataValue)?.GroupId;
+        var rows = (Row?[Column.PrimaryDataColumnName]?.CurrentValue as GroupDataValue)?.GroupRows.Where(r => !string.IsNullOrWhiteSpace(r[GroupDataSource.FileLinkColumnId].CurrentValue as string));
+        
+        <span onclick="@(() => OpenGroup(groupId))">
+            <i class="fa-regular fa-object-group"></i>
+        </span>
+
         foreach(var row in rows!)
         {
-            <span onclick ="@(() => OnClick(row[GroupDataSource.FileLinkColumnId].CurrentValue as string))">
+            <span onclick="@(() => OpenDocument(row[GroupDataSource.FileLinkColumnId].CurrentValue as string))">
                 <i class="fa-regular fa-file fa-lg" ></i>
             </span>
         } 
@@ -26,11 +32,18 @@
     [Parameter]
     public DataViewColumn? Column { get; set; }
 
-    private async void OnClick(string? fileName)
+    private async void OpenDocument(string? fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
             return;
 
         await _dataViewManager.OpenDocument(fileName);
+    }
+
+    private async void OpenGroup(string? groupId)
+    {
+        if (string.IsNullOrWhiteSpace(groupId))
+            return;
+        await _dataViewManager.OpenGroup(groupId);
     }
 }

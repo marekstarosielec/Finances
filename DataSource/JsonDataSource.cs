@@ -16,30 +16,28 @@ public class JsonDataSource : IDataSource
 
     private readonly DataSourceCacheStamp _cacheStamp;
 
-    private readonly DataSourceCacheStamp? _groupStamp;
     private readonly DataQueryExecutor _dataQueryExecutor = new();
 
-    public JsonDataSource(string path, string fileName, params DataColumn[] dataColumns)
+    public JsonDataSource(string path, string fileName, bool includeGroups = true, params DataColumn[] dataColumns)
     {
         if (string.IsNullOrWhiteSpace(fileName)) 
             throw new ArgumentException("FileName cannot be whitespace");
 
-        
-        Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
         _fileName = Path.Combine(path, fileName);
 
-        _cacheStamp = DataSourceCache.Instance.Register(Id, Load);
-
-        var groupColumn = dataColumns.FirstOrDefault(GroupDataColumn.IsGroupColumn);
-        if (groupColumn != null)
+        Columns = dataColumns.ToDictionary(c => c.ColumnName, c => c);
+        if (includeGroups)
         {
-            GroupDataSource.Create(path); //Needed to create instance of group data source
-            _groupStamp = new DataSourceCacheStamp(new List<string> { GroupDataSource.Id });
+            Columns.Add(GroupDataColumn.Name, new GroupDataColumn());
+             GroupDataSource.Create(path); //Needed to create instance of group data source
+            _cacheStamp = DataSourceCache.Instance.Register(Id, Load, GroupDataSource.Instance.Id);
         }
+        else
+            _cacheStamp = DataSourceCache.Instance.Register(Id, Load);
     }
 
     public Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
-        => _dataQueryExecutor.ExecuteQuery(Id, _cacheStamp, dataQuery, _groupStamp);
+        => _dataQueryExecutor.ExecuteQuery(Id, _cacheStamp, dataQuery);
 
     public async Task Save(List<DataRow> rows)
     {
@@ -120,13 +118,13 @@ public class JsonDataSource : IDataSource
             var json = await File.ReadAllTextAsync(_fileName, Encoding.Latin1);
             if (string.IsNullOrWhiteSpace(json))
                 throw new InvalidOperationException("Input json evaluated to null");
-            Console.WriteLine($"Json file loading: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Loaded {_fileName} in {watch.ElapsedMilliseconds} ms");
 
             watch.Restart();
             var nodes = JsonNode.Parse(json)?.AsArray()?.Where(a => a != null)?.Select(a => a!)?.ToList();
             if (nodes == null)
                 throw new InvalidOperationException("Input json evaluated to null");
-            Console.WriteLine($"Json file parsing: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Parsed {_fileName} in {watch.ElapsedMilliseconds} ms");
 
             var dataRows = new List<DataRow>();
             foreach (var node in nodes)

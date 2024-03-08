@@ -4,6 +4,9 @@ using Finances.DataSource;
 
 namespace FinancesDataView;
 
+/// <summary>
+/// This cannot be removed, even if it is not visible, since dataViewManager uses it to manage group items.
+/// </summary>
 public class GroupView : IDataView
 {
     private DataView? _dataView;

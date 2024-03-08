@@ -9,11 +9,13 @@ public static class GroupDataSource
     public static DataColumn RowIdDataColumn => new("RowId", ColumnDataType.Text);
     public static DataColumn GroupIdDataColumn => new("GroupId", ColumnDataType.Text);
     public static string FileLinkColumnId => "FileLink";
+
     internal static void Create(string dataFilePath)
     {
         if (_group != null)
             return;
         _group = new JsonDataSource(dataFilePath, "group.json",
+            includeGroups: false,
             new IdDataColumn(),
             GroupIdDataColumn,
             new DataColumn("DataViewName", ColumnDataType.Text),

@@ -12,7 +12,7 @@ internal class DataSourceCacheStamp
 
     public void AddNewRelatedId(string id)
     {
-        if (_stamps.ContainsKey(id))
+        if (!_stamps.ContainsKey(id))
             _stamps.Add(id, DateTime.MinValue);
     }
 
@@ -21,7 +21,7 @@ internal class DataSourceCacheStamp
     /// </summary>
     /// <param name="cache"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public void ResetFromCache(Dictionary<string, DataSourceCacheContainer> cache)
+    public void SetTimeStampsFromCache(Dictionary<string, DataSourceCacheContainer> cache)
     {
         foreach (var id in _stamps.Keys)
         {

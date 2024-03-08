@@ -8,6 +8,7 @@ internal class DataSourceCache
     public static DataSourceCache Instance { get; private set; } = _instance ??= new DataSourceCache();
 
     private Dictionary<string, DataSourceCacheContainer> _cache = new();
+    
     private bool _areDependenciesListBuilt;
     
     public DataSourceCacheStamp Register(string id, Func<Task<DataQueryResult>> factory, params string[] relatedIds)
@@ -23,19 +24,26 @@ internal class DataSourceCache
         return new DataSourceCacheStamp(allIds);
     }
 
+    /// <summary>
+    /// Get data from cache, or if not available or expired, from data source.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="dataSourceCacheStamp"></param>
+    /// <returns></returns>
     public async Task<DataQueryResult> Get(string id, DataSourceCacheStamp dataSourceCacheStamp)
     {
         if (!_areDependenciesListBuilt)
             BuildDependenciesLists();
 
+        //This is wrong - should use value from cache if it exists. Should only run Factory if cache is e.pty.
         if (dataSourceCacheStamp.CacheIsExpired(_cache))
-            await StoreContainer(id, _cache[id].Factory);
+            await RefreshCache(id, _cache[id].Factory);
 
         //Add new related ids, if they were added during BuildDependenciesLists.
         foreach (string relatedId in _cache[id].RelatedIds)
             dataSourceCacheStamp.AddNewRelatedId(relatedId);
 
-        dataSourceCacheStamp.ResetFromCache(_cache);
+        dataSourceCacheStamp.SetTimeStampsFromCache(_cache);
         return _cache[id].Result!;
     }
 
@@ -57,7 +65,7 @@ internal class DataSourceCache
         _areDependenciesListBuilt = true;
     }
 
-    private async Task StoreContainer(string id, Func<Task<DataQueryResult>> factory)
+    private async Task RefreshCache(string id, Func<Task<DataQueryResult>> factory)
     {
         _cache[id].Result = await factory.Invoke();
         _cache[id].TimeStamp = DateTime.UtcNow;

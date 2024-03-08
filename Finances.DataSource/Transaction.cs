@@ -10,6 +10,7 @@ public partial class DataSourceFactory
         get
         {
             _transaction ??= new JsonDataSource(_dataFilePath!, "transactions.json",
+                includeGroups: true,
                 new IdDataColumn(),
                 new DataColumn("ScrappingDate", ColumnDataType.Date),
                 new DataColumn("Status", ColumnDataType.Text),
@@ -28,9 +29,7 @@ public partial class DataSourceFactory
                 new DataColumn("Person", ColumnDataType.Text),
                 new DataColumn("CaseName", ColumnDataType.Text),
                 new DataColumn("Settlement", ColumnDataType.Text),
-                new DataColumn("DocumentId", ColumnDataType.Text),
-                new GroupDataColumn(),
-                new GroupIdDataColumn()
+                new DataColumn("DocumentId", ColumnDataType.Text)
                 //new DataColumn("DocumentCategory", ColumnDataType.Text),
                 //new DataColumn("DocumentInvoiceNumber", ColumnDataType.Text),
                 //new DataColumn("DocumentNumber", ColumnDataType.Number)

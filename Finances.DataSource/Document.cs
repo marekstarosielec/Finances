@@ -10,6 +10,7 @@ public partial class DataSourceFactory
         get
         {
             _document ??= new JsonDataSource(_dataFilePath!, "documents.json",
+                includeGroups: true,
                 new IdDataColumn(),
                 new DataColumn("Date", ColumnDataType.Date),
                 new DataColumn("Number", ColumnDataType.Number),
