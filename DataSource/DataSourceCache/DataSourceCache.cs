@@ -35,14 +35,15 @@ internal class DataSourceCache
         if (!_areDependenciesListBuilt)
             BuildDependenciesLists();
 
-        //This is wrong - should use value from cache if it exists. Should only run Factory if cache is e.pty.
-        if (dataSourceCacheStamp.CacheIsExpired(_cache))
-            await RefreshCache(id, _cache[id].Factory);
-
         //Add new related ids, if they were added during BuildDependenciesLists.
         foreach (string relatedId in _cache[id].RelatedIds)
             dataSourceCacheStamp.AddNewRelatedId(relatedId);
 
+        //Make sure that cache contains all the data. Also contains main cache.
+        foreach (var relatedId in dataSourceCacheStamp.Stamps.Keys)
+            if (!_cache.TryGetValue(id, out var container) || container.TimeStamp == DateTime.MinValue)
+                await RefreshCache(relatedId, _cache[relatedId].Factory);
+      
         dataSourceCacheStamp.SetTimeStampsFromCache(_cache);
         return _cache[id].Result!;
     }

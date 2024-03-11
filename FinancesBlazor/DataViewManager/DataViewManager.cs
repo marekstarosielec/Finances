@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Web;
 using FinancesBlazor.Components.Password;
 using Microsoft.JSInterop;
+using DataSource;
 
 namespace FinancesBlazor;
 
@@ -217,14 +218,16 @@ public class DataViewManager : IDisposable
     {
         var groups = DataViews.FirstOrDefault(dv => dv.Name == "gr") ?? throw new InvalidOperationException("Groups returned null");
 
+        //Search for all rows with same groupId.
         groups.Query.Reset();
-        groups.Query.Filters.Add(groups.Columns.First(c => c.PrimaryDataColumnName == "GroupId"), new DataViewColumnFilter { StringValue = new List<string> { groupId } });
+        groups.Query.Filters.Add(groups.Columns.First(c => c.PrimaryDataColumnName == GroupDataSource.GroupIdDataColumn.ColumnName), new DataViewColumnFilter { StringValue = new List<string> { groupId } });
         await groups.Requery();
 
         foreach (var dataRow in groups.Result!.Rows)
         {
-            var id = dataRow["RowId"].CurrentValue as string;
-            var dataViewName = dataRow["DataViewName"].CurrentValue as string;
+            //Add each row into visible details.
+            var id = dataRow[GroupDataSource.RowIdDataColumn.ColumnName].CurrentValue as string;
+            var dataViewName = dataRow[GroupDataSource.DataViewNameDataColumn.ColumnName].CurrentValue as string;
             var dataView = DataViews.FirstOrDefault(dv => dv.Name == dataViewName);
             if (id == null || dataView == null || SelectedData.Contains(dataRow))
                 continue;
@@ -232,18 +235,6 @@ public class DataViewManager : IDisposable
             SelectedData.Add(dataView, id!);
         }
         Save(ActiveView);
-
-        //if (DataView == null || Row == null)
-        //    return;
-
-        //var detailsDataView = _dataViewManager.FindViewByName(DataView.GetDetailsDataViewName());
-
-        //if (args)
-        //    _dataViewManager.SelectedData.Add(detailsDataView, Row);
-        //else
-        //    _dataViewManager.SelectedData.Remove(Row);
-        //_checked = args;
-        //_dataViewManager.Save(DataView);
     }
 
     public async Task GroupSelectedData()
