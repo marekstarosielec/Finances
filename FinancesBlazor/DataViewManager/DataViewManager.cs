@@ -181,13 +181,15 @@ public class DataViewManager : IDisposable
 
         //Refresh lists that use updated details view.
         foreach(var dv in DataViews) {
-            if (dv.GetDetailsDataViewName() == dataView.Name) //TODO: If more than 1 details view is used it needs to be checked too.
+            if (dv.GetDetailsDataViewName() == dataView.Name) //TODO: More views can be affected. Need to reset all related.
             {
                 dataView.RemoveCache();
                 ViewChanged?.Invoke(this, dv);
             }
         }
         ViewChanged?.Invoke(this, dataView);
+
+        //TODO: If list is resorted, checkbox does not refresh correclty.
     }
 
     public async Task OpenDocument(string? fileName)

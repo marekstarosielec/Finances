@@ -44,7 +44,7 @@ public class JsonDataSource : IDataSource
         var allDataRows = (await DataSourceCache.Instance.Get(Id, _cacheStamp)).Rows.ToList();
         foreach (DataRow row in rows)
         {
-            var originalRow = allDataRows.FirstOrDefault(r => r.Id?.OriginalValue == row.Id.OriginalValue);
+            var originalRow = allDataRows.FirstOrDefault(r => r.Id?.OriginalValue as string == row.Id.OriginalValue as string);
             if (originalRow == null)
             {
                 //New row created
@@ -72,9 +72,13 @@ public class JsonDataSource : IDataSource
         foreach (var saveRow in allDataRows)
         {
             var node = new Dictionary<string, object?>();
-            foreach (var column in Columns.Where(c => c.Value.CustomCreator == null)) //Do not save changes to calculated columns
+            foreach (var column in Columns.Where(c => c.Value.CustomCreator == null && !GroupDataColumn.IsGroupColumn(c.Value))) //Do not save changes to calculated columns
             {
-                node[column.Key] = saveRow[column.Key]?.CurrentValue;
+                if (!saveRow.ContainsKey(column.Key))
+                {
+                     continue;
+                }
+                node.Add(column.Key, saveRow[column.Key]?.CurrentValue);
             }
             nodes.Add(node);
         }
