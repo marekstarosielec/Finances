@@ -23,6 +23,7 @@
 
     protected override void OnInitialized()
     {
+        _dataViewManager.ViewChanged += ViewChanged;
         _dataViewManager.SelectedData.Changed += SelectedDataChanged;
      
         if (DataView == null || Row == null)
@@ -53,8 +54,17 @@
         StateHasChanged();
     }
 
+    void ViewChanged(object? sender, DataView e)
+    {
+        // if (DataView != e)
+        //     return;
+        // _checked = _dataViewManager.SelectedData.IsSelected(Row);
+        // StateHasChanged();
+    }
+
     void IDisposable.Dispose()
     {
+        _dataViewManager.ViewChanged -= ViewChanged;
         _dataViewManager.SelectedData.Changed -= SelectedDataChanged;
     }
 }

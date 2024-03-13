@@ -1,4 +1,6 @@
-﻿namespace DataSource;
+﻿using System.Threading;
+
+namespace DataSource;
 
 internal class DataSourceCache
 {
@@ -10,7 +12,10 @@ internal class DataSourceCache
     private Dictionary<string, DataSourceCacheContainer> _cache = new();
     
     private bool _areDependenciesListBuilt;
-    
+
+    private static Dictionary<string, SemaphoreSlim> _semaphores = new();
+
+
     public void Register(string id, Func<Task<DataQueryResult>> factory, params string[] relatedIds)
     {
         _cache[id] = new DataSourceCacheContainer
@@ -30,13 +35,26 @@ internal class DataSourceCache
     /// <returns></returns>
     public async Task<DataQueryResult> Get(string id)
     {
-        if (!_areDependenciesListBuilt)
-            BuildDependenciesLists();
+        var _semaphore = GetSemaphore(id);
+        try
+        {
+            _semaphore.Wait();
+            if (!_areDependenciesListBuilt)
+                BuildDependenciesLists();
 
-        if (!_cache.TryGetValue(id, out var container) || container.TimeStamp == DateTime.MinValue)
-            await RefreshCache(id, _cache[id].Factory);
+            if (!_cache.TryGetValue(id, out var container) || container.TimeStamp == DateTime.MinValue)
+                await RefreshCache(id, _cache[id].Factory);
 
-        return _cache[id].Result!;
+            return _cache[id].Result!;
+        }
+        catch (Exception e)
+        {
+            throw;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     /// <summary>
@@ -75,5 +93,12 @@ internal class DataSourceCache
         _cache[id].Result = await factory.Invoke();
         _cache[id].TimeStamp = DateTime.UtcNow;
         _cache[id].Invalidated = false;
+    }
+
+    private SemaphoreSlim GetSemaphore(string id)
+    {
+        if (!_semaphores.ContainsKey(id))
+            _semaphores[id] = new SemaphoreSlim(1);
+        return _semaphores[id];
     }
 }

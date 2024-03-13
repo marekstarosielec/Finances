@@ -58,6 +58,7 @@ public class DataView
 
     public void RemoveCache()
     {
+        Console.WriteLine($"{Name}: removing cache");
         DataSource.RemoveCache();
         IsLoading = true;
     }

@@ -115,20 +115,21 @@ public class JsonDataSource : IDataSource
 
         try
         {
+            Console.WriteLine($"{_fileName}: Read file");
             var watch = System.Diagnostics.Stopwatch.StartNew();
             _semaphore.Wait();
             if (!File.Exists(_fileName))
                 await File.WriteAllTextAsync(_fileName, "[]");
-            var json = await File.ReadAllTextAsync(_fileName, Encoding.Latin1);
+            var json = File.ReadAllText(_fileName, Encoding.Latin1);
             if (string.IsNullOrWhiteSpace(json))
                 throw new InvalidOperationException("Input json evaluated to null");
-            Console.WriteLine($"Loaded {_fileName} in {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine($"{_fileName}: File read in {watch.ElapsedMilliseconds} ms");
 
             watch.Restart();
             var nodes = JsonNode.Parse(json)?.AsArray()?.Where(a => a != null)?.Select(a => a!)?.ToList();
             if (nodes == null)
                 throw new InvalidOperationException("Input json evaluated to null");
-            Console.WriteLine($"Parsed {_fileName} in {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine($"{_fileName}: Parsed in {watch.ElapsedMilliseconds} ms");
 
             var dataRows = new List<DataRow>();
             foreach (var node in nodes)
@@ -162,7 +163,12 @@ public class JsonDataSource : IDataSource
                 dataRows.Add(dataRow);
             }
 
+            Console.WriteLine($"{_fileName}: Read file complete");
             return new DataQueryResult(Columns.Values, dataRows, dataRows.Count);
+        }
+        catch (Exception e)
+        {
+            throw;
         }
         finally
         {

@@ -6,6 +6,7 @@ internal class DataQueryExecutor
 {
     public async Task<DataQueryResult> ExecuteQuery(string id, DataQuery dataQuery)
     {
+        Console.WriteLine($"{id}: Execute query");
         var allData = await DataSourceCache.Instance.Get(id);
         var clonedData = allData.Clone();
         var clonedRows = clonedData.Rows;

@@ -19,15 +19,18 @@ public partial class Grid
     protected override void OnInitialized()
     {
         _dataViewManager.ViewChanged += ViewChanged;
+        Console.WriteLine("Grid initialized");
+      //  _timer.Restart();
     }
 
     protected override void OnParametersSet()
     {
-        _timer.Restart();
+        
     }
+
     protected override void OnAfterRender(bool firstRender)
     {
-        Console.WriteLine($"Grid rendering: {_timer.ElapsedMilliseconds} ms");
+      //  Console.WriteLine($"Grid rendering: {_timer.ElapsedMilliseconds} ms");
     }
     private void ToggleFilter(DataViewColumn column)
     {
@@ -56,9 +59,10 @@ public partial class Grid
     {
         if (DataView != e)
             return;
-        StateHasChanged();
+        _timer.Restart();
         await DataView.Requery();
         StateHasChanged();
+        Console.WriteLine($"Grid refreshed in {_timer.ElapsedMilliseconds} ms");
     }
 
     void IDisposable.Dispose()

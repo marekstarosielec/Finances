@@ -77,7 +77,7 @@ public class DataViewManager : IDisposable
     public void RemoveCache(DataView dataView)
     {
         dataView.RemoveCache();
-        ViewChanged?.Invoke(this, dataView);
+        InvokeViewChanged(dataView);
     }
 
     public void ChangeActiveView(DataView dataView)
@@ -133,9 +133,18 @@ public class DataViewManager : IDisposable
             if (qs[dv.Name] == null)
                 continue;
 
+            if (dv.Serialize() == qs[dv.Name] && dv.Name != _activeView?.Name)
+                continue;
+
             dv.Deserialize(qs[dv.Name]!);
-            ViewChanged?.Invoke(this, dv);
+            InvokeViewChanged(dv);
         }
+    }
+
+    private void InvokeViewChanged(DataView dv)
+    {
+        Console.WriteLine($"DataViewManager: Invoking view changed for {dv.Name}");
+        ViewChanged?.Invoke(this, dv);
     }
 
     private DataView? FindView(string? viewName)
@@ -178,12 +187,15 @@ public class DataViewManager : IDisposable
 
         await dataView.Save(rows);
         dataView.RemoveCache();
-
-        //Refresh lists that use updated details view.
-        foreach(var dv in DataViews.Where(dv => dv.IsCacheInvalidated)) 
-            ViewChanged?.Invoke(this, dv);
         
+        //Refresh lists that use updated details view.
+        foreach (var dv in DataViews.Where(dv => dv.IsCacheInvalidated))
+            InvokeViewChanged(dv);
+
+        SelectedData.InvokeChanged();
+
         //TODO: If list is resorted, checkbox does not refresh correclty.
+        // Save(dataView);
     }
 
     public async Task OpenDocument(string? fileName)
