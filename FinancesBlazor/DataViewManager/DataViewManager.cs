@@ -176,19 +176,13 @@ public class DataViewManager : IDisposable
         if (dataView == null || rows == null)
             return;
 
-     //   ViewChanged?.Invoke(this, dataView);
         await dataView.Save(rows);
+        dataView.RemoveCache();
 
         //Refresh lists that use updated details view.
-        foreach(var dv in DataViews) {
-            if (dv.GetDetailsDataViewName() == dataView.Name) //TODO: More views can be affected. Need to reset all related.
-            {
-                dataView.RemoveCache();
-                ViewChanged?.Invoke(this, dv);
-            }
-        }
-        ViewChanged?.Invoke(this, dataView);
-
+        foreach(var dv in DataViews.Where(dv => dv.IsCacheInvalidated)) 
+            ViewChanged?.Invoke(this, dv);
+        
         //TODO: If list is resorted, checkbox does not refresh correclty.
     }
 

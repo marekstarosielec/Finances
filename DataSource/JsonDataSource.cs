@@ -14,7 +14,7 @@ public class JsonDataSource : IDataSource
 
     public string Id => _fileName;
 
-    private readonly DataSourceCacheStamp _cacheStamp;
+    public bool IsCacheInvalidated => DataSourceCache.Instance.IsCacheInvalidated(Id);
 
     private readonly DataQueryExecutor _dataQueryExecutor = new();
 
@@ -29,19 +29,19 @@ public class JsonDataSource : IDataSource
         if (includeGroups)
         {
             Columns.Add(GroupDataColumn.Name, new GroupDataColumn());
-             GroupDataSource.Create(path); //Needed to create instance of group data source
-            _cacheStamp = DataSourceCache.Instance.Register(Id, Load, GroupDataSource.Instance.Id);
+            GroupDataSource.Create(path); //Needed to create instance of group data source
+            DataSourceCache.Instance.Register(Id, Load, GroupDataSource.Instance.Id);
         }
         else
-            _cacheStamp = DataSourceCache.Instance.Register(Id, Load);
+            DataSourceCache.Instance.Register(Id, Load);
     }
 
     public Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
-        => _dataQueryExecutor.ExecuteQuery(Id, _cacheStamp, dataQuery);
+        => _dataQueryExecutor.ExecuteQuery(Id, dataQuery);
 
     public async Task Save(List<DataRow> rows)
     {
-        var allDataRows = (await DataSourceCache.Instance.Get(Id, _cacheStamp)).Rows.ToList();
+        var allDataRows = (await DataSourceCache.Instance.Get(Id)).Rows.ToList();
         foreach (DataRow row in rows)
         {
             var originalRow = allDataRows.FirstOrDefault(r => r.Id?.OriginalValue as string == row.Id.OriginalValue as string);

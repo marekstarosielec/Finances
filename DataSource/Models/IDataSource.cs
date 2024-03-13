@@ -10,5 +10,7 @@ public interface IDataSource
 
     void RemoveCache();
 
+    bool IsCacheInvalidated { get; }
+
     Task Save(List<DataRow> rows);
 }

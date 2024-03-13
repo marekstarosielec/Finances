@@ -11,7 +11,7 @@ internal class DataSourceCache
     
     private bool _areDependenciesListBuilt;
     
-    public DataSourceCacheStamp Register(string id, Func<Task<DataQueryResult>> factory, params string[] relatedIds)
+    public void Register(string id, Func<Task<DataQueryResult>> factory, params string[] relatedIds)
     {
         _cache[id] = new DataSourceCacheContainer
         {
@@ -21,38 +21,42 @@ internal class DataSourceCache
         };
         var allIds = relatedIds.ToList();
         allIds.Add(id);
-        return new DataSourceCacheStamp(allIds);
     }
 
     /// <summary>
     /// Get data from cache, or if not available or expired, from data source.
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="dataSourceCacheStamp"></param>
     /// <returns></returns>
-    public async Task<DataQueryResult> Get(string id, DataSourceCacheStamp dataSourceCacheStamp)
+    public async Task<DataQueryResult> Get(string id)
     {
         if (!_areDependenciesListBuilt)
             BuildDependenciesLists();
 
-        //Add new related ids, if they were added during BuildDependenciesLists.
-        foreach (string relatedId in _cache[id].RelatedIds)
-            dataSourceCacheStamp.AddNewRelatedId(relatedId);
+        if (!_cache.TryGetValue(id, out var container) || container.TimeStamp == DateTime.MinValue)
+            await RefreshCache(id, _cache[id].Factory);
 
-        //Make sure that cache contains all the data. Also contains main cache.
-        foreach (var relatedId in dataSourceCacheStamp.Stamps.Keys)
-            if (!_cache.TryGetValue(id, out var container) || container.TimeStamp == DateTime.MinValue)
-                await RefreshCache(relatedId, _cache[relatedId].Factory);
-      
-        dataSourceCacheStamp.SetTimeStampsFromCache(_cache);
         return _cache[id].Result!;
     }
 
+    /// <summary>
+    /// Remove data from cache. All the related data is removed too, as it could have been modified (e.g. in union data source).
+    /// </summary>
+    /// <param name="id"></param>
     public void Clean(string id)
     {
+        foreach (var relatedId in _cache[id].RelatedIds)
+        {
+            _cache[relatedId].TimeStamp = DateTime.MinValue;
+            _cache[relatedId].Result = null;
+            _cache[relatedId].Invalidated = true;
+        }
         _cache[id].TimeStamp = DateTime.MinValue;
         _cache[id].Result = null;
+        _cache[id].Invalidated = true;
     }
+
+    public bool IsCacheInvalidated(string id) => _cache.TryGetValue(id, out var container) && container.Invalidated;
 
     private void BuildDependenciesLists()
     {
@@ -70,5 +74,6 @@ internal class DataSourceCache
     {
         _cache[id].Result = await factory.Invoke();
         _cache[id].TimeStamp = DateTime.UtcNow;
+        _cache[id].Invalidated = false;
     }
 }

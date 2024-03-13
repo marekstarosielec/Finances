@@ -4,9 +4,9 @@ namespace DataSource;
 
 internal class DataQueryExecutor
 {
-    public async Task<DataQueryResult> ExecuteQuery(string id, DataSourceCacheStamp cacheStamp, DataQuery dataQuery)
+    public async Task<DataQueryResult> ExecuteQuery(string id, DataQuery dataQuery)
     {
-        var allData = await DataSourceCache.Instance.Get(id, cacheStamp);
+        var allData = await DataSourceCache.Instance.Get(id);
         var clonedData = allData.Clone();
         var clonedRows = clonedData.Rows;
 
@@ -33,7 +33,7 @@ internal class DataQueryExecutor
             validRows.Add(validRow);
         }
         var result = new DataQueryResult(validColumns, validRows, count);
-        await AddGroupColumn(result, cacheStamp);
+        await AddGroupColumn(result);
         return result;
     }
 
@@ -42,12 +42,12 @@ internal class DataQueryExecutor
     /// </summary>
     /// <param name="dataQueryResult"></param>
     /// <param name="groupStamp"></param>
-    public async Task AddGroupColumn(DataQueryResult dataQueryResult, DataSourceCacheStamp cacheStamp)
+    public async Task AddGroupColumn(DataQueryResult dataQueryResult)
     {
         if (!dataQueryResult.Columns.Any(dc => GroupDataColumn.IsGroupColumn(dc)))
             return;
 
-        var allData = await DataSourceCache.Instance.Get(GroupDataSource.Id, cacheStamp);
+        var allData = await DataSourceCache.Instance.Get(GroupDataSource.Id);
         foreach (var row in dataQueryResult.Rows)
         {
             row[GroupDataColumn.Name] = new DataValue(null);

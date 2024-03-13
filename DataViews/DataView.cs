@@ -23,6 +23,8 @@ public class DataView
     public bool IsLoading { get; private set; } = true;
     public bool IsSaving { get; private set; } = false;
 
+    public bool IsCacheInvalidated => DataSource.IsCacheInvalidated;
+
     public DataQueryResult? Result { get; private set; }
 
     private string? _detailsViewName { get; }

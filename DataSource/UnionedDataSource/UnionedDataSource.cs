@@ -11,8 +11,9 @@ public class UnionedDataSource : IDataSource
 
     public string Id => $"{_firstDataSource.Id}_union_{_secondDataSource.Id}";
 
-    private readonly DataSourceCacheStamp _cacheStamp;
     private readonly DataQueryExecutor _dataQueryExecutor = new();
+
+    public bool IsCacheInvalidated => DataSourceCache.Instance.IsCacheInvalidated(Id);
 
     public UnionedDataSource(IDataSource firstDataSource, IDataSource secondDataSource, Dictionary<DataColumn, DataColumnFilter>? mainFilters = null, params DataColumnUnionMapping[] mappings)
     {
@@ -21,11 +22,11 @@ public class UnionedDataSource : IDataSource
         _mainFilters = mainFilters ?? new();
         _mappings = mappings;
         Columns = GetColumnList();
-        _cacheStamp = DataSourceCache.Instance.Register(Id, UnionTables, _firstDataSource.Id, _secondDataSource.Id);
+        DataSourceCache.Instance.Register(Id, UnionTables, _firstDataSource.Id, _secondDataSource.Id);
     }
 
     public Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
-        => _dataQueryExecutor.ExecuteQuery(Id, _cacheStamp, dataQuery);
+        => _dataQueryExecutor.ExecuteQuery(Id, dataQuery);
 
     private async Task<DataQueryResult> UnionTables()
     {

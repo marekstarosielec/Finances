@@ -14,8 +14,9 @@ public class JoinedDataSource : IDataSource
 
     public string Id => $"{_leftDataSource.Id}_join_{_rightDataSource.Id}";
 
-    private readonly DataSourceCacheStamp _cacheStamp;
     private readonly DataQueryExecutor _dataQueryExecutor = new();
+
+    public bool IsCacheInvalidated => DataSourceCache.Instance.IsCacheInvalidated(Id);
 
     public JoinedDataSource(IDataSource leftDataSource, IDataSource rightDataSource, string joinColumn, params DataColumnJoinMapping[] mappings)
     {
@@ -24,11 +25,11 @@ public class JoinedDataSource : IDataSource
         _joinColumn = joinColumn;
         _mappings = mappings;
         Columns = BuildJoinedColumnList();
-        _cacheStamp = DataSourceCache.Instance.Register(Id, LeftJoinTable, _leftDataSource.Id, _rightDataSource.Id);
+        DataSourceCache.Instance.Register(Id, LeftJoinTable, _leftDataSource.Id, _rightDataSource.Id);
     }
 
     public Task<DataQueryResult> ExecuteQuery(DataQuery dataQuery)
-        => _dataQueryExecutor.ExecuteQuery(Id, _cacheStamp, dataQuery);
+        => _dataQueryExecutor.ExecuteQuery(Id, dataQuery);
 
     private async Task<DataQueryResult> LeftJoinTable()
     {
