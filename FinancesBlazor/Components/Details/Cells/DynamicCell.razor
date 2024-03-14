@@ -24,6 +24,7 @@
             DataViewColumnDataType.Precision => typeof(PrecisionCell),
             DataViewColumnDataType.DocumentLink => typeof(DocumentLinkCell),
             DataViewColumnDataType.Number => typeof(NumberCell),
+            DataViewColumnDataType.GroupSubquery => typeof(GroupSubqueryCell),
             _ => throw new InvalidOperationException($"Unknown cell component for type {Column?.DataType}")
         };
 }

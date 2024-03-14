@@ -35,6 +35,7 @@ internal class DataSourceCache
     /// <returns></returns>
     public async Task<DataQueryResult> Get(string id)
     {
+        //Getting data through semaphore to avoid situation when same datasource is reloaded twice.
         var _semaphore = GetSemaphore(id);
         try
         {
@@ -43,7 +44,9 @@ internal class DataSourceCache
                 BuildDependenciesLists();
 
             if (!_cache.TryGetValue(id, out var container) || container.TimeStamp == DateTime.MinValue)
-                await RefreshCache(id, _cache[id].Factory);
+                await LoadSourceToCahce(id, _cache[id].Factory);
+            else
+                Console.WriteLine($"{id} is loaded from cache");
 
             return _cache[id].Result!;
         }
@@ -63,12 +66,23 @@ internal class DataSourceCache
     /// <param name="id"></param>
     public void Clean(string id)
     {
+        //Clean all related caches.
         foreach (var relatedId in _cache[id].RelatedIds)
-        {
-            _cache[relatedId].TimeStamp = DateTime.MinValue;
-            _cache[relatedId].Result = null;
-            _cache[relatedId].Invalidated = true;
-        }
+            CleanCache(relatedId);
+        
+        //Clean caches that used this data as related.
+        foreach (var kvp in _cache)
+            if (_cache[kvp.Key].RelatedIds.Contains(id))
+                CleanCache(kvp.Key);
+
+        CleanCache(id);
+    }
+
+    private void CleanCache(string id)
+    {
+        if (_cache[id].TimeStamp == DateTime.MinValue)
+            return;
+
         _cache[id].TimeStamp = DateTime.MinValue;
         _cache[id].Result = null;
         _cache[id].Invalidated = true;
@@ -88,8 +102,9 @@ internal class DataSourceCache
         _areDependenciesListBuilt = true;
     }
 
-    private async Task RefreshCache(string id, Func<Task<DataQueryResult>> factory)
+    private async Task LoadSourceToCahce(string id, Func<Task<DataQueryResult>> factory)
     {
+        Console.WriteLine($"{id} is reloaded from source");
         _cache[id].Result = await factory.Invoke();
         _cache[id].TimeStamp = DateTime.UtcNow;
         _cache[id].Invalidated = false;

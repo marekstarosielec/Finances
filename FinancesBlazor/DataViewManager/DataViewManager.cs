@@ -8,6 +8,7 @@ using System.Web;
 using FinancesBlazor.Components.Password;
 using Microsoft.JSInterop;
 using DataSource;
+using System.Text.RegularExpressions;
 
 namespace FinancesBlazor;
 
@@ -193,9 +194,6 @@ public class DataViewManager : IDisposable
             InvokeViewChanged(dv);
 
         SelectedData.InvokeChanged();
-
-        //TODO: If list is resorted, checkbox does not refresh correclty.
-        // Save(dataView);
     }
 
     public async Task OpenDocument(string? fileName)
@@ -251,41 +249,62 @@ public class DataViewManager : IDisposable
             .Select(r => r.Value.Result?.GetById(r.Key)) //Get data rows
             .Where(dr => dr?.SelectedInDetails == true); //that are checked
 
-        //var selectedGroupIds = allSelectedDataRows
-        //    .Select(dr => dr.GroupId?.CurrentValue as string) //get their groupId
-        //    .Where(groupId => !string.IsNullOrWhiteSpace(groupId)) //exclude those without group
-        //    .Distinct();
+        if (allSelectedDataRows.Count() < 2)
+        {
+            await Alert("Trzeba wybrac przynajmniej 2 elementy.");
+            return;
+        }
 
-        ////Check if we are connecting to existing group or creating new one.
-        //var groupId = string.Empty;
-        //var count = selectedGroupIds.Count();
+        var selectedGroupIds = allSelectedDataRows
+            .Select(dr => dr?.GroupId) //get their groupId
+            .Where(groupId => !string.IsNullOrWhiteSpace(groupId)) //exclude those without group
+            .Distinct();
 
-        ////if no groupId generate new
-        //if (count == 0)
-        //    groupId = Guid.NewGuid().ToString();
-        ////if 1 groupId, reuse it (attach to existing group)
-        //if (count == 1)
-        //    groupId = selectedGroupIds.First();
-        ////if more than 1 groupId throw error (cannot merge 2 groups)
-        //if (count > 1)
-        //    return;
+        //Check if we are connecting to existing group or creating new one.
+        var groupId = string.Empty;
+        var count = selectedGroupIds.Count();
 
-        ////Create rows that need to be added into group dataSource.
-        //var dataRowsToAdd = new List<DataRow>();
-        //foreach (var selectedDataRow in allSelectedDataRows)
-        //{
-        //    if (selectedDataRow?.GroupId?.CurrentValue != null)
-        //        continue; //No need to update records which are already in group.
-        //    var groupDataRow = new DataRow();
-        //    groupDataRow["Id"] = new DataValue(null, Guid.NewGuid().ToString());
-        //    groupDataRow["GroupId"] = new DataValue(null, groupId);
-        //    //Find view related to given detail
-        //    groupDataRow["DataViewName"] = new DataValue(null, SelectedData.Records[selectedDataRow.Id.CurrentValue as string].Name);
-        //    groupDataRow["RowId"] = new DataValue(null, selectedDataRow.Id.CurrentValue as string);
-        //    groupDataRow["DocumentNumber"] = new DataValue(null, selectedDataRow.ContainsKey("Number") ? selectedDataRow["Number"].OriginalValue : null);
-        //    dataRowsToAdd.Add(groupDataRow);
-        //}
-        //await SaveChanges(DataViews.FirstOrDefault(dv => dv.Name == "gr"), dataRowsToAdd);
+        //if no groupId generate new
+        if (count == 0)
+            groupId = Guid.NewGuid().ToString();
+        //if 1 groupId, reuse it (attach to existing group)
+        if (count == 1)
+            groupId = selectedGroupIds.First();
+        //if more than 1 groupId throw error (cannot merge 2 groups)
+        if (count > 1)
+        {
+            await Alert("Wybrane elementy już znajdują się w różnych grupach.");
+            return;
+        }
+
+
+        //Create rows that need to be added into group dataSource.
+        var dataRowsToAdd = new List<DataRow>();
+        foreach (var selectedDataRow in allSelectedDataRows)
+        {
+            if (selectedDataRow?.GroupId != null)
+                continue; //No need to update records which are already in group.
+            var groupDataRow = new DataRow();
+            groupDataRow["Id"] = new DataValue(null, Guid.NewGuid().ToString());
+            groupDataRow["GroupId"] = new DataValue(null, groupId);
+            //Find view related to given detail
+            groupDataRow["DataViewName"] = new DataValue(null, SelectedData.Records[selectedDataRow.Id.CurrentValue as string].Name);
+            groupDataRow["RowId"] = new DataValue(null, selectedDataRow.Id.CurrentValue as string);
+            groupDataRow["DocumentNumber"] = new DataValue(null, selectedDataRow.ContainsKey("Number") ? selectedDataRow["Number"].OriginalValue : null);
+            dataRowsToAdd.Add(groupDataRow);
+        }
+
+        if (dataRowsToAdd.Count > 0) 
+            await SaveChanges(DataViews.FirstOrDefault(dv => dv.Name == "gr"), dataRowsToAdd);
+
+        foreach (var item in allSelectedDataRows)
+            item!.SelectedInDetails = false;
+        SelectedData.InvokeChanged();
+    }
+
+    public async Task Alert(string message)
+    {
+        await _dialogService.Alert(message, string.Empty, options: new AlertOptions { CloseDialogOnEsc = true, CloseDialogOnOverlayClick = true, OkButtonText = "Ok", ShowClose = false, ShowTitle = false });
     }
 }
 

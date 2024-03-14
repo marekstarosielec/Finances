@@ -40,7 +40,11 @@ public class SelectedData
 
     public bool IsSelected(DataRow row) => _ids.ContainsKey(GetRowId(row));
 
-    internal void InvokeChanged() => Changed?.Invoke(this, EventArgs.Empty);
+    internal void InvokeChanged()
+    {
+        Console.WriteLine($"SelectedData: Invoking changed");
+        Changed?.Invoke(this, EventArgs.Empty);
+    }
     
     private string GetRowId(DataRow row)
     {
