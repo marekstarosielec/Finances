@@ -66,13 +66,13 @@
         return value.ToString();
     }
 
-    void openDialog()
+    async Task openDialog()
     {
         if (DataView == null || Row == null)
             return;
         var detailsDataView = _dataViewManager.FindViewByName(DataView.GetDetailsDataViewName());
         _dataViewManager.SelectedData.Clear();
         _dataViewManager.SelectedData.Add(detailsDataView, Row);
-        _dataViewManager.Save(DataView);
+        await _dataViewManager.Save(DataView);
     }
 }

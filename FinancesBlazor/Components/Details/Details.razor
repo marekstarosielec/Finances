@@ -56,10 +56,10 @@
         }
     }
 
-    private void DetailsCollapse()
+    private async Task DetailsCollapse()
     {
         _dataViewManager.SelectedData.DetailsCollapsed = !_dataViewManager.SelectedData.DetailsCollapsed;
-        _dataViewManager.Save(_dataViewManager.ActiveView);
+        await _dataViewManager.Save(_dataViewManager.ActiveView);
     }
 
     private async void Group()

@@ -43,13 +43,13 @@ public partial class Grid
     //         await kvp.Value.CloseAsync();
     // }
 
-    private void LoadMore()
+    private async Task LoadMore()
     {
         if (DataView == null)
             return;
 
         DataView.Query.PageSize += 100;
-        _dataViewManager.Save(DataView);
+        await _dataViewManager.Save(DataView);
     }
 
     private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending)

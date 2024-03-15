@@ -71,12 +71,12 @@
         debounce.Dispose();
     }
 
-    public void ApplyFilter()
+    public async Task ApplyFilter()
     {
         if (DataView?.Query.Filters == null || Column == null)
             return;
         DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = new List<string> { currentText } , Equality = DataSource.Equality.Contains };
-        _dataViewManager.Save(DataView);
+        await _dataViewManager.Save(DataView);
     }
 
     private async Task OnOpen()

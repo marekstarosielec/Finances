@@ -37,7 +37,7 @@
 
     private string? GetViewIcon(DataView dataView) => $"oi {dataView.Presentation?.NavMenuIcon}";
 
-    private void Navigate(DataView dataView)
-        => _dataViewManager.ChangeActiveView(dataView);
+    private async Task Navigate(DataView dataView)
+        => await _dataViewManager.ChangeActiveView(dataView);
     
 }

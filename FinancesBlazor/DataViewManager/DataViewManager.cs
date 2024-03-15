@@ -8,7 +8,7 @@ using System.Web;
 using FinancesBlazor.Components.Password;
 using Microsoft.JSInterop;
 using DataSource;
-using System.Text.RegularExpressions;
+using FinancesBlazor.Extensions;
 
 namespace FinancesBlazor;
 
@@ -40,7 +40,7 @@ public class DataViewManager : IDisposable
             throw new InvalidOperationException("No view found");
         
         //Determine initial view.
-        NameValueCollection qs = GetQueryString();
+        NameValueCollection qs = GetNavigationManagerQueryString();
         if (qs["av"] == null || FindView(qs["av"]) == null)
             qs["av"] = DataViews.First(dv => dv.Presentation != null).Name;
 
@@ -60,19 +60,20 @@ public class DataViewManager : IDisposable
 
     private void _navigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        LoadFromQueryString();
+        LoadFromQueryString(GetNavigationManagerQueryString());
     }
 
-    public void Save(DataView? dataView)
+    public async Task Save(DataView? dataView)
     {
         if (dataView == null)
             throw new ArgumentNullException(nameof(dataView));
 
-        var qs = GetQueryString();
+        var qs = await GetJSQueryString();
         qs[dataView.Name] = dataView.Serialize();
         qs["sdi"] = string.Join(',', SelectedData.Records.Select(cr => $"{cr.Key}:{cr.Value.Name}"));
         qs["sdc"] = SelectedData.DetailsCollapsed ? "1" : "0";
-        _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
+        await _js.ChangeRouteWithoutReload($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
+        LoadFromQueryString(qs);
     }
 
     public void RemoveCache(DataView dataView)
@@ -81,19 +82,19 @@ public class DataViewManager : IDisposable
         InvokeViewChanged(dataView);
     }
 
-    public void ChangeActiveView(DataView dataView)
+    public async Task ChangeActiveView(DataView dataView)
     {
         if (_activeView?.Name == dataView.Name)
             return;
 
-        var qs = GetQueryString();
+        var qs = await GetJSQueryString();
         qs["av"] = dataView.Name;
-        _navigationManager.NavigateTo($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
+        await _js.ChangeRouteWithoutReload($"{GetUriWithoutQueryString()}?{SerializeQueryString(qs)}");
+        LoadFromQueryString(qs);
     }
 
-    private void LoadFromQueryString()
+    private void LoadFromQueryString(NameValueCollection qs)
     {
-        var qs = GetQueryString();
         if (!string.Equals(qs["av"],ActiveView?.Name, StringComparison.CurrentCultureIgnoreCase))
         {
             var newActiveView = DataViews.FirstOrDefault(dv => string.Equals(qs["av"], dv.Name, StringComparison.CurrentCultureIgnoreCase));
@@ -163,7 +164,7 @@ public class DataViewManager : IDisposable
         _navigationManager.LocationChanged -= _navigationManager_LocationChanged;
     }
 
-    private NameValueCollection GetQueryString()
+    private NameValueCollection GetNavigationManagerQueryString()
     {
         var query = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).Query;
         if (query.StartsWith("?"))
@@ -173,6 +174,18 @@ public class DataViewManager : IDisposable
 
         return HttpUtility.ParseQueryString(query);
     }
+
+    private async Task<NameValueCollection> GetJSQueryString()
+    {
+        var query = await _js.GetQueryString();
+        if (query.StartsWith("?"))
+            query = query.Substring(1);
+        if (string.IsNullOrWhiteSpace(query))
+            return new NameValueCollection();
+
+        return HttpUtility.ParseQueryString(query);
+    }
+
 
     private string GetUriWithoutQueryString()
         => _navigationManager.ToAbsoluteUri(_navigationManager.Uri).GetLeftPart(UriPartial.Path);
@@ -240,7 +253,7 @@ public class DataViewManager : IDisposable
 
             SelectedData.Add(dataView, id!);
         }
-        Save(ActiveView);
+        await Save(ActiveView);
     }
 
     public async Task GroupSelectedData()

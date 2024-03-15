@@ -48,12 +48,12 @@ else
         await _dataViewManager.SaveChanges(DataView, new List<DataRow> { Row });
     }
 
-    private void Close()
+    private async Task Close()
     {
         if (DataView == null || Row == null)
             return;
         _dataViewManager.SelectedData.Remove(Row);
-        _dataViewManager.Save(DataView);
+        await _dataViewManager.Save(DataView);
     }
 
     void IDisposable.Dispose()

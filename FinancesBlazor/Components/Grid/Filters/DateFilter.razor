@@ -78,7 +78,7 @@
 
         var today = DateTime.Today;
         DataView.Query.Filters[Column] = new DataViewColumnFilter { DateFrom = from, DateTo = to };
-        _dataViewManager.Save(DataView);
+        await _dataViewManager.Save(DataView);
     }
 
     void ViewChanged(object? sender, DataView e)
