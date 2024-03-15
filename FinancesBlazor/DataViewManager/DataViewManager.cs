@@ -299,10 +299,10 @@ public class DataViewManager : IDisposable
                 continue; //No need to update records which are already in group.
             var groupDataRow = new DataRow();
             groupDataRow["Id"] = new DataValue(null, Guid.NewGuid().ToString());
-            groupDataRow["GroupId"] = new DataValue(null, groupId);
+            groupDataRow[GroupDataSource.GroupIdDataColumn.ColumnName] = new DataValue(null, groupId);
             //Find view related to given detail
-            groupDataRow["DataViewName"] = new DataValue(null, SelectedData.Records[selectedDataRow.Id.CurrentValue as string].Name);
-            groupDataRow["RowId"] = new DataValue(null, selectedDataRow.Id.CurrentValue as string);
+            groupDataRow[GroupDataSource.DataViewNameDataColumn.ColumnName] = new DataValue(null, SelectedData.Records[selectedDataRow.Id.CurrentValue as string].Name);
+            groupDataRow[GroupDataSource.RowIdDataColumn.ColumnName] = new DataValue(null, selectedDataRow.Id.CurrentValue as string);
             groupDataRow["DocumentNumber"] = new DataValue(null, selectedDataRow.ContainsKey("Number") ? selectedDataRow["Number"].OriginalValue : null);
             dataRowsToAdd.Add(groupDataRow);
         }
