@@ -1,0 +1,54 @@
+﻿@using DataSource;
+@using DataViews;
+
+@inject DataViewManager _dataViewManager;
+
+<td><RadzenCheckBox TValue="bool" class="checkbox" Value=@_checked Change=@(args => CheckChange(args)) /></td>
+
+@code {
+    private bool _checked;
+
+
+    [Parameter]
+    public DataView? DataView { get; set; }
+
+    [Parameter]
+    public DataRow? Row { get; set; }
+
+    [Parameter]
+    public DataViewColumn? Column { get; set; }
+
+    protected override void OnInitialized()
+    {
+        bool result = false;
+        if (Column == null || Row == null)
+        {
+            _checked = result;
+            return;
+        }
+
+        var value = Row[Column.PrimaryDataColumnName].OriginalValue;
+        if (value == null)
+        {
+            _checked = result;
+            return;
+        }
+
+        _checked = value as bool? ?? false;
+    }
+
+    private async Task CheckChange(bool args)
+    {
+        if (DataView == null || Row == null)
+            return;
+
+        // var detailsDataView = _dataViewManager.FindViewByName(DataView.GetDetailsDataViewName());
+
+        // if (args)
+        //     _dataViewManager.SelectedData.Add(detailsDataView, Row);
+        // else
+        //     _dataViewManager.SelectedData.Remove(Row);
+        // _checked = args;
+        await _dataViewManager.Save(DataView);
+    }
+}

@@ -8,5 +8,6 @@ public enum DataViewColumnDataType
     Amount = 3,
     DocumentLink = 4,
     GroupSubquery = 5,
-    Number = 6
+    Number = 6,
+    Checkbox = 7
 }

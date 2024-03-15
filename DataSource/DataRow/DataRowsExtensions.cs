@@ -22,6 +22,8 @@ public static class DataRowsExtensions
                     => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn.ColumnName].OriginalValue as decimal?, sorters[dataColumn]),
                 ColumnDataType.Number
                     => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn.ColumnName].OriginalValue as int?, sorters[dataColumn]),
+                ColumnDataType.Bool
+                    => result.SortBy(dataColumn == firstDataColumn, n => n?[dataColumn.ColumnName].OriginalValue as bool?, sorters[dataColumn]),
                 _ => throw new InvalidOperationException(),
             };
         }
@@ -49,6 +51,8 @@ public static class DataRowsExtensions
         (ColumnDataType.Precision, _)
             => throw new InvalidOperationException(),
         (ColumnDataType.Number, _)
+            => throw new InvalidOperationException(),
+        (ColumnDataType.Bool, _)
             => throw new InvalidOperationException(),
         (_, _) => throw new InvalidOperationException()
     };

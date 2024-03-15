@@ -13,8 +13,8 @@ public partial class DataSourceFactory
                 includeGroups: true,
                 new IdDataColumn(),
                 new DataColumn("Title", ColumnDataType.Text),
-                new DataColumn("Currency", ColumnDataType.Text)
-                //new DataColumn("Deleted", ColumnDataType.Bool),
+                new DataColumn("Currency", ColumnDataType.Text),
+                new DataColumn("Deleted", ColumnDataType.Bool)
                 );
             return _transactionAccount;
         }

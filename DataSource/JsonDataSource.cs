@@ -151,6 +151,7 @@ public class JsonDataSource : IDataSource
                                 ColumnDataType.Date => node[column.Key]?.GetValue<DateTime>(),
                                 ColumnDataType.Precision => node[column.Key]?.GetValue<decimal>(),
                                 ColumnDataType.Number => node[column.Key]?.GetValue<int>(),
+                                ColumnDataType.Bool => node[column.Key]?.GetValue<bool>(),
                                 _ => throw new Exception("Unsupported DataType")
                             };
                             dataRow[column.Value.ColumnName] = new DataValue(value, value);

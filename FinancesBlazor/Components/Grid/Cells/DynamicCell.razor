@@ -22,6 +22,7 @@
             DataViewColumnDataType.Precision => typeof(PrecisionCell),
             DataViewColumnDataType.DocumentLink => typeof(DocumentLinkCell),
             DataViewColumnDataType.GroupSubquery => typeof(GroupSubqueryCell),
+            DataViewColumnDataType.Checkbox => typeof(CheckboxCell),
             _ => throw new InvalidOperationException($"Unknown cell component for type {Column?.DataType}")
         };
 }
