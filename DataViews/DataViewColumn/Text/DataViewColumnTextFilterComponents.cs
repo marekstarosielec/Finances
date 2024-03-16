@@ -2,5 +2,6 @@
 
 public enum DataViewColumnTextFilterComponents
 {
-    Default = 0
+    Default = 0,
+    Selection = 1
 }

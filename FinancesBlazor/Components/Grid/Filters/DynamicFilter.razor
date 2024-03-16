@@ -76,6 +76,7 @@
                 return textResult switch
                 {
                     DataViewColumnTextFilterComponents.Default => typeof(TextFilter),
+                    DataViewColumnTextFilterComponents.Selection => typeof(SelectionFilter),
                     _ => throw new InvalidOperationException($"Unknown filter component {filterComponentName} for type {Column?.DataType}")
                 };
             default: throw new InvalidOperationException($"Unknown filter component {filterComponentName} for type {Column?.DataType}");

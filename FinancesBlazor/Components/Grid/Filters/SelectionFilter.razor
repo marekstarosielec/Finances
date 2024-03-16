@@ -1,0 +1,81 @@
+﻿@using FinancesBlazor.Extensions;
+@using DataViews;
+@using System.Timers;
+@using Radzen.Blazor.Rendering;
+
+@inject DataViewManager _dataViewManager;
+
+@inject IJSRuntime JSRuntime
+@implements IDisposable;
+
+@if (Column != null)
+{
+    @* <input type="text" id="search" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" autocomplete="off" /> *@
+    
+}
+
+abc
+
+@code {
+    [Parameter]
+    public DataView? DataView { get; set; }
+
+    [Parameter]
+    public DataViewColumn? Column { get; set; }
+
+    [Parameter]
+    public Popup? Popup { get; set; }
+
+    [Parameter]
+    public ElementReference? ElementReference { get; set; }
+
+    public string? currentText = string.Empty;
+
+   
+    protected override void OnInitialized()
+    {
+        if (Column != null && DataView?.Query.Filters?.ContainsKey(Column) == true)
+            currentText = DataView?.Query.Filters?[Column]?.StringValue?.FirstOrDefault();
+
+ 
+        Popup.Open = new EventCallback(this, OnOpen);
+        base.OnInitialized();
+    }
+
+    private async void KeyDown(KeyboardEventArgs e)
+    {
+        if (e.Code != "Enter" && e.Code != "Escape")
+            return;
+        if (Popup != null && ElementReference != null)
+            await Popup.CloseAsync(ElementReference.Value);
+        await ApplyFilter();
+    }
+
+    private void TextChanged(ChangeEventArgs e)
+    {
+        currentText = e.Value?.ToString() ?? string.Empty;
+    }
+
+
+
+    void IDisposable.Dispose()
+    {
+
+    }
+
+    public async Task ApplyFilter()
+    {
+        if (DataView?.Query.Filters == null || Column == null)
+            return;
+        DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = new List<string> { currentText } , Equality = DataSource.Equality.Contains };
+        await _dataViewManager.Save(DataView);
+    }
+
+    private async Task OnOpen()
+    {
+        if (DataView?.Query.Filters == null || Column == null)
+            return;
+        currentText = DataView.Query.Filters.ContainsKey(Column) ? DataView.Query.Filters[Column].StringValue.FirstOrDefault() : string.Empty;
+        await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
+    }
+}
