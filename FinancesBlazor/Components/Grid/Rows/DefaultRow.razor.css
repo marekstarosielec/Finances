@@ -9,10 +9,19 @@
     color: #FAFAFA;
 }
 
+.deleted {
+    text-decoration: line-through;
+    color: #2E2E2E;
+}
+
 .checkbox {
     background-color: #383838 !important;
 }
 
 .rz-chkbox-box {
     background-color: #383838 !important;
+}
+
+.selectionCheckbox {
+    width: 38px;
 }

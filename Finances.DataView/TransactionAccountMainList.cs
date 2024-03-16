@@ -25,7 +25,7 @@ public class TransactionAccountMainList : IDataView
             new DataViewColumnText("Id", "Id", "id", visible: false),
             new DataViewColumnText("Title", "Nazwa", "t"),
             new DataViewColumnText("Currency", "Waluta", "c"),
-            new DataViewColumnCheckbox("Deleted", "Usunięte", "d"),
+            new DataViewColumnCheckbox("Deleted", "Usunięte", "d", visible: false),
         };
 
         _dataView = new("ta", "Konta", _dataSourceFactory.TransactionAccount, new(columns), presentation, "tad");

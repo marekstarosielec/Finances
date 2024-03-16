@@ -4,8 +4,8 @@
 @inject DataViewManager _dataViewManager;
 @implements IDisposable;
 
-<tr class="@(_checked ? "checked" : null)">
-    <td><RadzenCheckBox TValue="bool" class="checkbox" Value=@_checked Change=@(args => CheckChange(args)) /></td>
+<tr class="@(_checked ? "checked" : null) @(IsDeleted() ? "deleted" : null)">
+    <td class="selectionCheckbox"><RadzenCheckBox TValue="bool" class="checkbox" Value=@_checked Change=@(args => CheckChange(args)) /></td>
     @foreach (var column in DataView?.Columns!.Where(c => c.Visible)!)
     {
         <DynamicCell DataView=@DataView Row=@Row Column=column></DynamicCell>
@@ -25,7 +25,7 @@
     {
         _dataViewManager.ViewChanged += ViewChanged;
         _dataViewManager.SelectedData.Changed += SelectedDataChanged;
-     
+
         if (DataView == null || Row == null)
             return;
         _checked = _dataViewManager.SelectedData.IsSelected(Row);
@@ -54,6 +54,17 @@
         StateHasChanged();
     }
 
+    bool IsDeleted()
+    {
+        if (DataView == null || Row == null)
+            return false;
+
+        if (Row.ContainsKey("Deleted") && (Row["Deleted"].OriginalValue as bool?) == true) 
+            return true;
+        return false;
+
+    }
+
     void ViewChanged(object? sender, DataView e)
     {
         // if (DataView != e)
@@ -61,6 +72,7 @@
         // _checked = _dataViewManager.SelectedData.IsSelected(Row);
         // StateHasChanged();
     }
+
 
     void IDisposable.Dispose()
     {

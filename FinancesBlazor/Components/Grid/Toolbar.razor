@@ -12,7 +12,7 @@
                 <li class="nav-item">
                     <button class="btn btn-primary" @onclick="() => RemoveFilters()"><span class="fa-layers fa-fw"><i class="fa fa-filter"></i><i class="fa-solid fa-xmark fa-lg red"></i></span></button>
                 </li>
-                @if (DataView?.Query?.Prefilters != null)
+                @if (DataView?.Query?.Prefilters?.Count > 0)
                 {
                     <li class="nav-item">
                         <button class="btn btn-primary" @ref=_prefilterInvoker @onclick="@(args => _prefilterPopup.ToggleAsync(_prefilterInvoker))"><span class="fa fa-bolt"></span></button>
