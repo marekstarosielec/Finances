@@ -16,7 +16,7 @@ public class DataView
 
     public ReadOnlyCollection<DataViewColumn> Columns { get; }
 
-    public DataViewPresentation? Presentation { get; }
+    public DataViewPresentation? Presentation { get; set;  }
 
     public DataViewQuery Query { get; init; }
 
@@ -39,6 +39,14 @@ public class DataView
         Query = new DataViewQuery(_dataQuery, DataSource, Columns);
         ValidateColumns();
         _detailsViewName = detailsViewName;
+    }
+
+    public DataView Clone(string name)
+    {
+        var clonedColumns = new Collection<DataViewColumn>();
+        foreach (DataViewColumn column in Columns)
+            clonedColumns.Add(column.Clone());
+        return new DataView(name, Title, DataSource, new ReadOnlyCollection<DataViewColumn>(clonedColumns), Presentation?.Clone(), _detailsViewName);
     }
 
     public string Serialize()

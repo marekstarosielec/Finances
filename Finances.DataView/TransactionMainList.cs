@@ -24,7 +24,7 @@ public class TransactionMainList : IDataView
         {
             new DataViewColumnText("Id", "Id", "id", visible: false),
             new DataViewColumnDate("Date", "Data", "d", DataViewColumnDateFilterComponents.Default),
-            new DataViewColumnText("Account", "Konto", "a", DataViewColumnTextFilterComponents.Selection),
+            new DataViewColumnText("Account", "Konto", "a", DataViewColumnTextFilterComponents.Selection) { ReferencedDataViewName = "tar"},
             new DataViewColumnText("Category", "Kategoria", "ct"),
             new DataViewColumnAmount("Amount", "Currency", "Kwota", "am"),
             new DataViewColumnText("Description", "Opis", "de", DataViewColumnTextFilterComponents.Default),

@@ -52,6 +52,8 @@ public static class DataRowsExtensions
             => throw new InvalidOperationException(),
         (ColumnDataType.Number, _)
             => throw new InvalidOperationException(),
+        (ColumnDataType.Bool, Equality.Equals) => 
+        source.Where(n => n?[column.ColumnName]?.OriginalValue as bool? == filter.BoolValue),
         (ColumnDataType.Bool, _)
             => throw new InvalidOperationException(),
         (_, _) => throw new InvalidOperationException()

@@ -14,4 +14,7 @@ public class DataViewPresentation
         NavMenuIcon = navMenuIcon;
         NavMenuTitle = navMenuTitle;
     }
+
+    public DataViewPresentation Clone() =>
+        new DataViewPresentation(NavMenuIndex, NavMenuIcon, NavMenuTitle);
 }

@@ -1,6 +1,6 @@
 ﻿namespace DataViews;
 
-public abstract class DataViewColumn
+public class DataViewColumn
 {
     public string PrimaryDataColumnName { get; }
 
@@ -19,8 +19,10 @@ public abstract class DataViewColumn
     public DataViewColumnContentAlign? HorizontalAlign { get; set; }
 
     public string? PreferredFilterComponentType { get; set; }
-    public bool Visible { get; }
+    public bool Visible { get; set; }
     public int? NumberOfLinesInDetails { get; set; }
+
+    public string? ReferencedDataViewName { get; set; }
 
     public DataViewColumn(string primaryDataColumnName, DataViewColumnDataType dataType, string title, string shortName, string? preferredFilterComponentType = null, bool visible = true)
     {
@@ -31,4 +33,14 @@ public abstract class DataViewColumn
         PreferredFilterComponentType = preferredFilterComponentType;
         Visible = visible;
     }
+
+    public DataViewColumn Clone() => new DataViewColumn(PrimaryDataColumnName, DataType, Title, ShortName, PreferredFilterComponentType, Visible)
+    {
+        SecondaryDataColumnName = SecondaryDataColumnName,
+        NullValue = NullValue,
+        Format = Format,
+        HorizontalAlign = HorizontalAlign,
+        NumberOfLinesInDetails = NumberOfLinesInDetails,
+        ReferencedDataViewName = ReferencedDataViewName,
+    };
 }

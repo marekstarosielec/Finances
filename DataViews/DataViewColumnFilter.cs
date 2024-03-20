@@ -14,12 +14,15 @@ public class DataViewColumnFilter
 
     public Equality Equality { get; set; }
 
+    public bool? BoolValue {  get; set; }   
+
     public DataColumnFilter GetPrimaryDataColumnFilter() 
         => new DataColumnFilter { 
             StringValue = StringValue?.Select(s => s.ToLowerInvariant()).ToList() ?? new List<string>(), 
             DateFrom = DateFrom, 
             DateTo = DateTo,
-            Equality = Equality 
+            Equality = Equality,
+            BoolValue = BoolValue
         };
 
     public DataColumnFilter? GetSecondaryDataColumnFilter()

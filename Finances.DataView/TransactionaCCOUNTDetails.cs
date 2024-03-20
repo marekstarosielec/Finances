@@ -26,7 +26,7 @@ public class TransactionAccountDetails : IDataView
             new DataViewColumnText("Currency", "Waluta", "c")
         };
 
-        _dataView = new("tad", "Szczegóły tranzakcji", _dataSourceFactory.TransactionAccount, new(columns));
+        _dataView = new("tad", "Szczegóły konta", _dataSourceFactory.TransactionAccount, new(columns));
         return _dataView;
     }
 }

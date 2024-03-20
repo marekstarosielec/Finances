@@ -31,15 +31,14 @@ abc
 
     public string? currentText = string.Empty;
 
-   
+
     protected override void OnInitialized()
     {
         if (Column != null && DataView?.Query.Filters?.ContainsKey(Column) == true)
             currentText = DataView?.Query.Filters?[Column]?.StringValue?.FirstOrDefault();
 
- 
-        Popup.Open = new EventCallback(this, OnOpen);
-        base.OnInitialized();
+
+        Popup.Open = new EventCallback(this, OnOpen);;
     }
 
     private async void KeyDown(KeyboardEventArgs e)
@@ -50,12 +49,6 @@ abc
             await Popup.CloseAsync(ElementReference.Value);
         await ApplyFilter();
     }
-
-    private void TextChanged(ChangeEventArgs e)
-    {
-        currentText = e.Value?.ToString() ?? string.Empty;
-    }
-
 
 
     void IDisposable.Dispose()
@@ -75,7 +68,13 @@ abc
     {
         if (DataView?.Query.Filters == null || Column == null)
             return;
-        currentText = DataView.Query.Filters.ContainsKey(Column) ? DataView.Query.Filters[Column].StringValue.FirstOrDefault() : string.Empty;
-        await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
+        if (string.IsNullOrWhiteSpace(Column?.ReferencedDataViewName))
+            throw new InvalidOperationException($"Selection filter component for column {Column?.ShortName} requires {nameof(DataViewColumn.ReferencedDataViewName)}.");
+
+        var referencedDv = _dataViewManager.FindViewByName(Column.ReferencedDataViewName);
+        referencedDv.Query.Reset();
+        await referencedDv.Requery();
+        
+        //        await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
     }
 }

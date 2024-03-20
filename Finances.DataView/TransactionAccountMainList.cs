@@ -29,18 +29,18 @@ public class TransactionAccountMainList : IDataView
         };
 
         _dataView = new("ta", "Konta", _dataSourceFactory.TransactionAccount, new(columns), presentation, "tad");
-        //_dataView.Query.Prefilters.Add(
-        //    new Prefilter(
-        //        name: "savings",
-        //        title: "Ukryj usunięte",
-        //        column: columns.Single(c => c.PrimaryDataColumnName == "Deleted"),
-        //        columnFilter: new DataViewColumnFilter
-        //        {
-        //            StringValue = new List<bool> { true },
-        //            Equality = DataSource.Equality.NotEquals
-        //        },
-        //        applied: true
-        //    ));
+        _dataView.Query.Prefilters.Add(
+            new Prefilter(
+                name: "deleted",
+                title: "Ukryj usunięte",
+                column: columns.Single(c => c.PrimaryDataColumnName == "Deleted"),
+                columnFilter: new DataViewColumnFilter
+                {
+                    BoolValue = false,
+                    Equality = Equality.Equals
+                },
+                applied: true
+            ));
         _dataView.Query.PreSorters.Add(columns.Single(c => c.PrimaryDataColumnName == "Title"), false);
         return _dataView;
     }
