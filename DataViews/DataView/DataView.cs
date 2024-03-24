@@ -27,6 +27,9 @@ public class DataView
 
     public DataQueryResult? Result { get; private set; }
 
+    public DataViewAction ClickAction { get; set; } = DataViewAction.OpenDetails;
+
+
     private string? _detailsViewName { get; }
 
     public DataView(string name, string title, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns, DataViewPresentation? presentation = null, string? detailsViewName = null)

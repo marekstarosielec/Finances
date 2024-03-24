@@ -63,7 +63,7 @@ public class DataViewManager : IDisposable
         LoadFromQueryString(GetNavigationManagerQueryString());
     }
 
-    public async Task Save(DataView? dataView)
+    public async Task RebuildView(DataView? dataView)
     {
         if (dataView == null)
             throw new ArgumentNullException(nameof(dataView));
@@ -149,7 +149,7 @@ public class DataViewManager : IDisposable
         ViewChanged?.Invoke(this, dv);
     }
 
-    public DataView? FindView(string? viewName)
+    private DataView? FindView(string? viewName)
     {
         if (string.IsNullOrWhiteSpace(viewName))
             return null;
@@ -253,7 +253,7 @@ public class DataViewManager : IDisposable
 
             SelectedData.Add(dataView, id!);
         }
-        await Save(ActiveView);
+        await RebuildView(ActiveView);
     }
 
     public async Task GroupSelectedData()

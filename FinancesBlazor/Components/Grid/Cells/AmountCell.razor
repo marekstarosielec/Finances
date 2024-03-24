@@ -73,6 +73,6 @@
         var detailsDataView = _dataViewManager.FindViewByName(DataView.GetDetailsDataViewName());
         _dataViewManager.SelectedData.Clear();
         _dataViewManager.SelectedData.Add(detailsDataView, Row);
-        await _dataViewManager.Save(DataView);
+        await _dataViewManager.RebuildView(DataView);
     }
 }

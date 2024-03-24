@@ -53,7 +53,7 @@ else
         if (DataView == null || Row == null)
             return;
         _dataViewManager.SelectedData.Remove(Row);
-        await _dataViewManager.Save(DataView);
+        await _dataViewManager.RebuildView(DataView);
     }
 
     void IDisposable.Dispose()

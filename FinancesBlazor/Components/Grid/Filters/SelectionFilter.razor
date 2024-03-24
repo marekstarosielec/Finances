@@ -17,7 +17,7 @@
     [Parameter]
     public DataView? DataView { get; set; }
 
-    public DataView? ReferencedDataView => _dataViewManager.FindView(Column?.ReferencedDataViewName);
+    public DataView? ReferencedDataView => _dataViewManager.FindViewByName(Column?.ReferencedDataViewName);
 
     [Parameter]
     public DataViewColumn? Column { get; set; }
@@ -60,7 +60,7 @@
         if (DataView?.Query.Filters == null || Column == null)
             return;
         DataView.Query.Filters[Column] = new DataViewColumnFilter { StringValue = new List<string> { currentText } , Equality = DataSource.Equality.Contains };
-        await _dataViewManager.Save(DataView);
+        await _dataViewManager.RebuildView(DataView);
     }
 
     private async Task OnOpen()

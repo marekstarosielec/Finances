@@ -46,7 +46,7 @@
         else
             _dataViewManager.SelectedData.Remove(Row);
         _checked = args;
-        await _dataViewManager.Save(DataView);
+        await _dataViewManager.RebuildView(DataView);
     }
 
     void SelectedDataChanged(object? sender, EventArgs e)

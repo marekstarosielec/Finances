@@ -50,7 +50,7 @@ public partial class Grid
             return;
 
         DataView.Query.PageSize += 100;
-        await _dataViewManager.Save(DataView);
+        await _dataViewManager.RebuildView(DataView);
     }
 
     private bool ColumnHeaderArrowHidden(DataViewColumn column, bool descending)
