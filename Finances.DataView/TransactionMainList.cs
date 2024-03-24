@@ -19,7 +19,7 @@ public class TransactionMainList : IDataView
         if (_dataView != null)
             return _dataView;
 
-        var presentation = new DataViewPresentation(50, "fa-solid fa-money-bill-transfer", "Tranzakcje");
+        var presentation = new DataViewPresentation { NavMenuIndex = 50, NavMenuIcon = "fa-solid fa-money-bill-transfer", NavMenuTitle = "Tranzakcje" };
         var columns = new List<DataViewColumn>
         {
             new DataViewColumnText("Id", "Id", "id", visible: false),

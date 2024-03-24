@@ -1,4 +1,5 @@
-﻿using DataViews;
+﻿using DataSource;
+using DataViews;
 using Finances.DataSource;
 
 namespace FinancesDataView;
@@ -18,11 +19,29 @@ public class TransactionAccountReferenceList : IDataView
         if (_dataView != null)
             return _dataView;
 
-        _dataView = new TransactionAccountMainList(_dataSourceFactory).GetDataView().Clone("tar");
-        _dataView.Presentation = null;
-        foreach (var column in _dataView.Columns)
-            column.Visible = column.ShortName == "t";
+        var presentation = new DataViewPresentation { ShowSelectionCheckboxesInList = false, ShowToolbar = false, ShowHeaders = false };
+        var columns = new List<DataViewColumn>
+        {
+            new DataViewColumnText("Id", "Id", "id", visible: false),
+            new DataViewColumnText("Title", "Nazwa", "t"),
+            new DataViewColumnText("Currency", "Waluta", "c", visible: false),
+            new DataViewColumnCheckbox("Deleted", "Usunięte", "d", visible: false),
+        };
 
+        _dataView = new("tar", "Konta", _dataSourceFactory.TransactionAccount, new(columns), presentation, "tad");
+        _dataView.Query.Prefilters.Add(
+            new Prefilter(
+                name: "deleted",
+                title: "Ukryj usunięte",
+                column: columns.Single(c => c.PrimaryDataColumnName == "Deleted"),
+                columnFilter: new DataViewColumnFilter
+                {
+                    BoolValue = false,
+                    Equality = Equality.Equals
+                },
+                applied: true
+            ));
+        _dataView.Query.PreSorters.Add(columns.Single(c => c.PrimaryDataColumnName == "Title"), false);
         return _dataView;
     }
 }

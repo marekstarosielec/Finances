@@ -23,7 +23,7 @@ public class GroupView : IDataView
         if (_dataView != null)
             return _dataView;
 
-        var presentation = new DataViewPresentation(1000, "fa-regular fa-object-group", "Grupy");
+        var presentation = new DataViewPresentation { NavMenuIndex = 1000, NavMenuIcon = "fa-regular fa-object-group", NavMenuTitle = "Grupy" };
         var columns = new List<DataViewColumn>
         {
             new DataViewColumnText("Id", "Id", "id", visible: false),

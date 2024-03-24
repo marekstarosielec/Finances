@@ -5,7 +5,10 @@
 @implements IDisposable;
 
 <tr class="@(_checked ? "checked" : null) @(IsDeleted() ? "deleted" : null)">
-    <td class="selectionCheckbox"><RadzenCheckBox TValue="bool" class="checkbox" Value=@_checked Change=@(args => CheckChange(args)) /></td>
+    @if (DataView?.Presentation?.ShowSelectionCheckboxesInList == true)
+    {
+        <td class="selectionCheckbox"><RadzenCheckBox TValue="bool" class="checkbox" Value=@_checked Change=@(args => CheckChange(args)) /></td>
+    }
     @foreach (var column in DataView?.Columns!.Where(c => c.Visible)!)
     {
         <DynamicCell DataView=@DataView Row=@Row Column=column></DynamicCell>

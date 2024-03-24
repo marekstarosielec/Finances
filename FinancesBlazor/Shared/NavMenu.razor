@@ -12,7 +12,7 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        @foreach (var dataView in _dataViewManager.DataViews.Where(dv => dv.Presentation != null))
+        @foreach (var dataView in _dataViewManager.DataViews.Where(dv => dv.Presentation?.NavMenuIndex != null))
         {
             <div class="nav-item px-3" @onclick="() => Navigate(dataView)">
                 <NavLink class="nav-link" Match="NavLinkMatch.All">

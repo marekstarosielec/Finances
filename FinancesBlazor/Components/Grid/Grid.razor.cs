@@ -13,6 +13,7 @@ public partial class Grid
     private Dictionary<DataViewColumn, Popup> _popups = new();
     private Dictionary<DataViewColumn, DynamicFilter> _dynamicFilters = new();
     private Stopwatch _timer = new Stopwatch();
+    
     [Parameter]
     public DataView? DataView { get; set; }
 

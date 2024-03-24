@@ -13,24 +13,30 @@
 }
 else
 {
-    <Toolbar DataView=DataView></Toolbar>
+    @if (DataView?.Presentation?.ShowToolbar == true)
+    {
+        <Toolbar DataView=DataView></Toolbar>
+    }
     <table class="table table-borderless">
-        <thead>
-            <tr>
-                <th></th>
-                @foreach (var column in DataView.Columns.Where(c => c.Visible))
-                {
-                    <th>
-                        <div class="@(column.HorizontalAlign == DataViewColumnContentAlign.Right ? "text-end dropdown" : "dropdown")">
-                            <button class="btn columnHeader" type="button" @ref=_popupInvokers[column] @onclick="@(args => ToggleFilter(column))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down blue"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up yellow"></span></span></button>
-                            <Popup @ref=_popups[column] Lazy=false class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
-                                <DynamicFilter DataView=@DataView Column=column @ref=_dynamicFilters[column] Popup="@_popups[column]" ElementReference="@_popupInvokers[column]" />
-                            </Popup>
-                        </div>
-                    </th>
-                }
-            </tr>
+        @if (DataView?.Presentation?.ShowHeaders == true)
+        {
+            <thead>
+                <tr>
+                    <th></th>
+                    @foreach (var column in DataView.Columns.Where(c => c.Visible))
+                    {
+                        <th>
+                            <div class="@(column.HorizontalAlign == DataViewColumnContentAlign.Right ? "text-end dropdown" : "dropdown")">
+                                <button class="btn columnHeader" type="button" @ref=_popupInvokers[column] @onclick="@(args => ToggleFilter(column))">@column.Title <span hidden="@ColumnHeaderArrowHidden(column, true)"><span class="fa fa-arrow-down blue"></span></span><span hidden="@ColumnHeaderArrowHidden(column, false)"><span class="fa fa-arrow-up yellow"></span></span></button>
+                                <Popup @ref=_popups[column] Lazy=false class="popup" Style="display:none;position:absolute;padding:5px;border:1px">
+                                    <DynamicFilter DataView=@DataView Column=column @ref=_dynamicFilters[column] Popup="@_popups[column]" ElementReference="@_popupInvokers[column]" />
+                                </Popup>
+                            </div>
+                        </th>
+                    }
+                </tr>
         </thead>
+        }
         <tbody>
             @if (DataView?.Result?.Rows != null)
             {

@@ -2,19 +2,18 @@
 
 public class DataViewPresentation
 {
-    public int? NavMenuIndex { get; }
+    public int? NavMenuIndex { get; set; }
 
-    public string NavMenuIcon { get; }
+    public string? NavMenuIcon { get; set; }
 
-    public string NavMenuTitle { get; }
+    public string? NavMenuTitle { get; set; }
 
-    public DataViewPresentation(int? navMenuIndex, string navMenuIcon, string navMenuTitle)
-    {
-        NavMenuIndex = navMenuIndex;
-        NavMenuIcon = navMenuIcon;
-        NavMenuTitle = navMenuTitle;
-    }
+    public bool ShowSelectionCheckboxesInList { get; set; } = true;
 
-    public DataViewPresentation Clone() =>
-        new DataViewPresentation(NavMenuIndex, NavMenuIcon, NavMenuTitle);
+    public bool ShowToolbar { get; set; } = true;
+
+    public bool ShowHeaders { get; set; } = true;
+
+    //public DataViewPresentation Clone() =>
+    //    new DataViewPresentation(NavMenuIndex, NavMenuIcon, NavMenuTitle);
 }

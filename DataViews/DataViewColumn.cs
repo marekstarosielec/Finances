@@ -34,13 +34,13 @@ public class DataViewColumn
         Visible = visible;
     }
 
-    public DataViewColumn Clone() => new DataViewColumn(PrimaryDataColumnName, DataType, Title, ShortName, PreferredFilterComponentType, Visible)
-    {
-        SecondaryDataColumnName = SecondaryDataColumnName,
-        NullValue = NullValue,
-        Format = Format,
-        HorizontalAlign = HorizontalAlign,
-        NumberOfLinesInDetails = NumberOfLinesInDetails,
-        ReferencedDataViewName = ReferencedDataViewName,
-    };
+    //public DataViewColumn Clone() => new DataViewColumn(PrimaryDataColumnName, DataType, Title, ShortName, PreferredFilterComponentType, Visible)
+    //{
+    //    SecondaryDataColumnName = SecondaryDataColumnName,
+    //    NullValue = NullValue,
+    //    Format = Format,
+    //    HorizontalAlign = HorizontalAlign,
+    //    NumberOfLinesInDetails = NumberOfLinesInDetails,
+    //    ReferencedDataViewName = ReferencedDataViewName,
+    //};
 }

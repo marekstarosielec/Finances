@@ -42,7 +42,7 @@ public class DataViewManager : IDisposable
         //Determine initial view.
         NameValueCollection qs = GetNavigationManagerQueryString();
         if (qs["av"] == null || FindView(qs["av"]) == null)
-            qs["av"] = DataViews.First(dv => dv.Presentation != null).Name;
+            qs["av"] = DataViews.First(dv => dv.Presentation?.NavMenuIndex != null).Name;
 
         //Setup initial values
         DataViews.ForEach(dv =>
@@ -149,7 +149,7 @@ public class DataViewManager : IDisposable
         ViewChanged?.Invoke(this, dv);
     }
 
-    private DataView? FindView(string? viewName)
+    public DataView? FindView(string? viewName)
     {
         if (string.IsNullOrWhiteSpace(viewName))
             return null;

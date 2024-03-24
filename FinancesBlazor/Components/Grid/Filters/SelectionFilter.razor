@@ -10,15 +10,14 @@
 
 @if (Column != null)
 {
-    @* <input type="text" id="search" aria-label="@Column.Title" aria-describedby="@Column.Title" @oninput="TextChanged" @onkeydown="KeyDown" value="@currentText" autocomplete="off" /> *@
-    
+    <FinancesBlazor.Components.Grid.Grid DataView=ReferencedDataView />
 }
-
-abc
 
 @code {
     [Parameter]
     public DataView? DataView { get; set; }
+
+    public DataView? ReferencedDataView => _dataViewManager.FindView(Column?.ReferencedDataViewName);
 
     [Parameter]
     public DataViewColumn? Column { get; set; }

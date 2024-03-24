@@ -18,7 +18,7 @@ public class DocumentMainList : IDataView
         if (_dataView != null)
             return _dataView;
 
-        var presentation = new DataViewPresentation(60, "fa-regular fa-folder-open", "Dokumenty");
+        var presentation = new DataViewPresentation { NavMenuIndex = 60, NavMenuIcon = "fa-regular fa-folder-open", NavMenuTitle = "Dokumenty" };
         var columns = new List<DataViewColumn>
         {
             new DataViewColumnText("Id", "Id", "id", visible: false),

@@ -18,7 +18,7 @@ public class GasMainList : IDataView
         if (_dataView != null)
             return _dataView;
 
-        var presentation = new DataViewPresentation(100, "fa-solid fa-fire", "Gaz");
+        var presentation = new DataViewPresentation { NavMenuIndex = 100, NavMenuIcon = "fa-solid fa-fire", NavMenuTitle = "Gaz" };
         var columns = new List<DataViewColumn>
         {
             new DataViewColumnText("Id", "Id", "id", visible: false),
