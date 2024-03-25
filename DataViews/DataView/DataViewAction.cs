@@ -3,5 +3,5 @@
 public enum DataViewAction
 {
     OpenDetails = 0,
-    InformReferenceingView = 1
+    InformReferencingView = 1
 }

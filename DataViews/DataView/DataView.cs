@@ -16,7 +16,7 @@ public class DataView
 
     public ReadOnlyCollection<DataViewColumn> Columns { get; }
 
-    public DataViewPresentation? Presentation { get; set;  }
+    public DataViewPresentation? Presentation { get; set; }
 
     public DataViewQuery Query { get; init; }
 
@@ -27,10 +27,11 @@ public class DataView
 
     public DataQueryResult? Result { get; private set; }
 
-    public DataViewAction ClickAction { get; set; } = DataViewAction.OpenDetails;
-
+    public DataViewAction SelectRecordAction { get; set; } = DataViewAction.OpenDetails;
 
     private string? _detailsViewName { get; }
+
+    public Func<DataView, DataRow, DataViewColumn, Task> SelectRecordFunc { get; set; }
 
     public DataView(string name, string title, IDataSource dataSource, ReadOnlyCollection<DataViewColumn> columns, DataViewPresentation? presentation = null, string? detailsViewName = null)
     {
@@ -122,6 +123,12 @@ public class DataView
         IsSaving = true;
         await DataSource.Save(rows);
         IsSaving = false;
+    }
+
+    public async Task SelectRecord(DataRow row, DataViewColumn column)
+    {
+        if (SelectRecordAction == DataViewAction.InformReferencingView && SelectRecordFunc != null)
+            await SelectRecordFunc.Invoke(this, row, column);
     }
 }
 

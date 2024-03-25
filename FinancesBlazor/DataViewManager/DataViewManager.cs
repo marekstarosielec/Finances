@@ -47,6 +47,7 @@ public class DataViewManager : IDisposable
         //Setup initial values
         DataViews.ForEach(dv =>
         {
+            dv.SelectRecordFunc = SelectRecord;
             var currentview = qs[dv.Name];
             if (!string.IsNullOrWhiteSpace(currentview))
                 dv.Deserialize(currentview);
@@ -318,6 +319,11 @@ public class DataViewManager : IDisposable
     public async Task Alert(string message)
     {
         await _dialogService.Alert(message, string.Empty, options: new AlertOptions { CloseDialogOnEsc = true, CloseDialogOnOverlayClick = true, OkButtonText = "Ok", ShowClose = false, ShowTitle = false });
+    }
+
+    private async Task SelectRecord(DataView dataView, DataRow row, DataViewColumn column)
+    {
+
     }
 }
 

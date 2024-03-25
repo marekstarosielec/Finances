@@ -42,6 +42,8 @@ public class TransactionAccountReferenceList : IDataView
                 applied: true
             ));
         _dataView.Query.PreSorters.Add(columns.Single(c => c.PrimaryDataColumnName == "Title"), false);
+
+        _dataView.SelectRecordAction = DataViewAction.InformReferencingView;
         return _dataView;
     }
 }

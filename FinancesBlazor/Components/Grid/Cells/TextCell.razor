@@ -1,7 +1,7 @@
 ﻿@using DataSource;
 @using DataViews;
 
-<td class="@GetCellStyle()">@GetCellValue()</td>
+<td class="@GetCellStyle()" @onclick="selectRecord">@GetCellValue()</td>
 
 @code {
     [Parameter]
@@ -37,4 +37,13 @@
 
         return value.ToString();
     }
+
+    async Task selectRecord()
+    {
+        if (DataView == null || Row == null || Column == null)
+            return;
+
+        await DataView.SelectRecord(Row, Column);
+    }
+
 }
